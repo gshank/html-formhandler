@@ -1,0 +1,18 @@
+=head1 NAME
+
+HTML::FormHandler::Manual::Templates
+
+=head1 SYNOPSIS
+
+Placeholder for documentation on templates to use with L<HTML::FormHandler>
+
+=head1 AUTHOR
+
+Gerda Shank, gshank@cpan.org
+
+=head1 COPYRIGHT
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut

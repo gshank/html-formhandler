@@ -1,0 +1,6 @@
+Revision history for Perl extension HTML::FormHandler 
+
+0.01 Mon Jan 12 2008, 17:00
+    Released on an unsuspecting world
+    Conversion of Form::Processor to Moose, including
+    renaming many attributes and methods and refactoring

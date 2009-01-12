@@ -1,0 +1,18 @@
+=head1 NAME
+
+HTML::FormHandler::Manual::Cookbook
+
+=head1 SYNOPSIS
+
+Placeholder for a collection of use recipes for L<HTML::FormHandler>
+
+=head1 AUTHOR
+
+Gerda Shank, gshank@cpan.org
+
+=head1 COPYRIGHT
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut
