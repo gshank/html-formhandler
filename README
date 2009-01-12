@@ -2,6 +2,9 @@ HTML::FormHandler
 
 This package is a Moose form handler, based on Form::Processor.
 
+Create Perl form classes, define fields, retrieve and save to the
+database...
+
 
 INSTALLATION
 
