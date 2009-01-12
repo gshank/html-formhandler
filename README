@@ -1,35 +1,31 @@
-Form::Processor
-Form::Processor::Model::DBIC
+HTML::FormHandler
 
-This package is a development conversion of Form::Processor and
-Form::Processor::Model::DBIC to Moose. It also
-provides a Catalyst::Controller to use in the place
-of Catalyst::Plugin::Form::Processor
+This package is a Moose form handler, based on Form::Processor.
+
 
 INSTALLATION
 
 To install this module, run the following commands:
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+        perl Makefile.PL
+        make
+        make test
+        make install
 
 SUPPORT AND DOCUMENTATION
 
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc Form::Processor
-    perldoc Form::Processor::Field
-    perldoc Form::Processor::Model::DBIC
-    perldoc Catalyst::Controller::Form::Processor
+    perldoc HTML::FormHandler::Manual
+    perldoc HTML::FormHandler::Tutorial
+    perldoc HTML::FormHandler
+    perldoc HTML::FormHandler::Model::DBIC
+    perldoc HTML::FormHandler::Field
+    perldoc Catalyst::Controller::Role::HTML::FormHandler
 
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2008 Bill Moseley & Gerda Shank
-
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
