@@ -11,7 +11,7 @@
     [% FOREACH f IN form.sorted_fields %] 
         <p>
         <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
-        <input type="text" name="[% f.name %]" id="[% f.name %]">
+        <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
         </p>
     [% END %]
     <input type="submit" value="Save"/>

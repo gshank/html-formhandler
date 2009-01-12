@@ -65,18 +65,6 @@ sub render
    return $output;
 }
 
-=item field_render
-
-Render a field by name
-
-=cut
-
-sub field_render
-{
-   my ( $self, $fieldname ) = @_;
-   return $self->render_field( $self->field($fieldname) );
-}
-
 =item render_field
 
 Render a field by a field object
@@ -86,6 +74,10 @@ Render a field by a field object
 sub render_field
 {
    my ( $self, $field ) = @_;
+   unless ( $field->isa( 'HTML::FormHandler::Field' ) )
+   {
+      $field = $self->field( $field );
+   }
    my $method = 'render_' . $field->widget;
    return $self->$method( $field );
 }
@@ -188,7 +180,7 @@ sub render_multiple
       $output .= "<option value=\"" . $option->{value} . "\"";
       if ( $field->fif )
       {
-         foreach my $optval ( $field->fif )
+         foreach my $optval ( @{$field->fif} )
          {
             $output .= " selected=\"selected\"" if $optval == $option->{value};
          }

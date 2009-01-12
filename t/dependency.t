@@ -2,6 +2,35 @@ use Test::More tests => 6;
 
 use DateTime;
 
+{
+   package My::Form;
+   use Moose;
+   extends 'HTML::FormHandler';
+
+   sub profile {
+      return {
+         required => {
+             name    => 'Text',
+             age     => 'Integer',
+         },
+         optional => {
+             comment  => 'Text',
+             address  => 'Text',
+             city     => 'Text',
+             state    => 'Text',
+             zip      => 'Text', 
+             cc_no    => 'Text',
+             cc_expires => 'Text',
+         },
+         dependency => [
+            [ 'address', 'city', 'state', 'zip' ],
+            [ 'cc_no', 'cc_expires' ],
+         ],
+      };
+   }
+
+}
+
 my $form = My::Form->new;
 ok( $form, 'get form' );
 
@@ -24,35 +53,4 @@ foreach my $field (@error_fields)
    is( $field->errors->[0], 'This field is required', "required field: $name");
 }
 
-
-package My::Form;
-use strict;
-use warnings;
-use base 'HTML::FormHandler';
-
-
-sub profile {
-
-   my @address_group       = ('address', 'city', 'state', 'zip');
-   my @credit_card_group   = ('cc_no', 'cc_expires');
-   return {
-      required => {
-          name    => 'Text',
-          age     => 'Integer',
-      },
-      optional => {
-          comment  => 'Text',
-          address  => 'Text',
-          city     => 'Text',
-          state    => 'Text',
-          zip      => 'Text', 
-          cc_no    => 'Text',
-          cc_expires => 'Text',
-      },
-      dependency => [
-          \@address_group,
-          \@credit_card_group,
-      ],
-   };
-}
 

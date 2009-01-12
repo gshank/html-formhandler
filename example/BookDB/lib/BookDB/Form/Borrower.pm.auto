@@ -1,8 +1,7 @@
 package BookDB::Form::Borrower;
 
-use strict;
-use warnings;
-use base 'Form::Processor::Model::DBIC';
+use Moose;
+extends 'HTML::FormHandler::Model::DBIC';
 
 
 =head1 NAME

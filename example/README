@@ -1,4 +1,4 @@
-A Catalyst example using Form::Processor and
-Form::Processor::Model::DBIC
+A Catalyst example using HTML::FormHandler 
+and HTML::FormHandler::Model::DBIC 
 
 execute script/bookdb_server.pl in the BookDB directory

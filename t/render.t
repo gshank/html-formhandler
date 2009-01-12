@@ -1,4 +1,4 @@
-use Test::More tests => 4;
+use Test::More tests => 6;
 
 use HTML::FormHandler::Field::Text;
 
@@ -19,8 +19,28 @@ use HTML::FormHandler::Field::Text;
                id    => 'f99',
                value => 'something'
             },
+            fruit => 'Select',
+            vegetables => 'Multiple',
+            active => 'Checkbox'
          }
-      }
+      },
+   }
+
+   sub options_fruit {
+       return (
+           1   => 'apples',
+           2   => 'oranges',
+           3   => 'kiwi',
+       );
+   }
+
+   sub options_vegetables {
+       return (
+           1   => 'lettuce',
+           2   => 'broccoli',
+           3   => 'carrots',
+           4   => 'peas',
+       );
    }
 }
 
@@ -28,11 +48,17 @@ my $form = Test::Form->new;
 
 ok( $form, 'create form');
 
-my $output = $form->field_render( 'TestField' );
-ok( $output, 'get rendered output');
+my $output1 = $form->render_field( $form->field('TestField') );
+ok( $output1, 'output from text field');
 
-$output = $form->render_field( $form->field('TestField') );
-ok( $output, 'get rendered output from field obj');
+my $output2 = $form->render_field( $form->field('fruit') );
+ok( $output2, 'output from select field');
+
+my $output3 = $form->render_field( $form->field('vegetables') );
+ok( $output3, 'output from select multiple field');
+
+my $output4 = $form->render_field( $form->field('active') );
+ok( $output4, 'output from checkbox field');
 
 $output = $form->render;
 ok( $output, 'get rendered output from form');

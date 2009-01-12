@@ -1,7 +1,8 @@
 package BookDB::Controller::Borrower;
 
 use Moose;
-use base  'Catalyst::Controller::HTML::FormHandler';
+use base  'Catalyst::Controller';
+with 'Catalyst::Controller::Role::HTML::FormHandler';
 
 =head1 NAME
 
