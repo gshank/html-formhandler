@@ -7,24 +7,12 @@ use Scalar::Util ('blessed');
 
 =head1 NAME
 
-Form::Model -- default model base class
+HTML::FormHandler::Model - default model base class
 
 =head1 SYNOPSIS
 
-    # A class to define a form in your application
-    package MyApplication::Form::User;
-    use strict;
-
-    # Inherit from the form model class for your ORM
-    use base 'HTML::FormHandler::Model::CDBI
-
-    # Relate the form to a specific ORM class
-    sub item_class{ 'MyDB::User' }
-
-    sub profile {
-
-        [...]
-    }
+This class defines the base attributes for FormHandler model
+classes. It is not used directly.
 
 =head1 DESCRIPTION
 
@@ -41,9 +29,7 @@ the Class::DBI ORM.
 
 =head1 METHODS
 
-=over 4
-
-=item item, build_item
+=head2 item, build_item
 
 The "item" is initialized with "build_item" the first time $form->item is called.  
 "item" must be defined in the model class to fetch the object based on the item id.
@@ -69,7 +55,7 @@ sub set_item
    $self->item_class( ref $item ); 
 }
 
-=item item_id
+=head2 item_id
 
 The id (primary key) of the item (object) that the form is updating
 or has just created. The model class should have a build_item method that can
@@ -79,7 +65,7 @@ fetch the object from the item_class for this id.
 
 has 'item_id' => ( is => 'rw' );
 
-=item item_class
+=head2 item_class
 
 "item_class" sets and returns a value used by the model class to access
 the ORM class related to a form.
@@ -119,7 +105,7 @@ has 'item_class' => (
 # tell Moose to make this class immutable
 HTML::FormHandler::Model->meta->make_immutable;
 
-=item guess_field_type
+=head2 guess_field_type
 
 Returns the guessed field type.  The field name is passed as the first argument.
 This is only required if using "Auto" type of fields in your form classes.
@@ -139,7 +125,7 @@ sub guess_field_type
    Carp::confess "Don't know how to determine field type of [$_[1]]";
 }
 
-=item lookup_options
+=head2 lookup_options
 
 This method is called to find possible options for a given field
 from the database.  The default method returns undef.
@@ -167,7 +153,7 @@ default is "name".
 
 sub lookup_options { return }
 
-=item init_value
+=head2 init_value
 
 This method populates a form field's value from the item object.
 This is typically done by calling the field's name as an method
@@ -193,7 +179,7 @@ sub init_value
 
 }
 
-=item update_from_form
+=head2 update_from_form
 
 Update or create the object.
 
@@ -224,7 +210,7 @@ sub update_from_form
    die "must define 'update_from_form' in HTML::FormHandler::Model subclass";
 }
 
-=item model_validate
+=head2 model_validate
 
 Validates profile items that are dependent on the model.
 This is called via the validation process and the model class
@@ -241,8 +227,6 @@ The default method does nothing.
 =cut
 
 sub model_validate { }
-
-=back
 
 =head1 AUTHOR
 

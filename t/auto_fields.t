@@ -25,7 +25,7 @@ ok($schema, 'get schema');
    sub profile {
       return {
          auto_required => ['title', 'author', 'isbn', 'publisher'],
-           auto_optional => ['books_genres', 'format', 'year', 'pages'], 
+           auto_optional => ['genres', 'format', 'year', 'pages'], 
          unique => ['isbn'],
       };
    }

@@ -83,9 +83,7 @@ by overriding 'validate_field'.
 
 =head1 ATTRIBUTES
 
-=over 4
-
-=item name
+=head2 name
 
 Field name. This name must be the same as the database column/accessor
 name or relationship.
@@ -94,7 +92,7 @@ name or relationship.
 
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 
-=item type
+=head2 type
 
 Field type (e.g. 'Text', 'Select' ... ) from a HTML::FormHandler::Field
 subclass, either one provided in the distribution or one that you
@@ -104,16 +102,16 @@ create yourself, proceded by a "+":  type => '+MetaText'
 
 has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
 
-=item init_value
+=head2 init_value
 
 Initial value populated by init_from_object - used to look for changes.
-Not to be confused with the form method init_value().
+Not to be confused with the form method init_value(). Not set by user.
 
 =cut
 
 has 'init_value' => ( is => 'rw' );
 
-=item value
+=head2 value
 
 Internal value -- same as init_value at start.  
 Sets or returns the internal value of the field.
@@ -132,7 +130,7 @@ has 'value' => (
    }
 );
 
-=item input
+=head2 input
 
 Input value from parameter. A change in this attribute triggers setting
 'fif'
@@ -148,7 +146,7 @@ has 'input' => (
    }
 );
 
-=item fif
+=head2 fif
 
 For filling in forms. Input or value.
 
@@ -162,7 +160,7 @@ sub fif
    return $self->_fif unless $self->password;
 }
 
-=item temp
+=head2 temp
 
 Temporary attribute. Not used by HTML::FormHandler.
 
@@ -170,7 +168,7 @@ Temporary attribute. Not used by HTML::FormHandler.
 
 has 'temp' => ( is => 'rw' );
 
-=item label
+=head2 label
 
 Text label for this field. Useful in templates. Defaults to field name.
 
@@ -183,7 +181,7 @@ has 'label' => (
    default => sub { shift->name }, 
 );
 
-=item title
+=head2 title
 
 Place to put title for field, for mouseovers. Not used by F::P.
 
@@ -191,7 +189,7 @@ Place to put title for field, for mouseovers. Not used by F::P.
 
 has 'title' => ( isa => 'Str', is => 'rw' );
 
-=item style
+=head2 style
 
 Field's generic style to use for css formatting in templates.
 Not actually used by F::P. 
@@ -200,7 +198,7 @@ Not actually used by F::P.
 
 has 'style' => ( isa => 'Str', is => 'rw' );
 
-=item css_class
+=head2 css_class
 
 Field's css_class for use in templates.
 
@@ -208,7 +206,7 @@ Field's css_class for use in templates.
 
 has 'css_class' => ( isa => 'Str', is => 'rw' );
 
-=item sub_form
+=head2 sub_form
 
 The field is made up of a sub-form.
 
@@ -219,7 +217,7 @@ contained in a form.  This is a reference to that form.
 
 has 'sub_form' => ( isa => 'Str', is => 'rw' );
 
-=item form
+=head2 form
 
 A reference to the containing form.
 
@@ -227,7 +225,7 @@ A reference to the containing form.
 
 has 'form' => ( is => 'rw', weak_ref => 1 );
 
-=item prename
+=head2 prename
 
 Field name prefixed by the form name and a dot.
 A field named "street" in a form named "address" would
@@ -251,7 +249,7 @@ sub build_prename
    return $prefix . $self->name;
 }
 
-=item widget
+=head2 widget
 
 The 'widget' is attribute is not used by base FormHandler code.
 It is intended for use in generating HTML, in templates and the 
@@ -283,7 +281,7 @@ The default widget is 'text'.
 
 has 'widget' => ( isa => 'Str', is => 'rw', default => 'text' );
 
-=item order
+=head2 order
 
 This is the field's order used for sorting errors and field lists.
 See the "set_order" method and F::P method "sorted_fields".
@@ -298,7 +296,7 @@ will be unpredictable.
 
 has 'order' => ( isa => 'Int', is => 'rw', default => '1' );
 
-=item required
+=head2 required
 
 Flag indicating whether this field must have a value
 
@@ -306,7 +304,7 @@ Flag indicating whether this field must have a value
 
 has 'required' => ( isa => 'Bool', is => 'rw', default => '0' );
 
-=item required_message
+=head2 required_message
 
 Error message text added to errors if required field is not present
 
@@ -316,7 +314,7 @@ The default is "This field is required".
 
 has 'required_message' => ( isa => 'Str', is => 'rw', default => 'This field is required' );
 
-=item unique
+=head2 unique
 
 Sets or returns the unique flag on the field
 
@@ -324,7 +322,7 @@ Sets or returns the unique flag on the field
 
 has 'unique' => ( isa => 'Bool', is => 'rw' );
 
-=item unique_message
+=head2 unique_message
 
 Error message text added to errors if field is not unique
 
@@ -332,8 +330,9 @@ Error message text added to errors if field is not unique
 
 has 'unique_message' => ( isa => 'Str', is => 'rw' );
 
-=item range_start
-=item range_end
+=head2 range_start
+
+=head2 range_end
 
 Field values are validated against the specified range if one
 or both of range_start and range_end are set and the field
@@ -365,7 +364,7 @@ must only be used on appropriate fields
 has 'range_start' => ( isa => 'Int|Undef', is => 'rw', default => undef );
 has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
 
-=item value_sprintf
+=head2 value_sprintf
 
 This is a sprintf format string that is used when moving the field's
 input data to the field's value attribute.  By defult this is undefined,
@@ -382,14 +381,14 @@ The field's 'value' will be formatted with two decimal places.
 
 has 'value_sprintf' => ( isa => 'Str|Undef', is => 'rw', default => undef );
 
-=item id, build_id
+=head2 id, build_id
 
 Provides an 'id' for the field. Useful for javascript.
 The default id is:
 
     $field->form->name . $field->id
 
-A field may override with "build_id".
+Override with "build_id".
 
 =cut
 
@@ -402,7 +401,7 @@ sub build_id
    return $form_name . $field->name;
 }
 
-=item password
+=head2 password
 
 This is a boolean flag to prevent the field from being returned in
 the C<$form->fif> and C<$field->fif> methods. 
@@ -411,7 +410,7 @@ the C<$form->fif> and C<$field->fif> methods.
 
 has 'password' => ( isa => 'Bool', is => 'rw', default => 0 );
 
-=item writeonly
+=head2 writeonly
 
 Fields flagged 'writeonly' are not returned in the 'fif' methods from the
 field's initial value, even if a value for the field exists in the item.
@@ -424,7 +423,7 @@ be used for columns that should only be written to the database on updates.
 
 has 'writeonly' => ( isa => 'Bool', is => 'rw', default => 0 );
 
-=item clear
+=head2 clear
 
 This is a flag that says you want to set the database column to null for this
 field.  Validation is also not run on this field.
@@ -433,8 +432,9 @@ field.  Validation is also not run on this field.
 
 has 'clear' => ( isa => 'Bool', is => 'rw', default => 0 );
 
-=item disabled
-=item readonly
+=head2 disabled
+
+=head2 readonly
 
 These allow you to enter hints about how the html element is generated.  
 
@@ -446,7 +446,7 @@ in constructing HTML.
 has 'disabled' => ( isa => 'Bool', is => 'rw', default => '0' );
 has 'readonly' => ( isa => 'Bool', is => 'rw', default => '0' );
 
-=item noupdate
+=head2 noupdate
 
 This boolean flag indicates a field that should not be updated.  Fields
 flagged as noupdate are skipped when processed by the model.
@@ -458,7 +458,7 @@ written to the data store.
 
 has 'noupdate' => ( isa => 'Bool', is => 'rw', default => '0' );
 
-=item errors
+=head2 errors
 
 Returns the error list for the field. Also provides 'num_errors',
 'has_errors', 'push_errors' and 'clear_errors' from Collection::Array 
@@ -482,7 +482,7 @@ has 'errors' => (
 );
 
 
-=item validate_meth
+=head2 validate_meth
 
 Specify the form method to be used to validate this field.
 
@@ -493,13 +493,9 @@ has 'validate_meth' => ( isa => 'Str', is => 'rw' );
 # tell Moose to make this class immutable
 __PACKAGE__->meta->make_immutable;
 
-=back
-
 =head1 METHODS
 
-=over 4
-
-=item new [parameters]
+=head2 new [parameters]
 
 Create a new instance of a field.  Initial values are passed 
 as a list of parameters.
@@ -512,7 +508,7 @@ sub BUILDARGS
    return {@args};
 }
 
-=item full_name
+=head2 full_name
 
 This returns the name of the field, but if the field
 is a child field will prepend the field with the parent's field
@@ -531,7 +527,7 @@ sub full_name
    return $parent->name . '.' . $name;
 }
 
-=item set_order
+=head2 set_order
 
 This sets the field's order to the form's field_counter
 and increments the counter. This may be used in a template
@@ -548,7 +544,7 @@ sub set_order
    $form->field_counter( $order + 1 );
 }
 
-=item add_error
+=head2 add_error
 
 Add an error to the list of errors.  If $field->form
 is defined then process error message as Maketext input.
@@ -585,7 +581,7 @@ sub add_error
 }
 
 
-=item validate_field
+=head2 validate_field
 
 This method does standard validation, which currently tests:
 
@@ -641,7 +637,7 @@ sub validate_field
    return;
 }
 
-=item validate
+=head2 validate
 
 This method validates the input data for the field and returns true if
 the data validates.  An error message must be added to the field with
@@ -660,7 +656,7 @@ method is to return true.
 sub validate { 1 }
 
 
-=item input_to_value
+=head2 input_to_value
 
 This method moves the 'input' attribute value to the 'value' attribute
 if 'value' is undefined (has not already been set in 'validate').
@@ -687,7 +683,7 @@ sub input_to_value
    }
 }
 
-=item test_ranges
+=head2 test_ranges
 
 If range_start and/or range_end is set AND the field
 does not have options will test that the value is within
@@ -731,7 +727,7 @@ sub test_ranges
    return 1;
 }
 
-=item trim_value
+=head2 trim_value
 
 Trims leading and trailing white space for single parameters.
 If the parameter is an array ref then each value is trimmed.
@@ -756,7 +752,7 @@ sub trim_value
    return @values > 1 ? \@values : $values[0];
 }
 
-=item test_multiple
+=head2 test_multiple
 
 Returns false if the field is a multiple field
 and the input for the field is a list.
@@ -778,7 +774,7 @@ sub test_multiple
    return 1;
 }
 
-=item has_input
+=head2 has_input
 
 Returns true if $self->input contains any non-blank input.
 
@@ -795,7 +791,7 @@ sub has_input
    return defined $value && $value =~ /\S/;
 }
 
-=item test_options
+=head2 test_options
 
 If the field has an "options" method then the input value (or values
 if an array ref) is tested to make sure they all are valid options.
@@ -829,7 +825,7 @@ sub test_options
    return 1;
 }
 
-=item fif_value
+=head2 fif_value
 
 A field class can use this method to format an internal
 value into hash for form parameters.
@@ -852,7 +848,7 @@ sub fif_value
    return $value;
 }
 
-=item value_changed
+=head2 value_changed
 
 Returns true if the value in the item has changed from what is currently in the
 field's value.
@@ -877,7 +873,7 @@ sub value_changed
    return $cmp[0] ne $cmp[1];
 }
 
-=item required_text
+=head2 required_text
 
 Returns "required" or "optional" based on the field's setting.
 
@@ -885,7 +881,7 @@ Returns "required" or "optional" based on the field's setting.
 
 sub required_text { shift->required ? 'required' : 'optional' }
 
-=item dump_field
+=head2 dump_field
 
 A little debugging.
 
@@ -912,8 +908,6 @@ sub dump
       warn "Options: " . Data::Dumper::Dumper $o;
    }
 }
-
-=back
 
 =head1 AUTHORS
 

@@ -15,7 +15,7 @@
    </p>
 
    <p>
-   [% f = form.field('books_genres') %]
+   [% f = form.field('genres') %]
    <label class="label" for="[% f.name %]">[% f.label %]</label>
    <select name="[% f.name %]" multiple="multiple" size="5">
      [% FOR option IN f.options %]

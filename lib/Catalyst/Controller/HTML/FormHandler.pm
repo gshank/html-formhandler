@@ -4,11 +4,11 @@ use Moose;
 use base 'Catalyst::Controller';
 with 'Catalyst::Controller::Role::HTML::FormHandler';
 
-our $VERSION = '0.01_01';
+our $VERSION = '0.01';
 
 =head1 NAME
 
-Catalyst::Controller::HTML::FormHandler
+Catalyst::Controller::HTML::FormHandler - a base controller for Catalyst
 
 =head1 SYNOPSIS
 

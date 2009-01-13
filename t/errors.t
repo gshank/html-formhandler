@@ -1,8 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
-my $tests = 8;
-plan tests => $tests;
+use Test::More tests => 13;
 
 use_ok( 'HTML::FormHandler' );
 
@@ -13,12 +11,15 @@ use_ok( 'HTML::FormHandler' );
    has '+name' => ( default => 'testform_' );
    sub profile {
        return {
-           required    => {
-               reqname     => 'Text',
+           fields    => {
+               reqname     => {
+                  type => 'Text',
+                  required => 1,
+                  required_message => 'You must supply a reqname',
+               },
                fruit       => 'Select',
-           },
-           optional    => {
                optname     => 'Text',
+               silly_name  => 'Text',
            },
        };
    }
@@ -29,39 +30,49 @@ use_ok( 'HTML::FormHandler' );
            3   => 'kiwi',
        );
    }
-   sub validate_reqname
+   sub validate_silly_name
    {
-      my $self = shift;
+      my ( $self, $field ) = @_;
+      $field->add_error( 'Not a valid silly_name' )
+            unless $field->value eq 'TeStInG';
    }
 }
 
 my $form = My::Form->new;
 
-ok( !$form->validate, 'Empty data' );
-
-$form->clear;
-
-my $good = {
-    reqname => 'hello',
-    optname => 'not req',
-    fruit   => 2,
-};
-
-ok( $form->validate( $good ), 'Good data' );
-
 my $bad_1 = {
     optname => 'not req',
     fruit   => 4,
+    silly_name => 'what??',
 };
 
-$form->clear;
 ok( !$form->validate( $bad_1 ), 'bad 1' );
+
+ok( $form->has_error, 'form has error' );
 
 ok( $form->field('fruit')->has_errors, 'fruit has error' );
 
 ok( $form->field('reqname')->has_errors, 'reqname has error' );
 
 ok( !$form->field('optname')->has_errors, 'optname has no error' );
+ok( $form->field('silly_name')->has_errors, 'silly_name has error' );
+ok( $form->has_errors, 'form has errors' );
+
+my @fields = $form->error_fields;
+ok( @fields, 'error fields' );
+
+my @errors = $form->errors;
+is_deeply( \@errors, ['\'4\' is not a valid value',
+                     'You must supply a reqname',
+                     'Not a valid silly_name' ],
+     'errors from form' );
+
+is( $form->num_errors, 3, 'number of errors' );
+
+my @field_names = $form->error_field_names;
+is_deeply( \@field_names, 
+           [ 'fruit', 'reqname', 'silly_name' ],
+           'error field names' );
 
 is( $form->field('fruit')->id, "testform_fruit", 'field has id' ); 
 

@@ -1,6 +1,12 @@
 Revision history for Perl extension HTML::FormHandler 
 
-0.01 Mon Jan 12 2008, 17:00
+0.03 Tues Jan 12 2009, 16:00
+    Pod fix, remove failing test from htmlarea
+
+0.02 Tues Jan 12 2009, 03:00
+    Fixed pod formatting, naming of files
+
+0.01 Mon Jan 12 2009, 17:00
     Released on an unsuspecting world
     Conversion of Form::Processor to Moose, including
     renaming many attributes and methods and refactoring

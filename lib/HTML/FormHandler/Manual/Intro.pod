@@ -1,6 +1,6 @@
 =head1 NAME
 
-HTML::FormHandler
+HTML::FormHandler::Intro - basic usage of FormHandler
 
 =head1 SYNOPSIS
 
@@ -78,7 +78,7 @@ enough for select fields, since you need to access the field 'options'.
    <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
    <select name="[% f.name %]">
      [% FOR option IN f.options %]
-       <option value="[% option.value %]" [% IF option.value == f.value %]selected="selected"[% END %]>[% option.label | html %]</option>
+       <option value="[% option.value %]" [% IF option.value == f.fif %]selected="selected"[% END %]>[% option.label | html %]</option>
      [% END %] 
    </select>
    </p>
@@ -91,7 +91,7 @@ A multiple select list where 'hobbies' is a 'many_to_many' pseudo-relationship.
    <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
    <select name="[% f.name %]" multiple="multiple" size="[% f.size %]">
      [% FOR option IN f.options %]
-       <option value="[% option.value %]" [% FOREACH selval IN f.value %][% IF selval == option.value %]selected="selected"[% END %][% END %]>[% option.label | html %]</option>
+       <option value="[% option.value %]" [% FOREACH selval IN f.fif %][% IF selval == option.value %]selected="selected"[% END %][% END %]>[% option.label | html %]</option>
      [% END %] 
    </select>
    </p>
@@ -119,7 +119,7 @@ With the Catalyst controller the schema is set from the model_name config
 options, ($c->model($model_name)...), but it can also be set by passing 
 in the schema on "new", or setting with $form->schema($schema).
 If you want to use FillInForm to fill in values instead of the field's
-fif attribute, use L<Catalyst::Controller::HTML::FormHandler::FifEnd>.
+fif attribute, use L<Catalyst::Controller::HTML::FormHandler>.
 
 
 =head1 DESCRIPTION
@@ -148,14 +148,14 @@ HTML::FormHandler.
 The L<Catalyst::Controller::HTML::FormHandler> package includes a working 
 example using a SQLite database and a number of forms. 
 
-=head2 The Form
+=head1 The Form
 
 A "form" class is where fields and validation routines are defined. It is a
 subclass of a FormHandler model class (for database forms) or FormHandler
 itself (for non-database forms). Since it is a subclass, many aspects of
 FormHandler behavior can be changed in a particular form.
 
-=head2 Form Models 
+=head1 Form Models 
 
 If you are not using a database interface, the base class for your forms is 
 HTML::FormHandler. For use with a database, you need to use a form model class--
@@ -176,7 +176,7 @@ form's "item" attribute.
 The $form->update_from_form method will validate the parameters and then 
 update or create the database row object.  
 
-=item The profile in your form
+=head1 The form profile
 
 Returns a hashref of field definitions.
 
@@ -225,7 +225,7 @@ All other keys are attributes of L<HTML::FormHandler::Field> or its subclasses.
 An example of a select field:
 
     my $profile = {
-        required => {
+        fields => {
             favorite_color => {
                 type            => 'Select',
                 label_column    => 'color_name',
@@ -264,7 +264,7 @@ is set for all of the fields in the group.
             fields => [
                 name    => 'Text',
                 age     => 'Integer',
-                date    => 'DateTimeDMYHM',
+                date    => 'DateTime',
                 comment => 'Text',
                 ...
             ],
@@ -275,7 +275,7 @@ is set for all of the fields in the group.
         };
     }
 
-=head2 Fields
+=head1 Fields
 
 A form's fields are created from the definitions in the "profile" subroutine.
 FormHandler processes the profile and creates an array of 
@@ -340,6 +340,82 @@ By default, the validation is simply to copy the data from the "input" to the "v
 field attribute, but you might have a field that must be converted from a text
 representation to an object (e.g. month, day, year to DateTime).
 
+=head1 Other methods for your form
+
+=over 4
+
+=item options_$fieldname 
+
+If you have a 'Select' or 'Multiple' field, there are two ways to provide the 
+'options', or the list of values and labels for the select list. 1) Get them 
+from a database table (from the relationship that is the field name), or 2) 
+provide them from an options_$fieldname method.
+
+An 'options_$fieldname' method should return a list of ordered key (option value) 
+and value (label to be displayed in the select list) pairs.
+
+   sub options_fruit {
+       return (
+           1   => 'apples',
+           2   => 'oranges',
+           3   => 'kiwi',
+       );
+   }
+
+=item init_value_$fieldname
+
+Allows you to provide a different initial value for a particular field than that
+in the database.
+
+   sub init_value_license {
+      my ( $self, $field, $item ) = @_;
+      return 0 unless $item->license; 
+      return $item->license;
+   }
+
+=item validate_$fieldname
+
+Do per-field validation customization not handled by the Field class.
+
+    sub validate_age {
+        my ( $self, $field ) = @_;
+        $field->add_error('Sorry, you must be 18')
+            if $field->value < 18;
+    }
+
+=item cross_validate
+
+Handle cross-field validation, or any validation that needs to be done after the entire
+form is validated.  This method is executed whether or not the form has validated so far.
+
+   sub cross_validate {
+      my $self = shift;
+      if ( $self->field('count')->value && $self->field('duration')->value )
+      {
+          $self->field('duration')->add_error( 
+                    'Do not enter both a count and a duration' );
+      }
+   }
+
+=item active_column
+
+Sets the 'active' column for all select lists in the form.
+
+   sub active_column { 'is_active' }
+
+=item update_model
+
+Override the model's 'update_model' method to do additional updates.
+
+   sub update_model {
+      my $self = shift;
+      $self->SUPER::update_model;
+      my $event = $self->item;
+      $event->update( ... );
+   }
+
+=back
+
 =head1 Filling the HTML form with values
 
 There are three ways to get the database or parameter values into the actual
@@ -353,7 +429,7 @@ You can use the hash returned by the form method "fif":
 
    [% form.fif.book %]
 
-Or you can use L<HTML::FillInForm> and the $form->fif hash. For Catalyst, 
+Or you can use L<HTML::FillInForm> and the C<< $form->fif hash >>. For Catalyst, 
 an example "end" routine to call FillInForm is provided in
 L<Catalyst::Controller::HTML::FormHandler>
 

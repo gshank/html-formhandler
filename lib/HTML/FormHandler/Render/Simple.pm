@@ -45,9 +45,7 @@ create additional widget routines in your form for custom widgets.
 
 =cut
 
-=back
-
-=item render
+=head2 render
 
 To render all the fields in a form in sorted order (using
 'sorted_fields' method). 
@@ -65,7 +63,7 @@ sub render
    return $output;
 }
 
-=item render_field
+=head2 render_field
 
 Render a field by a field object
 
@@ -82,7 +80,7 @@ sub render_field
    return $self->$method( $field );
 }
 
-=item render_text
+=head2 render_text
 
 Output an HTML string for a text widget
 
@@ -110,7 +108,7 @@ sub render_text
    return $output;
 }
 
-=item render_select
+=head2 render_select
 
 Output an HTML string for a 'select' widget
 
@@ -147,7 +145,7 @@ sub render_select
    return $output;
 }
 
-=item render_multiple
+=head2 render_multiple
 
 Output an HTML string for a 'multiple' widget
 
@@ -192,7 +190,7 @@ sub render_multiple
 
 }
 
-=item render_checkbox
+=head2 render_checkbox
 
 Output an HTML string for a 'checkbox' widget
 
@@ -215,7 +213,7 @@ sub render_checkbox
    return $output;
 }
 
-=item render_radio
+=head2 render_radio
 
 Output an HTML string for a 'radio' widget
 

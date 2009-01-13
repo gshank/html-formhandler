@@ -37,7 +37,7 @@ sub profile {
 				order => '2',
 			},
             # has_many relationship pointing to mapping table
-			books_genres    => {
+			genres    => {
 				type => 'Multiple',
 				label => 'Genres:',
                 label_column => 'name',

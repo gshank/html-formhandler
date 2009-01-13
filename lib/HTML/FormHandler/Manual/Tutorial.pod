@@ -1,6 +1,6 @@
 =head1 NAME
 
-HTML::FormHandler::Manual::Tutorial 
+HTML::FormHandler::Manual::Tutorial - use FormHandler with Catalyst
 
 =head1 DESCRIPTION
 

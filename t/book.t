@@ -30,7 +30,7 @@ $form->clear;
 my $good = {
     'title' => 'How to Test Perl Form Processors',
     'author' => 'I.M. Author',
-    'books_genres' => [2, 4],
+    'genres' => [2, 4],
     'format'       => 2,
     'isbn'   => '123-02345-0502-2' ,
     'publisher' => 'EreWhon Publishing',
@@ -84,6 +84,6 @@ $form->clear;
 $form = BookDB::Form::Book->new(item => $book, schema => $schema);
 ok( $form, 'create form from db object');
 
-my $genres_field = $form->field('books_genres');
+my $genres_field = $form->field('genres');
 is_deeply( sort $genres_field->value, [2, 4], 'value of multiple field is correct');
 

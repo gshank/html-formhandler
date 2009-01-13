@@ -7,7 +7,6 @@ all_from 'lib/HTML/FormHandler.pm';
 license 'perl';
 
 # prereqs
-requires 'perl'             => '5.008';
 requires 'Scalar::Util'     => '1.19';
 requires 'Carp';
 requires 'Moose'              => '0.59';
@@ -22,6 +21,8 @@ requires 'DBIx::Class';
 build_requires 'Test::More'      => '0.77';
 
 tests_recursive();
+
+auto_install();
 
 WriteAll();
 

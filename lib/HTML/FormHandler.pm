@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.01';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -101,9 +101,7 @@ An example of a form class:
 A dynamic form may be created in a controller:
 
     $c->stash->{form} = HTML::FormHandler->new(
-        item_class => 'Book',
-        item_id => $id,
-        schema => $schema,
+        item => $user,
         profile => {
             fields => {
                first_name => 'Text',
@@ -136,9 +134,7 @@ L<HTML::FormHandler::Manual>.
 
 =head1 ATTRIBUTES
 
-=over 4
-
-=item profile
+=head2 profile
 
 A hashref of field definitions.
 
@@ -183,7 +179,7 @@ list of fields where if one is entered, all fields are required.
 
 has 'profile' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
 
-=item name
+=head2 name
 
 The form's name.  Useful for multiple forms.
 It's also used to construct the default 'id' for fields. 
@@ -201,7 +197,7 @@ has 'name' => (
    default => sub { return 'form' . int( rand 1000 ) }
 );
 
-=item name_prefix
+=head2 name_prefix
 
 Prefix used for all field names listed in profile when creating
 each field.  This is useful for creating compound form fields where
@@ -214,7 +210,7 @@ day, month, and year fields.
 
 has 'name_prefix' => ( isa => 'Str', is => 'rw' );
 
-=item html_prefix
+=head2 html_prefix
 
 Flag to indicate that the form name is used as a prefix for fields
 in an HTML form. Useful for multiple forms
@@ -229,7 +225,7 @@ will return the form name + "." + field name
 
 has 'html_prefix' => ( isa => 'Bool', is => 'rw', default => 0 );
 
-=item init_object
+=head2 init_object
 
 If an 'init_object' is supplied on form creation, it will be used instead 
 of the 'item' to pre-populate the values in the form.
@@ -243,19 +239,19 @@ See 'init_from_object' method
 
 has 'init_object' => ( isa => 'HashRef', is => 'rw' );
 
-=item ran_validation
+=head2 ran_validation
 
 Flag to indicate that validation has already been run.
 
-=item validated
+=head2 validated
 
 Flag that indicates if form has been validated
 
-=item verbose
+=head2 verbose
 
 Flag to print out additional diagnostic information 
 
-=item readonly
+=head2 readonly
 
 "Readonly" is not used by F::P.
 
@@ -263,7 +259,7 @@ Flag to print out additional diagnostic information
 
 has [ 'ran_validation', 'validated', 'verbose', 'readonly' ] => ( isa => 'Bool', is => 'rw' );
 
-=item field_name_space
+=head2 field_name_space
 
 Use to set the name space used to locate fields that 
 start with a "+", as: "+MetaText". Fields without a "+" are loaded
@@ -279,7 +275,7 @@ has 'field_name_space' => (
    default => '',
 );
 
-=item num_errors
+=head2 num_errors
 
 Total number of errors
 
@@ -287,7 +283,7 @@ Total number of errors
 
 has 'num_errors' => ( isa => 'Int', is => 'rw', default => 0 );
 
-=item updated_or_created
+=head2 updated_or_created
 
 Flag indicating whether the db record in the item already existed 
 (was updated) or was created
@@ -296,7 +292,7 @@ Flag indicating whether the db record in the item already existed
 
 has 'updated_or_created' => ( isa => 'Str|Undef', is => 'rw' );
 
-=item user_data
+=head2 user_data
 
 Place to store user data 
 
@@ -304,7 +300,7 @@ Place to store user data
 
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 
-=item language_handle, build_language_handle
+=head2 language_handle, build_language_handle
 
 Holds a Local::Maketext language handle
 
@@ -327,7 +323,7 @@ sub build_language_handle
    return $lh;
 }
 
-=item field_counter
+=head2 field_counter
 
 Used for numbering fields. Used by set_order method in Field.pm. 
 Useful in templates.
@@ -340,7 +336,7 @@ has 'field_counter' => (
    default => 1
 );
 
-=item params
+=head2 params
 
 Stores HTTP parameters. 
 Also: set_param, get_param, reset_params, delete_param, from
@@ -363,7 +359,7 @@ has 'params' => (
    },
 );
 
-=item fields
+=head2 fields
 
 The field definitions as built from the profile. This is a
 MooseX::AttributeHelpers::Collection::Array, and provides
@@ -388,7 +384,7 @@ has 'fields' => (
    }
 );
 
-=item required
+=head2 required
 
 Array of fields that are required
 
@@ -406,7 +402,7 @@ has 'required' => (
    }
 );
 
-=item parent_field
+=head2 parent_field
 
 This value can be used to link a sub-form to the parent field.
 
@@ -421,19 +417,15 @@ has 'parent_field' => ( is => 'rw', weak_ref => 1 );
 # tell Moose to make this class immutable
 HTML::FormHandler->meta->make_immutable;
 
-=back
-
 =head1 METHODS
 
-=over 4
-
-=item new 
+=head2 new 
 
 New creates a new form object.  The constructor takes name/value pairs:
 
     MyForm->new(
         item    => $item,
-        item_id => $item->id,
+        init_object => { name => 'Your name here', username => 'choose' }
     );
 
 Or a single item (model row object) or item_id (row primary key)
@@ -450,13 +442,6 @@ an "id" method.  So:
 
     MyForm->new( $item_object );
 
-is the same as:
-
-    MyForm->new(
-        item    => $item_object,
-        item_id => $item_object->id,
-    );
-
 The common attributes to be passed in to the constructor are:
 
    item_id
@@ -466,7 +451,6 @@ The common attributes to be passed in to the constructor are:
    item_class
    profile
    init_object
-
 
 Creating a form object:
 
@@ -487,7 +471,7 @@ in L<HTML::FormHandler::Model>, and 'schema' is defined in
 L<HTML::FormHandler::Model::DBIC>.
 
 
-=item BUILD, BUILDARGS
+=head2 BUILD, BUILDARGS
 
 These are called when the form object is first created (by Moose).  
 
@@ -527,7 +511,7 @@ sub BUILD
    return;
 }
 
-=item clear
+=head2 clear
 
 Clears out state information on the form.  Normally only used in
 tests.
@@ -544,7 +528,7 @@ sub clear
    $self->updated_or_created(undef);
 }
 
-=item build_form
+=head2 build_form
 
 This parses the form profile and creates the individual
 field objects.  It calls the make_field() method for each field.
@@ -610,7 +594,7 @@ sub _set_field
    $self->add_field($field);
 }
 
-=item make_field
+=head2 make_field
 
     $field = $form->make_field( $name, $type );
 
@@ -661,7 +645,7 @@ sub make_field
    return $field;
 }
 
-=item load_options
+=head2 load_options
 
 For 'Select' or 'Multiple' fields (fields which have an 'options' method),
 call an "options_$field_name" method if it exists (is defined in your form), 
@@ -689,7 +673,7 @@ sub load_options
    $self->load_field_options($_) for $self->fields;
 }
 
-=item load_field_options
+=head2 load_field_options
 
 Load the options array into a field. Pass in a field object,
 and, optionally, an options array.
@@ -720,7 +704,7 @@ sub load_field_options
    $field->options( \@opts ) if @opts;
 }
 
-=item dump_fields
+=head2 dump_fields
 
 Dumps the fields of the form for debugging.
 
@@ -736,7 +720,7 @@ sub dump_fields
    }
 }
 
-=item init_from_object
+=head2 init_from_object
 
 Populates the field 'value' attributes from $form->item
 by calling a form's custom init_value_$fieldname method, passing in
@@ -774,7 +758,7 @@ sub init_from_object
    }
 }
 
-=item clear_values
+=head2 clear_values
 
 Clears the internal and external values of the form
 
@@ -792,7 +776,7 @@ sub clear_values
    $self->reset_params;
 }
 
-=item fif -- "fill in form"
+=head2 fif -- "fill in form"
 
 Returns a hash of values suitable for use with HTML::FillInForm
 or for filling in a form with C<< $form->fif->{fieldname} >>.
@@ -815,7 +799,7 @@ sub fif
    return $params;
 }
 
-=item sorted_fields
+=head2 sorted_fields
 
 Calls fields and returns them in sorted order by their "order"
 value.
@@ -830,7 +814,7 @@ sub sorted_fields
    return wantarray ? @fields : \@fields;
 }
 
-=item field NAME
+=head2 field NAME
 
 Searches for and returns a field named "NAME".
 Dies on not found.
@@ -856,7 +840,7 @@ sub field
    croak "Field '$name' not found in form '$self'";
 }
 
-=item field_exists
+=head2 field_exists
 
 Returns true (the field) if the field exists
 
@@ -869,7 +853,7 @@ sub field_exists
 }
 
 
-=item validate
+=head2 validate
 
 Validates the form from the HTTP request parameters.
 The parameters must be a hash ref with multiple values as array refs.
@@ -952,7 +936,7 @@ sub validate
    return $self->validated;
 }
 
-=item munge_params
+=head2 munge_params
 
 Munges the parameters when they are set.  Currently just adds 
 keys without the "html_prefix". Can be subclassed.
@@ -976,7 +960,7 @@ sub munge_params
    }
 }
 
-=item dump_validated
+=head2 dump_validated
 
 For debugging, dump the validated fields.
 
@@ -990,7 +974,7 @@ sub dump_validated
       for $self->fields;
 }
 
-=item cross_validate
+=head2 cross_validate
 
 This method is useful for cross checking values after they have been saved 
 as their final validated value, and for performing more complex dependency
@@ -1057,7 +1041,7 @@ sub clear_dependency
    $self->clear_required;
 }
 
-=item has_error
+=head2 has_error
 
 Returns true if validate has been called and the form did not
 validate.
@@ -1070,7 +1054,7 @@ sub has_error
    return $self->ran_validation && !$self->validated;
 }
 
-=item has_errors
+=head2 has_errors
 
 Checks the fields for errors and return true or false.
 
@@ -1085,7 +1069,7 @@ sub has_errors
    return 0;
 }
 
-=item error_fields
+=head2 error_fields
 
 Returns list of fields with errors.
 
@@ -1096,7 +1080,7 @@ sub error_fields
    return grep { $_->has_errors } shift->sorted_fields;
 }
 
-=item error_field_name
+=head2 error_field_name
 
 Returns the names of the fields with errors.
 
@@ -1109,8 +1093,21 @@ sub error_field_names
    return map { $_->name } @error_fields;
 }
 
+=head2 errors
 
-=item uuid
+Returns a single array with all field errors
+
+=cut
+
+sub errors
+{
+   my $self         = shift;
+   my @error_fields = $self->error_fields;
+   return map { $_->errors } @error_fields;
+}
+
+
+=head2 uuid
 
 Generates a hidden html field with a unique ID which
 the model class can use to check for duplicate form postings.
@@ -1124,9 +1121,6 @@ sub uuid
    my $uuid = Data::UUID->new->create_str;
    return qq[<input type="hidden" name="form_uuid" value="$uuid">];
 }
-
-=back
-
 
 =head1 AUTHOR
 

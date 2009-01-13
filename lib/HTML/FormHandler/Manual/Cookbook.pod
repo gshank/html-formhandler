@@ -1,6 +1,6 @@
 =head1 NAME
 
-HTML::FormHandler::Manual::Cookbook
+HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
 
 =head1 SYNOPSIS
 

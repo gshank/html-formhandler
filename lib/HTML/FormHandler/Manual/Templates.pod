@@ -1,6 +1,6 @@
 =head1 NAME
 
-HTML::FormHandler::Manual::Templates
+HTML::FormHandler::Manual::Templates - using templates
 
 =head1 SYNOPSIS
 

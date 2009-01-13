@@ -5,11 +5,11 @@ use Carp;
 use Data::Dumper;
 extends 'HTML::FormHandler';
 
-our $VERSION = '0.07_1';
+our $VERSION = '0.01';
 
 =head1 NAME
 
-HTML::FormHandler::Model::CDBI - model class for HTML::FormHandler based on Class::DBI
+HTML::FormHandler::Model::CDBI - Class::DBI model class for HTML::FormHandler
 
 =head1 SYNOPSIS
 
@@ -26,84 +26,44 @@ HTML::FormHandler::Model::CDBI - model class for HTML::FormHandler based on Clas
         my $self = shift;
 
         return {
-            required => {
+            fields => [
                 name        => 'Text',
                 age         => 'PosInteger',
                 sex         => 'Select',
                 birthdate   => 'DateTimeDMYHM',
-            },
-            optional => {
-                hobbies     => 'Multiple',
-                address     => 'Text',
-                city        => 'Text',
-                state       => 'Select',
-            },
-
-            dependency => [
-                [qw/ address city state /],
             ],
         };
     }
 
 =head1 DESCRIPTION
 
-This is a HTML::FormHandler::Model add-on module.  This module is for use with
-Class::DBI objects.  A form is associated with one of your CDBI table classes
-(e.g. Artists, Users) and then your forms can be populated with data from the
-database row, and select options from has_a and many-to-many relationships are
-also selected automatically.
-
-Your application code calls the update_from_form() method to validate and (
-if validation passes) to update or insert the row into the table.
-
-Your form inherits from HTML::FormHandler::Model::CDBI as shown in the SYNOPSIS
-instead of directly from HTML::FormHandler.
+A Class::DBI database model for HTML::FormHandler
 
 
 =head1 METHODS
 
-=over 4
+=head2 item_class
 
-=item item_class
-
-This method is typically overridden in your form class and relates the form
-to a specific Class::DBI table class.  This is the mapping between the form and
-the columns in the table the form operates on.
-
-The module uses this information to lookup options in related tables for both
-select and multiple select (many-to-many) relationships.
-
-If not defined will attempt to use the class of $form->item, if set.
-
-Typically, this method is overridden as shown above, and is all you need to do to
-use this module.  This can also be a parameter when creating a form instance.
-
+The name of your database class.
 
 =cut
 
 
 HTML::FormHandler::Model::CDBI->meta->make_immutable;
 
-=item init_item
+=head2 init_item
 
 This is called first time $form->item is called.
-It calls basically does:
+It does the equivalent of: 
 
     return $self->item_class->retrieve( $self->item_id );
-
-But also validates that the item id matches /^\d+$/.  Override this method
-in your form class (or form base class) if your ids do not match that pattern.
 
 =cut
 
 sub init_item {
     my $self = shift;
 
-    #my $item_id = $self->item_id or return 0;
     my $item_id = $self->item_id or return;
-
-    #return 0 unless $item_id =~ /^\d+$/;
-    return unless $item_id =~ /^\d+$/;
     return $self->item_class->retrieve($item_id);
 }
 
@@ -112,31 +72,22 @@ sub BUILDARGS {
     return {@args};
 }
 
-=item guess_field_type
+=head2 guess_field_type
 
-Pass in a column and will try and determine the field type.
-Currently only looks at CDBI relationships.  Would be nice to use the database
-to determine the types as well.
-
+Pass in a column and assigns field types.
 Must set $self->item_class to return the related item class.
-
 Returns the type in scalar context, returns the type and maybe the related table
 in list context.
 
 Currently returns:
 
-    DateTimeDMYHM   - for a has_a relationship that isa DateTime
+    DateTime        - for a has_a relationship that isa DateTime
     Select          - for a has_a relationship
     Multiple        - for a has_many
-
-otherwise:
-
-    DateTimeDMYHM   - if the field ends in _time
+    DateTime        - if the field ends in _time
     Text            - otherwise
 
 =cut
-
-# probably need to check $class->isa('Class::DBI').  Just haven't seen the need yet.
 
 sub guess_field_type {
     my ( $self, $column, $class ) = @_;
@@ -153,7 +104,7 @@ sub guess_field_type {
 
         @return =
             $f_class->isa('DateTime')
-            ? ('DateTimeDMYHM')
+            ? ('DateTime')
             : ( 'Select', $f_class );
 
         # Otherwise, check for has_many
@@ -161,33 +112,26 @@ sub guess_field_type {
     elsif ( $meta = $class->meta_info('has_many')->{$column} ) {
 
         my $f_class = $meta->foreign_class;
-
         # Is there a mapping table in between?  If so need to find the
         # actual class for lookups -- call recursively
-        #
-
         if ( @{ $meta->args->{mapping} } ) {
             my $t;
             ( $t, $f_class ) =
                 $self->guess_field_type( $meta->args->{mapping}[0], $f_class );
         }
-
         @return = ( 'Multiple', $f_class );
-
     }
     elsif ( $column =~ /_time$/ ) {
-        @return = ('DateTimeDMYHM');
-
+        @return = ('DateTime');
     }
     else {
         @return = ('Text');
-
     }
 
     return wantarray ? @return : $return[0];
 }
 
-=item lookup_options
+=head2 lookup_options
 
 Returns a array reference of key/value pairs for the column passed in.
 Calls $field->label_column to get the column name to use as the label.
@@ -220,25 +164,21 @@ sub lookup_options {
     my ( $self, $field ) = @_;
 
     my $class = $self->item_class or return;
-
     return unless $class->isa('Class::DBI');
-
     my $field_name = $field->name;
-
     my ( $type, $f_class ) = $self->guess_field_type( $field_name, $class );
     return unless $f_class;
 
+    # label column
     my $label_column = $field->label_column;
-
     return unless $f_class->find_column($label_column);
-
+    # active column
     my $active_col =
           $self->can('active_column')
         ? $self->active_column
         : $field->active_column;
-
     $active_col = '' unless $f_class->find_column($active_col);
-
+    # sort column
     my $sort_col = $field->sort_column;
     $sort_col =
         defined $sort_col && $f_class->find_column($sort_col)
@@ -246,29 +186,21 @@ sub lookup_options {
         : $label_column;
 
     my $criteria = {};
-
     my $primary_key = $f_class->primary_column;
-
     # In cases where the f_class is the same as the item's class don't
     # include item in the option list -- don't want to be able to have item point to itself
     # Obviously, this doesn't prevent circular references.
-
     $criteria->{"$primary_key"} = { '!=', $self->item->id }
         if $f_class eq ref $self->item;
 
     # If there's an active column, only select active OR items already selected
-
     if ($active_col) {
-
         my @or = ( $active_col => 1 );
-
         # But also include any existing non-active
-
         push @or,
             ( "$primary_key" =>
                 $field->init_value )    # init_value is scalar or array ref
             if $self->item && defined $field->init_value;
-
         $criteria->{'-or'} = \@or;
     }
 
@@ -283,7 +215,7 @@ sub lookup_options {
 
 }
 
-=item init_value
+=head2 init_value
 
 Populate $field->value with object ids from the CDBI object.  If the column
 expands to more than one object then an array ref is set.
@@ -298,47 +230,26 @@ sub init_value {
     $item ||= $self->item;
 
     return $item->{$column} if ref($item) eq 'HASH';
-
     # Use "can" instead of "find_column" because could be a related column
     return unless $item && $item->isa('Class::DBI') && $item->can($column);
 
     # @options can be a collection of CDBI objects (has_many) or a
-    # CDBI objects get turned into IDs.  Should also check that it's not a compound
-    # primary key.
-
+    # CDBI objects get turned into IDs.  
     my @values =
         map { ref $_ && $_->isa('Class::DBI') ? $_->id : $_ } $item->$column;
 
     return @values;
-
 }
 
-=item update_from_form
+=head2 update_from_form
 
     my $ok = $form->update_from_form( $parameter_hash );
 
 Update or create the object from values in the form.
 
-Any field names that are related to the class by "has_many" and have a mapping
-table will be updated.  Validation is run unless validation has already been
-run.  ($form->clear might need to be called if the $form object stays in memory
-between requests.)
-
-The update/create is done inside a transaction if the method
-C<do_transaction()> is available.  It's recommended that your CDBI model class
-supplies that method.
-
-The actual update is done in the C<update_model> method.  Your form class can
-override that method (but don't forget to call SUPER!) if you wish to do additional
-database inserts or updates.  This is useful when a single form updates multiple tables.
-(If you are doing much of that review your schema design....).  If anything goes wrong
-in the update make sure you C<die>.  Assuming you have a standard C<do_transaction()>
-method this will call a rollback.  You should no use C<do_transaction()> in your overridden
-method unless is supports nested calls or you are not calling SUPER.
-
+The actual update is done in the C<update_model> method.  
 Pass in hash reference of parameters.
-
-Returns false if form does not validate.  Very likely dies on database errors.
+Returns false if form does not validate.  
 
 =cut
 
@@ -346,21 +257,16 @@ sub update_from_form {
     my ( $self, $params ) = @_;
 
     return unless $self->validate($params);
-
-    # Should this be wrapped in an eval?  If so then should
-    # call $item->discard_changes (when updating)
     if ( $self->item_class->can('do_transaction') ) {
         $self->item_class->do_transaction( sub { $self->update_model } );
-
     }
     else {
         $self->update_model;
     }
-
     return 1;
 }
 
-=item model_validate
+=head2 model_validate
 
 Validates profile items that are dependent on the model.
 Currently, "unique" fields are checked  to make sure they are unique.
@@ -374,11 +280,10 @@ sub model_validate {
     my ($self) = @_;
 
     return unless $self->validate_unique;
-
     return 1;
 }
 
-=item validate_unique
+=head2 validate_unique
 
 Checks that the value for the field is not currently in the database.
 
@@ -395,29 +300,20 @@ sub validate_unique {
     my $item = $self->item;
 
     my $class = ref($item) || $self->item_class;
-
     my $found_error = 0;
-
     for my $field ( map { $self->field($_) } @unique ) {
-
         next if $field->errors;
-
         my $value = $field->value;
         next unless defined $value;
-
         my $name = $field->name;
-
         # unique means there can only be on in the database like it.
         my $match = $class->search( { $name => $value } )->first || next;
-
         next if $self->items_same( $item, $match );
-
         my $field_error = $field->unique_message
             || 'Value must be unique in the database';
         $field->add_error($field_error);
         $found_error++;
     }
-
     return $found_error;
 }
 
@@ -430,21 +326,15 @@ sub update_model {
 
     # get a hash of all fields
     my %fields = map { $_->name, $_ } grep { !$_->noupdate } $self->fields;
-
     # First process the normal and has_a columns
     # as that data is directly stored in the object
-
     my %data;
-
     # Loads columns (including has_a)
     foreach my $col ( $class->columns('All') ) {
         next unless exists $fields{$col};
-
         my $field = delete $fields{$col};
-
         # If the field is flagged "clear" then set to NULL.
         my $value = $field->clear ? undef : $field->value;
-
         if ($item) {
             my $cur = $item->$col;
             next unless $value || $cur;
@@ -475,10 +365,8 @@ sub update_model {
         my $field = delete $fields{$field_name};
         my $value = $field->value;
 
-        my %keep;
-
         # Figure out which values to keep and which to add
-
+        my %keep;
         %keep = map { $_ => 1 } ref $value ? @$value : ($value)
             if defined $value;
 
@@ -486,16 +374,10 @@ sub update_model {
         my $foreign_class = $meta->foreign_class;
         my $foreign_key   = $meta->args->{foreign_key};
         my $related_key   = $meta->args->{mapping}->[0];
-
-        # This limits to using a mapping table.  Hard to imagine an interface
-        # for adding a has_many without a mapping table, but it could be a table
-        # of just columns id, name, f_key, I suppose.
-
         die "Failed to find related_key for field [$field] in class [$class]"
             unless $related_key;
 
         # Delete any items that are not to be kept
-
         for ( $foreign_class->search( { $foreign_key => $item } ) ) {
             $_->delete unless delete $keep{ $_->$related_key };
         }
@@ -511,30 +393,14 @@ sub update_model {
 
     # Save item in form object
     $self->item($item);
-
-    # Uncomment if want to update values from database from values
-    # just saved to database.  Where this might have an effect it
-    # with DateTime objects since the timezone coming out of the database
-    # might be different then the timezone set after an updated.
-    # (e.g from the db it might be DateTime::TimeZone::OffsetOnly, but
-    #  from the form it might be DateTime::TimeZone::America::Los_Angeles.
-    #  Both of which are determined by the timezone setting on the
-    #  database and application server.
-    #
-    # $self->init_from_object;
-
     $self->reset_params;    # force reload of parameters from values
-
     return $item;
 }
 
-=item items_same
+=head2 items_same
 
 Returns true if the two passed in cdbi objects are the same object.
-Can't trust that the Live_Object index is in use.
-
-
-If both are undefined returns true.  But don't call it that way.
+If both are undefined returns true.  
 
 =cut
 
@@ -543,14 +409,12 @@ sub items_same {
 
     # returns true if both are undefined
     return 1 if not defined $item1 and not defined $item2;
-
     # return false if either undefined
     return unless defined $item1 and defined $item2;
-
     return $self->obj_key($item1) eq $self->obj_key($item2);
 }
 
-=item obj_key
+=head2 obj_key
 
 returns a key for a given object, or undef if the object is undefined.
 
@@ -562,7 +426,6 @@ sub obj_key {
         map { $_ . '=' . ( $item->$_ || '.' ) } $item->primary_columns;
 }
 
-=back
 
 =head1 AUTHOR
 

@@ -6,11 +6,11 @@ with 'Catalyst::Component::InstancePerContext';
 use Carp;
 use UNIVERSAL::require;
 
-our $VERSION = '0.01_01';
+our $VERSION = '0.01';
 
 =head1 NAME
 
-Catalyst::Controller::Role::HTML::FormHandler
+Catalyst::Controller::Role::HTML::FormHandler - a Moose role for Catalyst controllers
 
 =head1 SYNOPSIS
 
@@ -87,7 +87,7 @@ sub build_per_context_instance {
 =item model_name
 
 Set the Catalyst model name. Currently only used by
-L<HTML::FormHandler::Model::DBIC>.
+L<HTML::FormHandler::Model::DBIC> to set the schema.
 
 =item form_name_space
 
