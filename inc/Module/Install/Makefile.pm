@@ -7,7 +7,7 @@ use ExtUtils::MakeMaker ();
 
 use vars qw{$VERSION $ISCORE @ISA};
 BEGIN {
-	$VERSION = '0.77';
+	$VERSION = '0.68';
 	$ISCORE  = 1;
 	@ISA     = qw{Module::Install::Base};
 }
@@ -36,9 +36,9 @@ sub prompt {
 
 sub makemaker_args {
 	my $self = shift;
-	my $args = ( $self->{makemaker_args} ||= {} );
-	%$args = ( %$args, @_ );
-	return $args;
+	my $args = ($self->{makemaker_args} ||= {});
+	%$args = ( %$args, @_ ) if @_;
+	$args;
 }
 
 # For mm args that take multiple space-seperated args,
@@ -63,18 +63,18 @@ sub build_subdirs {
 sub clean_files {
 	my $self  = shift;
 	my $clean = $self->makemaker_args->{clean} ||= {};
-	  %$clean = (
+	%$clean = (
 		%$clean, 
-		FILES => join ' ', grep { length $_ } ($clean->{FILES} || (), @_),
+		FILES => join(' ', grep length, $clean->{FILES}, @_),
 	);
 }
 
 sub realclean_files {
-	my $self      = shift;
+	my $self  = shift;
 	my $realclean = $self->makemaker_args->{realclean} ||= {};
-	  %$realclean = (
+	%$realclean = (
 		%$realclean, 
-		FILES => join ' ', grep { length $_ } ($realclean->{FILES} || (), @_),
+		FILES => join(' ', grep length, $realclean->{FILES}, @_),
 	);
 }
 
@@ -104,8 +104,8 @@ sub tests_recursive {
 	unless ( -d $dir ) {
 		die "tests_recursive dir '$dir' does not exist";
 	}
-	%test_dir = ();
 	require File::Find;
+	%test_dir = ();
 	File::Find::find( \&_wanted_t, $dir );
 	$self->tests( join ' ', map { "$_/*.t" } sort keys %test_dir );
 }
@@ -114,21 +114,10 @@ sub write {
 	my $self = shift;
 	die "&Makefile->write() takes no arguments\n" if @_;
 
-	# Make sure we have a new enough
-	require ExtUtils::MakeMaker;
-
-	# MakeMaker can complain about module versions that include
-	# an underscore, even though its own version may contain one!
-	# Hence the funny regexp to get rid of it.  See RT #35800
-	# for details.
-
-	$self->configure_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
-
-	# Generate the 
 	my $args = $self->makemaker_args;
 	$args->{DISTNAME} = $self->name;
-	$args->{NAME}     = $self->module_name || $self->name;
-	$args->{VERSION}  = $self->version;
+	$args->{NAME}     = $self->module_name || $self->name || $self->determine_NAME($args);
+	$args->{VERSION}  = $self->version || $self->determine_VERSION($args);
 	$args->{NAME}     =~ s/-/::/g;
 	if ( $self->tests ) {
 		$args->{test} = { TESTS => $self->tests };
@@ -153,11 +142,8 @@ sub write {
 		map { @$_ }
 		map { @$_ }
 		grep $_,
-		($self->configure_requires, $self->build_requires, $self->requires)
+		($self->build_requires, $self->requires)
 	);
-
-	# Remove any reference to perl, PREREQ_PM doesn't support it
-	delete $args->{PREREQ_PM}->{perl};
 
 	# merge both kinds of requires into prereq_pm
 	my $subdirs = ($args->{DIR} ||= []);
@@ -181,9 +167,7 @@ sub write {
 
 	my $user_preop = delete $args{dist}->{PREOP};
 	if (my $preop = $self->admin->preop($user_preop)) {
-		foreach my $key ( keys %$preop ) {
-			$args{dist}->{$key} = $preop->{$key};
-		}
+		$args{dist} = $preop;
 	}
 
 	my $mm = ExtUtils::MakeMaker::WriteMakefile(%args);
@@ -221,7 +205,7 @@ sub fix_up_makefile {
 	#$makefile =~ s/^PERL_ARCHLIB = .+/PERL_ARCHLIB =/m;
 
 	# Perl 5.005 mentions PERL_LIB explicitly, so we have to remove that as well.
-	$makefile =~ s/(\"?)-I\$\(PERL_LIB\)\1//g;
+	$makefile =~ s/("?)-I\$\(PERL_LIB\)\1//g;
 
 	# XXX - This is currently unused; not sure if it breaks other MM-users
 	# $makefile =~ s/^pm_to_blib\s+:\s+/pm_to_blib :: /mg;
@@ -250,4 +234,4 @@ sub postamble {
 
 __END__
 
-#line 379
+#line 363

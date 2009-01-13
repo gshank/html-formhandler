@@ -4,11 +4,11 @@ package Module::Install::Win32;
 use strict;
 use Module::Install::Base;
 
-use vars qw{$VERSION @ISA $ISCORE};
+use vars qw{$VERSION $ISCORE @ISA};
 BEGIN {
-	$VERSION = '0.77';
-	@ISA     = qw{Module::Install::Base};
+	$VERSION = '0.68';
 	$ISCORE  = 1;
+	@ISA     = qw{Module::Install::Base};
 }
 
 # determine if the user needs nmake, and download it if needed
@@ -16,7 +16,7 @@ sub check_nmake {
 	my $self = shift;
 	$self->load('can_run');
 	$self->load('get_file');
-
+	
 	require Config;
 	return unless (
 		$^O eq 'MSWin32'                     and
@@ -38,7 +38,8 @@ sub check_nmake {
 		remove    => 1,
 	);
 
-	die <<'END_MESSAGE' unless $rv;
+	if (!$rv) {
+        die <<'END_MESSAGE';
 
 -------------------------------------------------------------------------------
 
@@ -58,7 +59,7 @@ You may then resume the installation process described in README.
 
 -------------------------------------------------------------------------------
 END_MESSAGE
-
+	}
 }
 
 1;
