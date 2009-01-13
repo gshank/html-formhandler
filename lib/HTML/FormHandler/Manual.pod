@@ -1,0 +1,32 @@
+=head1 NAME 
+
+HTML::FormHandler::Manual - Index of the Manual
+
+=head1 DESCRIPTION
+
+This is the L<HTML::FormHandler> users manual. HTML::FormHandler is
+an HTML form handling class written in Moose. It provides facilities
+to write classes that represent HTML forms, and retrieves and loads
+data from the database. 
+
+=head1 SECTIONS
+
+=head2 L<DBIx::Class::Manual::Intro>
+
+Creating FormHandler forms and interfacing them
+with your controllers.
+
+=head2 L<DBIx::Class::Manual::Tutorial>
+
+Builds on the Catalyst tutorial. Step-by-step guide.
+
+=head2 L<DBIx::Class::Manual::Cookbook>
+
+Will contain 'howto' recipes...
+
+=head2 L<DBIx::Class::Manual::Templates>
+
+Will contain cut-and-paste examples of templates to use with FormHandler
+
+=cut
+
