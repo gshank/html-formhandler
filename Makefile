@@ -10,14 +10,14 @@
 #
 #   MakeMaker Parameters:
 
-#     ABSTRACT => q[validate and process form data]
+#     ABSTRACT => q[form handler written in Moose ]
 #     AUTHOR => q[Gerda Shank, gshank@cpan.org]
 #     DIR => []
 #     DISTNAME => q[HTML-FormHandler]
 #     NAME => q[HTML::FormHandler]
 #     NO_META => q[1]
 #     PL_FILES => {  }
-#     PREREQ_PM => { Scalar::Util=>q[1.19], ExtUtils::MakeMaker=>q[6.48], Carp=>q[0], Test::More=>q[0.77], MooseX::AttributeHelpers=>q[0.14], Module::Find=>q[0.05], Locale::Maketext=>q[1.09], UNIVERSAL::require=>q[0], DBIx::Class=>q[0], Moose=>q[0.59] }
+#     PREREQ_PM => { Scalar::Util=>q[1.19], Carp=>q[0], Test::More=>q[0.77], MooseX::AttributeHelpers=>q[0.14], Module::Find=>q[0.05], Locale::Maketext=>q[1.09], UNIVERSAL::require=>q[0], DBIx::Class=>q[0], Moose=>q[0.59] }
 #     VERSION => q[0.01]
 #     dist => {  }
 #     test => { TESTS=>q[t/*.t t/Field/*.t] }
@@ -192,6 +192,7 @@ MAN3PODS = lib/Catalyst/Controller/HTML/FormHandler.pm \
 	lib/HTML/FormHandler/Field/Year.pm \
 	lib/HTML/FormHandler/Manual.pod \
 	lib/HTML/FormHandler/Manual/Cookbook.pod \
+	lib/HTML/FormHandler/Manual/Intro.pod \
 	lib/HTML/FormHandler/Manual/Reference.pod \
 	lib/HTML/FormHandler/Manual/Templates.pod \
 	lib/HTML/FormHandler/Manual/Tutorial.pod \
@@ -252,6 +253,7 @@ TO_INST_PM = lib/Catalyst/Controller/HTML/FormHandler.pm \
 	lib/HTML/FormHandler/I18N/en_us.pm \
 	lib/HTML/FormHandler/Manual.pod \
 	lib/HTML/FormHandler/Manual/Cookbook.pod \
+	lib/HTML/FormHandler/Manual/Intro.pod \
 	lib/HTML/FormHandler/Manual/Reference.pod \
 	lib/HTML/FormHandler/Manual/Templates.pod \
 	lib/HTML/FormHandler/Manual/Tutorial.pod \
@@ -264,6 +266,8 @@ PM_TO_BLIB = lib/HTML/FormHandler/Field/Multiple.pm \
 	blib/lib/HTML/FormHandler/Field/Multiple.pm \
 	lib/HTML/FormHandler/Field/TextArea.pm \
 	blib/lib/HTML/FormHandler/Field/TextArea.pm \
+	lib/HTML/FormHandler/Manual/Intro.pod \
+	blib/lib/HTML/FormHandler/Manual/Intro.pod \
 	lib/HTML/FormHandler/Field/Password.pm \
 	blib/lib/HTML/FormHandler/Field/Password.pm \
 	lib/HTML/FormHandler/Manual/Templates.pod \
@@ -559,6 +563,7 @@ POD2MAN = $(POD2MAN_EXE)
 manifypods : pure_all  \
 	lib/HTML/FormHandler/Field/Multiple.pm \
 	lib/HTML/FormHandler/Field/TextArea.pm \
+	lib/HTML/FormHandler/Manual/Intro.pod \
 	lib/HTML/FormHandler/Field/Password.pm \
 	lib/HTML/FormHandler/Manual/Templates.pod \
 	lib/HTML/FormHandler/Field/Month.pm \
@@ -597,6 +602,7 @@ manifypods : pure_all  \
 	$(NOECHO) $(POD2MAN) --section=3 --perm_rw=$(PERM_RW) \
 	  lib/HTML/FormHandler/Field/Multiple.pm $(INST_MAN3DIR)/HTML::FormHandler::Field::Multiple.$(MAN3EXT) \
 	  lib/HTML/FormHandler/Field/TextArea.pm $(INST_MAN3DIR)/HTML::FormHandler::Field::TextArea.$(MAN3EXT) \
+	  lib/HTML/FormHandler/Manual/Intro.pod $(INST_MAN3DIR)/HTML::FormHandler::Manual::Intro.$(MAN3EXT) \
 	  lib/HTML/FormHandler/Field/Password.pm $(INST_MAN3DIR)/HTML::FormHandler::Field::Password.$(MAN3EXT) \
 	  lib/HTML/FormHandler/Manual/Templates.pod $(INST_MAN3DIR)/HTML::FormHandler::Manual::Templates.$(MAN3EXT) \
 	  lib/HTML/FormHandler/Field/Month.pm $(INST_MAN3DIR)/HTML::FormHandler::Field::Month.$(MAN3EXT) \
@@ -986,12 +992,11 @@ testdb_static :: testdb_dynamic
 ppd :
 	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="0,01,0,0">' > $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <TITLE>$(DISTNAME)</TITLE>' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '    <ABSTRACT>validate and process form data</ABSTRACT>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <ABSTRACT>form handler written in Moose </ABSTRACT>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <AUTHOR>Gerda Shank, gshank@cpan.org</AUTHOR>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <DEPENDENCY NAME="Carp" VERSION="0,0,0,0" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <DEPENDENCY NAME="DBIx-Class" VERSION="0,0,0,0" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <DEPENDENCY NAME="ExtUtils-MakeMaker" VERSION="6,48,0,0" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <DEPENDENCY NAME="Locale-Maketext" VERSION="1,09,0,0" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <DEPENDENCY NAME="Module-Find" VERSION="0,05,0,0" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <DEPENDENCY NAME="Moose" VERSION="0,59,0,0" />' >> $(DISTNAME).ppd
@@ -1012,6 +1017,7 @@ pm_to_blib : $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', '\''$(PM_FILTER)'\'')' -- \
 	  lib/HTML/FormHandler/Field/Multiple.pm blib/lib/HTML/FormHandler/Field/Multiple.pm \
 	  lib/HTML/FormHandler/Field/TextArea.pm blib/lib/HTML/FormHandler/Field/TextArea.pm \
+	  lib/HTML/FormHandler/Manual/Intro.pod blib/lib/HTML/FormHandler/Manual/Intro.pod \
 	  lib/HTML/FormHandler/Field/Password.pm blib/lib/HTML/FormHandler/Field/Password.pm \
 	  lib/HTML/FormHandler/Manual/Templates.pod blib/lib/HTML/FormHandler/Manual/Templates.pod \
 	  lib/HTML/FormHandler/Field/Month.pm blib/lib/HTML/FormHandler/Field/Month.pm \
@@ -1059,4 +1065,4 @@ pm_to_blib : $(TO_INST_PM)
 
 
 # End.
-# Postamble by Module::Install 0.77
+# Postamble by Module::Install 0.68

@@ -180,9 +180,8 @@ has 'label' => (
    isa     => 'Str',
    is      => 'rw',
    lazy    => 1,
-   builder => 'build_label'
+   default => sub { shift->name }, 
 );
-sub build_label { return shift->name }
 
 =item title
 

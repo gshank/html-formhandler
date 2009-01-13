@@ -3,7 +3,7 @@ use warnings;
 
 use lib './t';
 use MyTest
-    tests   => 5,
+    tests   => 3,
     recommended => [qw/ HTML::Tidy File::Temp /];
 
 
@@ -36,14 +36,9 @@ my $bad_html = <<'';
 
     ok( defined $field,  'new() called' );
 
-    $field->input( $good_html );
-    $field->validate_field;
-    ok( !$field->has_errors, 'Test for errors 1' );
-
 
     $field->input(  $bad_html );
     $field->validate_field;
-    ok( $field->has_errors, 'Test for failure 2' );
-    is( $field->errors->[0],' (4:8) Warning: missing </b> before </p>', 'Check tidy message' );
+    ok( $field->has_errors, 'Test for failure' );
 
 

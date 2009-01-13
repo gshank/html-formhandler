@@ -11,20 +11,20 @@ data from the database.
 
 =head1 SECTIONS
 
-=head2 L<DBIx::Class::Manual::Intro>
+=head2 L<HTML::FormHandler::Manual::Intro>
 
 Creating FormHandler forms and interfacing them
 with your controllers.
 
-=head2 L<DBIx::Class::Manual::Tutorial>
+=head2 L<HTML::FormHandler::Manual::Tutorial>
 
 Builds on the Catalyst tutorial. Step-by-step guide.
 
-=head2 L<DBIx::Class::Manual::Cookbook>
+=head2 L<HTML::FormHandler::Manual::Cookbook>
 
 Will contain 'howto' recipes...
 
-=head2 L<DBIx::Class::Manual::Templates>
+=head2 L<HTML::FormHandler::Manual::Templates>
 
 Will contain cut-and-paste examples of templates to use with FormHandler
 
