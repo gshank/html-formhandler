@@ -47,7 +47,8 @@ sub profile {
 			isbn         => {
 				type => 'Text',
 				label => 'ISBN:',
-			    order => '5',
+		      order => '5',
+            unique => 1,
 			},
 			publisher    => {
 				type => 'Text',
@@ -72,7 +73,6 @@ sub profile {
 				order => '8',
 			},
 		},
-		unique => ['isbn'],
 	};
 }
 

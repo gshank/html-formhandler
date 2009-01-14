@@ -4,7 +4,54 @@ HTML::FormHandler::Manual::Templates - using templates
 
 =head1 SYNOPSIS
 
-Placeholder for documentation on templates to use with L<HTML::FormHandler>
+Documentation on templates to use with L<HTML::FormHandler>
+
+In progress...
+
+=head1 Using templates
+
+=head1 Sample templates
+
+=head2 Text input field
+
+   <label class="label" for="[% f.name %]">[% f.label %]</label>
+   <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
+
+=head2 Select field
+
+Single select:
+
+   <label class="label" for="[% f.name %]">[% f.label %]</label>
+   <select name="[% f.name %]">
+     [% FOR option IN f.options %]
+       <option value="[% option.value %]" 
+       [% IF option.value == f.fif %]
+          selected="selected"
+       [% END %]>
+       [% option.label %]</option>
+     [% END %] 
+   </select>
+
+Multiple select:
+
+   <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
+   <select name="[% f.name %]" multiple="multiple" size="5">
+     [% FOR option IN f.options %]
+       <option value="[% option.value %]" 
+       [% FOREACH optval IN f.value %]
+          [% IF optval == option.value %]
+             selected="selected"
+          [% END %]
+       [% END %]>
+       [% option.label %]</option>
+     [% END %] 
+   </select>
+
+=head2 Checkbox
+
+  <input type="checkbox" name="[% f.name %]" value="1"
+      [% IF f.fif == 1 %] checked="checked"[% END %] />
+
 
 =head1 AUTHOR
 

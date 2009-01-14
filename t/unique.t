@@ -34,7 +34,7 @@ ok( !$form->validate( $params ), 'duplicate isbn fails validation' );
 
 my @errors = $form->field('isbn')->errors;
 
-is( $errors[0], 'Value must be unique in the database', 'error message for duplicate');
+is( $errors[0], 'Duplicate value for ISBN', 'error message for duplicate');
 
 {
    package My::Form;

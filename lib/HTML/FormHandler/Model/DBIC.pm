@@ -33,6 +33,9 @@ controller. ( also see L<Catalyst::Controller::Role::HTML::FormHandler> )
 If an 'item' is passed in, the 'item_id', 'item_class', and 'schema' will
 be derived from the 'item'.
 
+In practice, if you want to use FormHandler to create new database records,
+you would need to use the 'item_id'/'item_class'/'schema' method.
+
 The field names in the profile of your form must match column, relationship,
 or accessor names in your DBIx::Class result source.
 
@@ -537,6 +540,7 @@ sub validate_unique
       # found this value, but it's the same row we're updating
       next
          if $count == 1
+            && $self->item_id 
             && $self->item_id == $rs->search( { $name => $value } )->first->id;
       my $field_error = $field->unique_message || 'Duplicate value for ' . $field->label;
       $field->add_error( $field_error );

@@ -2,6 +2,8 @@ package HTML::FormHandler::Render::Simple;
 
 use Moose::Role;
 
+requires ('sorted_fields', 'field');
+
 our $VERSION = 0.01;
 
 =head1 NAME
@@ -13,8 +15,7 @@ HTML::FormHandler::Render::Simple - Simple rendering routine
 This is a Moose role that is an example of a very simple rendering 
 routine for L<HTML::FormHandler>. It has almost no features, but can
 be used as an example for producing something more complex.
-The idea is that you will produce your own custom rendering
-roles.
+The idea is to produce your own custom rendering roles...
 
 In your Form class:
 
@@ -58,14 +59,17 @@ sub render
    my $output;
    foreach my $field ($self->sorted_fields)
    {
-      $output .= "\n<p>" . $self->render_field($field) . "</p>\n";
+      $output .= "\n<div>" . $self->render_field($field) . "</div>\n";
    }
    return $output;
 }
 
 =head2 render_field
 
-Render a field by a field object
+Render a field passing in a field object or a field name
+
+   $form->render_field( $field )
+   $form->render_field( 'title' )
 
 =cut
 
@@ -83,11 +87,6 @@ sub render_field
 =head2 render_text
 
 Output an HTML string for a text widget
-
-The equivalent of:
-
-   <label class="label" for="[% f.name %]">[% f.label %]</label>
-   <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
 
 =cut
 
@@ -110,20 +109,7 @@ sub render_text
 
 =head2 render_select
 
-Output an HTML string for a 'select' widget
-
-The equivalent of:
-
-   <label class="label" for="[% f.name %]">[% f.label %]</label>
-   <select name="[% f.name %]">
-     [% FOR option IN f.options %]
-       <option value="[% option.value %]" 
-       [% IF option.value == f.fif %]
-          selected="selected"
-       [% END %]>
-       [% option.label %]</option>
-     [% END %] 
-   </select>
+Output an HTML string for a 'select' widget, single or multiple
 
 =cut
 
@@ -134,61 +120,35 @@ sub render_select
    my $fif = $field->fif || ''; 
    my $output = "<label class=\"label\" for=\"";
    $output .= $field->name . "\">" . $field->label . "</label>";
-   $output .= "<select name=\"" . $field->name . "\">";
+   $output .= "<select name=\"" . $field->name . "\""; 
+   $output .= " multiple=\"multiple\" size=\"5\"" if $field->multiple == 1;
+   $output .= "\">";
    foreach my $option ($field->options)
    {
       $output .= "<option value=\"" . $option->{value} ."\" ";
-      $output .= "selected=\"selected\"" if $option->{value} eq $fif;
-      $output .= ">" . $option->{label} . "</option>";
-   }
-   $output .= "</select>";
-   return $output;
-}
-
-=head2 render_multiple
-
-Output an HTML string for a 'multiple' widget
-
-The equivalent of:
-
-   <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
-   <select name="[% f.name %]" multiple="multiple" size="5">
-     [% FOR option IN f.options %]
-       <option value="[% option.value %]" 
-       [% FOREACH optval IN f.value %]
-          [% IF optval == option.value %]
-             selected="selected"
-          [% END %]
-       [% END %]>
-       [% option.label %]</option>
-     [% END %] 
-   </select>
-
-=cut
-
-sub render_multiple
-{
-   my ( $self, $field ) = @_;
-   my $output = "<label class=\"label\" for=\"";
-   $output .= $field->name . "\">" . $field->label . "</label>";
-   $output .= "<select name=\"" . $field->name . "\"";
-   $output .= " multiple=\"multiple\" size=\"5\">";
-   foreach my $option ($field->options)
-   {
-      $output .= "<option value=\"" . $option->{value} . "\"";
-      if ( $field->fif )
+      
+      if ( $fif )
       {
-         foreach my $optval ( @{$field->fif} )
+         if ( $field->multiple == 1 )
          {
-            $output .= " selected=\"selected\"" if $optval == $option->{value};
+            foreach my $optval ( @{$field->fif} )
+            {
+               $output .= " selected=\"selected\"" 
+                     if $optval == $option->{value};
+            }
+         }
+         else
+         {
+         $output .= "selected=\"selected\"" 
+                if $option->{value} eq $fif;
          }
       }
       $output .= ">" . $option->{label} . "</option>";
    }
    $output .= "</select>";
    return $output;
-
 }
+
 
 =head2 render_checkbox
 
@@ -196,8 +156,6 @@ Output an HTML string for a 'checkbox' widget
 
 The equivalent of:
 
-  <input type="checkbox" name="[% f.name %]" value="1"
-      [% IF f.fif == 1 %]checked="checked"[% END %] />
 
 =cut
 

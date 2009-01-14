@@ -26,7 +26,6 @@ sub profile {
 	return {
 		auto_required => ['title', 'author', 'isbn', 'publisher'],
         auto_optional => ['genres', 'format', 'year', 'pages'], 
-		unique => ['isbn'],
 	};
 }
 

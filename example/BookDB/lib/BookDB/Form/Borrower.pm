@@ -26,6 +26,8 @@ sub profile {
                 required => 1,
                 order    => 1,
                 label    => "Name",
+                unique => 1,
+                unique_message => 'That name is already in our user directory',
             },
 			email        => {
                 type => 'Email',
@@ -44,9 +46,6 @@ sub profile {
                 label => 'URL',
             },
 		},
-      unique => {
-         name => 'That name is already in our user directory'
-      },
 	};
 }
 
