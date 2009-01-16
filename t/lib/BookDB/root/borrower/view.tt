@@ -1,0 +1,24 @@
+[% PROCESS scaffold/header.tt %]
+
+[% FOR column IN columns %]
+    <b class="title">[% column %]</b><br/>
+    [% borrower.$column %]<br/><br/>
+[% END %]
+<table>
+    <tr>
+      <th>Book</th><th>Borrowed</th>
+      <th/>
+    </tr>
+[% FOR book IN borrower.books %]
+    <tr>
+      <td>[%book.title%]</td>
+      <td>[%book.borrowed%]</td>
+      <td><a href="[% c.uri_for('/book/view' , book.id) %]">View</a> 
+          <a href="[% c.uri_for('/book/do_return' , book.id) %]">Return</a></td>
+    </tr>
+[% END %]
+</table>
+
+<p><a class="big" href="[% c.uri_for('list') %]">&gt; LIST</a></p>
+
+[% PROCESS scaffold/footer.tt %]

@@ -23,7 +23,6 @@ In a Catalyst controller:
 
    package MyApp::Controller::Book;
 
-   use Moose;
    use base 'Catalyst::Controller';
    with 'Catalyst::Controller::Role::HTML::FormHandler';
 
@@ -53,30 +52,39 @@ In a Catalyst controller:
       $c->res->redirect($c->uri_for('list'));
    }
 
+Or configure model_name and form_name_space for the entire app:
+
+   MyApp->config( { 'Controller::HTML::FormHandler' => 
+          { model_name => 'DB', form_name_space => 'MyApp::Form' }} );
+
+(Note that the config key does not use "Role".)
 
 =cut
 
-has 'form_name_space' => ( isa => 'Str|Undef', is => 'rw', lazy => 1,
-     builder => 'build_form_name_space');
-sub build_form_name_space { 
-   my $self = shift;
-   return $self->config->{form_name_space} ||
-          ref( $self->ctx ) . "::Form";
-}
-has 'model_name' => ( isa => 'Str', is => 'rw', 
-     builder => 'build_model_name');
-sub build_model_name { shift->config->{model_name} || '' } 
-has 'model' => (  is => 'rw', lazy => 1, builder => '_build_model' );
-sub _build_model {
-   my $self = shift;
-   return $self->ctx->model($self->model_name) if $self->model_name;
-}
+has 'form_name_space' => ( isa => 'Str|Undef', is => 'rw' );
+has 'model_name' => ( isa => 'Str', is => 'rw' );
+has 'model' => (  is => 'rw' );
 has 'ctx' => ( isa => 'Catalyst', is => 'rw' );
+has 'fif' => ( isa => 'Bool', is => 'rw', default => 0 );
 
 
 sub build_per_context_instance {
    my ( $self, $c ) = @_;
+
    $self->ctx( $c );
+   $self->form_name_space( $self->config->{form_name_space} ||
+      $c->config->{'Controller::HTML::FormHandler'}->{form_name_space} || '' );
+   if ($self->form_name_space eq '')
+   {
+      my $package = $c->action->class;
+      $package =~ s/::C(?:ontroller)?::/::Form::/;
+      $self->form_name_space( $package );
+   }
+   $self->model_name( $self->config->{model_name} ||
+      $c->config->{'Controller::HTML::FormHandler'}->{model_name} || '' );
+   $self->model( $c->model( $self->model_name ) ) if $self->model_name;
+   $self->fif( $self->config->{fif} ||
+      $c->config->{'Controller::HTML::FormHandler'}->{fif} || 0 );
    return $self;
 }
 
@@ -113,21 +121,9 @@ sub get_form
    my ( $self, $args_ref, $form_name, $model_name ) = @_;
 
    # Determine the form package name
-   my $package;
-   if ( defined $form_name )
-   {
-      my $form_prefix = $self->form_name_space . "::";
-      $package =
-           $form_name =~ s/^\+//
-         ? $form_name
-         : $form_prefix . $form_name;
-   }
-   else
-   {
-      $package = $self->ctx->action->class;
-      $package =~ s/::C(?:ontroller)?::/::Form::/;
-      $package .= '::' . ucfirst( $self->ctx->action->name );
-   }
+   $form_name ||= ucfirst( $self->ctx->action->name );
+   my $form_prefix = $self->form_name_space . "::";
+   my $package = $form_name =~ s/^\+// ? $form_name : $form_prefix . $form_name;
    $package->require
       or die "Failed to load Form module $package";
 
@@ -155,15 +151,12 @@ sub get_form
    # Save the Catalyst context
    $args{user_data}{context} = $self->ctx;
 
-   # Set model if passed in
-   $model_name ||= $args{model_name};
-   my $model = $self->ctx->model($model_name) if $model_name;
-   $model ||= $self->model;
+   # Get schema from model
    if ( $package->isa('HTML::FormHandler::Model::DBIC') )
    {
       # schema only exists for DBIC model
-      die "No model to create schema for C::C::H::F" unless $model;
-      $args{schema} = $model->schema;
+      die "No model to create schema for C::C::H::F" unless $self->model;
+      $args{schema} = $self->model->schema;
    }
    if ( $self->form_posted ) # to allow access to params for form building
    {
@@ -182,8 +175,10 @@ sub validate_form
 {
    my $self = shift;
    my $form = $self->get_form(@_);
-   return $self->form_posted
-      && $form->validate( $self->ctx->req->parameters );
+   my $validated = $form->validate( $self->ctx->req->parameters )
+      if $self->form_posted;
+   $self->ctx->stash( fillinform => $form->fif ) if $self->fif;
+   return $validated;
 }
 
 =item update_from_form
@@ -195,9 +190,12 @@ Use for forms that have a database interface
 sub update_from_form
 {
    my $self = shift;
+
    my $form = $self->get_form(@_);
-   return $self->form_posted
-      && $form->update_from_form( $self->ctx->req->parameters );
+   my $validated = $form->update_from_form( $self->ctx->req->parameters )
+      if $self->form_posted;
+   $self->ctx->stash( fillinform => $form->fif ) if $self->fif;
+   return $validated;
 }
 
 =item form_posted

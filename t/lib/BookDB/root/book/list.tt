@@ -1,0 +1,25 @@
+[% PROCESS scaffold/header.tt %]
+<table id="books" cellspacing="0" summary="The list of all books">
+<caption>Table: List of Books</caption>
+  <tr>
+    [% FOR column in columns %]
+    <th scope="col">[% column %]</th>
+    [% END %]
+    <th/>
+    [% counter = 0 %]
+  </tr>
+  [% FOR book IN books %] 
+  <tr[% IF (counter % 2) == 0 %] class="alt"[% END %]>
+    [% FOR column IN columns %] 
+    <td>[% book.$column %]</td>
+    [% END %]
+    <td>
+      <a href="[% c.uri_for('/book/view', book.id) %]">View</a>
+      <a href="[% c.uri_for('/book/edit', book.id) %]">Edit</a>
+      <a href="[% c.uri_for('/book/destroy', book.id) %]">Destroy</a>
+    </td>[% counter = counter + 1 %]
+  </tr>[% END %]
+</table>
+<p><a class="big" href="[% c.uri_for('/book/add') %]">+ ADD</a></p>
+
+[% PROCESS scaffold/footer.tt %]

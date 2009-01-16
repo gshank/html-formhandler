@@ -48,7 +48,7 @@ ok ($book, 'get book object from form');
 my $num_genres = $book->genres->count;
 is( $num_genres, 2, 'multiple select list updated ok');
 
-is( $form->field('format')->value, 2, 'get value for format' );
+is( $form->value('format'), 2, 'get value for format' );
 
 my $id = $book->id;
 $form->clear;

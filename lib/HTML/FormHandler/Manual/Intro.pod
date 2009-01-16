@@ -362,6 +362,18 @@ and value (label to be displayed in the select list) pairs.
        );
    }
 
+You can also write custom methods to retrieve the option info from the database:
+
+   sub options_country
+   {
+      my $self = shift; 
+      my @rows =
+         $self->schema->resultset( 'Country' )->
+            search( {}, { order_by => ['rank', 'country_name'] } )->all;
+      return [ map { $_->digraph, $_->country_name } @rows ];
+   }
+
+
 =item init_value_$fieldname
 
 Allows you to provide a different initial value for a particular field than that
@@ -369,8 +381,8 @@ in the database.
 
    sub init_value_license {
       my ( $self, $field, $item ) = @_;
-      return 0 unless $item->license; 
-      return $item->license;
+      return 0 unless $item && $item->license_id; 
+      return $item->license_id;
    }
 
 =item validate_$fieldname
@@ -396,12 +408,6 @@ form is validated.  This method is executed whether or not the form has validate
                     'Do not enter both a count and a duration' );
       }
    }
-
-=item active_column
-
-Sets the 'active' column for all select lists in the form.
-
-   sub active_column { 'is_active' }
 
 =item update_model
 

@@ -111,6 +111,7 @@ These attributes are usually accessed in a subroutine or in a template.
    fields         Field array
    required       Array of required fields
    parent_field   For subforms
+   active_column  The 'active' column for all select lists in the form
     
 =head2 Form methods
 
@@ -131,7 +132,6 @@ These attributes are usually accessed in a subroutine or in a template.
    validate_$fieldname      Validation routine for field 
    init_value_$fieldname    Overrides initial value for the field
    cross_validate           For validation after individual fields are validated 
-   active_column            For all select lists in the form
    Plus any subroutine you care to write...
    
 =head2 Methods to subclass from HTML::FormHandler::Model::DBIC

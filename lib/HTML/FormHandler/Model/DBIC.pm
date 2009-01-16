@@ -409,11 +409,7 @@ sub lookup_options
    my $label_column = $field->label_column;
    return unless $source->has_column($label_column);
 
-   my $active_col =
-        $self->can('active_column')
-      ? $self->active_column
-      : $field->active_column;
-
+   my $active_col = $self->active_column || $field->active_column;
    $active_col = '' unless $source->has_column($active_col);
    my $sort_col = $field->sort_column;
    $sort_col = defined $sort_col && $source->has_column($sort_col) ? $sort_col : $label_column;

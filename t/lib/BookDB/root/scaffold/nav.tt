@@ -1,0 +1,8 @@
+<ul>
+  <li class="section">Books</li>
+  <li><a href="/book/add">Add</a></li>
+  <li><a href="/book/list">List</a></li>
+  <li class="section">Borrowers</li>
+  <li><a href="/borrower/add">Add</a></li>
+  <li><a href="/borrower/list">List</a></li>
+</ul>

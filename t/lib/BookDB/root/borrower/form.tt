@@ -1,0 +1,21 @@
+[% PROCESS scaffold/header.tt %]
+
+<p>[%message%]</p>
+[% FOR field IN form.error_fields %]
+  [% FOR error IN field.errors %]
+    <div class='error' id=error>[% field.name _ ': ' _ error %] </div>
+  [% END %]
+[% END %]
+
+<form action="[% c.uri_for('add', form.item_id) %]" method="post">
+    [% FOREACH f IN form.sorted_fields %] 
+        <p>
+        <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
+        <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
+        </p>
+    [% END %]
+    <input type="submit" value="Save"/>
+</form>
+<p><a class="big" href="[% c.uri_for('list') %]">&gt; LIST</a></p>
+
+[% PROCESS scaffold/footer.tt %]

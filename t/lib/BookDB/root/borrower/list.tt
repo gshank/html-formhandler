@@ -1,0 +1,24 @@
+[% PROCESS scaffold/header.tt %]
+[% USE table_class = Class('BookDB::Model::DB::Borrower') %]
+<table id="borrowers">
+<caption>Table: List of Borrowers</caption>
+  <tr>
+    [% FOR column IN columns %]
+      <th>[% column %]</th>
+    [% END %]
+    <th/>[% counter = 0 %]
+  </tr>[% FOR borrower IN borrowers %]
+  <tr[% IF (counter % 2) == 0 %] class="alt"[% END %]>
+    [% FOR column IN columns %]
+      <td>[% borrower.$column %]</td>
+    [% END %]
+    <td>
+      <a href="[% c.uri_for('view', borrower.id) %]">View</a>
+      <a href="[% c.uri_for('edit', borrower.id) %]">Edit</a>
+      <a href="[% c.uri_for('destroy', borrower.id) %]">Destroy</a>
+    </td>[% counter = counter + 1 %]
+  </tr>[% END %]
+</table>
+<p><a class="big" href="[% c.uri_for('add') %]">+ ADD</a></p>
+
+[% PROCESS scaffold/footer.tt %]

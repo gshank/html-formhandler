@@ -28,6 +28,6 @@ my $params = {
 
 $form->validate($params);
 
-my $price = $form->field('price')->value;
+my $price = $form->value('price');
 is( $price, '1234.00', 'format value' );
 

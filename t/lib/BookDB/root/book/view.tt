@@ -1,0 +1,65 @@
+[% PROCESS scaffold/header.tt %]
+
+<p>[% message %]</p>
+[% FOR field IN form.error_fields %]
+<div class='error' id=error>[% field.name _ ': ' _ field.errors %] </div>
+[% END %]
+   <p>
+    <b class="title">Title:</b>
+    <p>[% form.item.title %]</p>
+   </p>
+   <p>
+    <b class="title">Author:</b>
+    <p>[% form.item.author %]</p>
+   </p>
+   <p>
+    <b class="title">Genres:</b>
+    [% FOR genre IN form.item.genres %]
+    <p>[% genre.name %]</p>
+    [% END %]
+   </p>
+   <p>
+    <b class="title">Publisher:</b>
+    <p>[% form.item.publisher %]</p>
+   </p>
+   <p>
+    <b class="title">ISBN:</b>
+    <p>[% form.item.isbn %]</p>
+   </p>
+   <p>
+    <b class="title">Format:</b>
+    <p>[% form.item.format.name %]</p>
+   </p>
+   <p>
+    <b class="title">Pages:</b>
+    <p>[% form.item.pages %]</p>
+   </p>
+   <p>
+    <b class="title">Year:</b>
+    <p>[% form.item.year %]</p>
+   </p>
+<br />
+[% IF form.item.borrower %]
+Checked out to <a href="[%base _ 'borrower/view/' _ form.item.borrower.id%]">[%form.item.borrower.name%]</a> ([%form.item.borrowed%])<br/>
+<a href="[%base _ "book/do_return/" _ form.item.id %]">Return it</a>
+[%ELSE%]
+<form action="[% c.uri_for('view/' _ form.item.id) %]" method="post">
+   <p>
+   [% SET f = form.field('borrower') %]
+   <label class="label" for="[% f.name %]">Not borrowed.</label>
+   <br />
+   <input type="submit" value="Check out to"/>
+   <select name="[% f.name %]">
+     [% FOR option IN f.options %]
+       <option value="[% option.value %]" [% IF option.value == f.fif %]selected="selected"[% END %]>[% option.label %]</option>
+     [% END %] 
+   </select>
+   [% SET f = form.field('borrowed') %]
+     <input  type="hidden" name="[% f.name %]" id="[% f.name %]">
+   </p>
+</form>
+[%END%]
+
+<p><a class="big" href="[% c.uri_for('list') %]">&gt; LIST</a></p>
+
+[% PROCESS scaffold/footer.tt %]

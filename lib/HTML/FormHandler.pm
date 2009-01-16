@@ -336,6 +336,14 @@ has 'field_counter' => (
    default => 1
 );
 
+=head2 active_column
+
+The column in tables used for select list that marks an option 'active'
+
+=cut
+
+has 'active_column' => ( isa => 'Str', is => 'rw' );
+
 =head2 params
 
 Stores HTTP parameters. 
@@ -840,6 +848,20 @@ sub field
    croak "Field '$name' not found in form '$self'";
 }
 
+=head2
+
+Convenience function to return the value of the field. Returns
+undef if field not found.
+
+=cut
+
+sub value
+{
+   my ( $self, $fieldname ) = @_;
+   my $field = $self->field( $fieldname, 1 ) || return;
+   return $field->value; 
+}
+
 =head2 field_exists
 
 Returns true (the field) if the field exists
@@ -895,9 +917,9 @@ sub validate
 
    return $self->validated if $self->ran_validation;
 
-   # Set params -- so can be used by fif later
-   $self->params($params) if $params;
-   $params ||= $self->params;
+   # Set params 
+   $self->params($params) if ($params && keys %$params);
+   $params = $self->params; 
    $self->set_dependency;    # set required dependencies
 
    foreach my $field ( $self->fields )
