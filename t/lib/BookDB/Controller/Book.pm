@@ -164,6 +164,7 @@ sub view : Local {
 	$c->stash->{template} = 'book/view.tt';
 
 	my $validated = $self->update_from_form( $id, 'BookView' );
+$DB::single=1;
 	return if !$validated;
 
 	# form validated

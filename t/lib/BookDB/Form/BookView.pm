@@ -10,7 +10,7 @@ has '+item_class' => ( default => 'Book' );
 sub profile {
    return  {
       required => {
-         borrower   => 'Select',
+        borrower   => 'Select',
 	     borrowed   => 'Text',
       },
    };
