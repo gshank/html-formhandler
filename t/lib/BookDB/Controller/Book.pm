@@ -1,12 +1,12 @@
 package BookDB::Controller::Book;
 
 use Moose;
-use base  'Catalyst::Controller';
+use base 'Catalyst::Controller';
 with 'Catalyst::Controller::Role::HTML::FormHandler';
 use DateTime;
 use BookDB::Form::Book;
 
-__PACKAGE__->config( model_name => 'DB', form_name_space => 'BookDB::Form');
+__PACKAGE__->config( model_name => 'DB', form_name_space => 'BookDB::Form' );
 
 =head1 NAME
 
@@ -30,38 +30,87 @@ Sets a template.
 
 =cut
 
-sub add : Local {
-    my ( $self, $c ) = @_;
 
-	$c->forward('do_form');
+sub book_base : Chained PathPart('book') CaptureArgs(0)
+{
+   my ( $self, $c ) = @_;
 }
 
+sub default : Chained('book_base') ParthPart('') Args
+{
+   my ( $self, $c ) = @_;
+   return $self->do_list($c);
+}
 
-=item do_form
+sub list : Chained('book_base') PathPart('list') Args(0)
+{
+   my ( $self, $c ) = @_;
+   return $self->do_list($c);
+}
+
+sub do_list
+{
+   my ( $self, $c ) = @_;
+   # get an array of row object
+   my $books = [ $c->model('DB::Book')->all ];
+   # set columns in order wanted for list
+   my @columns = ( 'title', 'author', 'publisher', 'year' );
+
+   $c->stash->{books}    = $books;
+   $c->stash->{columns}  = \@columns;
+   $c->stash->{template} = 'book/list.tt';
+}
+
+sub create : Chained('book_base') PathPart('create') Args(0)
+{
+   my ( $self, $c ) = @_;
+   # the $book variable will be undefined, which will cause
+   # FormHandler to create the record
+   return $self->form($c);
+}
+
+sub item : Chained('book_base') PathPart('') CaptureArgs(1)
+{
+   my ( $self, $c, $book_id ) = @_;
+
+  $c->stash->{book} = $c->model('DB::Book')->find($book_id);
+}
+
+=item edit
 
 Handles displaying and validating the form
 Will save to the database on validation
 
 =cut
 
-sub do_form : Private {
-    my ( $self, $c, $id ) = @_;
+sub edit : Chained('item') PathPart('edit') Args(0)
+{
+   my ( $self, $c ) = @_;
+   return $self->form($c);
+}
 
-	# Name template, otherwise it will use book/add.tt or book/edit.tt
-	$self->ctx->stash->{template} = 'book/form.tt';
 
-	# Name form, otherwise it will create 'Book::Add' or 'Book::Edit'
-	my $validated = $self->update_from_form( $id, 'Book' ); 
+sub form
+{
+   my ( $self, $c ) = @_;
 
-    return if !$validated; # This (re)displays the form, because it's the
-            	           # 'end' of the method, and the 'default end' action
-					       # takes over, which is to render the view
+   # Name template, otherwise it will use book/add.tt or book/edit.tt
+   $self->ctx->stash->{template} = 'book/form.tt';
 
-	# get the new book that was just created by the form
-	my $new_book = $c->stash->{form}->item;
+   # Name form, otherwise it will expect 'Book::Edit'
+   my $book = $c->stash->{book};
+   my $validated = $self->update_from_form( $book, 'Book' );
+   $c->stash->{form}->action( $c->chained_uri_for->as_string );
 
-	# redirect to list. 'show' also a possibility...
-    $c->res->redirect($c->uri_for('list'));
+   return if !$validated;    # This (re)displays the form, because it's the
+                             # 'end' of the method, and the 'default end' action
+                             # takes over, which is to render the view
+
+   # get the new book that was just created by the form
+   my $new_book = $c->stash->{form}->item;
+
+   # redirect to list. 'show' also a possibility...
+   $c->res->redirect( $c->uri_for('list') );
 }
 
 =item form (without Catalyst plugin)
@@ -73,83 +122,42 @@ or set up FillInForm.
 
 =cut
 
-
-sub edit_alt : Local 
+sub edit_alt : Chained('item') PathPart('edit_alt') CaptureArgs(0) 
 {
-    my ( $self, $c, $id ) = @_;
+   my ( $self, $c ) = @_;
 
-    my $form = BookDB::Form::Book->new(item_id => $id, schema => $c->model('DB')->schema);
-    # put form and template in stash
-    $c->stash->{form} = $form;
-    $c->stash->{template} = 'book/edit_alt.tt';
+   my $book = $c->stash->{book};
+   my $form = BookDB::Form::Book->new($book);
+   # put form and template in stash
+   $c->stash->{form}     = $form;
+   $c->stash->{template} = 'book/edit_alt.tt';
 
-    # update form
-    $form->update_from_form( $c->req->parameters ) if $c->req->method eq 'POST';
-    return unless $c->req->method eq 'POST' && $form->validated;
+   # update form
+   $form->update_from_form( $c->req->parameters ) if $c->req->method eq 'POST';
+   $c->stash->{form}->action( $c->chained_uri_for->as_string );
+   return unless $c->req->method eq 'POST' && $form->validated;
 
-	# get the new book that was just created by the form
-	my $new_book = $form->item;
-	# redirect to list. 
-    $c->res->redirect($c->uri_for('list'));
+   # get the new book that was just created by the form
+   my $new_book = $form->item;
+   # redirect to list.
+   $c->res->redirect( $c->uri_for('list') );
 }
 
-
-=item default
-
-Forwards to list.
-
-=cut
-
-sub default : Private {
-    my ( $self, $c ) = @_;
-    $c->forward('list');
-}
-
-=item destroy
+=item delete
 
 Destroys a row and forwards to list.
 
 =cut
 
-sub destroy : Local {
-    my ( $self, $c, $id ) = @_;
-
-	# delete row in database
-	$c->model('DB::Book')->find($id)->delete;
-	# redirect to list page
-    $c->res->redirect($c->uri_for('list'));
-}
-
-=item edit
-
-Display edit form
-
-=cut
-
-sub edit : Local {
-    my ( $self, $c, $id ) = @_;
-    
-	$c->forward('do_form', $id);
-}
-
-
-=item list
-
-Lists books
-
-=cut
-
-sub list : Local {
+sub delete : Chained('item') PathPart('delete') Args(0)
+{
    my ( $self, $c ) = @_;
 
-   # get an array of row object
-   my $books = [$c->model('DB::Book')->all];
-	# set columns in order wanted for list
-   my @columns = ('title', 'author', 'publisher', 'year');
-
-	$c->stash->{books} = $books;
-	$c->stash->{columns} = \@columns;
-   $c->stash->{template} = 'book/list.tt';
+   # delete row in database
+   my $book = $c->stash->{book};
+   $book->delete;
+   # redirect to list page
+   $c->res->redirect( $c->uri_for('list') );
 }
 
 =item view
@@ -158,34 +166,36 @@ Fetches a row and sets a template.
 
 =cut
 
-sub view : Local {
-    my ( $self, $c, $id ) = @_;
+sub view : Chained('item') PathPart('') Args(0)
+{
+   my ( $self, $c, $id ) = @_;
 
-	$c->stash->{template} = 'book/view.tt';
-	my $validated = $self->update_from_form( $id, 'BookView' );
-	return if !$validated;
-	# form validated
-    $c->stash->{message} = 'Book checked out';
+   my $book = $c->stash->{book};
+   $c->stash->{template} = 'book/view.tt';
+   my $validated = $self->update_from_form( $book, 'BookView' );
+   return if !$validated;
+   # form validated
+   $c->stash->{message} = 'Book checked out';
 }
 
 =item do_return
 
 =cut
 
-sub do_return : Local {
-    my ( $self, $c, $id ) = @_;
+sub do_return : Chained('item') PathPart('return') Args(0)
+{
+   my ( $self, $c, $id ) = @_;
 
-	$c->stash->{item} = $c->model('DB::Book')->find($id);
-    $c->stash->{item}->borrowed(undef);
-    $c->stash->{item}->borrower(undef);
-    $c->stash->{item}->update;
+   my $book = $c->stash->{book};
+   $book->borrowed(undef);
+   $book->borrower(undef);
+   $book->update;
 
-	$c->res->redirect($c->uri_for('view', $id));
+   $c->res->redirect( $c->uri_for( 'view', $id ) );
 }
 
 =item
 =cut
-
 
 =back
 

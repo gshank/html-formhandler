@@ -1,7 +1,7 @@
 package BookDB::Controller::Borrower;
 
 use Moose;
-use base  'Catalyst::Controller';
+use base 'Catalyst::Controller';
 with 'Catalyst::Controller::Role::HTML::FormHandler';
 
 =head1 NAME
@@ -28,10 +28,11 @@ Sets a template.
 
 __PACKAGE__->config( model_name => 'DB' );
 
-sub add : Local {
-    my ( $self, $c ) = @_;
+sub add : Local
+{
+   my ( $self, $c ) = @_;
 
-	$c->forward('do_form');
+   $c->forward('do_form');
 }
 
 =item form
@@ -41,25 +42,26 @@ Will save to the database on validation
 
 =cut
 
-sub do_form : Private {
-    my ( $self, $c, $id ) = @_;
+sub do_form : Private
+{
+   my ( $self, $c, $id ) = @_;
 
-	# Set template
-	$c->stash->{template} = 'borrower/form.tt';
-	# Fill form Al Gore
+   # Set template
+   $c->stash->{template} = 'borrower/form.tt';
+   # Fill form Al Gore
 
-	my $validated = $self->update_from_form( $id, 'Borrower' ); 
+   my $validated = $self->update_from_form( $id, 'Borrower' );
 
-    # this could also be
-	# return unless $c->update_from_form( $id, 'Borrower');
-	# but that makes it difficult to look at with the debugger.
-    return if !$validated; # This (re)displays the form, because it's the
-            	           # 'end' of the method, and the 'default end' action
-					       # takes over, which is to render the view
+   # this could also be
+   # return unless $c->update_from_form( $id, 'Borrower');
+   # but that makes it difficult to look at with the debugger.
+   return if !$validated;    # This (re)displays the form, because it's the
+                             # 'end' of the method, and the 'default end' action
+                             # takes over, which is to render the view
 
-	# get the new borrower that was just created by the form
-	my $new_borrower = $c->stash->{form}->item;
-    $c->res->redirect($c->uri_for('list'));
+   # get the new borrower that was just created by the form
+   my $new_borrower = $c->stash->{form}->item;
+   $c->res->redirect( $c->uri_for('list') );
 }
 
 =item default
@@ -68,9 +70,10 @@ Forwards to list.
 
 =cut
 
-sub default : Private {
-    my ( $self, $c ) = @_;
-	$c->res->redirect($c->uri_for('list'));
+sub default : Private
+{
+   my ( $self, $c ) = @_;
+   $c->res->redirect( $c->uri_for('list') );
 }
 
 =item destroy
@@ -79,11 +82,12 @@ Destroys a row and forwards to list.
 
 =cut
 
-sub destroy : Local {
-    my ( $self, $c, $id ) = @_;
-	$c->model('DB::Borrower')->find($id)->delete;
-	$c->stash->{message} = 'Borrower deleted';
-	$c->res->redirect($c->uri_for('list'));
+sub destroy : Local
+{
+   my ( $self, $c, $id ) = @_;
+   $c->model('DB::Borrower')->find($id)->delete;
+   $c->stash->{message} = 'Borrower deleted';
+   $c->res->redirect( $c->uri_for('list') );
 }
 
 =item do_add
@@ -92,19 +96,18 @@ Adds a new row to the table and forwards to list.
 
 =cut
 
-
 =item edit
 
 Sets a template.
 
 =cut
 
-sub edit : Local {
-    my ( $self, $c, $id ) = @_;
+sub edit : Local
+{
+   my ( $self, $c, $id ) = @_;
 
-	$c->forward('do_form');
+   $c->forward('do_form');
 }
-
 
 =item list
 
@@ -112,16 +115,17 @@ Sets a template.
 
 =cut
 
-sub list : Local {
-    my ( $self, $c ) = @_;
-	
-    # get an array of row objects
-    my $borrowers = [$c->model('DB::Borrower')->all];
-    my @columns = ('name', 'email');
+sub list : Local
+{
+   my ( $self, $c ) = @_;
 
-	$c->stash->{borrowers} = $borrowers;
-	$c->stash->{columns} = \@columns;
-    $c->stash->{template} = 'borrower/list.tt';
+   # get an array of row objects
+   my $borrowers = [ $c->model('DB::Borrower')->all ];
+   my @columns = ( 'name', 'email' );
+
+   $c->stash->{borrowers} = $borrowers;
+   $c->stash->{columns}   = \@columns;
+   $c->stash->{template}  = 'borrower/list.tt';
 }
 
 =item view
@@ -130,18 +134,19 @@ Fetches a row and sets a template.
 
 =cut
 
-sub view : Local {
-    my ( $self, $c, $id ) = @_;
+sub view : Local
+{
+   my ( $self, $c, $id ) = @_;
 
-	# get row object for this borrower id 
-	my $borrower = $c->model('DB::Borrower')->find($id);
-	# list of columns in order for form
-	my @columns = ('name', 'email', 'phone', 'url');
+   # get row object for this borrower id
+   my $borrower = $c->model('DB::Borrower')->find($id);
+   # list of columns in order for form
+   my @columns = ( 'name', 'email', 'phone', 'url' );
 
-	my $rel = $c->model('DB')->source('Borrower')->relationship_info('books');
-	$c->stash->{columns} = \@columns; 
-	$c->stash->{borrower} = $borrower;
-    $c->stash->{template} = 'borrower/view.tt';
+   my $rel = $c->model('DB')->source('Borrower')->relationship_info('books');
+   $c->stash->{columns}  = \@columns;
+   $c->stash->{borrower} = $borrower;
+   $c->stash->{template} = 'borrower/view.tt';
 }
 
 =back

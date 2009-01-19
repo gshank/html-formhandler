@@ -26,9 +26,15 @@ MyApp::Controller::Root - Root Controller for MyApp
 
 =cut
 
-sub default : Private {
+sub base : Chained('/') PathPart('') CaptureArgs(0)
+{
+   my ( $self, $c ) = @_;
+}
+
+sub def : Chained('base') PathPart('') Args
+{
     my ( $self, $c ) = @_;
-    $c->forward('/book/default');
+    return $c->controller('Book')->do_list($c);
 }
 
 

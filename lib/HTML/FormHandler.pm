@@ -358,7 +358,7 @@ Store the form 'action' on submission
 
 =cut
 
-has 'action' => ( isa => 'Str', is => 'rw' );
+has 'action' => ( is => 'rw' );
 
 =head2 submit
 
