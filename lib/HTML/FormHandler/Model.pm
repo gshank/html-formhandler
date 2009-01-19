@@ -3,7 +3,6 @@ package HTML::FormHandler::Model;
 use Moose;
 use Carp;
 use Data::Dumper;
-use Scalar::Util ('blessed');
 
 =head1 NAME
 

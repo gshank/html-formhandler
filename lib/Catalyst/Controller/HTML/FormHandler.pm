@@ -1,7 +1,7 @@
 package Catalyst::Controller::HTML::FormHandler;
 
 use Moose ('with');
-use base ('Catalyst::Controller', 'Class::Accessor::Fast');
+use base ('Catalyst::Controller', 'Moose::Object');
 with 'Catalyst::Component::InstancePerContext';
 
 use Carp;
@@ -128,7 +128,7 @@ sub get_form
       {
          %args = %{$args_ref};
       }
-      elsif ( Scalar::Util::blessed($args_ref) )
+      elsif ( blessed($args_ref) )
       {
          %args = (
             item    => $args_ref,
