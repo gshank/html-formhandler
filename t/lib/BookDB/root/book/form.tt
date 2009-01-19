@@ -26,8 +26,7 @@
 
    <p>
    [% f = form.field('publisher') %]
-   <label class="label" for="[% f.name %]">[% f.label %]</label>
-   <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
+   [% PROCESS widget/text.tt %]
    </p>
 
    <p>

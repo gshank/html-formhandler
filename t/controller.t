@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 use lib 't/lib';
 
@@ -15,3 +15,5 @@ $mech->content_contains('Harry Potter', 'list contents');
 $mech->get_ok('http://localhost/book/edit/1');
 
 $mech->content_contains('Harry', 'get Harry Potter');
+
+$mech->content_contains('Boomsbury', 'get publisher');

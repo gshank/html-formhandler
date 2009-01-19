@@ -2,7 +2,7 @@ Revision history for Perl extension HTML::FormHandler
 
 0.04 Fri Jan 16 2009, 19:00
     Move example to test directory. Change controller; add controller
-    test. Add more documentation.
+    test. Add use for HashRefInflator. Add more documentation.
 
 0.03 Tues Jan 12 2009, 16:00
     Pod fix, remove failing test from htmlarea

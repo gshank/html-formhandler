@@ -5,6 +5,8 @@ extends 'HTML::FormHandler::Field';
 our $VERSION = '0.01';
 
 has '+widget' => ( default => 'textarea' );
+has 'cols' => ( isa => 'Integer', is => 'rw' );
+has 'rows' => ( isa => 'Integer', is => 'rw' );
 
 __PACKAGE__->meta->make_immutable;
 

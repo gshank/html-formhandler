@@ -59,8 +59,8 @@ Then in your template for an input field:
 
    <p>
    [% f = form.field('address') %]
-   <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
-   <input type="text" name="[% f.name %]" id="[% f.name %]" value="[ f.fif %]">
+   <label class="label" for="[% f.name %]">[% f.label %]</label>
+   <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
    </p>
 
 The value can come from the hash returned by $form->fif, from the 'fif'
@@ -75,10 +75,12 @@ enough for select fields, since you need to access the field 'options'.
 
    <p>
    [% f = form.field('sex') %]
-   <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
+   <label class="label" for="[% f.name %]">[% f.label %]</label>
    <select name="[% f.name %]">
      [% FOR option IN f.options %]
-       <option value="[% option.value %]" [% IF option.value == f.fif %]selected="selected"[% END %]>[% option.label | html %]</option>
+       <option value="[% option.value %]" 
+       [% IF option.value == f.fif %]selected="selected"[% END %]>
+       [% option.label | html %]</option>
      [% END %] 
    </select>
    </p>

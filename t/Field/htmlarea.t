@@ -2,9 +2,12 @@ use strict;
 use warnings;
 
 use lib './t';
-use MyTest
-    tests   => 3,
-    recommended => [qw/ HTML::Tidy File::Temp /];
+use MyTest;
+BEGIN {
+   eval "use HTML::Tidy; use File::Temp;";
+   plan skip_all => 'HTML::Tidy and File::Temp required' if $@;
+   plan tests => 3;
+}
 
 
 
@@ -25,8 +28,6 @@ my $bad_html = <<'';
     </p>
     <p><b>and bold without ending tag</p>
 
-
-
     use_ok( $class );
     my $field = $class->new(
         name    => 'test_field',
@@ -36,9 +37,9 @@ my $bad_html = <<'';
 
     ok( defined $field,  'new() called' );
 
-
     $field->input(  $bad_html );
     $field->validate_field;
     ok( $field->has_errors, 'Test for failure' );
+
 
 
