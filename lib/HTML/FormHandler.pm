@@ -344,6 +344,30 @@ The column in tables used for select list that marks an option 'active'
 
 has 'active_column' => ( isa => 'Str', is => 'rw' );
 
+=head2 http_method
+
+For storing 'post' or 'get'
+
+=cut
+
+has 'http_method' => ( isa => 'Str', is => 'rw', default => 'post' );
+
+=head2  action
+
+Store the form 'action' on submission
+
+=cut
+
+has 'action' => ( isa => 'Str', is => 'rw' );
+
+=head2 submit
+
+Store form submit field info
+
+=cut
+
+has 'submit' => ( is => 'rw' );
+
 =head2 params
 
 Stores HTTP parameters. 

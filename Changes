@@ -1,5 +1,9 @@
 Revision history for Perl extension HTML::FormHandler 
 
+0.05 Mon Jan 19 2009, 15:00
+    Add skip test to htmlarea test. Add action, http_method, & submit to form.
+    Add javascript to field. Create widget directory for templates.
+
 0.04 Fri Jan 16 2009, 19:00
     Move example to test directory. Change controller; add controller
     test. Add use for HashRefInflator. Add more documentation.

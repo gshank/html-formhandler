@@ -401,6 +401,14 @@ sub build_id
    return $form_name . $field->name;
 }
 
+=head2 javascript
+
+Store javascript for the field
+
+=cut
+
+has 'javascript' => ( isa => 'Str', is => 'rw' );
+
 =head2 password
 
 This is a boolean flag to prevent the field from being returned in
