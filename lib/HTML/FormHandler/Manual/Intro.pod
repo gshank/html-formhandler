@@ -168,7 +168,7 @@ When using a database model, form field values for the row are retrieved from
 the database using the field names as database class accessors. 
 FormHandler will use relationships to populate single and multiple 
 selection lists, and validate input. It doesn't yet do anything with other
-relationships.
+relationships, although it will return a hash of the relationship.
 
 You can pass in either the primary key or a row object to the form. If a
 primary key is passed in, the model will use the item_class (DBIC source

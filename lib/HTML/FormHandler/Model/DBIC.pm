@@ -35,10 +35,11 @@ controller. ( also see L<Catalyst::Controller::Role::HTML::FormHandler> )
 If an 'item' is passed in, the 'item_id', 'item_class', and 'schema' will
 be derived from the 'item'.
 
-In practice, if you want to use FormHandler to create new database records,
-you would need to use the 'item_id'/'item_class'/'schema' method.
+To use FormHandler to create new database records, pass in undef for the item_id,
+and supply an 'item_class' and 'schema', or pass in an empty row (using
+the resultset 'new_result' method).
 
-The field names in the profile of your form must match column, relationship,
+The field names in the profile of your form should match column, relationship,
 or accessor names in your DBIx::Class result source.
 
 =head1 DESCRIPTION
@@ -103,18 +104,19 @@ sub BUILDARGS
 
 =head2 update_from_form
 
-    my $validated = $form->update_from_form( $parameter_hash );
+    my $validated = $form->update_from_form( item => $row );
+    or
+    my $validated = $form->update_form_form( item_id => undef, schema => $schema );
 
-This is not the same as the routine called with $c->update_from_form--the
-Catalyst plugin routine that calls this one--or $self->update_form_form--the
-Catalyst controller routine. This routine updates or
+This is not the same as the subroutine called with $c->update_from_form--the
+Catalyst controller/role routine that calls this one. This method updates or
 creates the object from values in the form.
 
 All fields that refer to columns and have been changed will be updated. Field names
 that are a single relationship will be updated. Any field names that are related 
-to the class by "has_many" are assumed to have a mapping table and will be 
-updated.  Validation is run unless validation has already been run.  
-($form->clear might need to be called if the $form object stays in memory
+to the class by "has_many" and have the 'multiple' flag set are assumed to have a 
+mapping table and will be updated.  Validation is run unless validation has already 
+been run.  ($form->clear might need to be called if the $form object stays in memory
 between requests.)
 
 The actual update is done in the C<update_model> method.  Your form class can
@@ -216,7 +218,7 @@ sub update_model
       }
    }
 
-   my $changed = 0;
+   my $changed;
    # Handle database columns
    if ($item)
    {
@@ -256,7 +258,7 @@ sub update_model
       $changed++;
    }
    # update db
-   $item->update if $changed > 0;
+   $item->update_or_insert if $changed;
 
    # process Multiple field 'many_to_many' relationships
    for my $field_name ( keys %multiple_m2m )

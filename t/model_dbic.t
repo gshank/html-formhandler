@@ -4,7 +4,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 6;
+   plan tests => 13;
 }
 
 use_ok('HTML::FormHandler::Model::DBIC');
@@ -45,3 +45,43 @@ ok( $title_field->order == 1, 'order for title');
 
 ok( $author_field->order == 2, 'order for author'); 
 
+
+{
+   package My::Form2;
+   use Moose;
+   extends 'HTML::FormHandler::Model::DBIC';
+
+   has '+profile' => ( default => sub {
+         {
+           fields    => [
+               title     => {
+                  type => 'Text',
+                  required => 1,
+               },
+               author    => 'Text',
+           ]}
+       }
+   );
+}
+
+my $book = $schema->resultset('Book')->find(1);
+
+my $form2 = My::Form2->new(item => $book );
+ok( $form2, 'get form with row object');
+is( $form2->value('title'), 'Harry Potter and the Order of the Phoenix', 'get title from form');
+is( $form2->item_id, 1, 'item_id set from row');
+
+my $book3 = $schema->resultset('Book')->new_result({});
+END { $book3->delete }
+my $form3 = My::Form2->new( item => $book3 );
+ok( $form3, 'get form from empty row object');
+is( $form3->item_id, undef, 'empty row form has no item_id');
+is( $form3->item_class, 'Book', 'item_class set from empty row');
+
+my $params = {
+   title => 'Testing a form created from an empty row',
+   author => 'S.Else'
+};
+
+$form3->update_from_form( $params );
+is( $book3->author, 'S.Else', 'row object updated');
