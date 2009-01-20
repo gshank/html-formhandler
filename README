@@ -5,7 +5,6 @@ This package is a Moose form handler, based on Form::Processor.
 Create Perl form classes, define fields, retrieve and save to the
 database...
 
-
 INSTALLATION
 
 To install this module, run the following commands:
@@ -15,16 +14,23 @@ To install this module, run the following commands:
         make test
         make install
 
+EXAMPLE
+
+The test directory contains an example Catalyst application.
+Execute it by executing 't/script/bookdb_server.pl'.
+
 SUPPORT AND DOCUMENTATION
 
 After installing, you can find documentation for this module with the
 perldoc command.
 
     perldoc HTML::FormHandler::Manual
+    perldoc HTML::FormHandler::Info
     perldoc HTML::FormHandler::Tutorial
     perldoc HTML::FormHandler
     perldoc HTML::FormHandler::Model::DBIC
     perldoc HTML::FormHandler::Field
+    perldoc Catalyst::Controller::HTML::FormHandler
     perldoc Catalyst::Controller::Role::HTML::FormHandler
 
 

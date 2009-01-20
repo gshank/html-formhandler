@@ -1,5 +1,9 @@
 Revision history for Perl extension HTML::FormHandler 
 
+0.06 Tues Jan 20 2009, 15:00
+    Add prereq skip tests to controller test. Clean up Makefile.PL.
+    Convert test controller Book.pm to use chained.
+
 0.05 Mon Jan 19 2009, 15:00
     Add skip test to htmlarea test. Add action, http_method, & submit to form.
     Add javascript to field. Create widget directory for templates.

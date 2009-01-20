@@ -15,14 +15,17 @@ no_index:
   directory:
     - inc
     - t
+recommends:
+  Catalyst: 0
+  Catalyst::Component::InstancePerContext: 0
+  DBIx::Class: 0
+  Template: 0
+  Test::WWW::Mechanize::Catalyst: 0
 requires:
   Carp: 0
-  DBIx::Class: 0
   Locale::Maketext: 1.09
-  Module::Find: 0.05
   Moose: 0.59
   MooseX::AttributeHelpers: 0.14
-  Scalar::Util: 1.19
   UNIVERSAL::require: 0
   perl: 5.8.0
 resources:
