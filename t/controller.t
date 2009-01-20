@@ -1,9 +1,20 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
-
+use Test::More;
 use lib 't/lib';
+
+BEGIN {
+   eval "use Catalyst";
+   plan skip_all => 'Catalyst required' if $@;
+   eval "use Catalyst::Component::InstancePerContext";
+   plan skip_all => 'Catalyst::Component::InstancePerContext required' if $@;
+   eval "use Test::WWW::Mechanize::Catalyst";
+   plan skip_all => 'Test::WWW::Mechanize::Catalyst required' if $@;
+   eval "use Template";
+   plan skip_all => 'Template required' if $@;
+   plan tests => 5;
+}
 
 use Test::WWW::Mechanize::Catalyst 'BookDB';
 
