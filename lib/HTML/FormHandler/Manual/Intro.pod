@@ -2,6 +2,37 @@
 
 HTML::FormHandler::Intro - basic usage of FormHandler
 
+=head1 SUMMARY
+
+HTML::FormHandler is a form handling class primarily useful for getting HMTL form
+data into the database. It provides attributes on fields that can be used
+for creating a set of widgets and highly automatic templates, but does
+not actually create the templates themselves, although there is an example of a
+rendering role.
+
+The DBIC & CDBI  models will save form fields automatically to the database, will
+retrieve selection lists from the database (with type => 'Select' and a 
+fieldname containing a single relationship, or type => 'Multiple' and a
+many_to_many relationship), and will save the selected values (one value for 
+'Select', multiple values in a mapping table for a 'Multiple' field). 
+
+The 'form' is a Perl subclass of L<HTML::FormHandler> for non-database forms,
+or a subclass of a model class for database forms, and in it you define
+your fields (with many possible attributes), and initialization
+and validation routines. Because it's a Perl class, you have a lot of 
+flexibility.
+
+You can define your own L<HTML::FormHandler::Field> classes to
+create your own field types, and perform specialized validation. And you
+can subclass the methods in HTML::FormHandler::Model::DBIC and 
+HTML::FormHandler.
+
+The L<Catalyst::Controller::HTML::FormHandler> package includes a working 
+example using a SQLite database and a number of forms in the test directory.
+You can execute the sample from a downloaded distribution package with:
+
+   perl -Ilib t/script/bookdb_server.pl
+
 =head1 SYNOPSIS
 
 To use HTML::FormHandler, you need to create a form class, call the
@@ -16,28 +47,40 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     extends 'HTML::FormHandler::Model::DBIC';
 
     # Associate this form with a DBIx::Class result class
+    # Or 'item_class' can be passed in on 'new', or you
+    # you can always pass in a row object
     has '+item_class' => ( default => 'User' );
 
     # Define the fields that this form will operate on
-    # Field names must be column or relationship names in your
-    # DBIx::Class result class
+    # Field names are usually column, accessor, or relationship names in your
+    # DBIx::Class result class. You can also have fields that don't exist
+    # in your result class.
     sub profile {                 # or: has '+profile' => ( default => ...)
         return {
             fields => {
                 name        => {
                    type => 'Text',
-                   label => 'Name:',
+                   label => 'Username',
                    required => 1,
+                   required_message => 'You must enter a username',
                    noupdate => 1,
+                   unique => 1,  # unique in db
+                   unique_message => 'That username is already taken'
                 },
                 age         => {
                     type => 'PosInteger',
-                    label    => 'Age:',
+                    label    => 'Age',
                     required => 1,
+                    css_class => 'box', # not used by HF, for templates
+                    title => 'User age in years', # for templates
+                    widget => 'age_text', # allows selecting a particular
+                                          # widget in your templates or in
+                                          # a rendering role
+                    range_start => 18,    # can't enter an age less than 18
                 },
                 sex         => {
                     type => 'Select',
-                    label => 'Gender:',
+                    label => 'Gender',
                     required => 1,
                 },
                 birthdate   => '+MyApp::Field::Date', # customized field class
@@ -55,18 +98,18 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
             ],
         };
 
-Then in your template for an input field:
+In a template, for an input field:
 
    <p>
    [% f = form.field('address') %]
-   <label class="label" for="[% f.name %]">[% f.label %]</label>
+   <label class="label" for="[% f.name %]">[% f.label %]:</label>
    <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
    </p>
 
 The value can come from the hash returned by $form->fif, from the 'fif'
 attribute of the field, or can be supplied by FillInForm.
 Plain HTML works fine for a simple input field if you use FillInForm to
-supply the value:
+supply the value.
 
 For a select list, provide a relationship name as the field name, or provide
 an options_<field_name> subroutine in the form. FillInForm alone is not
@@ -99,12 +142,21 @@ A multiple select list where 'hobbies' is a 'many_to_many' pseudo-relationship.
    </p>
 
  
-Then in a Catalyst controller (with Catalyst::Controller::HTML::FormHandler):
+If you always use the same model for your forms, and the same form name
+space, you can specify the config values in your application module:
+
+   __PACKAGE__->config( { 'Controller::HTML::FormHandler' =>
+       { model_name => 'DB', form_name_space => 'MyApp::Form' }} );
+
+In a Catalyst controller (with Catalyst::Controller::HTML::FormHandler):
 
     package MyApp::Controller::User;
     use strict;
     use warnings;
     use base 'Catalyst::Controller::HTML::FormHandler';
+
+    # If you didn't specify the model_name already 
+    __PACKAGE__->config( model_name => 'DB');
 
     # Create or edit
     sub edit : Local {
@@ -119,36 +171,16 @@ Then in a Catalyst controller (with Catalyst::Controller::HTML::FormHandler):
 
 With the Catalyst controller the schema is set from the model_name config
 options, ($c->model($model_name)...), but it can also be set by passing 
-in the schema on "new", or setting with $form->schema($schema).
+in the schema on "new", or setting with $form->schema($schema), or from
+passing in a row object.
+
 If you want to use FillInForm to fill in values instead of the field's
-fif attribute, use L<Catalyst::Controller::HTML::FormHandler>.
+fif attribute, use can L<Catalyst::Controller::HTML::FormHandler>. If you
+set C<< __PACKAGE__->config( fif => 1 ) >> the C<< $form->fif >> hash
+will be set in the C<< $c->stash->{fillinform} >>> stash key. The base
+controller 'end' routine will call FillInForm for you, or you can use
+the stash key to handle FillInForm yourself.
 
-
-=head1 DESCRIPTION
-
-HTML::FormHandler is a form handling class primarily useful for getting HMTL form
-data into the database. It provides attributes on fields that can be used
-for creating a set of widgets and highly automatic templates, but does
-not actually create the templates themselves. 
-
-The DBIC & CDBI  models will save form fields automatically to the database, will
-retrieve selection lists from the database (with type => 'Select' and a 
-fieldname containing a single relationship, or type => 'Multiple' and a
-many_to_many relationship), and will save the selected values (one value for 
-'Select', multiple values in a mapping table for a 'Multiple' field). 
-
-The 'form' is a Perl subclass of the model class, and in it you define
-your fields (with many possible attributes), and initialization
-and validation routines. Because it's a Perl class, you have a lot of 
-flexibility.
-
-You can define your own L<HTML::FormHandler::Field> classes to
-create your own field types, and perform specialized validation. And you
-can subclass the methods in HTML::FormHandler::Model::DBIC and 
-HTML::FormHandler.
-
-The L<Catalyst::Controller::HTML::FormHandler> package includes a working 
-example using a SQLite database and a number of forms. 
 
 =head1 The Form
 
@@ -308,7 +340,7 @@ Type "Text" loads the HTML::FormHandler::Field::Text module and type
 'Integer' loads HTML::FormHandler::Field::Integer.
 
 The fields are assumed to be in the HTML::FormHandler::Field name
-space.  If you want to explicitly list the field's package prefix it
+space.  If you want to explicitly list the field's package, prefix it
 with a plus sign. The field name space for "+" prefixed fields can
 be set with the form's "field_name_space" attribute:
  
@@ -327,13 +359,13 @@ at a time.
 Each field has a "value" method, which is the field's internal value.  This is
 the value your database object would have (e.g. scalar, boolean 0 or 1,
 DateTime object).  A field's internal value is converted to the external value
-by use of the field's C<format_value()> method.  This method returns a hash which
+by use of the field's C< fif_value > method.  This method returns a hash which
 allows a single internal value to be made up of multiple fields externally.
 For example, a DateTime object internally might be formatted as a day, month, and
 year externally.
 
 When data is passed in to validate the form, it is trimmed of leading and trailing
-whitespace by the Field module and placed in the field's "input" attribute.  
+whitespace by the base field class and placed in the field's "input" attribute.  
 Each field has a validate method that validates the input data and then moves 
 it to the internal representation in the "value" attribute.  Depending on the model, 
 it's this internal value that is stored or used by your application.

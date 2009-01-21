@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 8;
+my $tests = 9;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
@@ -63,6 +63,8 @@ ok( $form->field('reqname')->has_errors, 'reqname has error' );
 ok( !$form->field('optname')->has_errors, 'optname has no error' );
 
 is( $form->field('fruit')->id, "testform_fruit", 'field has id' ); 
+
+is( $form->field('fruit')->label, 'Fruit', 'field label');
 
 $form->clear;
 

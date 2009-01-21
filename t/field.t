@@ -9,7 +9,6 @@ ok( $field, 'create field');
 $field = HTML::FormHandler::Field->new(
      name => 'AnotherField',
      type => 'Text',
-     label => 'FIELD:',
      widget => 'select1',
      required => 1,
      required_message => 'This field is REQUIRED'

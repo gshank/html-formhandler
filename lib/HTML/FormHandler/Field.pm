@@ -4,7 +4,7 @@ use Moose;
 use MooseX::AttributeHelpers;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -178,7 +178,7 @@ has 'label' => (
    isa     => 'Str',
    is      => 'rw',
    lazy    => 1,
-   default => sub { shift->name }, 
+   default => sub { ucfirst(shift->name) }, 
 );
 
 =head2 title

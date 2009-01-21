@@ -4,7 +4,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 13;
+   plan tests => 14;
 }
 
 use_ok('HTML::FormHandler::Model::DBIC');
@@ -29,6 +29,7 @@ ok($schema, 'get schema');
                   required => 1,
                },
                author    => 'Text',
+               extra     => 'Text',
            ]}
        }
    );
@@ -59,6 +60,7 @@ ok( $author_field->order == 2, 'order for author');
                   required => 1,
                },
                author    => 'Text',
+               extra     => 'Text',
            ]}
        }
    );
@@ -80,8 +82,10 @@ is( $form3->item_class, 'Book', 'item_class set from empty row');
 
 my $params = {
    title => 'Testing a form created from an empty row',
-   author => 'S.Else'
+   author => 'S.Else',
+   extra => 'extra_test'
 };
 
 $form3->update_from_form( $params );
 is( $book3->author, 'S.Else', 'row object updated');
+is( $form3->value('extra'), 'extra_test', 'value of non-db field');
