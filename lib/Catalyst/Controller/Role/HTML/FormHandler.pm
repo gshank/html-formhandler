@@ -6,7 +6,7 @@ with 'Catalyst::Component::InstancePerContext';
 use Carp;
 use UNIVERSAL::require;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -155,8 +155,9 @@ sub get_form
    if ( $package->isa('HTML::FormHandler::Model::DBIC') )
    {
       # schema only exists for DBIC model
-      die "No model to create schema for C::C::H::F" unless $self->model;
-      $args{schema} = $self->model->schema;
+      die "Form $package must have an item or a schema (via model_name)" 
+            unless ( $self->model || $args{item} );
+      $args{schema} = $self->model->schema if $self->model;
    }
    if ( $self->form_posted ) # to allow access to params for form building
    {

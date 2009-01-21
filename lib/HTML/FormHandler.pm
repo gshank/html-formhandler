@@ -26,9 +26,6 @@ number of methods and attributes have been renamed for internal
 consistency and consistency with Moose usage, and some refactoring has
 been done. 
 
-This first version should be considered non-stable, since I am actively 
-looking for ways to improve it which may result in some api changes.
-
 HTML::FormHandler allows you to define HTML form fields and validators, and will
 automatically update or create rows in a database, although it can also be
 used for non-database forms.
@@ -767,7 +764,6 @@ attribute.
 sub init_from_object
 {
    my $self = shift;
-
    my $item = $self->init_object || $self->item || return;
 
    for my $field ( $self->fields )

@@ -498,6 +498,7 @@ sub init_value
    }
    elsif ( $field->can('multiple' ) && $field->multiple == 1 )
    {
+      return unless $item->id;
       my @rows = $item->$name->all;
       my @values = map { $_->id } @rows;
       return @values;

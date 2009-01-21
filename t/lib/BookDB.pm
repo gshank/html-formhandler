@@ -52,18 +52,6 @@ sub chained_uri_for
    return $c->uri_for($c->action,$c->req->captures,@_);    
 }
 
-=item redirect_to_action
-
-    $c->redirect_to_action('User','login');
-
-=cut
-
-sub redirect_to_action {
-   my ($c, $controller, $action, @params) =@_;
-   $c->response->redirect($c->uri_for($c->controller($controller)->action_for($action), @params));
-   $c->detach;
-}
-
 
 =back
 

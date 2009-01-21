@@ -6,7 +6,7 @@ with 'Catalyst::Controller::Role::HTML::FormHandler';
 use DateTime;
 use BookDB::Form::Book;
 
-__PACKAGE__->config( model_name => 'DB', form_name_space => 'BookDB::Form' );
+__PACKAGE__->config( form_name_space => 'BookDB::Form' );
 
 =head1 NAME
 
@@ -64,8 +64,8 @@ sub do_list
 sub create : Chained('book_base') PathPart('create') Args(0)
 {
    my ( $self, $c ) = @_;
-   # the $book variable will be undefined, which will cause
-   # FormHandler to create the record
+   # Create the empty book row for the form
+   $c->stash( book => $c->model('DB::Book')->new_result({}) );
    return $self->form($c);
 }
 
@@ -101,7 +101,6 @@ sub form
    my $book = $c->stash->{book};
    my $validated = $self->update_from_form( $book, 'Book' );
    $c->stash->{form}->action( $c->chained_uri_for->as_string );
-
    return if !$validated;    # This (re)displays the form, because it's the
                              # 'end' of the method, and the 'default end' action
                              # takes over, which is to render the view
@@ -115,10 +114,8 @@ sub form
 
 =item form (without Catalyst plugin)
 
-Handles displaying and validating the form without Catalyst
-Will save to the database on validation
-You must either put values into your HTML: value="[% form.fif.title %]"
-or set up FillInForm. 
+Handles displaying and validating the form without the controller/role
+methods.  Will save to the database on validation.
 
 =cut
 
@@ -154,8 +151,7 @@ sub delete : Chained('item') PathPart('delete') Args(0)
    my ( $self, $c ) = @_;
 
    # delete row in database
-   my $book = $c->stash->{book};
-   $book->delete;
+   $c->stash->{book}->delete;
    # redirect to list page
    $c->res->redirect( $c->uri_for('list') );
 }
@@ -170,9 +166,8 @@ sub view : Chained('item') PathPart('') Args(0)
 {
    my ( $self, $c, $id ) = @_;
 
-   my $book = $c->stash->{book};
    $c->stash->{template} = 'book/view.tt';
-   my $validated = $self->update_from_form( $book, 'BookView' );
+   my $validated = $self->update_from_form( $c->stash->{book}, 'BookView' );
    return if !$validated;
    # form validated
    $c->stash->{message} = 'Book checked out';
@@ -184,14 +179,16 @@ sub view : Chained('item') PathPart('') Args(0)
 
 sub do_return : Chained('item') PathPart('return') Args(0)
 {
-   my ( $self, $c, $id ) = @_;
+   my ( $self, $c ) = @_;
 
    my $book = $c->stash->{book};
    $book->borrowed(undef);
    $book->borrower(undef);
    $book->update;
 
-   $c->res->redirect( $c->uri_for( 'view', $id ) );
+   my $action = $c->controller->action('view');
+   $c->res->redirect($c->uri_for( $action, [$book->id]));
+   $c->detach;
 }
 
 =item
