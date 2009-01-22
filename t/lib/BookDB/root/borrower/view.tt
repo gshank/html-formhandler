@@ -13,8 +13,8 @@
     <tr>
       <td>[%book.title%]</td>
       <td>[%book.borrowed%]</td>
-      <td><a href="[% c.uri_for('/book/view' , book.id) %]">View</a> 
-          <a href="[% c.uri_for('/book/do_return' , book.id) %]">Return</a></td>
+      <td><a href="[% '/book/' _ book.id %]">View</a> 
+          <a href="[% '/book/' _ book.id _ '/return' %]">Return</a></td>
     </tr>
 [% END %]
 </table>

@@ -26,7 +26,7 @@ Sets a template.
 
 =cut
 
-__PACKAGE__->config( model_name => 'DB' );
+__PACKAGE__->config( model_name => 'DB', form_name_space => 'BookDB::Form' );
 
 sub add : Local
 {
@@ -49,7 +49,7 @@ sub do_form : Private
    # Set template
    $c->stash->{template} = 'borrower/form.tt';
    # Fill form Al Gore
-
+$DB::single=1;
    my $validated = $self->update_from_form( $id, 'Borrower' );
 
    # this could also be

@@ -522,11 +522,9 @@ sub validate_unique
    my $rs          = $self->resultset;
    my $found_error = 0;
 
-   my @unique = map { $_->name } grep { $_->unique } $self->fields; 
-   return 1 unless @unique;
-
-   for my $field ( map { $self->field($_) } @unique )
+   for my $field ( $self->fields )
    {
+      next unless $field->unique;
       next if $field->has_errors;
       my $value = $field->value;
       next unless defined $value;

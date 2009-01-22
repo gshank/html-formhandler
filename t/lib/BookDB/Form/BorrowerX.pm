@@ -1,4 +1,4 @@
-package BookDB::Form::Borrower;
+package BookDB::Form::BorrowerX;
 
 use Moose;
 extends 'HTML::FormHandler::Model::DBIC';
@@ -48,6 +48,7 @@ sub profile {
                 order => 3,
                 label => 'URL',
             },
+         books => 'Text',
 		},
       unique => {
          name => 'That name is already in our user directory'

@@ -13,7 +13,7 @@ BEGIN {
 
 use_ok( 'HTML::FormHandler' );
 
-use_ok( 'BookDB::Form::Borrower');
+use_ok( 'BookDB::Form::BorrowerX');
 
 use_ok( 'BookDB::Schema::DB');
 use DBIx::Class::ResultClass::HashRefInflator;
@@ -25,7 +25,7 @@ my $rs = $schema->resultset('Borrower')->find(2)->books;
 $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
 my @results = $rs->all;
 
-my $form = BookDB::Form::Borrower->new(item_id => 2, schema => $schema);
+my $form = BookDB::Form::BorrowerX->new(item_id => 2, schema => $schema);
 ok( $form, 'get borrower form');
 
 # this doesn't actually DO anything... Can't handle anywhere, but

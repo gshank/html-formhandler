@@ -20,24 +20,6 @@ MyApp::Controller::Root - Root Controller for MyApp
 
 =head1 METHODS
 
-=cut
-
-=head2 default
-
-=cut
-
-sub base : Chained('/') PathPart('') CaptureArgs(0)
-{
-   my ( $self, $c ) = @_;
-}
-
-sub def : Chained('base') PathPart('') Args
-{
-    my ( $self, $c ) = @_;
-    return $c->controller('Book')->do_list($c);
-}
-
-
 =head2 end
 
 Attempt to render a view, if needed.

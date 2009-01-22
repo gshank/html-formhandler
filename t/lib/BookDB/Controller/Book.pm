@@ -168,6 +168,7 @@ sub view : Chained('item') PathPart('') Args(0)
    $c->stash->{template} = 'book/view.tt';
    my $validated = $self->update_from_form( $c->stash->{book}, 'BookView' );
    return if !$validated;
+$DB::single=1;
    # form validated
    $c->stash->{message} = 'Book checked out';
 }
@@ -185,8 +186,7 @@ sub do_return : Chained('item') PathPart('return') Args(0)
    $book->borrower(undef);
    $book->update;
 
-   my $action = $c->controller->action('view');
-   $c->res->redirect($c->uri_for( $action, [$book->id]));
+   $c->res->redirect( '/book/' . $book->id );
    $c->detach;
 }
 
