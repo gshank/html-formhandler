@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 =head1 NAME
 
@@ -465,11 +465,6 @@ may be supplied:
 or
 
     MyForm->new( $item );
-
-If the value passed in is a reference then it is assumed to have 
-an "id" method.  So:
-
-    MyForm->new( $item_object );
 
 The common attributes to be passed in to the constructor are:
 
@@ -1028,7 +1023,7 @@ This method is called even if some fields did not validate.
 
 sub cross_validate { 1 }
 
-=head1 set_dependency
+=head2 set_dependency
 
 Process the dependency lists 
 

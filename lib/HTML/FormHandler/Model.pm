@@ -23,9 +23,6 @@ This module provides instructions on methods to override to create
 a HTML::FormHandler::Model class to work with a specific object relational
 mapping (ORM) tool.
 
-For an example see L<HTML::FormHandler::Model::CDBI> for working with
-the Class::DBI ORM.
-
 =head1 METHODS
 
 =head2 item, build_item
@@ -69,30 +66,21 @@ has 'item_id' => ( is => 'rw' );
 "item_class" sets and returns a value used by the model class to access
 the ORM class related to a form.
 
-For example, if the model class interfaces with Class::DBI and
-a form is created for updating, say, MyDB::Users then in your form
-class:
+For example:
 
-    sub item_class { 'MyDB::Users' }
+   has '+item_class' => ( default => 'User' );
 
 This gives the model class a way to access the data store.
 If this is not a fixed value (as above) then do not define the
 method in your subclass and instead set the value when the form
 is created:
 
-    my $form = MyApp::Form::Users->new;
-    $form->item_class( $my_object );
+    my $form = MyApp::Form::Users->new( item_class => $class );
 
 The value can be any scalar (or object) needed by the specific ORM
 to access the data related to the form.
 
-This method does not need to be defined in a model subclass unless
-you wish to do extra validation.
-
-The default returns the class of "item", if item is defined.  It's not as useful
-as it sounds because "item" doesn't exist when creating new records.
-
-This can also be set as a parameter to new, but will be overridden in subclasses.
+A builder for 'item_class' might be to return the class of the 'item'.
 
 =cut
 
@@ -108,14 +96,10 @@ HTML::FormHandler::Model->meta->make_immutable;
 
 Returns the guessed field type.  The field name is passed as the first argument.
 This is only required if using "Auto" type of fields in your form classes.
+You could override this in your form class, for example, if you use a field 
+naming convention that indicates the field type.
 
-The default is to die, since we can't guess.  To be useful this must be
-overridden in a form model class.  You could override this in your form class, for
-example, if you use a field naming convention that indicates the field type.
-
-HTML::FormHandler::Model::CDBI uses CDBI's meta_info() method to look at
-relationships and figure out the field type.  Other form model classes might
-look at the database for this information, for example.
+The metadata info about the columns can be used to assign types.
 
 =cut
 
@@ -126,8 +110,8 @@ sub guess_field_type
 
 =head2 lookup_options
 
-This method is called to find possible options for a given field
-from the database.  The default method returns undef.
+Retrieve possible options for a given select field from the database.  
+The default method returns undef.
 
 Returns an array reference of key/value pairs for the column passed in.
 These values are used for the values and labels for field types that
@@ -143,11 +127,6 @@ options are looked up:
 
 The default for label_column is "name".
 
-HTML::FormHandler::Model::CDBI, for example, uses meta_info() to look at related
-classes and returns a list of options sorted by the label column which by
-default is "name".
-
-
 =cut
 
 sub lookup_options { return }
@@ -155,14 +134,6 @@ sub lookup_options { return }
 =head2 init_value
 
 This method populates a form field's value from the item object.
-This is typically done by calling the field's name as an method
-on the object.
-
-The default method basically does:
-
-    my $name = $field->name;
-    return $item->can( $name ) ? $item->$name : undef
-        if blessed( $item );
 
 =cut
 
@@ -183,24 +154,15 @@ sub init_value
 Update or create the object.
 
 This needs to be overridden in the model subclass or in your
-form subclass.
+form subclass. It should update $form->item, if set, otherwise 
+create a new item.
 
-It should update $form->item, if set, otherwise create a new item.
-
-The update/create should be done inside a transaction if do_transaction is
-available.
-
-Any field names that are related to the class by "has_many" and have a mapping
-table should also be updated.
+Any field names that are related to the class by "has_many" and 
+have a mapping table should also be updated.
 
 Validation must also be run unless validation has already been run.
 ($form->clear might need to be called if the $form object stays in memory
 between requests.)
-
-See HTML::FormHandler::Model::CDBI for an example.
-
-
-The default method dies.
 
 =cut
 

@@ -75,6 +75,7 @@ to connect your controllers to your form class.
 First, change your C<lib/MyApp/Controller/Books.pm> to use the
 the FormHandler role by adding:
 
+    use Moose ('with'); # if you're not already using Moose
     with 'Catalyst::Controller::Role::HTML::FormHandler';
 
 Add the database model name to the controller config (you could also specify
@@ -243,7 +244,7 @@ If you want all your forms to have a submit button definition, you can put this
 in a base Form class. Or create a Moose::Role and group a number of similar
 functions together.
 
-If you want an new attribute in your fields, it's very easy to add it to your 
+If you want a new attribute in your fields, it's very easy to add it to your 
 custom Field classes.
 
    package MyApp::Form::Field::Extra;
@@ -257,7 +258,7 @@ custom Field classes.
 Now if your Field classes inherit from this, you can have a 'my_attribute' 
 attribute for all your fields. Or use a Moose role instead of inheritance. 
 
-=head1 C<HTML::FormHandler> Validation 
+=head1 L<HTML::FormHandler> Validation 
 
 Now we'll add more validation to ensure that users
 are entering correct data. 

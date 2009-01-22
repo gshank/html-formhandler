@@ -12,8 +12,9 @@ requires 'Moose'              => '0.59';
 requires 'MooseX::AttributeHelpers' => '0.14';
 requires 'UNIVERSAL::require' => '0';
 requires 'Locale::Maketext'   => '1.09';
+requires 'DateTime';
+requires 'DBIx::Class';
 
-recommends 'DBIx::Class';
 recommends 'Catalyst';
 recommends 'Catalyst::Component::InstancePerContext';
 recommends 'Template';

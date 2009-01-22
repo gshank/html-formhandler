@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::FormHandler 
 
+0.07 Thurs Jan 22 2009, 04:00
+    Add prereq of DateTime. Minor doc changes.
+
 0.06 Wed Jan 21 2009, 04:00
     Add prereq skip tests to controller test. Clean up Makefile.PL.
     Convert test controller Book.pm to use chained. Support empty

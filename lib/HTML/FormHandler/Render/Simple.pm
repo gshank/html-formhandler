@@ -20,6 +20,7 @@ The idea is to produce your own custom rendering roles...
 In your Form class:
 
    package MyApp::Form::Silly;
+   use Moose;
    extends 'HTML::FormHandler::Model::DBIC';
    with 'HTML::FormHandler::Render::Simple';
 

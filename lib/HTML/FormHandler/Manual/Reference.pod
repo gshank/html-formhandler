@@ -66,7 +66,7 @@ These attributes are usually accessed in a subroutine or in a template.
    input_to_value    To process the field before storing, after validation
    Add your own field attributes in your custom Field classes.
 
-=head3 Miscellaneous field subroutines
+=head2 Miscellaneous field subroutines
  
    set_order      Sets the field's order to the value of the form's field_counter
    has_input      Checks 'input' attribute

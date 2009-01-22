@@ -35,23 +35,15 @@ In a Catalyst controller:
    }
 
    sub form : Private {
-       my ( $self, $c, $id ) = @_;
+      my ( $self, $c, $id ) = @_;
 
-      # Name template, or allow default 'book/add.tt'
       $self->ctx->stash->{template} = 'book/form.tt';
-
-      # Name form, or use default 'Book::Add'
-      my $validated = $self->update_from_form( $id, 'Book' ); 
-      return if !$validated; # This (re)displays the form, because it's the
-                             # 'end' of the method, and the 'default end' action
-                             # takes over, which is to render the view
-      # or simpler syntax: return unless $self->update_from_form( $id, 'Book');
-
-      # get the new book that was just created by the form
-      my $new_book = $c->stash->{form}->item;
-
+      return unless $self->update_from_form( $id, 'Book' ); 
       $c->res->redirect($c->uri_for('list'));
    }
+
+(See L<Catalyst::Controller::Role::HTML::FormHandler> for an example
+using chained.)
 
 Or configure model_name and form_name_space for the entire app:
 
@@ -94,6 +86,11 @@ L<Form::Processor::Model::DBIC>.
 Set the name space to look for forms. Otherwise, forms will
 be found in a "Form" directory parallel to the controller directory.
 Override with "+" and complete package name. 
+
+=item fif
+
+Set C<< $c->stash->{fillinform} >> to the C<< $form->fif >> parameter
+hash to make the 'end' routine call FillInForm.
 
 =head1 METHODS
 
@@ -218,7 +215,7 @@ sub end : Private
    my ( $self, $ctx ) = ( shift, shift );
 
    $ctx->forward('render') unless $ctx->res->output;
-   if ($self->fif)
+   if ($ctx->stash->{fillinform})
    {
       if ( HTML::FillInForm->require )
       {

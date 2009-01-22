@@ -85,8 +85,8 @@ by overriding 'validate_field'.
 
 =head2 name
 
-Field name. This name must be the same as the database column/accessor
-name or relationship.
+Field name. If this is a database form, this name is usually a database 
+column/accessor name or relationship.
 
 =cut
 
@@ -104,7 +104,8 @@ has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
 
 =head2 init_value
 
-Initial value populated by init_from_object - used to look for changes.
+Initial value populated by init_from_object. You can tell if a field
+has changed by comparint 'init_value' and 'value'.
 Not to be confused with the form method init_value(). Not set by user.
 
 =cut
@@ -113,11 +114,11 @@ has 'init_value' => ( is => 'rw' );
 
 =head2 value
 
-Internal value -- same as init_value at start.  
-Sets or returns the internal value of the field.
-A change in this attribute triggers setting the 'fif' attribute.
+The initial value of the field from the database (or init_object), and 
+the changed value after form validation. A change in this attribute 
+triggers setting the 'fif' attribute.
 
-The "validate" field method must set this value if the field validates.
+The "validate" field method usually sets this value if the field validates.
 
 =cut
 
@@ -132,8 +133,9 @@ has 'value' => (
 
 =head2 input
 
-Input value from parameter. A change in this attribute triggers setting
-'fif'
+Input value for the field, usually from a parameter hash, but could
+also be set with an accessor. Validation is performed on the 'input'
+attributes. A change in this attribute triggers setting 'fif'.
 
 =cut
 
@@ -170,7 +172,7 @@ has 'temp' => ( is => 'rw' );
 
 =head2 label
 
-Text label for this field. Useful in templates. Defaults to field name.
+Text label for this field. Useful in templates. Defaults to ucfirst field name.
 
 =cut
 
@@ -316,7 +318,7 @@ has 'required_message' => ( isa => 'Str', is => 'rw', default => 'This field is 
 
 =head2 unique
 
-Sets or returns the unique flag on the field
+Flag to initiate checks in the database model for uniqueness.
 
 =cut
 
@@ -846,7 +848,6 @@ A Date field subclass might expand the value into:
         $name . 'm' => $month,
         $name . 'y' => $year,
     );
-
 
 =cut
 

@@ -23,34 +23,38 @@ In a Catalyst controller:
 
    package MyApp::Controller::Book;
 
-   use base 'Catalyst::Controller';
+   use Moose ('with');
+   use base ('Catalyst::Controller', 'Moose::Object');
    with 'Catalyst::Controller::Role::HTML::FormHandler';
 
    __PACKAGE__->config( model_name => 'DB', form_name_space => 'MyApp::Form');
 
-   sub edit : Local {
+
+   sub book_base : Chained PathPart('book') CaptureArgs(0)
+   {
       my ( $self, $c ) = @_;
-      $c->forward('do_form');
+      # setup
    }
+   sub item : Chained('book_base') PathPart('') CaptureArgs(1)
+   {
+      my ( $self, $c, $book_id ) = @_;
+      $c->stash->{book} = $c->model('DB::Book')->find($book_id);
+   }
+   sub edit : Chained('item') PathPart('edit') Args(0)
+   {
+      my ( $self, $c ) = @_;
+      return $self->form($c);
+   }
+   sub form
+   {
+      my ( $self, $c ) = @_;
 
-   sub form : Private {
-       my ( $self, $c, $id ) = @_;
-
-      # Name template, or allow default 'book/add.tt'
       $self->ctx->stash->{template} = 'book/form.tt';
-
-      # Name form, or use default 'Book::Add'
-      my $validated = $self->update_from_form( $id, 'Book' ); 
-      return if !$validated; # This (re)displays the form, because it's the
-                             # 'end' of the method, and the 'default end' action
-                             # takes over, which is to render the view
-      # or simpler syntax: return unless $self->update_from_form( $id, 'Book');
-
-      # get the new book that was just created by the form
-      my $new_book = $c->stash->{form}->item;
-
-      $c->res->redirect($c->uri_for('list'));
+      return unless $self->update_from_form( $c->stash->{book}, 'Book' );
+      $c->res->redirect( $c->uri_for('list') );
    }
+
+(See L<Catalyst::Controller::HTML::FormHandler> for non-chained example.)
 
 Or configure model_name and form_name_space for the entire app:
 
@@ -58,6 +62,10 @@ Or configure model_name and form_name_space for the entire app:
           { model_name => 'DB', form_name_space => 'MyApp::Form' }} );
 
 (Note that the config key does not use "Role".)
+
+If you set the 'fif' attribute, the C<< $form->fif >> hash will
+be stored in C<< $c->stash->{fillinform} >> for you to pass to
+L<HTML::FillInForm>
 
 =cut
 
@@ -102,6 +110,11 @@ L<HTML::FormHandler::Model::DBIC> to set the schema.
 Set the name space to look for forms. Otherwise, forms will
 be found in a "Form" directory parallel to the controller directory.
 Override with "+" and complete package name. 
+
+=item fif
+
+Set C<< $c->stash->{fillinform} >> to the C<< $form->fif >> parameter
+hash so you can use it to call FillInForm. 
 
 =head1 METHODS
 
@@ -210,8 +223,6 @@ sub form_posted
    my ($self) = @_;
    return $self->ctx->req->method eq 'POST';
 }
-
-
 
 =head1 AUTHOR
 

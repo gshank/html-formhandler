@@ -36,7 +36,7 @@ sub book_base : Chained PathPart('book') CaptureArgs(0)
    my ( $self, $c ) = @_;
 }
 
-sub default : Chained('book_base') ParthPart('') Args
+sub default : Chained('book_base') PathPart('') Args
 {
    my ( $self, $c ) = @_;
    return $self->do_list($c);
@@ -72,7 +72,6 @@ sub create : Chained('book_base') PathPart('create') Args(0)
 sub item : Chained('book_base') PathPart('') CaptureArgs(1)
 {
    my ( $self, $c, $book_id ) = @_;
-
   $c->stash->{book} = $c->model('DB::Book')->find($book_id);
 }
 
