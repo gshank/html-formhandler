@@ -460,11 +460,12 @@ sub init_value
 {
    my ( $self, $field, $item ) = @_;
 
+   return unless $item;
+   return if $field->writeonly;
    my $name = $field->name;
    my $prefix = $self->name_prefix;
    $name =~ s/$prefix\.//g if $prefix;
    $item ||= $self->item;
-   return unless $item;
    return $item->{$name} if ref($item) eq 'HASH';
    return unless $item->isa('DBIx::Class') && $item->can($name);
    return unless defined $item->$name;
@@ -498,7 +499,7 @@ sub init_value
    }
    elsif ( $field->can('multiple' ) && $field->multiple == 1 )
    {
-      return unless $item->id;
+      return unless $item->id; 
       my @rows = $item->$name->all;
       my @values = map { $_->id } @rows;
       return @values;
@@ -507,6 +508,7 @@ sub init_value
    {
       return $item->$name;
    }
+   return;
 }
 
 =head2 validate_unique

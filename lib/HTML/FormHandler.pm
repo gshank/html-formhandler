@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 NAME
 

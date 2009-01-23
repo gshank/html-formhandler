@@ -10,12 +10,46 @@ In progress...
 
 =head1 Using templates
 
+There are lots of different ways to set up templates. One way is to
+create a 'widget' directory, and store template snippets there.
+
+You can use the default 'widget' for the field class, or set the 'widget' 
+for the field in your form:
+
+   fields => [
+      my_special_field => {
+         type => 'Text',
+         widget => 'my_special_widget',
+      },
+      my_second_field => {
+         type => 'Text',
+         widget => 'yet_another_widget',
+      },
+   ]
+
+And include them in a generic template:
+
+   [% PROCESS widget/form_start.tt %]
+
+   [% FOREACH f in form.sorted_fields %]
+      [% PROCESS widget/${f.widget}.tt %]
+   [% END %]
+
+   [% PROCESS widget/form_end.tt %]
+
 =head1 Sample templates
 
-=head2 Text input field
+=head2 Text input field with error class on div & error messages
 
+   <div class="[% f.css_class %] [% IF f.has_errors %]error_fld[% END %]">
+   [% IF f.has_errors %]
+     [% FOR error IN f.errors %]
+       <p><span class="error" id="error">[% error %] </span></p>
+     [% END %]
+   [% END %]
    <label class="label" for="[% f.name %]">[% f.label %]</label>
    <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
+   </div>
 
 =head2 Select field
 

@@ -22,11 +22,11 @@ Builds on the Catalyst tutorial. Step-by-step guide.
 
 =head2 L<HTML::FormHandler::Manual::Cookbook>
 
-Will contain 'howto' recipes...
+'Howto' recipes...
 
 =head2 L<HTML::FormHandler::Manual::Templates>
 
-Will contain cut-and-paste examples of templates to use with FormHandler
+Cut-and-paste examples of templates to use with FormHandler
 
 =cut
 

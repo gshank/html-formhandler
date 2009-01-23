@@ -229,6 +229,7 @@ sub init_value {
 
     $item ||= $self->item;
 
+    return if $field->writeonly;
     return $item->{$column} if ref($item) eq 'HASH';
     # Use "can" instead of "find_column" because could be a related column
     return unless $item && $item->isa('Class::DBI') && $item->can($column);

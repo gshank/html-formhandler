@@ -4,7 +4,130 @@ HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
 
 =head1 SYNOPSIS
 
-Placeholder for a collection of use recipes for L<HTML::FormHandler>
+Collection of use recipes for L<HTML::FormHandler>
+
+=head1 Select lists
+
+If you want to set the initial value of a select field to 0 (or some other
+default):
+
+   sub init_value_license {
+      my ( $self, $field, $item ) = @_;
+      return 0 unless $item && $item->license_id; 
+      return $item->license_id;
+   }
+
+If the table defining the choices for a select list doesn't include
+a 'no choice' choice, in your template:
+
+   [% f = form.field('subject_class') %]
+   <select id="select_sc" name="[% f.name %]">
+     <option value="">--- Choose Subject Class---</option>
+     [% FOR option IN f.options %]
+       <option value="[% option.value %]" 
+          [% IF option.value == f.fif %]selected="selected"[% END %]>
+          [% option.label | html %]</option>
+     [% END %] 
+   </select>
+
+Customize the select list in an 'options_' method:
+
+   sub options_country
+   {
+      my $self = shift; 
+      my @rows =
+         $self->schema->resultset( 'Country' )->
+            search( {}, { order_by => ['rank', 'country_name'] } )->all;
+      return [ map { $_->digraph, $_->country_name } @rows ];
+   }
+
+=head1 The database and FormHandler forms 
+
+If you have to process the input data before saving to the database, and
+this is something that would be useful in other places besides your form,
+you should do that processing in the DBIx::Class result class.
+
+If the pre-processing is only relevant to HTML form input, you might want
+to do it in the form.
+
+     fields => {
+        'my_complex_field' => {
+            type => 'Text',
+            noupdate => 1,
+         }
+      }
+
+The 'noupdate' flag is only used if an accessor actually exists in the
+result class, because in that case FormHandler will attempt to use the accessor
+to do an update. With a non-updatable field, you can process the input for the 
+field in a number of different places, depending on what is most logical. 
+Some of the choices are: 
+
+   1) cross_validate
+   2) validate_model
+   3) model_update
+
+The field 'clear' flag will cause that column in the database to be set to
+null. This flag could be set in a validation routine.
+
+When the field is flagged 'writeonly', the value from the database will not
+be used to fill in the form (put in the C<< $form->fif >> hash, or the
+field C<< $field->fif >>), but a value entered in the form WILL be used
+to update the database.
+
+=head1 Set up form base classes or roles for your application
+
+You can add whatever attributes you want to your form classes. Maybe you
+want to save a title, or a particular navigation widget. You could even
+save bits of text, or retrieve them from the database. Sometimes doing it
+this way would be the wrong way. But it's your form, your choice. In the
+right circumstances, it might provide a way to keep code out of your
+templates and simplify your controllers.
+
+   package MyApp::Form::Base;
+   use Moose;
+   extends 'HTML::FormHandler::Model::DBIC';
+
+   has 'title' => ( isa => 'Str', is => 'rw' );
+   has 'nav_bar' => ( isa => 'Str', is => 'rw' );
+
+   sub summary
+   {
+      my $self = shift;
+      my $schema = $self->schema;
+      my $text = $schema->resultset('Summary')->find( ... )->text;
+      return $text;
+   }
+   1;
+
+Then:
+
+   package MyApp::Form::Whatsup;
+   use Moose;
+   extends 'MyApp::Form::Base';
+
+   has 'title' => ( default => 'This page is an example of what to expect...' );
+   has '+profile' => ( default => .... );
+   1;
+
+And in the template:
+
+   <h1>[% form.title %]</h1>
+   [% form.nav_bar %]
+   <p><b>Summary: </b>[% form.summary %]</p>
+
+
+Or you can make these customizations Moose roles.
+
+   package MyApp::Form::Role::Base;
+   use Moose::Role;
+   ...
+
+   package MyApp::Form::Whatsup;
+   use Moose;
+   with 'MyApp::Form::Role::Base';
+   ...
+   
 
 =head1 AUTHOR
 

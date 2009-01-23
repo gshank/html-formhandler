@@ -6,6 +6,7 @@ with 'Catalyst::Component::InstancePerContext';
 
 use Carp;
 use UNIVERSAL::require;
+use Scalar::Util ('blessed');
 
 __PACKAGE__->mk_accessors('form_name_space', 'model_name', 'ctx', 'fif');
 

@@ -1,6 +1,7 @@
 package HTML::FormHandler::Render::Simple;
 
 use Moose::Role;
+use HTML::Entities;
 
 requires ('sorted_fields', 'field');
 

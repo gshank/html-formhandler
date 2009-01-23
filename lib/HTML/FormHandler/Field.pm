@@ -105,7 +105,7 @@ has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
 =head2 init_value
 
 Initial value populated by init_from_object. You can tell if a field
-has changed by comparint 'init_value' and 'value'.
+has changed by comparing 'init_value' and 'value'.
 Not to be confused with the form method init_value(). Not set by user.
 
 =cut
@@ -126,7 +126,7 @@ has 'value' => (
    is      => 'rw',
    trigger => sub {
       my ( $self, $value ) = @_;
-      $self->fif($self->fif_value($value)) unless $self->writeonly;
+      $self->fif($self->fif_value($value));
       return $value;
    }
 );
@@ -424,10 +424,9 @@ has 'password' => ( isa => 'Bool', is => 'rw', default => 0 );
 
 Fields flagged 'writeonly' are not returned in the 'fif' methods from the
 field's initial value, even if a value for the field exists in the item.
+The value is not read from the database.
 However, the value entered into the form WILL be returned. This might
 be used for columns that should only be written to the database on updates.
-
-'fif_value' is not called for this field
 
 =cut
 
