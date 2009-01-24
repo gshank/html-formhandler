@@ -12,8 +12,6 @@ BookDB->config( name => 'BookDB' );
 BookDB->setup;
 
 
-
-
 =head1 NAME
 
 BookDB - Catalyst based application

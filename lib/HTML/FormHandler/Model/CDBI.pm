@@ -39,6 +39,9 @@ HTML::FormHandler::Model::CDBI - Class::DBI model class for HTML::FormHandler
 
 A Class::DBI database model for HTML::FormHandler
 
+I don't use CDBI, so this module is not well tested. Patches
+and tests gratefully accepted.
+
 
 =head1 METHODS
 
@@ -240,31 +243,6 @@ sub init_value {
         map { ref $_ && $_->isa('Class::DBI') ? $_->id : $_ } $item->$column;
 
     return @values;
-}
-
-=head2 update_from_form
-
-    my $ok = $form->update_from_form( $parameter_hash );
-
-Update or create the object from values in the form.
-
-The actual update is done in the C<update_model> method.  
-Pass in hash reference of parameters.
-Returns false if form does not validate.  
-
-=cut
-
-sub update_from_form {
-    my ( $self, $params ) = @_;
-
-    return unless $self->validate($params);
-    if ( $self->item_class->can('do_transaction') ) {
-        $self->item_class->do_transaction( sub { $self->update_model } );
-    }
-    else {
-        $self->update_model;
-    }
-    return 1;
 }
 
 =head2 model_validate

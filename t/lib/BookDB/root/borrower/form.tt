@@ -7,7 +7,7 @@
   [% END %]
 [% END %]
 
-<form action="[% c.uri_for('add', form.item_id) %]" method="post">
+<form action="[% action %]" method="post">
     [% FOREACH f IN form.sorted_fields %] 
         <p>
         <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>

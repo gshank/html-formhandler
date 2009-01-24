@@ -86,6 +86,6 @@ my $params = {
    extra => 'extra_test'
 };
 
-$form3->update_from_form( $params );
+$form3->update( params => $params );
 is( $book3->author, 'S.Else', 'row object updated');
 is( $form3->value('extra'), 'extra_test', 'value of non-db field');

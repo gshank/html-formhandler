@@ -34,31 +34,35 @@ One of its goals is to keep the controller interface as simple as possible,
 and to minimize the duplication of code. 
 
 An example of a Catalyst controller that uses an HTML::FormHandler form
-to update or create a 'Book' record (this example does not use 
-L<Catalyst::Controller::Role::HTML::FormHandler>):
+to update a 'Book' record:
 
-    package MyApp::Controller::Book;
+   package MyApp::Controller::Book;
+   use Moose;
+   use base 'Catalyst::Controller';
+   use MyApp::Form::Book;
+   has 'edit_form' => ( isa => 'MyApp::Form::Book', is => 'rw',
+       default => sub { MyApp::Form::Book->new } );
 
-    use Moose;
-    use MyApp::Form::Book;
+   sub book_base : Chained PathPart('book') CaptureArgs(0)
+   {
+      my ( $self, $c ) = @_;
+      # setup
+   }
+   sub item : Chained('book_base') PathPart('') CaptureArgs(1)
+   {
+      my ( $self, $c, $book_id ) = @_;
+      $c->stash( book => $c->model('DB::Book')->find($book_id) );
+   }
+   sub edit : Chained('item') PathPart('edit') Args(0)
+   {
+      my ( $self, $c ) = @_;
 
-    sub edit : Local {
-        my ( $self, $c, $id ) = @_;
+      $c->stash( form => $self->edit_form, template => 'book/form.tt' );
+      return unless $self->edit_form->process( item => $c->stash->{book},
+         params => $c->req->parameters );
+      $c->res->redirect( $c->uri_for('list') );
+   }
 
-        # Create the form object
-        my $form = MyApplication::Form::Book->new( $id );
-        $c->stash->{form} = $form;
-
-        # Update or create the record if form posted
-        $form->update_from_form( $c->req->parameters  ) 
-                if $c->req->method eq 'POST';
-        # the return will cause the "end" action to use the default
-        # view to display the form
-        return unless $c->req->method eq 'POST' && $form->validated;
-
-        # form validated, so continue on to some other action
-        $c->res->redirect( $c->uri_for('view', $form->item->id) );
-    }
 
 An example of a form class:
 
@@ -67,7 +71,7 @@ An example of a form class:
     use Moose;
     extends 'HTML::FormHandler::Model::DBIC';
 
-    has '+item_class' => ( default => 'Book' );
+    has '+item_class' => ( default => 'User' );
 
     sub profile {
         return {
@@ -297,6 +301,14 @@ Place to store user data
 
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 
+=head2 ctx
+
+Place to store application context
+
+=cut
+
+has 'ctx' => ( is => 'rw' );
+
 =head2 language_handle, build_language_handle
 
 Holds a Local::Maketext language handle
@@ -368,7 +380,7 @@ has 'submit' => ( is => 'rw' );
 =head2 params
 
 Stores HTTP parameters. 
-Also: set_param, get_param, reset_params, delete_param, from
+Also: set_param, get_param, _params, delete_param, from
 Moose 'Collection::Hash' metaclass.
 
 =cut
@@ -383,8 +395,9 @@ has 'params' => (
    provides   => {
       set    => 'set_param',
       get    => 'get_param',
-      clear  => 'reset_params',
+      clear  => 'clear_params',
       delete => 'delete_param',
+      empty  => 'has_params',
    },
 );
 
@@ -461,11 +474,10 @@ Or a single item (model row object) or item_id (row primary key)
 may be supplied:
 
     MyForm->new( $id );
-
-or
-
     MyForm->new( $item );
 
+If you will be processing a persistent form with 'process', no arguments
+are necessary.
 The common attributes to be passed in to the constructor are:
 
    item_id
@@ -494,6 +506,10 @@ The 'item', 'item_id', and 'item_class' attributes are defined
 in L<HTML::FormHandler::Model>, and 'schema' is defined in
 L<HTML::FormHandler::Model::DBIC>.
 
+FormHandler forms are handled in two steps: 1) create with 'new',
+2) handle with 'process' or 'update'. FormHandler doesn't
+care whether most parameters are set on new or process or update,
+but a 'profile' argument should be passed in on 'new'.
 
 =head2 BUILD, BUILDARGS
 
@@ -535,21 +551,110 @@ sub BUILD
    return;
 }
 
+=head2 process
+
+For persistent FormHandler instances, processes a form
+
+   my $validated = $form->process( item => $book, 
+       params => $c->req->parameters );
+
+or:
+
+   my $validated = $form->process( item_id => $item_id,
+       schema => $schema, params => $c->req->parameters );
+
+Calls 'clear_all' to clear previous values, calls 'update' to process the form.
+If you set attributes that are not cleared and you have a persistent form,
+you must either set that attribute on each request or clear it.
+
+=cut 
+
+sub process
+{
+   my ( $self, @args ) = @_;
+   $self->clear;
+   return $self->update(@args);
+}
+
 =head2 clear
 
-Clears out state information on the form.  Normally only used in
-tests.
+Calls clear_state, clear_model (in the model), and clears 'ctx'
 
 =cut
 
 sub clear
+{ 
+   my $self = shift;
+   $self->clear_state;
+   $self->clear_model;
+   $self->ctx(undef) if $self->ctx;
+}
+
+=head2 update
+
+Pass in item or item_id/schema and parameters. 
+
+    my $form = MyApp::Form::Book->new;
+    <later>
+    $form->clear;
+    $form->update( item => $item );
+
+=cut
+
+sub update
+{
+   my ( $self, @args ) = @_;
+   my $hashref = {@args};
+   while ( my ($key, $value) = each %{$hashref} )
+   {
+      $self->$key($value);
+   } 
+   $self->init_from_object;
+   $self->load_options;
+   my $validated = $self->validate if $self->has_params;
+   $self->update_model if $validated;
+   return $validated;
+}
+
+=head2 clear_state
+
+Clears out state information in the form.  
+
+   validated
+   ran_validation
+   num_errors
+   updated_or_created
+   fields: value, input, fif, errors   
+   params
+
+=cut
+
+sub clear_state
 {
    my $self = shift;
    $self->validated(0);
    $self->ran_validation(0);
    $self->num_errors(0);
-   $self->clear_values;
+   $self->clear_values; 
+   $self->clear_params;
    $self->updated_or_created(undef);
+}
+
+=head2 clear_values
+
+Clears field value, input, errors. Form params. 
+
+=cut
+
+sub clear_values
+{
+   my $self = shift;
+   for ( $self->fields )
+   {
+      $_->value(undef);
+      $_->input(undef);
+      $_->clear_errors;
+   }
 }
 
 =head2 build_form
@@ -781,23 +886,6 @@ sub init_from_object
    }
 }
 
-=head2 clear_values
-
-Clears the internal and external values of the form
-
-=cut
-
-sub clear_values
-{
-   my $self = shift;
-
-   for ( $self->fields )
-   {
-      $_->value(undef);
-      $_->input(undef);
-   }
-   $self->reset_params;
-}
 
 =head2 fif -- "fill in form"
 
@@ -902,7 +990,7 @@ object stays in memory between requests), returns the cached validated result.
 is true.  To force a re-validation call $form->clear.  
 
 Params may be passed in to validate, or else may be set earlier
-by passing into 'update_from_form' in the model, or using the params setter.
+on new, or by using the params setter.
 
 The method does the following:
  
@@ -955,7 +1043,7 @@ sub validate
 
    $self->cross_validate($params);
    # model specific validation 
-   $self->model_validate;
+   $self->validate_model;
    $self->clear_dependency;
 
    # count errors 

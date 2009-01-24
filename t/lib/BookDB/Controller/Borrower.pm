@@ -2,154 +2,95 @@ package BookDB::Controller::Borrower;
 
 use Moose;
 use base 'Catalyst::Controller';
-with 'Catalyst::Controller::Role::HTML::FormHandler';
+use BookDB::Form::Borrower;
+has 'my_form' => ( isa => 'BookDB::Form::Borrower', is => 'rw',
+   default => sub { BookDB::Form::Borrower->new } );
 
 =head1 NAME
 
 BookDB::Controller::Borrower
 
-=head1 SYNOPSIS
-
-See L<BookDB>
-
 =head1 DESCRIPTION
 
 Controller for Borrower 
 
-=head1 METHODS
-
-=over 4
-
-=item add
-
-Sets a template.
-
 =cut
 
-__PACKAGE__->config( model_name => 'DB', form_name_space => 'BookDB::Form' );
 
-sub add : Local
+sub borrower_base : Chained PathPart('borrower') CaptureArgs(0)
+{
+   my ( $self, $c ) = @_;
+}
+
+sub default : Chained('borrower_base') PathPart('') Args
+{
+   my ( $self, $c ) = @_;
+   return $self->do_list($c);
+}
+
+sub list : Chained('borrower_base') PathPart('list') Args(0)
+{
+   my ( $self, $c ) = @_;
+   return $self->do_list($c);
+}
+
+sub do_list
 {
    my ( $self, $c ) = @_;
 
-   $c->forward('do_form');
-}
-
-=item form
-
-Handles displaying and validating the form
-Will save to the database on validation
-
-=cut
-
-sub do_form : Private
-{
-   my ( $self, $c, $id ) = @_;
-
-   # Set template
-   $c->stash->{template} = 'borrower/form.tt';
-   # Fill form Al Gore
-$DB::single=1;
-   my $validated = $self->update_from_form( $id, 'Borrower' );
-
-   # this could also be
-   # return unless $c->update_from_form( $id, 'Borrower');
-   # but that makes it difficult to look at with the debugger.
-   return if !$validated;    # This (re)displays the form, because it's the
-                             # 'end' of the method, and the 'default end' action
-                             # takes over, which is to render the view
-
-   # get the new borrower that was just created by the form
-   my $new_borrower = $c->stash->{form}->item;
-   $c->res->redirect( $c->uri_for('list') );
-}
-
-=item default
-
-Forwards to list.
-
-=cut
-
-sub default : Private
-{
-   my ( $self, $c ) = @_;
-   $c->res->redirect( $c->uri_for('list') );
-}
-
-=item destroy
-
-Destroys a row and forwards to list.
-
-=cut
-
-sub destroy : Local
-{
-   my ( $self, $c, $id ) = @_;
-   $c->model('DB::Borrower')->find($id)->delete;
-   $c->stash->{message} = 'Borrower deleted';
-   $c->res->redirect( $c->uri_for('list') );
-}
-
-=item do_add
-
-Adds a new row to the table and forwards to list.
-
-=cut
-
-=item edit
-
-Sets a template.
-
-=cut
-
-sub edit : Local
-{
-   my ( $self, $c, $id ) = @_;
-
-   $c->forward('do_form');
-}
-
-=item list
-
-Sets a template.
-
-=cut
-
-sub list : Local
-{
-   my ( $self, $c ) = @_;
-
-   # get an array of row objects
    my $borrowers = [ $c->model('DB::Borrower')->all ];
    my @columns = ( 'name', 'email' );
-
-   $c->stash->{borrowers} = $borrowers;
-   $c->stash->{columns}   = \@columns;
-   $c->stash->{template}  = 'borrower/list.tt';
+   $c->stash( borrowers => $borrowers, columns => \@columns,
+              template => 'borrower/list.tt' );
 }
 
-=item view
+sub add : Chained('borrower_base') PathPart('add') Args(0)
+{
+   my ( $self, $c ) = @_;
+   # Create the empty borrower row for the form
+   $c->stash( borrower => $c->model('DB::Borrower')->new_result({}) );
+   return $self->form($c);
+}
 
-Fetches a row and sets a template.
+sub item : Chained('borrower_base') PathPart('') CaptureArgs(1)
+{
+   my ( $self, $c, $borrower_id ) = @_;
+   $c->stash( borrower => $c->model('DB::Borrower')->find($borrower_id) );
+}
 
-=cut
+sub edit : Chained('item') PathPart('edit') Args(0)
+{
+   my ( $self, $c ) = @_;
+   return $self->form($c);
+}
 
-sub view : Local
+sub form
+{
+   my ( $self, $c ) = @_;
+
+   $c->stash( form => $self->my_form, template => 'borrower/form.tt',
+      action => $c->chained_uri_for->as_string );
+   return unless $self->my_form->process( item => $c->stash->{borrower},
+      params => $c->req->parameters );
+   $c->res->redirect( $c->uri_for('list') );
+}
+
+sub delete : Chained('item') PathPart('delete') Args(0)
+{
+   my ( $self, $c ) = @_;
+
+   $c->stash->{borrower}->delete;
+   $c->res->redirect( $c->uri_for('list') );
+}
+
+sub view : Chained('item') PathPart('') Args(0)
 {
    my ( $self, $c, $id ) = @_;
 
-   # get row object for this borrower id
-   my $borrower = $c->model('DB::Borrower')->find($id);
-   # list of columns in order for form
    my @columns = ( 'name', 'email', 'phone', 'url' );
-
-   my $rel = $c->model('DB')->source('Borrower')->relationship_info('books');
-   $c->stash->{columns}  = \@columns;
-   $c->stash->{borrower} = $borrower;
-   $c->stash->{template} = 'borrower/view.tt';
+   $c->stash( columns => \@columns, template => 'borrower/view.tt' );
 }
 
-=back
 
 =head1 AUTHOR
 

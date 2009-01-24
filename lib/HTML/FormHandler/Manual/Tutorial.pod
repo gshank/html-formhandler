@@ -49,7 +49,7 @@ create the file Book.pm.
 
 This is your Form class. The form initializes the 'item_class' to the
 source name of your DBIx::Class result class. The form's fields are defined
-in the 'profile' attribute. The names of the fields must match an
+in the 'profile' attribute. The names of the fields should match an
 accessor in your DBIx::Class result source: a column, relationship, or
 other accessor.
 
@@ -69,19 +69,16 @@ this simple form the default types are adequate.
 
 =head2 Connect HTML::FormHandler to your controller 
 
-Use L<Catalyst::Controller::Role::HTML::FormHandler>
-to connect your controllers to your form class. 
+Your controller must use Moose:
 
-First, change your C<lib/MyApp/Controller/Books.pm> to use the
-the FormHandler role by adding:
+    use Moose;
+    use base 'Catalyst::Controller';
 
-    use Moose ('with'); # if you're not already using Moose
-    with 'Catalyst::Controller::Role::HTML::FormHandler';
+Create an attribute to hold your form:
 
-Add the database model name to the controller config (you could also specify
-it in the update_from_form call):
+   has 'form' => ( isa => 'MyApp::Form::Book', is => 'rw',
+       default => sub { MyApp::Form::Book->new } );
 
-    __PACKAGE__->config( model_name => 'DB' );
 
 =head2 Add Action to Display and Save the Form
 
@@ -90,10 +87,11 @@ In C<lib/MyApp/Controller/Books.pm> add the following method:
     sub edit : Local {
         my ( $self, $c, $book_id ) = @_;
 
-        $c->stash->{template} = 'books/edit.tt2'; 
+        $c->stash( template => 'books/edit.tt2' ); 
 
-        # Validate and insert/update database. Args = pk, form name
-        return unless $self->update_from_form( $book_id, 'Book' );
+        # Validate and insert/update database 
+        return unless $self->form->process( item_id => $book_id,
+           schema => $c->model('DB::Books')->schema ); 
 
         # Form validated, return to the books list
         $c->flash->{status_msg} = 'Book saved';
@@ -102,8 +100,9 @@ In C<lib/MyApp/Controller/Books.pm> add the following method:
 
 This will handle both creating new books, and updating old books.
 If $book_id is undefined, then HTML::FormHandler will create
-a new book from your form. You can also pass in a DBIx::Class row
-object instead of a primary key. 
+a new book from your form. If you pass in a DBIx::Class row
+object instead of a primary key, you don't need to specify the
+schema. 
 
 
 =head2 Create a Template for the form 

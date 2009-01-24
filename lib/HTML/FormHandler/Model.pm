@@ -149,29 +149,7 @@ sub init_value
 
 }
 
-=head2 update_from_form
-
-Update or create the object.
-
-This needs to be overridden in the model subclass or in your
-form subclass. It should update $form->item, if set, otherwise 
-create a new item.
-
-Any field names that are related to the class by "has_many" and 
-have a mapping table should also be updated.
-
-Validation must also be run unless validation has already been run.
-($form->clear might need to be called if the $form object stays in memory
-between requests.)
-
-=cut
-
-sub update_from_form
-{
-   die "must define 'update_from_form' in HTML::FormHandler::Model subclass";
-}
-
-=head2 model_validate
+=head2 validate_model
 
 Validates profile items that are dependent on the model.
 This is called via the validation process and the model class
@@ -187,7 +165,15 @@ The default method does nothing.
 
 =cut
 
-sub model_validate { }
+sub validate_model { }
+
+=head2 clear_model
+
+Clear out any dynamic data for persistent object
+
+=cut
+
+sub clear_model { }
 
 =head1 AUTHOR
 

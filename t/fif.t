@@ -46,7 +46,7 @@ is_deeply( $fif, {
       pages => '702',
    }, 'get form fif' );
 
-$form->clear;
+$form->clear_state;
 
 $fif->{pages} = '501';
 $form = BookDB::Form::Book->new(item => $book, schema => $schema, params => $fif);
@@ -62,7 +62,7 @@ my $validated = $form->validate;
 
 ok( $validated, 'validated without params' );
 
-$form->clear;
+$form->clear_state;
 my $params = {
    title => 'Testing form',
    isbn => '02340234',

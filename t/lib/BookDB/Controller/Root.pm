@@ -10,6 +10,14 @@ use base 'Catalyst::Controller';
 #
 __PACKAGE__->config->{namespace} = '';
 
+sub index : Path Args 
+{
+   my ( $self, $c ) = @_;
+   $c->res->redirect('/book');
+   $c->detach;
+
+}
+
 =head1 NAME
 
 MyApp::Controller::Root - Root Controller for MyApp

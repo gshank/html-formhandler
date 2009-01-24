@@ -81,10 +81,7 @@ Catalyst context and the item_class in the plugin.
 =cut
 
 has 'schema' => (
-   isa     => 'DBIx::Class::Schema',
    is      => 'rw',
-   lazy    => 1,
-   builder => 'build_schema'
 );
 has 'source_name' => (
    isa     => 'Str',
@@ -102,39 +99,8 @@ sub BUILDARGS
    return {@args};
 }
 
-=head2 update_from_form
 
-    my $validated = $form->update_from_form( item => $row );
-    or
-    my $validated = $form->update_form_form( item_id => undef, schema => $schema );
-
-This is not the same as the subroutine called with $c->update_from_form--the
-Catalyst controller/role routine that calls this one. This method updates or
-creates the object from values in the form.
-
-All fields that refer to columns and have been changed will be updated. Field names
-that are a single relationship will be updated. Any field names that are related 
-to the class by "has_many" and have the 'multiple' flag set are assumed to have a 
-mapping table and will be updated.  Validation is run unless validation has already 
-been run.  ($form->clear might need to be called if the $form object stays in memory
-between requests.)
-
-The actual update is done in the C<update_model> method.  Your form class can
-override that method if you wish to do additional
-database inserts or updates.  This is useful when a single form updates 
-multiple tables, or there are secondary tables to update.
-
-=cut
-
-sub update_from_form
-{
-   my ( $self, $params ) = @_;
-   return unless $self->validate($params);
-   $self->update_model;
-   return 1;
-}
-
-=head2 model_validate
+=head2 validate_model
 
 The place to put validation that requires database-specific lookups.
 Subclass this method in your form. Validation of unique fields is 
@@ -142,11 +108,25 @@ called from this method.
 
 =cut
 
-sub model_validate
+sub validate_model
 {
    my ($self) = @_;
    return unless $self->validate_unique;
    return 1;
+}
+
+=head2 clear_model
+
+Clear state for persistent forms
+
+=cut
+
+sub clear_model
+{
+   my $self = shift;
+   $self->item(undef);
+   $self->item_id(undef);
+   $self->schema(undef);
 }
 
 =head2 update_model
@@ -289,7 +269,7 @@ sub update_model
 
    # Save item in form object
    $self->item($item);
-   $self->reset_params;    # force reload of parameters from values
+   $self->clear_params;    # force reload of parameters from values
    return $item;
 }
 
@@ -391,6 +371,7 @@ sub lookup_options
 {
    my ( $self, $field ) = @_;
 
+   return unless $self->schema;
    my $field_name = $field->name;
    my $prefix     = $self->name_prefix;
    $field_name =~ s/^$prefix\.//g if $prefix;
@@ -593,26 +574,6 @@ sub set_item
    $self->schema( $item->result_source->schema );
 }
 
-=head2 build_schema
-
-For initializing the DBIx::Class schema. User may override.
-Default is to die if a schema does not exist.
-
-Pass schema in on new:  
-
-  $my_form_class->new(item_id => $id, schema => $schema)
-
-Or pass in a row (result) object ('item'), and the schema will be set from
-the result object.
-
-=cut
-
-sub build_schema
-{
-   my $self = shift;
-   return if exists $self->{schema};
-   die "Schema must be defined for HTML::FormHandler::Model::DBIC";
-}
 
 sub build_source_name
 {

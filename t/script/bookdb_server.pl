@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 BEGIN { 
     $ENV{CATALYST_ENGINE} ||= 'HTTP';
-    $ENV{CATALYST_SCRIPT_GEN} = 30;
+    $ENV{CATALYST_SCRIPT_GEN} = 31;
     require Catalyst::Engine::HTTP;
 }  
 
@@ -21,8 +21,9 @@ my $port              = $ENV{BOOKDB_PORT} || $ENV{CATALYST_PORT} || 3000;
 my $keepalive         = 0;
 my $restart           = $ENV{BOOKDB_RELOAD} || $ENV{CATALYST_RELOAD} || 0;
 my $restart_delay     = 1;
-my $restart_regex     = '\.yml$|\.yaml$|\.pm$';
+my $restart_regex     = '(?:/|^)(?!\.#).+(?:\.yml$|\.yaml$|\.conf|\.pm)$';
 my $restart_directory = undef;
+my $follow_symlinks   = 0;
 
 my @argv = @ARGV;
 
@@ -36,7 +37,8 @@ GetOptions(
     'restart|r'           => \$restart,
     'restartdelay|rd=s'   => \$restart_delay,
     'restartregex|rr=s'   => \$restart_regex,
-    'restartdirectory=s'  => \$restart_directory,
+    'restartdirectory=s@' => \$restart_directory,
+    'followsymlinks'      => \$follow_symlinks,
 );
 
 pod2usage(1) if $help;
@@ -60,6 +62,7 @@ BookDB->run( $port, $host, {
     restart_delay     => $restart_delay,
     restart_regex     => qr/$restart_regex/,
     restart_directory => $restart_directory,
+    follow_symlinks   => $follow_symlinks,
 } );
 
 1;
@@ -85,11 +88,12 @@ bookdb_server.pl [options]
    -rd -restartdelay  delay between file checks
    -rr -restartregex  regex match files that trigger
                       a restart when modified
-                      (defaults to '\.yml$|\.yaml$|\.pm$')
+                      (defaults to '\.yml$|\.yaml$|\.conf|\.pm$')
    -restartdirectory  the directory to search for
-                      modified files
-                      (defaults to '../')
-
+                      modified files, can be set mulitple times
+                      (defaults to '[SCRIPT_DIR]/..')
+   -follow_symlinks   follow symlinks in search directories
+                      (defaults to false. this is a no-op on Win32)
  See also:
    perldoc Catalyst::Manual
    perldoc Catalyst::Manual::Intro
@@ -98,10 +102,9 @@ bookdb_server.pl [options]
 
 Run a Catalyst Testserver for this application.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Sebastian Riedel, C<sri@oook.de>
-Maintained by the Catalyst Core Team.
+Catalyst Contributors, see Catalyst.pm
 
 =head1 COPYRIGHT
 

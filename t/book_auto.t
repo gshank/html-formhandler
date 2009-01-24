@@ -22,7 +22,7 @@ my $form = BookDB::Form::BookAuto->new(item_id => undef, schema => $schema);
 
 ok( !$form->validate, 'Empty data' );
 
-$form->clear;
+$form->clear_state;
 
 # This is munging up the equivalent of param data from a form
 my $good = {
@@ -41,7 +41,7 @@ ok ($book, 'get book object from form');
 
 # clean up book db & form
 $book->delete;
-$form->clear;
+$form->clear_state;
 
 my $bad_1 = {
     notitle => 'not req',
@@ -49,7 +49,7 @@ my $bad_1 = {
 };
 
 ok( !$form->validate( $bad_1 ), 'bad 1' );
-$form->clear;
+$form->clear_state;
 
 my $bad_2 = {
     'book.title' => "Another Silly Test Book",
@@ -67,6 +67,6 @@ ok( !$form->field('pages')->has_errors, 'pages has no error' );
 
 ok( !$form->field('author')->has_errors, 'author has no error' );
 
-$form->clear;
+$form->clear_state;
 
 

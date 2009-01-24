@@ -27,7 +27,7 @@ create your own field types, and perform specialized validation. And you
 can subclass the methods in HTML::FormHandler::Model::DBIC and 
 HTML::FormHandler.
 
-The L<Catalyst::Controller::HTML::FormHandler> package includes a working 
+The L<HTML::FormHandler> package includes a working 
 example using a SQLite database and a number of forms in the test directory.
 You can execute the sample from a downloaded distribution package with:
 
@@ -42,7 +42,6 @@ the form in an HTML page.
 Create a Form, subclassed from HTML::FormHandler::Model::DBIC
 
     package MyApp:Form::User;
-
     use Moose;
     extends 'HTML::FormHandler::Model::DBIC';
 
@@ -148,38 +147,69 @@ space, you can specify the config values in your application module:
    __PACKAGE__->config( { 'Controller::HTML::FormHandler' =>
        { model_name => 'DB', form_name_space => 'MyApp::Form' }} );
 
-In a Catalyst controller (with Catalyst::Controller::HTML::FormHandler):
+In a Catalyst controller:
 
     package MyApp::Controller::User;
-    use strict;
-    use warnings;
-    use base 'Catalyst::Controller::HTML::FormHandler';
-
-    # If you didn't specify the model_name already 
-    __PACKAGE__->config( model_name => 'DB');
+    use Moose;
+    use base 'Catalyst::Controller';
+    has 'form' => ( isa => 'MyApp::Form::User', is => 'rw',
+        default => sub { MyApp::Form::User->new } );
 
     # Create or edit
     sub edit : Local {
         my ( $self, $c, $user_id ) = @_;
-        $c->stash->{template} = 'user/edit.tt'; 
-        # Validate and insert/update database. Args = pk, form name
-        return unless $self->update_from_form( $user_id, 'User' );
+
+        $c->stash( template => 'user/edit.tt' ); 
+        return unless $self->form->process( item_id => $user_id,
+           schema => $c->model('DB::User')->schema );
+
         # Form validated.
-        $c->stash->{user} = $c->stash->{form}->item;
+        $c->stash( user => $form->item );
         $c->res->redirect($c->uri_for('profile'));
     }
+    ...
 
-With the Catalyst controller the schema is set from the model_name config
-options, ($c->model($model_name)...), but it can also be set by passing 
-in the schema on "new", or setting with $form->schema($schema), or from
-passing in a row object.
+With the DBIC model the schema is set from the 'item' (row object)
+passed in, or from the primary key ('item_id') and schema. 
+
+The example above uses persistent forms in a Moose attribute. The
+'process' method will clear out non-persistent form values and
+update the information from the database row (if given). If you
+modify form attributes that are not automatically cleared, you must
+set those attributes on every request or clear them yourself.
+
+You can also create a new form on each request with new:
+
+   my $form = BookDB::Form::Book->new( item => $book );
+   return unless $form->process( params => $c->req->parameters );
 
 If you want to use FillInForm to fill in values instead of the field's
-fif attribute, use can L<Catalyst::Controller::HTML::FormHandler>. If you
-set C<< __PACKAGE__->config( fif => 1 ) >> the C<< $form->fif >> hash
-will be set in the C<< $c->stash->{fillinform} >>> stash key. The base
-controller 'end' routine will call FillInForm for you, or you can use
-the stash key to handle FillInForm yourself.
+fif attribute, you will need to set that up yourself in an 'end' routine
+or a finalize method. One option would be to set the 'fif' hash in a
+stash variable:
+
+    my $validated = $self->form->process( ... );
+    $c->stash( fillinform => $self->form->fif );
+    return unless $validated;
+ 
+and then check for the stash variable in your end routine and call
+FillInForm:
+
+   sub end : Private
+   {
+      my ( $self, $c ) = @_;
+      $c->forward('render') unless $c->res->output;
+      if ($c->stash->{fillinform})
+      {
+         $c->response->body(
+            HTML::FillInForm->new->fill(
+               scalarref => \$c->response->{body},
+               fdat      => $c->stash->{fillinform},
+            )
+         );
+      }
+   }
+   sub render : ActionClass('RenderView') { }
 
 
 =head1 The Form
@@ -192,7 +222,7 @@ FormHandler behavior can be changed in a particular form.
 =head1 Form Models 
 
 If you are not using a database interface, the base class for your forms is 
-HTML::FormHandler. For use with a database, you need to use a form model class--
+HTML::FormHandler. For use with a database, use a model base class--
 a class that knows how to work with your data objects, such as
 L<HTML::FormHandler::Model::DBIC> or L<HTML::FormHandler::Model::CDBI>.
 
@@ -207,8 +237,9 @@ primary key is passed in, the model will use the item_class (DBIC source
 name) to fetch the row from the database. The database row is stored in the
 form's "item" attribute.
 
-The $form->update_from_form method will validate the parameters and then 
-update or create the database row object.  
+The C<< $form->process >> or C<< $form->update >> methods will validate 
+the parameters and then update or create the database row object.  
+
 
 =head1 The form profile
 
@@ -469,9 +500,7 @@ You can use the hash returned by the form method "fif":
 
    [% form.fif.book %]
 
-Or you can use L<HTML::FillInForm> and the C<< $form->fif hash >>. For Catalyst, 
-an example "end" routine to call FillInForm is provided in
-L<Catalyst::Controller::HTML::FormHandler>
+Or you can use L<HTML::FillInForm> and the C<< $form->fif hash >>. 
 
 If you are already using FormHandler field attributes in your form elements,
 then using the field 'fif' method is probably easiest. If you are not using

@@ -3,7 +3,7 @@
 [% FOR efield IN form.error_fields %]
 <div class='error' id=error>[% efield.name _ ': ' _ efield.errors %] </div>
 [% END %]
-<form action="[% form.action %]" method="post">
+<form action="[% action %]" method="post">
    <p>
    [% f = form.field('title') %]
    <label class="label" for="[% f.name %]">[% f.label %]</label>

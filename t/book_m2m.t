@@ -23,7 +23,7 @@ my $form = BookDB::Form::BookM2M->new(item_id => undef, schema => $schema);
 
 ok( !$form->validate, 'Empty data' );
 
-$form->clear;
+$form->clear_state;
 
 # This is munging up the equivalent of param data from a form
 my $good = {
@@ -45,7 +45,7 @@ my $num_genres = $book->genres->count;
 is( $num_genres, 3, 'multiple select list updated ok');
 
 my $id = $form->item->id;
-$form->clear;
+$form->clear_state;
 
 $form = BookDB::Form::BookM2M->new( item_id => $id, schema => $schema ); 
 my $genres_field = $form->field('genres');
