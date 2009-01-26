@@ -18,6 +18,9 @@ HTML::FormHandler - form handler written in Moose
 
 =head1 SYNOPSIS
 
+This package should currently be considered unstable since I am actively making 
+changes and improvements. 
+
 HTML::FormHandler is based on L<Form::Processor>. The original goal was just
 to make a Moose version of Form::Processor, but there were issues in maintaining 
 compatibility between the non-Moose and Moose versions. Although very similar to 
@@ -864,6 +867,8 @@ attribute.
 sub init_from_object
 {
    my $self = shift;
+
+   $self->item( $self->build_item ) if $self->item_id && !$self->item;
    my $item = $self->init_object || $self->item || return;
 
    for my $field ( $self->fields )

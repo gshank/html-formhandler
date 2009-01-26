@@ -8,10 +8,8 @@ This is a concise reference of HTML::FormHandler.
 
 HTML::FormHandler has a lot of options and many ways to customize your forms.
 More complete documentation can be found at L<HTML::FormHandler>, 
-L<HTML::FormHandler::Field>, L<HTML::FormHandler::Model::CDBI>, 
-L<HTML::FormHandler::Model::DBIC>, L<HTML::FormHandler::Render::Simple>,
-L<Catalyst::Controller::Role::HTML::FormHandler>,
-and in the individual field classes.
+L<HTML::FormHandler::Field>, L<HTML::FormHandler::Model::DBIC>, 
+L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
 =head1 Fields
 
@@ -136,7 +134,7 @@ These attributes are usually accessed in a subroutine or in a template.
    
 =head2 Methods to subclass from HTML::FormHandler::Model::DBIC
 
-   model_validate    Add additional database type validation
+   validate_model    Add additional database type validation
    update_model      To add additional actions on update
    guess_field_type  To create better field type assignment for auto forms 
      

@@ -20,7 +20,7 @@ Use CPAN to install L<HTML::FormHandler>
 We'll use the files that were created in the L<Catalyst::Tutorial>, in
 order to concentrate on just the bits where HTML::FormHandler is useful.
 You can download a tar file of the tutorial files from the Catalyst
-code repository. Check on L<Catalyst::Tutorial> for links. 
+code repository. (See L<Catalyst::Manual::Tutorial::Intro>.)
 
 =head2 Create an HTML::FormHandler form
 
@@ -49,9 +49,8 @@ create the file Book.pm.
 
 This is your Form class. The form initializes the 'item_class' to the
 source name of your DBIx::Class result class. The form's fields are defined
-in the 'profile' attribute. The names of the fields should match an
-accessor in your DBIx::Class result source: a column, relationship, or
-other accessor.
+in the 'profile' attribute. The names of the fields should match
+a column, relationship, or other accessor in your DBIx::Class result class.
 
 The basic fields have only a 'type', such as
 'Text', or 'Integer'. These types are actually the names of 
@@ -69,10 +68,11 @@ this simple form the default types are adequate.
 
 =head2 Connect HTML::FormHandler to your controller 
 
-Your controller must use Moose:
+Edit lib/MyApp/Controller/Books.pm.  Add use Moose:
 
     use Moose;
     use base 'Catalyst::Controller';
+    use MyApp::Form::Book;
 
 Create an attribute to hold your form:
 
@@ -87,10 +87,12 @@ In C<lib/MyApp/Controller/Books.pm> add the following method:
     sub edit : Local {
         my ( $self, $c, $book_id ) = @_;
 
-        $c->stash( template => 'books/edit.tt2' ); 
+        $c->stash( template => 'books/edit.tt2',
+                   form => $self->form ); 
 
         # Validate and insert/update database 
         return unless $self->form->process( item_id => $book_id,
+           params => $c->req->parameters,
            schema => $c->model('DB::Books')->schema ); 
 
         # Form validated, return to the books list
@@ -132,13 +134,13 @@ Open C<root/src/books/edit.tt2> in your editor and enter or copy the following:
    <p>
    [% f = form.field('title') %]
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
-   <input type="text" name="[% f.name %]" id="[% f.name %]">[% f.fif %]
+   <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
    </p>
 
    <p>
    [% f = form.field('rating') %]
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
-   <input type="text" name="[% f.name %]" id="[% f.name %]" %]>[% f.fif %]
+   <input type="text" name="[% f.name %]" id="[% f.name %]" %] value="[% f.fif %]">
    </p>
 
    <p>
@@ -147,7 +149,7 @@ Open C<root/src/books/edit.tt2> in your editor and enter or copy the following:
    <select name="[% f.name %]" multiple="multiple" size="[% f.size %]">
      [% FOR option IN f.options %]
        <option value="[% option.value %]" 
-         [% FOREACH selval IN f.value %]
+         [% FOREACH selval IN f.fif %]
              [% IF selval == option.value %]selected="selected"[% END %]
          [% END %]>
        [% option.label | html %]</option>
@@ -211,16 +213,15 @@ keys and values:
          fields => {
             title => {
                type => 'Text',
-               label => 'Title',
+               label => 'Title of Book',
             },
             rating => {
                type => 'Integer',
-               label => 'Rating',
+               label => 'Rating (1-5)',
             },
             authors => {
                type => 'Multiple',
                label_column => 'last_name',
-               label => 'Authors',
             },
          }
       }
@@ -269,7 +270,7 @@ Update the 'profile' subroutine in your MyApp::Form::Book file:
          fields => {
             title => {
                type => 'Text',
-               label => 'Title',
+               label => 'Title of Book',
                required => 1,
                size => 40,
                min_length => 5,
@@ -278,6 +279,7 @@ Update the 'profile' subroutine in your MyApp::Form::Book file:
                type => 'Integer',
                label => 'Rating',
                required => 1,
+               required_message => 'You must rate the book',
                range_start => 1,
                range_end => 5,
             },
@@ -285,7 +287,6 @@ Update the 'profile' subroutine in your MyApp::Form::Book file:
                type => 'Multiple',
                label_column => 'last_name',
                required => 1,
-               label => 'Author',
             },
          }
       }
@@ -320,7 +321,7 @@ MyApp::Form::Book:
    }
 
 You can also have a 'cross_validation' routine to check interdependencies.
-The 'model_validate' routine is the place to perform database specific validation.
+The 'validate_model' routine is the place to perform database specific validation.
 You can validate that the field is unique, or use a dependency list to make
 more fields required if one is updated.
 
@@ -342,14 +343,6 @@ L<DBIx::Class> classes. L<HTML::FormHandler::Model::DBIC> allows
 the use of custom accessors, making it easier to keep the code
 in the right place.
 
-
-=head2 If you're addicted to YAML
-
-If you really, really want to define your form fields in YAML, you
-could use Config::Any to load the field definitions from a YAML (or
-other config file format) file and return them in the 'profile' subroutine.
-This could easily be automated in a Form base class.
-   
 =head1 AUTHORS
 
 Gerda Shank, gshank@cpan.org

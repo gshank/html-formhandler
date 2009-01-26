@@ -6,7 +6,7 @@ use Carp;
 use UNIVERSAL::require;
 use DBIx::Class::ResultClass::HashRefInflator;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -30,7 +30,7 @@ You can specify the "item_class" in your form:
     has '+item_class' => ( default => 'User' ); # 'User' is the DBIC source_name 
 
 The 'item_id' and 'schema' must be passed in when the form is used in your
-controller. ( also see L<Catalyst::Controller::Role::HTML::FormHandler> ) 
+controller.
 
 If an 'item' is passed in, the 'item_id', 'item_class', and 'schema' will
 be derived from the 'item'.
@@ -65,10 +65,6 @@ L<HTML::FormHandler>
 L<HTML::FormHandler::Manual>
 
 L<HTML::FormHandler::Field>
-
-L<Catalyst::Controller::HTML::FormHandler>
-
-L<Catalyst::Controller::Role::HTML::FormHandler>
 
 =head1 METHODS
 
@@ -612,14 +608,6 @@ sub resultset
 
 The author can be contacted through the L<Catalyst> or L<DBIx::Class> mailing 
 lists or IRC channels (gshank).
-
-=head1 SEE ALSO
-
-L<HTML::FormHandler>
-L<HTML::FormHandler::Field>
-L<HTML::FormHandler::Model::CDBI>
-L<Catalyst::Controller:HTML::FormHandler>
-L<Rose::Object>
 
 =head1 AUTHOR
 

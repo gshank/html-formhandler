@@ -1,4 +1,9 @@
-Revision history for Perl extension HTML::FormHandler 
+Revision history for HTML::FormHandler 
+
+0.08 Sun Jan 25 2009, 03:00
+    Remove controller and role. Refactor to support persistent
+    forms. Remove update_from_form method. Add 'process', and
+    'update' methods. Update documentation to match. Update tutorial.
 
 0.07 Thurs Jan 22 2009, 04:00
     Add prereq of DateTime. Minor doc changes.

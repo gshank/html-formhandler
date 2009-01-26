@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 18;
+   plan tests => 20;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -21,6 +21,9 @@ ok($schema, 'get db schema');
 my $form = BookDB::Form::Book->new;
 
 ok( $form, 'no param new' );
+
+$form->process( item_id => 1, schema => $schema, params => {} );
+is( $form->item->id, 1, 'get item from item_id and schema');
 
 ok( !$form->process( schema => $schema ), 'Empty data' );
 
@@ -47,7 +50,6 @@ is( $num_genres, 2, 'multiple select list updated ok');
 is( $form->value('format'), 2, 'get value for format' );
 
 my $id = $book->id;
-
 
 my $bad_1 = {
     notitle => 'not req',

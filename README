@@ -30,8 +30,6 @@ perldoc command.
     perldoc HTML::FormHandler
     perldoc HTML::FormHandler::Model::DBIC
     perldoc HTML::FormHandler::Field
-    perldoc Catalyst::Controller::HTML::FormHandler
-    perldoc Catalyst::Controller::Role::HTML::FormHandler
 
 
 COPYRIGHT AND LICENCE

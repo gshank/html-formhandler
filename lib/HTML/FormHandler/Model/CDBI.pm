@@ -5,7 +5,7 @@ use Carp;
 use Data::Dumper;
 extends 'HTML::FormHandler';
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -245,7 +245,7 @@ sub init_value {
     return @values;
 }
 
-=head2 model_validate
+=head2 validate_model
 
 Validates profile items that are dependent on the model.
 Currently, "unique" fields are checked  to make sure they are unique.
@@ -255,7 +255,7 @@ field values entered in $field->value at this point.
 
 =cut
 
-sub model_validate {
+sub validate_model {
     my ($self) = @_;
 
     return unless $self->validate_unique;
