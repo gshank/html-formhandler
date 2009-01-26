@@ -106,8 +106,9 @@ Then:
    use Moose;
    extends 'MyApp::Form::Base';
 
-   has 'title' => ( default => 'This page is an example of what to expect...' );
-   has '+field_list' => ( default => .... );
+   has '+title' => ( default => 'This page is an example of what to expect...' );
+   has '+nav_bar' => ( default => ... );
+   ...
    1;
 
 And in the template:

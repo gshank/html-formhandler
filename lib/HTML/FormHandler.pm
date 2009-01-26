@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 =head1 NAME
 
@@ -720,17 +720,29 @@ sub build_form
 {
    my $self = shift;
 
-   my $meta_field_list = $self->meta->field_list;
-   $self->_build_fields( $meta_field_list, 0 ) if $meta_field_list; 
-
-   my $field_list = $self->field_list;
-   for my $group ( 'required', 'optional', 'fields' )
+   my $meta_flist = $self->meta->field_list;
+   my $flist = $self->field_list;
+   $self->_build_fields( $meta_flist, 0 ) if $meta_flist; 
+   $self->_build_fields( $flist->{'required'}, 1 ) if $flist->{'required'}; 
+   $self->_build_fields( $flist->{'optional'}, 0 ) if $flist->{'optional'};
+   $self->_build_fields( $flist->{'fields'}, 0 )   if $flist->{'fields'};
+   $self->_build_fields( $flist->{'auto_required'}, 1, 'auto' ) 
+                                              if $flist->{'auto_required'};
+   $self->_build_fields( $flist->{'auto_optional'}, 0, 'auto' ) 
+                                              if $flist->{'auto_optional'};
+   return unless $self->has_fields;
+   my $order = 0;
+   foreach my $field ( $self->fields)
    {
-      my $required = $group eq 'required' ? 1 : 0;
-      $self->_build_fields( $field_list->{$group}, $required );
-      my $auto_fields = $field_list->{ 'auto_' . $group } || next;
-      $self->_build_fields( $auto_fields, $required, 'Auto' );
+      $order++ if $field->order > $order;
    }
+   $order++;
+   foreach my $field ( $self->fields )
+   {
+      $field->order( $order ) unless $field->order;
+      $order++;
+   }
+
 }
 
 sub _build_fields
@@ -743,9 +755,10 @@ sub _build_fields
    my $type;
    if ($auto)    # an auto array of fields
    {
-      $type = $auto;
       foreach $name (@$fields)
       {
+         $type = $self->guess_field_type($name);
+         croak "Could not guess field type for field '$name'" unless $type;
          $self->_set_field( $name, $type, $required );
       }
    }
@@ -760,7 +773,7 @@ sub _build_fields
    }
    else                                 # a hashref of fields
    {
-      while ( my ( $name, $type ) = each %$fields )
+      while ( ( $name, $type ) = each %$fields )
       {
          $self->_set_field( $name, $type, $required );
       }
@@ -771,10 +784,15 @@ sub _build_fields
 sub _set_field
 {
    my ( $self, $name, $type, $required ) = @_;
+
    my $field = $self->make_field( $name, $type );
-   return                      unless $field;
+   return unless $field;
    $field->required($required) unless ( $field->required == 1 );
-   $self->add_field($field);
+   my $index = $self->field_index($name);
+   if( defined $index )
+      { $self->set_field_at($index, $field); }
+   else
+      { $self->add_field($field); }
 }
 
 =head2 make_field
@@ -798,9 +816,6 @@ sub make_field
    $type_data = { type => $type_data } unless ref $type_data eq 'HASH';
    my $type = $type_data->{type}
       || die 'No field type for field $name';
-   $type = $self->guess_field_type($name) if $type eq 'Auto';
-   croak "Could not guess field type for field '$name'" unless $type;
-
    my $class =
         $type =~ s/^\+//
       ? $self->field_name_space
@@ -818,12 +833,6 @@ sub make_field
    $type_data->{form} = $self;
 
    my $field = $class->new( %{$type_data} );
-
-   unless ( $type_data->{order} )
-   {
-      my $fields = $self->fields;
-      $field->order( $fields ? scalar @{ $self->fields } + 1 : 1 );
-   }
 
    return $field;
 }
@@ -943,7 +952,7 @@ sub init_from_object
 }
 
 
-=head2 fif -- "fill in form"
+=head2 fif  (fill in form)
 
 Returns a hash of values suitable for use with HTML::FillInForm
 or for filling in a form with C<< $form->fif->{fieldname} >>.
@@ -1005,6 +1014,19 @@ sub field
    }
    return if $no_die;
    croak "Field '$name' not found in form '$self'";
+}
+
+sub field_index
+{
+   my ( $self, $name ) = @_;
+   $name = $self->name_prefix . '.' . $name if $self->name_prefix;
+   my $index = 0;
+   for my $field ( $self->fields )
+   {
+      return $index if $field->name eq $name;
+      $index++;
+   }
+   return;
 }
 
 =head2
@@ -1191,7 +1213,6 @@ sub set_dependency
          # The exception is a boolean can be zero which we count as not set.
          # This is to allow requiring a field when a boolean is true.
          next if $self->field($name)->type eq 'Boolean' && $value == 0;
-
          if ( ref $value )
          {
             # at least one value is non-blank

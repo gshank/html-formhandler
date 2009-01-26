@@ -296,7 +296,7 @@ will be unpredictable.
 
 =cut
 
-has 'order' => ( isa => 'Int', is => 'rw', default => '1' );
+has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
 
 =head2 required
 
