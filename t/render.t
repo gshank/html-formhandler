@@ -9,7 +9,7 @@ use HTML::FormHandler::Field::Text;
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Render::Simple';
 
-   sub profile
+   sub field_list
    {
       return {
          fields => {

@@ -22,9 +22,7 @@ HTML::FormHandler::Model::CDBI - Class::DBI model class for HTML::FormHandler
     has '+item_class' => ( default => 'MyDB::User' );
 
     # Define the fields that this form will operate on
-    sub profile {
-        my $self = shift;
-
+    sub field_list {
         return {
             fields => [
                 name        => 'Text',
@@ -247,7 +245,7 @@ sub init_value {
 
 =head2 validate_model
 
-Validates profile items that are dependent on the model.
+Validates fields that are dependent on the model.
 Currently, "unique" fields are checked  to make sure they are unique.
 
 This validation happens after other form validation.  The form already has any
@@ -271,9 +269,7 @@ Checks that the value for the field is not currently in the database.
 sub validate_unique {
     my ($self) = @_;
 
-    my $unique_from_profile = $self->profile->{unique};
-    my @unique_from_fields = map { $_->name } grep { $_->unique } $self->fields;
-    my @unique = ( @$unique_from_profile, @unique_from_fields );
+    my @unique = map { $_->name } grep { $_->unique } $self->fields;
     return 1 unless @unique;
 
     my $item = $self->item;
@@ -410,7 +406,7 @@ sub obj_key {
 
 Gerda Shank, gshank@cpan.org
 
-Based on the original source code of L<Form::Processor::Field> by Bill Moseley
+Based on the original source code of L<Form::Processor::Model::CDBI> by Bill Moseley
 
 =head1 COPYRIGHT
 

@@ -15,22 +15,13 @@ my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
 
 {
    package My::Form;
-   use Moose;
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler::Model::DBIC';
 
    has '+item_class' => ( default => 'Book' );
 
-   sub profile {
-       return {
-           fields    => [
-               title     => {
-                  type => 'Text',
-                  required => 1,
-               },
-               author    => 'Text',
-           ],
-       };
-   }
+   has_field 'title' => ( type => 'Text', required => 1 );
+   has_field 'author' => ( type => 'Text' );
 
    sub init_value_author
    {
@@ -68,4 +59,3 @@ is( $book->title, 'We Love to Test Perl Form Processors', 'title updated');
 
 $book->delete;
 
-#------------------------

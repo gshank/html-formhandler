@@ -9,7 +9,7 @@ use_ok( 'HTML::FormHandler' );
    use Moose;
    extends 'HTML::FormHandler';
    has '+name' => ( default => 'testform_' );
-   sub profile {
+   sub field_list {
        return {
            fields    => {
                reqname     => {

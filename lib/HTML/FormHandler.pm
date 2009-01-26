@@ -18,16 +18,16 @@ HTML::FormHandler - form handler written in Moose
 
 =head1 SYNOPSIS
 
-This package should currently be considered unstable since I am actively making 
-changes and improvements. 
+This package is currently unstable since I am actively making changes and 
+improvements.  
 
 HTML::FormHandler is based on L<Form::Processor>. The original goal was just
 to make a Moose version of Form::Processor, but there were issues in maintaining 
 compatibility between the non-Moose and Moose versions. Although very similar to 
 L<Form::Processor>, FormHandler does not intend to be compatible. A substantial
 number of methods and attributes have been renamed for internal 
-consistency and consistency with Moose usage, and some refactoring has
-been done. 
+consistency and consistency with Moose usage, the code has been refactored,
+and features have been added. 
 
 HTML::FormHandler allows you to define HTML form fields and validators, and will
 automatically update or create rows in a database, although it can also be
@@ -71,28 +71,24 @@ An example of a form class:
 
     package MyApp::Form::User;
     
-    use Moose;
+    use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Model::DBIC';
 
     has '+item_class' => ( default => 'User' );
 
-    sub profile {
-        return {
-            fields => [
-                name        => 'Text',
-                age         => 'PosInteger',
-                birthdate   => 'DateTime',
-                hobbies     => 'Multiple',
-                address     => 'Text',
-                city        => 'Text',
-                state       => 'Select',
-                email       => 'Email',
-            ],
-            dependency => [
-                ['address', 'city', 'state'],
-            ],
-        ];
-    }
+    has_field 'name' => ( type => 'Text' );
+    has_field 'age' => ( type => 'PosInteger' );
+    has_field 'birthdate' => ( type => 'DateTime' );
+    has_field 'hobbies' => ( type => 'Multiple' );
+    has_field 'address' => ( type => 'Text' );
+    has_field 'city' => ( type => 'Text' );
+    has_field 'state' => ( type => 'Select' );
+    has_field 'email' => ( type => 'Email' );
+
+    has '+dependency' => ( default => sub {
+          [ ['address', 'city', 'state'], ]
+       }
+    );
 
     sub validate_age {
         my ( $self, $field ) = @_;
@@ -100,13 +96,15 @@ An example of a form class:
             if $field->value < 18;
     }
 
+    no HTML::FormHandler::Moose;
     1;
 
-A dynamic form may be created in a controller:
+A dynamic form may be created in a controller using the field_list
+attribute to set fields:
 
-    $c->stash->{form} = HTML::FormHandler->new(
+    my $form = HTML::FormHandler->new(
         item => $user,
-        profile => {
+        field_list => {
             fields => {
                first_name => 'Text',
                last_name => 'Text' 
@@ -138,22 +136,67 @@ L<HTML::FormHandler::Manual>.
 
 =head1 ATTRIBUTES
 
-=head2 profile
+=head2 has_field
+
+This is not actually a Moose attribute. It is just sugar to allow the
+declarative specification of fields. It will not create accessors for the
+fields. The 'type' is not a Moose type, but an L<HTML::FormHandler::Field>
+type. To use this sugar, you must do 
+
+   use HTML::FormHandler::Moose;
+
+instead of C< use Moose; >. Don't forget C< no HTML::FormHandler::Moose; > at
+the end of the package. Use the syntax:
+
+   has_field 'title' => ( type => 'Text', required => 1 );
+   has_field 'authors' => ( type => 'Select' );
+
+instead of:
+
+   has '+field_list' => ( default => sub { {
+         fields => {
+             title => {
+                type => 'Text',
+                required => 1,
+             },
+             authors => 'Select',
+             } 
+          }
+       }
+    );
+ 
+or:
+
+   sub field_list {
+      return {
+         fields => {
+            title => {
+               type => 'Text',
+               required => 1,
+            },
+            authors => 'Select',
+         }
+      }            
+   }
+         
+Fields specified in a field_list will overwrite fields specified with 'has_field',
+
+
+=head2 field_list
 
 A hashref of field definitions.
 
-The possible keys in the profile hashref are:
+The possible keys in the field_list hashref are:
 
    required
    optional
    fields
    auto_required
    auto_optional
-   dependency
 
-Example of a profile hashref:
+Example of a field_list hashref:
 
-    my $profile => {
+    my $field_list => {
         fields => [
             field_one => {
                type => 'Text',
@@ -163,25 +206,17 @@ Example of a profile hashref:
          ],
      }; 
 
-For the "auto" profile keys, provide a list of field names.  
+For the "auto" field_list keys, provide a list of field names.  
 The field types will be determined by calling 'guess_field_type' 
 in the model.  
 
     auto_required => ['name', 'age', 'sex', 'birthdate'],
     auto_optional => ['hobbies', 'address', 'city', 'state'],
 
-The "dependency" profile key is an arrayref of arrayrefs that contain a
-list of fields where if one is entered, all fields are required.
-
-   dependency => [
-      ['address', 'city', 'state', 'zip'],
-      ['cc_no', 'cc_expires'],
-   ]
-
 
 =cut
 
-has 'profile' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
+has 'field_list' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
 
 =head2 name
 
@@ -203,7 +238,7 @@ has 'name' => (
 
 =head2 name_prefix
 
-Prefix used for all field names listed in profile when creating
+Prefix used for all field names when creating
 each field.  This is useful for creating compound form fields where
 a single field is made up of a collection of fields.  The collection
 of fields can be a complete form.  An example might be a field
@@ -310,7 +345,7 @@ Place to store application context
 
 =cut
 
-has 'ctx' => ( is => 'rw' );
+has 'ctx' => ( is => 'rw', weak_ref => 1 );
 
 =head2 language_handle, build_language_handle
 
@@ -406,7 +441,7 @@ has 'params' => (
 
 =head2 fields
 
-The field definitions as built from the profile. This is a
+The field definitions as built from the field_list. This is a
 MooseX::AttributeHelpers::Collection::Array, and provides
 clear_fields, add_field, remove_last_field, num_fields,
 has_fields, and set_field_at methods.
@@ -431,7 +466,7 @@ has 'fields' => (
 
 =head2 required
 
-Array of fields that are required
+Array of fields that are required. Used for internal processing.
 
 =cut
 
@@ -446,6 +481,20 @@ has 'required' => (
       push  => 'add_required'
    }
 );
+
+=head2 dependency
+
+Arrayref of arrayrefs of fields. If one of a group of fields has a
+value, then all of the group are set to 'required'.
+
+  has '+dependency' => ( default => sub { [
+     ['street', 'city', 'state', 'zip' ],] }
+  );
+
+    
+=cut
+
+has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
 
 =head2 parent_field
 
@@ -485,10 +534,10 @@ The common attributes to be passed in to the constructor are:
 
    item_id
    item
-   name
-   name_prefix
-   item_class
-   profile
+   schema
+   item_class (often set in the form class)
+   dependency
+   field_list
    init_object
 
 Creating a form object:
@@ -497,7 +546,7 @@ Creating a form object:
         item_id         => $id,
         item_class    => 'User', 
         schema          => $schema,
-        profile         => {
+        field_list         => {
             required => {
                 name    => 'Text',
                 active  => 'Boolean',
@@ -512,7 +561,7 @@ L<HTML::FormHandler::Model::DBIC>.
 FormHandler forms are handled in two steps: 1) create with 'new',
 2) handle with 'process' or 'update'. FormHandler doesn't
 care whether most parameters are set on new or process or update,
-but a 'profile' argument should be passed in on 'new'.
+but a 'field_list' argument should be passed in on 'new'.
 
 =head2 BUILD, BUILDARGS
 
@@ -521,7 +570,7 @@ These are called when the form object is first created (by Moose).
 A single argument is an "item" parameter if it's a reference, 
 otherwise it's an "item_id".
 
-First BUILD calls the build_form method, which reads the profile and creates
+First BUILD calls the build_form method, which reads the field_list and creates
 the fields object array.
 
 Then 'init_from_object' is called to load each field's internal value
@@ -645,7 +694,7 @@ sub clear_state
 
 =head2 clear_values
 
-Clears field value, input, errors. Form params. 
+Clears field value, input, errors
 
 =cut
 
@@ -662,7 +711,7 @@ sub clear_values
 
 =head2 build_form
 
-This parses the form profile and creates the individual
+This parses the form field_list and creates the individual
 field objects.  It calls the make_field() method for each field.
 
 =cut
@@ -670,16 +719,16 @@ field objects.  It calls the make_field() method for each field.
 sub build_form
 {
    my $self = shift;
-$DB::single=1;
-   my $field_list = $self->meta->field_list;
-   $self->_build_fields( $field_list, 0 ) if $field_list; 
 
-   my $profile = $self->profile;
+   my $meta_field_list = $self->meta->field_list;
+   $self->_build_fields( $meta_field_list, 0 ) if $meta_field_list; 
+
+   my $field_list = $self->field_list;
    for my $group ( 'required', 'optional', 'fields' )
    {
       my $required = $group eq 'required' ? 1 : 0;
-      $self->_build_fields( $profile->{$group}, $required );
-      my $auto_fields = $profile->{ 'auto_' . $group } || next;
+      $self->_build_fields( $field_list->{$group}, $required );
+      my $auto_fields = $field_list->{ 'auto_' . $group } || next;
       $self->_build_fields( $auto_fields, $required, 'Auto' );
    }
 }
@@ -1128,7 +1177,7 @@ sub set_dependency
 {
    my $self = shift;
 
-   my $depends = $self->profile->{dependency} || return;
+   my $depends = $self->dependency || return;
    my $params = $self->params;
    for my $group (@$depends)
    {
@@ -1258,7 +1307,7 @@ sub uuid
 
 Gerda Shank, gshank@cpan.org
 
-Based on the original source code of L<Form::Processor::Field> by Bill Moseley
+Based on the original source code of L<Form::Processor> by Bill Moseley
 
 =head1 COPYRIGHT
 

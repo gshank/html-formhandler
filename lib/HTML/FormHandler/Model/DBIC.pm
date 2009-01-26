@@ -39,7 +39,7 @@ To use FormHandler to create new database records, pass in undef for the item_id
 and supply an 'item_class' and 'schema', or pass in an empty row (using
 the resultset 'new_result' method).
 
-The field names in the profile of your form should match column, relationship,
+The field names in the field_list of your form should match column, relationship,
 or accessor names in your DBIx::Class result source.
 
 =head1 DESCRIPTION

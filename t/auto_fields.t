@@ -22,7 +22,7 @@ ok($schema, 'get schema');
 
    has '+item_class' => ( default => 'Book' );
 
-   sub profile {
+   sub field_list {
       return {
          auto_required => ['title', 'author', 'isbn', 'publisher'],
            auto_optional => ['genres', 'format', 'year', 'pages'], 

@@ -107,7 +107,7 @@ Then:
    extends 'MyApp::Form::Base';
 
    has 'title' => ( default => 'This page is an example of what to expect...' );
-   has '+profile' => ( default => .... );
+   has '+field_list' => ( default => .... );
    1;
 
 And in the template:

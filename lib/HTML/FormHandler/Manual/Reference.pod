@@ -82,16 +82,16 @@ These attributes are usually accessed in a subroutine or in a template.
    schema        Schema of item
    item          DB row object
    init_object   For default values instead of $item
+   dependency    Array of arrays of field names. If one name has a value, all
+                       fields in the list are set to 'required'
    
-=head2 Form Profile attributes 
+=head2 Form field_list attributes 
 
    fields        Array (or hashref) of field definitions
    required      Hashref of 'required' fields
    optional      Hashref of non-required fields
    auto_required Array of required field names (types from 'guess_field_type')
    auto_optional Array of optional field names
-   dependency    Array of arrays of field names. If one name has a value, all
-                       fields in the list are set to 'required'
 
 =head2 Other Form attributes
 

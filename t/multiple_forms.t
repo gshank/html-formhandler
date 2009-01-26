@@ -12,7 +12,7 @@ use_ok( 'HTML::FormHandler' );
    has '+name' => ( default => 'One' );
    has '+html_prefix' => ( default => 1 );
 
-   sub profile {
+   sub field_list {
        return {
            fields    => {
                field_one => 'Text',
@@ -33,7 +33,7 @@ ok( $form1, 'get first form' );
    # this form uses the default random form name generation
    has '+html_prefix' => ( default => 1 );
 
-   sub profile {
+   sub field_list {
        return {
            fields    => {
                field_one => 'Text',

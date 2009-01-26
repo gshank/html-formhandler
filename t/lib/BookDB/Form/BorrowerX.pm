@@ -21,7 +21,7 @@ has '+name_prefix' => ( default => 'borrower' );
 
 __PACKAGE__->meta->make_immutable;
 
-sub profile {
+sub field_list {
 	return {
 		fields => {
 			name         => {

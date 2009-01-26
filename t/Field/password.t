@@ -66,7 +66,7 @@ use strict;
 use warnings;
 use base 'HTML::FormHandler';
 
-sub profile {
+sub field_list {
     return {
         optional => {
             login       => 'Text',

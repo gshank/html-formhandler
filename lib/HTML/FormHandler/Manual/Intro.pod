@@ -1,6 +1,6 @@
 =head1 NAME
 
-HTML::FormHandler::Intro - basic usage of FormHandler
+HTML::FormHandler::Manual::Intro - basic usage of FormHandler
 
 =head1 SUMMARY
 
@@ -42,7 +42,7 @@ the form in an HTML page.
 Create a Form, subclassed from HTML::FormHandler::Model::DBIC
 
     package MyApp:Form::User;
-    use Moose;
+    use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Model::DBIC';
 
     # Associate this form with a DBIx::Class result class
@@ -54,48 +54,27 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     # Field names are usually column, accessor, or relationship names in your
     # DBIx::Class result class. You can also have fields that don't exist
     # in your result class.
-    sub profile {                 # or: has '+profile' => ( default => ...)
-        return {
-            fields => {
-                name        => {
-                   type => 'Text',
-                   label => 'Username',
-                   required => 1,
-                   required_message => 'You must enter a username',
-                   noupdate => 1,
-                   unique => 1,  # unique in db
-                   unique_message => 'That username is already taken'
-                },
-                age         => {
-                    type => 'PosInteger',
-                    label    => 'Age',
-                    required => 1,
-                    css_class => 'box', # not used by HF, for templates
-                    title => 'User age in years', # for templates
-                    widget => 'age_text', # allows selecting a particular
-                                          # widget in your templates or in
-                                          # a rendering role
-                    range_start => 18,    # can't enter an age less than 18
-                },
-                sex         => {
-                    type => 'Select',
-                    label => 'Gender',
-                    required => 1,
-                },
-                birthdate   => '+MyApp::Field::Date', # customized field class
-                hobbies     =>  {
-                    type => 'Multiple',
-                    size => 5,
-                },
-                address     => 'Text',
-                city        => 'Text',
-                state       => 'Select',
-            },
 
-            dependency => [
+    has_field 'name'    => ( type => 'Text', label => 'Username, required => 1,
+       required_message => 'You must enter a username', unique => 1,
+       unique_message => 'That username is already taken' );
+    # the css_class, title, and widget attributes are for use in templates
+    has_field 'age'     => ( type => 'PosInteger', required => 1, css_class => 'box',
+       title => 'User age in years', widget => 'age_text', range_start => 18 ); 
+    has_field 'sex'     => ( type => 'Select', label => 'Gender', required => 1 );
+    # a customized field class
+    has_field 'birthdate => ( type => '+MyApp::Field::Date' );
+    has_field 'hobbies' => ( type => 'Multiple', size => 5 );
+    has_field 'address' => ( type => 'Text' );
+    has_field 'city'    => ( type => 'Text' );
+    has_field 'state'   => ( type => 'Select' );
+
+    has '+dependency' => ( default => sub {
+            [
                 ['address', 'city', 'state'],
             ],
-        };
+        }
+    );
 
 In a template, for an input field:
 
@@ -241,26 +220,25 @@ The C<< $form->process >> or C<< $form->update >> methods will validate
 the parameters and then update or create the database row object.  
 
 
-=head1 The form profile
+=head1 The form field_list
 
 Returns a hashref of field definitions.
 
-The possible keys in the profile hashref are:
+The possible keys in the field_list hashref are:
 
    required
    optional
    fields
    auto_required
    auto_optional
-   dependency
 
-The profile is the easiest way to define the fields in your form (though
+The field_list one way to define the fields in your form (though
 you can also add fields individually). 
 
 You can categorize your fields as required and optional with two separate 
 hashrefs:
 
-    my $profile => {
+    my $field_list => {
         required => {
             field_one => 'Text', 
         },
@@ -272,7 +250,7 @@ hashrefs:
 Or you can use one hashref and indicate 'required' as yet another field
 attribute:
 
-    my $profile => {
+    my $field_list => {
         fields => [
             field_one => {
                type => 'Text',
@@ -289,7 +267,7 @@ All other keys are attributes of L<HTML::FormHandler::Field> or its subclasses.
 
 An example of a select field:
 
-    my $profile = {
+    my $field_list = {
         fields => {
             favorite_color => {
                 type            => 'Select',
@@ -309,7 +287,7 @@ The definition above is the equivalent of the following code:
     $form->add_field( $field );
 
 
-For the "auto" profile keys, provide a list of field names.  
+For the "auto" field_list keys, provide a list of field names.  
 The field types will be determined by calling 'guess_field_type' 
 in the model.  
 
@@ -319,32 +297,13 @@ in the model.
 The 'guess_field_type' method could be customized to provide more
 sophisticated determination of types. See the model class. 
 
-The 'dependency' profile key is an array of arrays of field names.  
-During validation, if any field in a given group 
-contains the pattern /\S/ (non-blank), the 'required' flag
-is set for all of the fields in the group.
-
-    sub profile {
-        return {
-            fields => [
-                name    => 'Text',
-                age     => 'Integer',
-                date    => 'DateTime',
-                comment => 'Text',
-                ...
-            ],
-            dependency => [
-               ['address', 'city', 'state', 'zip'],
-               ['cc_no', 'cc_expires'],
-            ],
-        };
-    }
 
 =head1 Fields
 
-A form's fields are created from the definitions in the "profile" subroutine.
-FormHandler processes the profile and creates an array of 
-L<HTML::FormHandler::Field> objects. The "type" of a field in the profile
+A form's fields are created from the 'has_field' and 'field_list'
+definitions.
+FormHandler processes the field lists and creates an array of 
+L<HTML::FormHandler::Field> objects. The "type" of a field 
 determines which field class to use. The field class determines which
 attributes are valid for a particular field. A number of field classes are 
 provided by FormHandler. You can customize the validation in your form on a 
@@ -353,22 +312,8 @@ might be more easily handled in a custom field class.
 
 Fields can also be added dynamically with the 'add_field' method.
 
-In the template the fields are accessed with form.field('name').
-Field errors are in $field->errors. 
-
-Each form field is associated with a general type.  The type name
-is used to load a module by that name:
-
-    my $profile = {
-        required => {
-            title   => 'Text',
-            age     => 'Integer',
-        },
-    };
-
-
-Type "Text" loads the HTML::FormHandler::Field::Text module and type
-'Integer' loads HTML::FormHandler::Field::Integer.
+In the template the fields are accessed with C< form.field('name') >.
+Field errors are in C<< $field->errors >>. 
 
 The fields are assumed to be in the HTML::FormHandler::Field name
 space.  If you want to explicitly list the field's package, prefix it
@@ -377,10 +322,8 @@ be set with the form's "field_name_space" attribute:
  
     has '+field_name_space' => ( default => 'MyApp::Form::Field' );
 
-    required => {
-        name    => 'Text',  # HTML::FormHandler::Field::Text
-        foo     => '+Foo',  # MyApp::Form::Field::Foo
-    },
+    has_field 'name' => ( type => 'Text' ); # HTML::FormHandler::Field::Text
+    has_field 'foo'  => ( type => +Foo' );  # MyApp::Form::Field::Foo
 
 The most basic type is "Text", which takes a single scalar value.  A "Select"
 class is similar, but its value must be a valid choice from a list of options.
@@ -404,6 +347,45 @@ it's this internal value that is stored or used by your application.
 By default, the validation is simply to copy the data from the "input" to the "value"
 field attribute, but you might have a field that must be converted from a text
 representation to an object (e.g. month, day, year to DateTime).
+
+=head1 Common form attributes
+
+The 'dependency' field_list key is an array of arrays of field names.  
+During validation, if any field in a given group 
+contains the pattern /\S/ (non-blank), the 'required' flag
+is set for all of the fields in the group.
+
+   has '+dependency' => ( default => sub {
+            [
+               ['address', 'city', 'state', 'zip'],
+               ['cc_no', 'cc_expires'],
+            ],
+        },
+    );
+
+The 'item_class':
+
+   has '+item_class' => ( default => 'Book' );
+
+The form name:
+
+   has '+name' => ( default => 'book_form' );
+
+The field name space for use with '+' prefixed fields:
+
+   has '+field_name_space' => ( default => 'MyApp::Form::Field' );
+   ...
+   has_field 'subname' => ( type => '+SubName' );
+   
+An 'init_object' for filling in the form with default values instead of
+the database object. (To set individual field values use "init_value_$fieldname".)
+
+   has '+init_object' => ( default => sub { 
+         {  name => 'Choose name',
+            project => 'Standard'
+         }
+      }
+   );
 
 =head1 Other methods for your form
 
@@ -449,6 +431,7 @@ in the database.
       return 0 unless $item && $item->license_id; 
       return $item->license_id;
    }
+
 
 =item validate_$fieldname
 

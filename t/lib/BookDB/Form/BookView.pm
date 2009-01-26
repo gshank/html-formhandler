@@ -7,7 +7,7 @@ use DateTime;
 
 has '+item_class' => ( default => 'Book' );
 
-sub profile {
+sub field_list {
    return  {
       required => {
         borrower   => 'Select',

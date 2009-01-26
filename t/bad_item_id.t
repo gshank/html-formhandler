@@ -24,7 +24,7 @@ $record->delete if $record;
 
    has '+item_class' => ( default => 'Book' );
 
-   sub profile {
+   sub field_list {
        return {
            fields    => [
                title     => {

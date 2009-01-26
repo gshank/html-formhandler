@@ -8,7 +8,7 @@ use_ok( 'HTML::FormHandler' );
    use Moose;
    extends 'HTML::FormHandler';
 
-   sub profile {
+   sub field_list {
        return {
            fields    => [
                field_one => 'Text',

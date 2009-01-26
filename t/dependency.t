@@ -4,30 +4,26 @@ use DateTime;
 
 {
    package My::Form;
-   use Moose;
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   sub profile {
-      return {
-         required => {
-             name    => 'Text',
-             age     => 'Integer',
-         },
-         optional => {
-             comment  => 'Text',
-             address  => 'Text',
-             city     => 'Text',
-             state    => 'Text',
-             zip      => 'Text', 
-             cc_no    => 'Text',
-             cc_expires => 'Text',
-         },
-         dependency => [
+   has_field 'name'    => ( type => 'Text', required => 1 );
+   has_field 'age'     => ( type => 'Integer', required => 1 );
+   has_field 'comment' => ( type => 'Text' );
+   has_field 'address' => ( type => 'Text' );
+   has_field 'city'    => ( type => 'Text' );
+   has_field 'state'   => ( type => 'Text' );
+   has_field 'zip'     => ( type => 'Text' );
+   has_field 'cc_no'   => ( type => 'Text' );
+   has_field 'cc_expires' => ( type => 'Text' );
+
+   has '+dependency' => ( default => sub {
+         [
             [ 'address', 'city', 'state', 'zip' ],
             [ 'cc_no', 'cc_expires' ],
-         ],
-      };
-   }
+         ] 
+      }
+   );
 
 }
 

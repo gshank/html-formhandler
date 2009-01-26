@@ -151,7 +151,7 @@ sub init_value
 
 =head2 validate_model
 
-Validates profile items that are dependent on the model.
+Validates fields that are dependent on the model.
 This is called via the validation process and the model class
 must at least validate "unique" constraints defined in the form
 class.
@@ -179,7 +179,7 @@ sub clear_model { }
 
 Gerda Shank, gshank@cpan.org
 
-Based on the original source code of L<Form::Processor::Field> by Bill Moseley
+Based on the original source code of L<Form::Processor::Model> by Bill Moseley
 
 =head1 COPYRIGHT
 

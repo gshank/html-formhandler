@@ -20,7 +20,7 @@ Catalyst Form.
 
 has '+item_class' => ( default => 'Book' );
 
-sub profile {
+sub field_list {
 	my $self = shift;
 
 	return {

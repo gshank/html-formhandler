@@ -29,28 +29,22 @@ create the file Book.pm.
 
    package MyApp::Form::Book;
 
-   use Moose;
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler::Model::DBIC';
 
    has '+item_class' => ( default =>'Books' );
-   sub profile {
-     return {
-         fields => {
-            title => 'Text',
-            rating => 'Integer',
-            authors => {
-               type => 'Multiple',
-               label_column => 'last_name',
-            },
-         }
-      } 
-   }
+   has_field 'title' => ( type => 'Text' );
+   has_field 'rating' => ( type => 'Integer' );
+   has_field 'authors' => ( type => 'Multiple', label_column => 'last_name' );
+
+   no HTML::FormHandler::Moose;
    1;
 
 This is your Form class. The form initializes the 'item_class' to the
 source name of your DBIx::Class result class. The form's fields are defined
-in the 'profile' attribute. The names of the fields should match
-a column, relationship, or other accessor in your DBIx::Class result class.
+with the 'has_field' sugar, or in a 'field_list'. The names of the fields 
+should match a column, relationship, or other accessor in your DBIx::Class 
+result class.
 
 The basic fields have only a 'type', such as
 'Text', or 'Integer'. These types are actually the names of 
@@ -109,8 +103,9 @@ schema.
 
 =head2 Create a Template for the form 
 
-L<HTML::FormHandler> doesn't provide a 'render' routine to automatically
-create the HTML for your forms (though you could create one of your own). 
+L<HTML::FormHandler> provides only a simple sample 'render' routine to 
+automatically create the HTML for your forms that you could use as
+a model for creating your own rendering routines.
 You could also use TT macros to do pretty sophisticated
 template generation. But for now, we'll stick to a straightforward TT
 template:
@@ -204,36 +199,17 @@ character to the rating field. You should get an error message.
 
 =head2 Add additional attributes to your form's fields 
 
-Start by adding a 'label' attribute to the fields, replacing the
-simple type string with a hashref containing various attribute
-keys and values: 
+We'll add a couple of 'label' attribute to the fields: 
 
-   sub profile {
-      return  {
-         fields => {
-            title => {
-               type => 'Text',
-               label => 'Title of Book',
-            },
-            rating => {
-               type => 'Integer',
-               label => 'Rating (1-5)',
-            },
-            authors => {
-               type => 'Multiple',
-               label_column => 'last_name',
-            },
-         }
-      }
+   has_field 'title' => ( type => 'Text', label => 'Title of a Book' );
+   has_field 'rating' => ( type => 'Integer', label => 'Rating (1-5)' );
+   has_field 'authors' => ( type => 'Multiple', label_column => 'last_name' );
+
     
 L<HTML::FormHandler> doesn't have built-in attributes for a submit button, but
 if you want to put one in your form to use in a template, go ahead.
 
-   sub submit {
-     return {
-        name => 'submit',
-        value => 'Submit',
-   }
+   has '+submit' => ( default => sub { { name => 'submit', value => 'Submit' }});
 
 In a template, you could then access this with:
 
@@ -263,34 +239,15 @@ attribute for all your fields. Or use a Moose role instead of inheritance.
 Now we'll add more validation to ensure that users
 are entering correct data. 
 
-Update the 'profile' subroutine in your MyApp::Form::Book file:
+Update the fields form file:
 
-   sub profile {
-      return  {
-         fields => {
-            title => {
-               type => 'Text',
-               label => 'Title of Book',
-               required => 1,
-               size => 40,
-               min_length => 5,
-            },
-            rating => {
-               type => 'Integer',
-               label => 'Rating',
-               required => 1,
-               required_message => 'You must rate the book',
-               range_start => 1,
-               range_end => 5,
-            },
-            authors => {
-               type => 'Multiple',
-               label_column => 'last_name',
-               required => 1,
-            },
-         }
-      }
-   }
+   has_field 'title' => ( type => 'Text', label => 'Title of a Book',
+      required => 1, size => 40, min_length => 5 );
+   has_field 'rating' => ( type => 'Integer', label => 'Rating (1-5)',
+      required => 1, required_message => 'You must rate the book',
+      range_start => 1, range_end => 5 );
+   has_field 'authors' => ( type => 'Multiple', label_column => 'last_name',
+      required => 1 );
 
 We've made all the fields required.
 We added 'size' and 'min_length' attributes to the 'title' field. These 

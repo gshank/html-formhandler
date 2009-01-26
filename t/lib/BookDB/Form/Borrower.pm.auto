@@ -19,10 +19,10 @@ Catalyst Controller.
 has '+item_class' => ( default => 'Borrower' );
 
 
-sub profile {
+sub field_list {
 	return {
 		auto_required => ['name', 'email'],
-        auto_optional => ['phone', 'url'],
+      auto_optional => ['phone', 'url'],
 	};
 }
 

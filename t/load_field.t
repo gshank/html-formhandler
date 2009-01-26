@@ -4,32 +4,19 @@ use lib 't/lib';
 
 {
    package My::Form;
-   use Moose;
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
    # this form specifies the form name
    #sub init_field_name_space { 'BookDB::Form::Field' }
    has '+field_name_space' => ( default => 'BookDB::Form::Field' );
 
-   sub profile {
-       return {
-           fields    => {
-               field_one => {
-                  type => '+AltText',
-                  another_attribute => 'one',
-               },
-               field_two => {
-                  type => '+AltText',
-                  another_attribute => 'two',
-               },
-               field_three => {
-                  type => '+AltText',
-                  another_attribute => 'three',
-               },
-           },
-       };
-   }
+   has_field 'field_one'   => ( type => '+AltText', another_attribute => 'one' );
+   has_field 'field_two'   => ( type => '+AltText', another_attribute => 'two' );
+   has_field 'field_three' => ( type => '+AltText', another_attribute => 'three' );
+
 }
+
 my $form = My::Form->new; 
 ok( $form, 'get form' );
 

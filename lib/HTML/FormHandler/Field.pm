@@ -13,7 +13,7 @@ HTML::FormHandler::Field - Base class for HTML::FormHandler Fields
 =head1 SYNOPSIS
 
 Instances of Field subclasses are generally built by L<HTML::FormHandler>
-from the profile, but they can also be constructed using new.
+from the field_list, but they can also be constructed using new.
 
     use HTML::FormHandler::Field::Text;
     my $field = HTML::FormHandler::Field::Text->new( name => $name, ... );
@@ -30,7 +30,7 @@ In your custom field class:
 =head1 DESCRIPTION
 
 This is the base class for form fields. The 'type' of a field class
-is used in the FormHandler profile to identify which field class to
+is used in the FormHandler field_list or has_field to identify which field class to
 load.  
 
 A number of field classes are provided by the distribution. The basic
@@ -259,7 +259,7 @@ rendering roles. Fields of different type can use the same
 widget.
 
 This attribute is set in the field classes, or in the fields
-defined in the profile.
+defined in the form.
 
 Widget types for the provided field classes:
 
@@ -289,9 +289,9 @@ This is the field's order used for sorting errors and field lists.
 See the "set_order" method and F::P method "sorted_fields".
 The order field is set for the fields when the form is built, but
 if the fields are defined with a hashref the order will not be defined.
-The "auto" and "fields" profile attributes will take an arrayref which
+The "auto" and "fields" field_list attributes will take an arrayref which
 will preserve the order. If you explicitly set "order" on the fields
-in a profile, you should set it on all the fields, otherwise results
+in a field_list, you should set it on all the fields, otherwise results
 will be unpredictable.
 
 =cut
@@ -343,7 +343,7 @@ does not have 'options'.
 The IntRange field uses this range to create a select list 
 with a range of integers.
 
-In a FormHandler profile:
+In a FormHandler field_list
 
     age => {
         type            => 'Integer',
@@ -381,7 +381,7 @@ The field's 'value' will be formatted with two decimal places.
 
 =cut
 
-has 'value_sprintf' => ( isa => 'Str|Undef', is => 'rw', default => undef );
+has 'value_sprintf' => ( isa => 'Str|Undef', is => 'rw' );
 
 =head2 id, build_id
 
@@ -418,7 +418,7 @@ the C<$form->fif> and C<$field->fif> methods.
 
 =cut
 
-has 'password' => ( isa => 'Bool', is => 'rw', default => 0 );
+has 'password' => ( isa => 'Bool', is => 'rw' );
 
 =head2 writeonly
 
@@ -430,7 +430,7 @@ be used for columns that should only be written to the database on updates.
 
 =cut
 
-has 'writeonly' => ( isa => 'Bool', is => 'rw', default => 0 );
+has 'writeonly' => ( isa => 'Bool', is => 'rw' );
 
 =head2 clear
 
@@ -439,7 +439,7 @@ field.  Validation is also not run on this field.
 
 =cut
 
-has 'clear' => ( isa => 'Bool', is => 'rw', default => 0 );
+has 'clear' => ( isa => 'Bool', is => 'rw' );
 
 =head2 disabled
 
@@ -452,8 +452,8 @@ in constructing HTML.
 
 =cut
 
-has 'disabled' => ( isa => 'Bool', is => 'rw', default => '0' );
-has 'readonly' => ( isa => 'Bool', is => 'rw', default => '0' );
+has 'disabled' => ( isa => 'Bool', is => 'rw' );
+has 'readonly' => ( isa => 'Bool', is => 'rw' );
 
 =head2 noupdate
 
@@ -465,7 +465,7 @@ written to the data store.
 
 =cut
 
-has 'noupdate' => ( isa => 'Bool', is => 'rw', default => '0' );
+has 'noupdate' => ( isa => 'Bool', is => 'rw' );
 
 =head2 errors
 

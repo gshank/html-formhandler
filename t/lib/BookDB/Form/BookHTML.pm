@@ -7,7 +7,7 @@ has '+item_class' => ( default => 'Book' );
 has '+name' => ( default => 'book' );
 has '+html_prefix' => ( default => 1 );
 
-sub profile {
+sub field_list {
     return {
         fields    => [
             title     => {

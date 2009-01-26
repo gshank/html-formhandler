@@ -43,7 +43,7 @@ is( $errors[0], 'Duplicate value for ISBN', 'error message for duplicate');
 
    has '+item_class' => ( default => 'Book' );
 
-   sub profile {
+   sub field_list {
        return {
            fields    => [
                title     => {

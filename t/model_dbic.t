@@ -21,7 +21,7 @@ ok($schema, 'get schema');
    extends 'HTML::FormHandler::Model::DBIC';
 
    has '+item_class' => ( default => 'Book' );
-   has '+profile' => ( default => sub {
+   has '+field_list' => ( default => sub {
          {
            fields    => [
                title     => {
@@ -52,7 +52,7 @@ ok( $author_field->order == 2, 'order for author');
    use Moose;
    extends 'HTML::FormHandler::Model::DBIC';
 
-   has '+profile' => ( default => sub {
+   has '+field_list' => ( default => sub {
          {
            fields    => [
                title     => {

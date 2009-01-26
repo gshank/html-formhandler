@@ -13,7 +13,7 @@ use_ok( 'HTML::FormHandler' );
 
    has '+name' => ( default => 'testform_' );
 
-   sub profile {
+   sub field_list {
        return {
            required    => {
                reqname     => 'Text',

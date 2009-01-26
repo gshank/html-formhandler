@@ -22,9 +22,7 @@ has '+name_prefix' => ( default => 'book' );
 
 __PACKAGE__->meta->make_immutable;
 
-sub profile {
-	my $self = shift;
-
+sub field_list {
 	return {
 		auto_required => ['title', 'author', 'isbn', 'publisher'],
         auto_optional => ['genres', 'format', 'year', 'pages'], 
