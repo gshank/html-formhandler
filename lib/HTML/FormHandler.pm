@@ -1,6 +1,6 @@
 package HTML::FormHandler;
 
-use Moose;
+use HTML::FormHandler::Moose;
 use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Model';
 
@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 =head1 NAME
 
@@ -670,9 +670,11 @@ field objects.  It calls the make_field() method for each field.
 sub build_form
 {
    my $self = shift;
+$DB::single=1;
+   my $field_list = $self->meta->field_list;
+   $self->_build_fields( $field_list, 0 ) if $field_list; 
 
    my $profile = $self->profile;
-
    for my $group ( 'required', 'optional', 'fields' )
    {
       my $required = $group eq 'required' ? 1 : 0;
@@ -1265,5 +1267,5 @@ the same terms as Perl itself.
 
 =cut
 
-no Moose;
+no HTML::FormHandler::Moose;
 1;

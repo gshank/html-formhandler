@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 20;
+   plan tests => 19;
 }
 
 use_ok( 'HTML::FormHandler' );
