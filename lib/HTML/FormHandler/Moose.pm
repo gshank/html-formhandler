@@ -1,7 +1,7 @@
-package  # hide from Pause
-   HTML::FormHandler::Moose;
+package  HTML::FormHandler::Moose;
 
 use Moose;
+use Moose::Exporter;
 use HTML::FormHandler::Meta::Class;
 
 =head1 NAME
@@ -10,17 +10,15 @@ HTML::FormHandler::Moose - to add FormHandler sugar
 
 =head1 SYNOPSIS
 
-Enables the use of field specification sugar:
-
-   has_field 'username' => ( type => 'Text', ... );
-
+Enables the use of field specification sugar (has_field).
 Use this module instead of C< use Moose; >
 
    package MyApp::Form::Foo;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   < define form>
+   has_field 'username' => ( type => 'Text', ... );
+   has_field 'something_else' => ( ... );
   
    no HTML::FormHandler::Moose;
    1;
@@ -33,18 +31,28 @@ Moose::Exporter->setup_import_methods(
 );
 
 sub init_meta {
-  shift;
-  Moose->init_meta( @_, metaclass => 'HTML::FormHandler::Meta::Class' );
+   shift;
+   Moose->init_meta( @_, metaclass => 'HTML::FormHandler::Meta::Class' );   
 }
 
 sub has_field
 {
    my ( $class, $name, %options ) = @_;
-   my $instance = Class::MOP::Class->initialize( 'HTML::FormHandler' );
-   my $flist_attr = $instance->get_attribute('has_field_list');
-   my $value = $flist_attr->get_value( $instance ) || [];
-   push @{$value}, {$name => \%options};
-   $flist_attr->set_value($instance, $value);
+$DB::single=1;
+   my $value = $class->meta->field_list || [];
+   if( scalar @{$value} == 0 )
+   {
+      # first time in this class.
+      foreach my $sc ( $class->meta->superclasses )
+      {
+         last if $sc eq 'HTML::FormHandler';
+         if ( $sc->meta->can('field_list') )
+         {
+            push @{$value}, @{$sc->meta->field_list};
+         }
+      }
+   }
+   push @{$value}, ($name => \%options); 
    $class->meta->field_list($value);
 }
 

@@ -1,6 +1,6 @@
 package HTML::FormHandler;
 
-use HTML::FormHandler::Moose;
+use Moose;
 use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Model';
 
@@ -508,8 +508,6 @@ This stores a weakened value.
 
 has 'parent_field' => ( is => 'rw', weak_ref => 1 );
 
-has 'has_field_list' => ( is => 'rw', isa => 'ArrayRef' );
-
 # tell Moose to make this class immutable
 HTML::FormHandler->meta->make_immutable;
 
@@ -721,8 +719,8 @@ field objects.  It calls the make_field() method for each field.
 sub build_form
 {
    my $self = shift;
-
-   my $meta_flist = $self->meta->field_list;
+$DB::single=1;
+   my $meta_flist = $self->meta->field_list if $self->meta->can('field_list');
    my $flist = $self->field_list;
    $self->_build_fields( $meta_flist, 0 ) if $meta_flist; 
    $self->_build_fields( $flist->{'required'}, 1 ) if $flist->{'required'}; 
@@ -1007,7 +1005,7 @@ Pass a second true value to not die on errors.
 sub field
 {
    my ( $self, $name, $no_die ) = @_;
-$DB::single=1;
+
    $name = $self->name_prefix . '.' . $name if $self->name_prefix;
    for my $field ( $self->fields )
    {
@@ -1338,5 +1336,5 @@ the same terms as Perl itself.
 
 =cut
 
-no HTML::FormHandler::Moose;
+no Moose;
 1;

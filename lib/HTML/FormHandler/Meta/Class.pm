@@ -1,5 +1,5 @@
 package  # hide from Pause
-    HTML::FormHandler::Meta::Class;
+   HTML::FormHandler::Meta::Class;
 use Moose;
 extends 'Moose::Meta::Class';
 
@@ -9,11 +9,11 @@ HTML::FormHandler::Meta::Class
 
 =head1 SYNOPSIS
 
-Adds a 'field_list' meta attribute for handling 'has_field'
+Add metaclass to field_list attribute
 
 =cut
 
-has 'field_list' => ( is => 'rw' );
+has 'field_list' => ( is => 'rw', isa => 'ArrayRef', predicate => 'has_field_list' );
 
 =head1 AUTHOR
 
@@ -21,10 +21,8 @@ Gerda Shank, gshank@cpan.org
 
 =head1 COPYRIGHT
 
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
+Same terms as Perl itself.
 
 =cut
 
-no Moose;
 1;
