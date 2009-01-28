@@ -33,13 +33,13 @@ sub init_meta {
 
 sub has_field
 {
-   my ( $caller, $name, %options ) = @_;
-
-   my $obj = Class::MOP::Class->initialize( $caller );
-   my $list = $caller->meta->field_list || [];
-   push @{$list}, ($name => \%options);
-   $caller->meta->field_list($list);
-   $list = $caller->meta->field_list;
+   my ( $class, $name, %options ) = @_;
+   my $instance = Class::MOP::Class->initialize( 'HTML::FormHandler' );
+   my $flist_attr = $instance->get_attribute('has_field_list');
+   my $value = $flist_attr->get_value( $instance ) || [];
+   push @{$value}, {$name => \%options};
+   $flist_attr->set_value($instance, $value);
+   $class->meta->field_list($value);
 }
 
 =head1 AUTHOR

@@ -508,6 +508,8 @@ This stores a weakened value.
 
 has 'parent_field' => ( is => 'rw', weak_ref => 1 );
 
+has 'has_field_list' => ( is => 'rw', isa => 'ArrayRef' );
+
 # tell Moose to make this class immutable
 HTML::FormHandler->meta->make_immutable;
 
