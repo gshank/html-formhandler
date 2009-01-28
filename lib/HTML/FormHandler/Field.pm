@@ -310,11 +310,12 @@ has 'required' => ( isa => 'Bool', is => 'rw', default => '0' );
 
 Error message text added to errors if required field is not present
 
-The default is "This field is required".
+The default is "Field <field label> is required".
 
 =cut
 
-has 'required_message' => ( isa => 'Str', is => 'rw', default => 'This field is required' );
+has 'required_message' => ( isa => 'Str', is => 'rw', lazy => 1, 
+     default => sub { shift->label . ' field is required' } );
 
 =head2 unique
 

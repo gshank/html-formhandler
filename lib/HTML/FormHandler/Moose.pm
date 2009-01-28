@@ -10,9 +10,15 @@ HTML::FormHandler::Moose - to add FormHandler sugar
 
 =head1 SYNOPSIS
 
-   package MyApp::Form::Foo;
+Enables the use of field specification sugar:
 
+   has_field 'username' => ( type => 'Text', ... );
+
+Use this module instead of C< use Moose; >
+
+   package MyApp::Form::Foo;
    use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
 
    < define form>
   
