@@ -450,7 +450,7 @@ has_fields, and set_field_at methods.
 
 has 'fields' => (
    metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef',
+   isa        => 'ArrayRef[HTML::FormHandler::Field]',
    is         => 'rw',
    default    => sub { [] },
    auto_deref => 1,
@@ -813,11 +813,10 @@ string, or a hashref with a 'type' key containing the field's type.
 
 sub make_field
 {
-   my ( $self, $name, $type_data ) = @_;
+   my ( $self, $name, $attr ) = @_;
 
-   $type_data = { type => $type_data } unless ref $type_data eq 'HASH';
-   my $type = $type_data->{type}
-      || die 'No field type for field $name';
+   $attr = { type => $attr } unless ref $attr eq 'HASH';
+   my $type = $attr->{type} ||= 'Text';
    my $class =
         $type =~ s/^\+//
       ? $self->field_name_space
@@ -828,13 +827,13 @@ sub make_field
       or die "Could not load field class '$type' for field '$name'"; 
 
    # Add field name and reference to form 
-   $type_data->{name} =
+   $attr->{name} =
         $self->name_prefix
       ? $self->name_prefix . '.' . $name
       : $name;
-   $type_data->{form} = $self;
+   $attr->{form} = $self;
 
-   my $field = $class->new( %{$type_data} );
+   my $field = $class->new( %{$attr} );
 
    return $field;
 }
@@ -1008,7 +1007,7 @@ Pass a second true value to not die on errors.
 sub field
 {
    my ( $self, $name, $no_die ) = @_;
-
+$DB::single=1;
    $name = $self->name_prefix . '.' . $name if $self->name_prefix;
    for my $field ( $self->fields )
    {

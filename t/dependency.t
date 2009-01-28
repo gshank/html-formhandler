@@ -7,15 +7,15 @@ use DateTime;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   has_field 'name'    => ( type => 'Text', required => 1 );
-   has_field 'age'     => ( type => 'Integer', required => 1 );
-   has_field 'comment' => ( type => 'Text' );
-   has_field 'address' => ( type => 'Text' );
-   has_field 'city'    => ( type => 'Text' );
-   has_field 'state'   => ( type => 'Text' );
-   has_field 'zip'     => ( type => 'Text' );
-   has_field 'cc_no'   => ( type => 'Text' );
-   has_field 'cc_expires' => ( type => 'Text' );
+   has_field 'name'    => ( required => 1 );
+   has_field 'age'     => ( required => 1 );
+   has_field 'comment';
+   has_field 'address';
+   has_field 'city';
+   has_field 'state';
+   has_field 'zip';
+   has_field 'cc_no';
+   has_field 'cc_expires';
 
    has '+dependency' => ( default => sub {
          [
@@ -46,7 +46,7 @@ is( $error_count, 3, 'number of errors is 3');
 foreach my $field (@error_fields)
 {
    my $name = $field->name;
-   is( $field->errors->[0], 'This field is required', "required field: $name");
+   is( $field->errors->[0], $field->label . ' field is required', "required field: $name");
 }
 
 

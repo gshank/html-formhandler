@@ -1,26 +1,29 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 9;
+my $tests = 10;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
 
 {
    package My::Form;
-   use Moose;
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
    has '+name' => ( default => 'testform_' );
 
+   has_field 'optname' => ( temp => 'First' );
+
+   has_field 'reqname' => ( required => 1 );
+
    sub field_list {
        return {
-           required    => {
-               reqname     => 'Text',
+           fields    => {
                fruit       => 'Select',
-           },
-           optional    => {
-               optname     => 'Text',
+               optname     => {
+                  temp => 'Second'
+               }
            },
        };
    }
@@ -35,6 +38,8 @@ use_ok( 'HTML::FormHandler' );
 }
 
 my $form = My::Form->new;
+
+is( $form->field('optname')->temp, 'Second', 'got second optname field' );
 
 ok( !$form->validate, 'Empty data' );
 
