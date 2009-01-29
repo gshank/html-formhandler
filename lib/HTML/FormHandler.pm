@@ -179,7 +179,7 @@ or:
       }            
    }
          
-Fields specified in a field_list will overwrite fields specified with 'has_field',
+Fields specified in a field_list will overwrite fields specified with 'has_field'.
 
 
 =head2 field_list
@@ -262,7 +262,7 @@ will return the form name + "." + field name
 
 =cut
 
-has 'html_prefix' => ( isa => 'Bool', is => 'rw', default => 0 );
+has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
 
 =head2 init_object
 
@@ -719,7 +719,7 @@ field objects.  It calls the make_field() method for each field.
 sub build_form
 {
    my $self = shift;
-$DB::single=1;
+
    my $meta_flist = $self->meta->field_list if $self->meta->can('field_list');
    my $flist = $self->field_list;
    $self->_build_fields( $meta_flist, 0 ) if $meta_flist; 

@@ -24,6 +24,7 @@ requires:
   Carp: 0
   DBIx::Class: 0
   DateTime: 0
+  HTML::Entities: 0
   Locale::Maketext: 1.09
   Moose: 0.59
   MooseX::AttributeHelpers: 0.14
@@ -31,4 +32,4 @@ requires:
   perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.09
+version: 0.10

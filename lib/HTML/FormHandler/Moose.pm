@@ -38,7 +38,7 @@ sub init_meta {
 sub has_field
 {
    my ( $class, $name, %options ) = @_;
-$DB::single=1;
+
    my $value = $class->meta->field_list || [];
    if( scalar @{$value} == 0 )
    {

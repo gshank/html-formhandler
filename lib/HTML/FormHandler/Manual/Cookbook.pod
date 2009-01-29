@@ -129,6 +129,16 @@ Or you can make these customizations Moose roles.
    with 'MyApp::Form::Role::Base';
    ...
    
+=head2 Access a user record in the form 
+
+You might need the user_id to create specialized select lists, or do other form processing. Add a user_id attribute to your form:
+
+  has 'user_id' => ( isa => 'Int', is => 'rw' );
+ 
+Then pass it in when you process the form:
+
+  $form->process( item => $item, params => $c->req->parameters, user_id = $c->user->user_id );
+
 
 =head1 AUTHOR
 

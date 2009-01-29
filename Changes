@@ -1,6 +1,13 @@
 Revision history for HTML::FormHandler 
 
-0.08 Sun Jan 25 2009, 03:00
+0.10 Thu Jan 29 2009, 07:00
+    Remove unnecessary 'use' from Render::Simple to eliminate install
+    failures. Change handling of 'has_field'.
+
+0.09 Sun Jan 25 2009, 17:00
+    Minor changes.
+
+0.08 Sat Jan 24 2009, 11:00
     Remove controller and role. Refactor to support persistent
     forms. Remove update_from_form method. Add 'process', and
     'update' methods. Update documentation to match. Update tutorial.

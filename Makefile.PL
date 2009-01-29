@@ -14,6 +14,7 @@ requires 'UNIVERSAL::require' => '0';
 requires 'Locale::Maketext'   => '1.09';
 requires 'DateTime';
 requires 'DBIx::Class';
+requires 'HTML::Entities';
 
 recommends 'Catalyst';
 recommends 'Catalyst::Component::InstancePerContext';
