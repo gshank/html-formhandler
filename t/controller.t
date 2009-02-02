@@ -13,6 +13,8 @@ BEGIN {
    plan skip_all => 'Test::WWW::Mechanize::Catalyst required' if $@;
    eval "use Template";
    plan skip_all => 'Template required' if $@;
+   eval "use Email::Valid";
+   plan skip_all => 'Email::Valid required' if $@;
    plan tests => 5;
 }
 

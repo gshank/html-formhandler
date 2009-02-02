@@ -120,19 +120,15 @@ A multiple select list where 'hobbies' is a 'many_to_many' pseudo-relationship.
    </p>
 
  
-If you always use the same model for your forms, and the same form name
-space, you can specify the config values in your application module:
-
-   __PACKAGE__->config( { 'Controller::HTML::FormHandler' =>
-       { model_name => 'DB', form_name_space => 'MyApp::Form' }} );
-
 In a Catalyst controller:
 
     package MyApp::Controller::User;
-    use Moose;
-    use base 'Catalyst::Controller';
+    BEGIN {
+       use Moose;
+       extends 'Catalyst::Controller';
+    }
     has 'form' => ( isa => 'MyApp::Form::User', is => 'rw',
-        default => sub { MyApp::Form::User->new } );
+        lazy => 1, default => sub { MyApp::Form::User->new } );
 
     # Create or edit
     sub edit : Local {
@@ -140,7 +136,7 @@ In a Catalyst controller:
 
         $c->stash( template => 'user/edit.tt' ); 
         return unless $self->form->process( item_id => $user_id,
-           schema => $c->model('DB::User')->schema );
+           schema => $c->model('DB')->schema );
 
         # Form validated.
         $c->stash( user => $form->item );
@@ -414,6 +410,7 @@ You can also write custom methods to retrieve the option info from the database:
    sub options_country
    {
       my $self = shift; 
+      return unless $self->schema;
       my @rows =
          $self->schema->resultset( 'Country' )->
             search( {}, { order_by => ['rank', 'country_name'] } )->all;

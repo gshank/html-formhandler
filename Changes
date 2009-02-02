@@ -1,5 +1,8 @@
 Revision history for HTML::FormHandler 
 
+0.11 Mon Feb 02 2009, 17:00
+    Change to use BEGIN block in controllers for Catalyst 5.80.
+
 0.10 Thu Jan 29 2009, 07:00
     Remove unnecessary 'use' from Render::Simple to eliminate install
     failures. Change handling of 'has_field'.

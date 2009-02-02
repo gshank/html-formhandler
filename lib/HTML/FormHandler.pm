@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 =head1 NAME
 
@@ -40,11 +40,13 @@ An example of a Catalyst controller that uses an HTML::FormHandler form
 to update a 'Book' record:
 
    package MyApp::Controller::Book;
-   use Moose;
-   use base 'Catalyst::Controller';
+   BEGIN {
+      use Moose;
+      extends 'Catalyst::Controller';
+   }
    use MyApp::Form::Book;
    has 'edit_form' => ( isa => 'MyApp::Form::Book', is => 'rw',
-       default => sub { MyApp::Form::Book->new } );
+       lazy => 1, default => sub { MyApp::Form::Book->new } );
 
    sub book_base : Chained PathPart('book') CaptureArgs(0)
    {

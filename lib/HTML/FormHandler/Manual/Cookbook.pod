@@ -35,6 +35,7 @@ Customize the select list in an 'options_' method:
    sub options_country
    {
       my $self = shift; 
+      return unless $self->schema;
       my @rows =
          $self->schema->resultset( 'Country' )->
             search( {}, { order_by => ['rank', 'country_name'] } )->all;

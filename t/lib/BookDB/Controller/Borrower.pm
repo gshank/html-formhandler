@@ -1,10 +1,13 @@
 package BookDB::Controller::Borrower;
 
-use Moose;
-use base 'Catalyst::Controller';
+BEGIN {
+   use Moose;
+   extends 'Catalyst::Controller';
+}
+
 use BookDB::Form::Borrower;
 has 'my_form' => ( isa => 'BookDB::Form::Borrower', is => 'rw',
-   default => sub { BookDB::Form::Borrower->new } );
+   lazy => 1, default => sub { BookDB::Form::Borrower->new } );
 
 =head1 NAME
 

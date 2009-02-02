@@ -1,14 +1,17 @@
 package BookDB::Controller::Book;
 
-use Moose;
-use base 'Catalyst::Controller';
+BEGIN {
+   use Moose;
+   extends 'Catalyst::Controller';
+}
+
 use BookDB::Form::Book;
 use BookDB::Form::BookView;
 
 has 'edit_form' => ( isa => 'BookDB::Form::Book', is => 'rw',
-   default => sub { BookDB::Form::Book->new } );
+   lazy => 1, default => sub { BookDB::Form::Book->new } );
 has 'view_form' => ( isa => 'BookDB::Form::BookView', is => 'rw',
-   default => sub { BookDB::Form::BookView->new } );
+   lazy => 1, default => sub { BookDB::Form::BookView->new } );
 
 =head1 NAME
 

@@ -64,14 +64,16 @@ this simple form the default types are adequate.
 
 Edit lib/MyApp/Controller/Books.pm.  Add use Moose:
 
-    use Moose;
-    use base 'Catalyst::Controller';
+    BEGIN {
+       use Moose;
+       extends 'Catalyst::Controller';
+    }
     use MyApp::Form::Book;
 
 Create an attribute to hold your form:
 
    has 'form' => ( isa => 'MyApp::Form::Book', is => 'rw',
-       default => sub { MyApp::Form::Book->new } );
+       lazy => 1, default => sub { MyApp::Form::Book->new } );
 
 
 =head2 Add Action to Display and Save the Form
@@ -87,7 +89,7 @@ In C<lib/MyApp/Controller/Books.pm> add the following method:
         # Validate and insert/update database 
         return unless $self->form->process( item_id => $book_id,
            params => $c->req->parameters,
-           schema => $c->model('DB::Books')->schema ); 
+           schema => $c->model('DB')->schema ); 
 
         # Form validated, return to the books list
         $c->flash->{status_msg} = 'Book saved';
