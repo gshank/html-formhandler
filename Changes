@@ -1,5 +1,11 @@
 Revision history for HTML::FormHandler 
 
+0.12 Wed Feb 04 2009, 18:00
+    Fix 'dump_fields'. Add more output for verbose. Change so
+    that 'validate' doesn't require a separate 'clear' for 
+    persistent forms. The controller test will only execute
+    with an environment variable.
+
 0.11 Mon Feb 02 2009, 17:00
     Change to use BEGIN block in controllers for Catalyst 5.80.
 

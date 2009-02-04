@@ -4,7 +4,6 @@ author:
   - 'Gerda Shank, gshank@cpan.org'
 build_requires:
   Test::More: 0.77
-  Test::WWW::Mechanize: 1.24
 distribution_type: module
 generated_by: 'Module::Install version 0.77'
 license: perl

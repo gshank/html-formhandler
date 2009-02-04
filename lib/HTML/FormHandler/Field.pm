@@ -901,23 +901,23 @@ sub dump
    my $self = shift;
 
    require Data::Dumper;
-   warn "HFH: **** Field: ",  $self->name, "\n";
-   warn "HFH: Field Type: ", ref($self), "\n";
-   warn "HFH: Required: ", ( $self->required || '0' ), "\n";
-   warn "HFH: Password: ", ( $self->password || '0' ), "\n";
+   warn "HFH: -----  ",  $self->name, " -----\n";
+   warn "HFH: type: ", ref($self), "\n";
+   warn "HFH: required: ", ( $self->required || '0' ), "\n";
+   warn "HFH: password: ", ( $self->password || '0' ), "\n";
    my $v = $self->value;
-   warn "HFH: Value: ", Data::Dumper::Dumper $v if $v;
+   warn "HFH: value: ", Data::Dumper::Dumper $v if $v;
    my $iv = $self->init_value;
-   warn "HFH: InitValue: ", Data::Dumper::Dumper $iv if $iv;
+   warn "HFH: init_value: ", Data::Dumper::Dumper $iv if $iv;
    my $i = $self->input;
-   warn "HFH: Input: ", Data::Dumper::Dumper $i if $i;
+   warn "HFH: input: ", Data::Dumper::Dumper $i if $i;
    my $fif = $self->fif;
-   warn "HFH: Fif: ", Data::Dumper::Dumper $fif if $fif;
+   warn "HFH: fif: ", Data::Dumper::Dumper $fif if $fif;
 
    if ( $self->can('options') )
    {
       my $o = $self->options;
-      warn "HFH: Options: " . Data::Dumper::Dumper $o;
+      warn "HFH: options: " . Data::Dumper::Dumper $o;
    }
 }
 

@@ -57,7 +57,12 @@ to update a 'Book' record:
       $c->res->redirect( $c->uri_for('list') );
    }
 
-
+The example above has the forms as a persistent part of the application.
+If you prefer, it also works fine to create the form on each request:
+    
+    my $form = MyApp::Form->new;
+    my $validated = $form->process( item => $book, params => $params );
+   
 An example of a form class:
 
     package MyApp::Form::User;
@@ -349,18 +354,6 @@ has 'field_counter' => (
    default => 1
 );
 
-=head2 name_prefix
-
-You don't need this attribute unless you have a compound field. 
-Prefix used for field names in compound fields.  The collection
-of fields can be a complete form.  An example might be a field
-that represents a DateTime object, but is made up of separate
-day, month, and year fields.
-
-=cut
-
-has 'name_prefix' => ( isa => 'Str', is => 'rw' );
-
 =head2 html_prefix
 
 Flag to indicate that the form name is used as a prefix for fields
@@ -378,6 +371,19 @@ will return the form name + "." + field name
 =cut
 
 has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
+
+=head2 name_prefix
+
+You don't need this attribute unless you have a compound field. 
+Prefix is used for field names in compound fields.  The collection
+of fields can be a complete form.  An example might be a field
+that represents a DateTime object, but is made up of separate
+day, month, and year fields. Adds the 'name_prefix' plus a dot to
+the beginning of the field name.
+
+=cut
+
+has 'name_prefix' => ( isa => 'Str', is => 'rw' );
 
 =head2 active_column
 
@@ -725,11 +731,12 @@ sub dump_fields
 {
    my $self = shift;
 
-   warn "HFH: Fields for form ", $self->name, "\n";
+   warn "HFH: ------- fields for form ", $self->name, "-------\n";
    for my $field ( $self->sorted_fields )
    {
       $field->dump;
    }
+   warn "HFH: ------- end fields -------\n";
 }
 
 =head2 init_from_object
@@ -1113,7 +1120,6 @@ sub build_form
 {
    my $self = shift;
   
-   warn "HFH: build_form\n" if $self->verbose;
    my $meta_flist = $self->meta->field_list if $self->meta->can('field_list');
    my $flist = $self->field_list;
    $self->_build_fields( $meta_flist, 0 ) if $meta_flist; 
