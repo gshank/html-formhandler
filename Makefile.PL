@@ -16,6 +16,8 @@ requires 'DateTime';
 requires 'DBIx::Class';
 requires 'HTML::Entities';
 
+test_requires 'Test::WWW::Mechanize' => '1.24';
+
 recommends 'Catalyst';
 recommends 'Catalyst::Component::InstancePerContext';
 recommends 'Template';

@@ -43,8 +43,6 @@ is( $form->field('optname')->temp, 'Second', 'got second optname field' );
 
 ok( !$form->validate, 'Empty data' );
 
-$form->clear_state;
-
 my $good = {
     reqname => 'hello',
     optname => 'not req',
@@ -58,7 +56,6 @@ my $bad_1 = {
     fruit   => 4,
 };
 
-$form->clear_state;
 ok( !$form->validate( $bad_1 ), 'bad 1' );
 
 ok( $form->field('fruit')->has_errors, 'fruit has error' );
@@ -71,6 +68,5 @@ is( $form->field('fruit')->id, "testform_fruit", 'field has id' );
 
 is( $form->field('fruit')->label, 'Fruit', 'field label');
 
-$form->clear_state;
 
 

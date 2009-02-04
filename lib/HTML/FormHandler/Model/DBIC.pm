@@ -148,6 +148,7 @@ sub update_model
    my $item   = $self->item;
    my $source = $self->source;
 
+   warn "HFH: update_model for ", $self->name, "\n" if $self->verbose;
    # get a hash of all fields, skipping fields marked 'noupdate'
    my $prefix = $self->name_prefix;
    my %columns;
@@ -266,6 +267,7 @@ sub update_model
    # Save item in form object
    $self->item($item);
    $self->clear_params;    # force reload of parameters from values
+   warn "HFH: finished update_model for ", $self->name, "\n" if $self->verbose;
    return $item;
 }
 

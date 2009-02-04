@@ -898,23 +898,26 @@ A little debugging.
 
 sub dump
 {
-   my $f = shift;
-   require Data::Dumper;
-   warn "\n---------- [ ", $f->name, " ] ---------------\n";
-   warn "Field Type: ", ref($f), "\n";
-   warn "Required: ", ( $f->required || '0' ), "\n";
-   warn "Password: ", ( $f->password || '0' ), "\n";
-   my $v = $f->value;
-   warn "Value: ", Data::Dumper::Dumper $v;
-   my $iv = $f->init_value;
-   warn "InitValue: ", Data::Dumper::Dumper $iv;
-   my $i = $f->input;
-   warn "Input: ", Data::Dumper::Dumper $i;
+   my $self = shift;
 
-   if ( $f->can('options') )
+   require Data::Dumper;
+   warn "HFH: **** Field: ",  $self->name, "\n";
+   warn "HFH: Field Type: ", ref($self), "\n";
+   warn "HFH: Required: ", ( $self->required || '0' ), "\n";
+   warn "HFH: Password: ", ( $self->password || '0' ), "\n";
+   my $v = $self->value;
+   warn "HFH: Value: ", Data::Dumper::Dumper $v if $v;
+   my $iv = $self->init_value;
+   warn "HFH: InitValue: ", Data::Dumper::Dumper $iv if $iv;
+   my $i = $self->input;
+   warn "HFH: Input: ", Data::Dumper::Dumper $i if $i;
+   my $fif = $self->fif;
+   warn "HFH: Fif: ", Data::Dumper::Dumper $fif if $fif;
+
+   if ( $self->can('options') )
    {
-      my $o = $f->options;
-      warn "Options: " . Data::Dumper::Dumper $o;
+      my $o = $self->options;
+      warn "HFH: Options: " . Data::Dumper::Dumper $o;
    }
 }
 

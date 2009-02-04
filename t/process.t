@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 19;
+   plan tests => 23;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -49,14 +49,22 @@ is( $num_genres, 2, 'multiple select list updated ok');
 
 is( $form->value('format'), 2, 'get value for format' );
 
-my $id = $book->id;
+$good = {
+    'title' => 'How to Test Perl Form Processors',
+    'author' => 'I.M. Author',
+    'genres' => [2, 4],
+    'format'       => 3,
+    'isbn'   => '123-02345-0502-2' ,
+    'publisher' => 'EreWhon Publishing',
+};
+ok( $form->process( item => $book, schema => $schema, params => $good ),
+  'update book with another request' ); 
 
 my $bad_1 = {
     notitle => 'not req',
     silly_field   => 4,
 };
-
-ok( !$form->process( schema => $schema, params => $bad_1 ), 'bad 1' );
+ok( !$form->process( schema => $schema, params => $bad_1 ), 'bad parameters' );
 
 
 my $bad_2 = {
@@ -78,9 +86,59 @@ ok( !$form->field('author')->has_errors, 'author has no error' );
 ok( $form->field('format')->has_errors, 'format has error' );
 
 
+
 $form->process(item => $book, schema => $schema);
 ok( $form, 'create form from db object');
 
 my $genres_field = $form->field('genres');
 is_deeply( sort $genres_field->value, [2, 4], 'value of multiple field is correct');
+
+{
+   package My::Form;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   has_field 'field_one';
+   has_field 'field_two';
+   has_field 'field_three';
+
+   sub validate_field_one
+   {
+      my ($self, $field) = @_;
+      $field->add_error( 'Field does not contain ONE' )
+         unless $field->value eq 'ONE';
+   }
+   sub validate_field_two
+   {
+      my ( $self, $field ) = @_;
+      $field->add_error( 'Field does not contain TWO' )
+         unless $field->value eq 'TWO';
+    } 
+}
+
+$form = My::Form->new;
+ok( $form, 'get non-database form' );
+
+my $bad = {
+   field_one => 'BAD',
+   field_two => 'BAD',
+};
+
+my $validated = $form->process( params => $bad );
+
+ok( !$validated, 'bad params did not validate' );
+$good = {
+   field_one => 'ONE',
+   field_two => 'TWO',
+};
+
+$validated = $form->process( params => $good );
+ok( $validated, 'good params did validate' );
+
+
+
+
+
+
+
 

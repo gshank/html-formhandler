@@ -1,5 +1,4 @@
 [% PROCESS scaffold/header.tt %]
-[% USE table_class = Class('BookDB::Model::DB::Borrower') %]
 <table id="borrowers">
 <caption>Table: List of Borrowers</caption>
   <tr>
