@@ -1,5 +1,8 @@
 Revision history for HTML::FormHandler 
 
+0.13 We Feb 04 2009, 23:00
+    Fix validate to set params if hash
+
 0.12 Wed Feb 04 2009, 18:00
     Fix 'dump_fields'. Add more output for verbose. Change so
     that 'validate' doesn't require a separate 'clear' for 

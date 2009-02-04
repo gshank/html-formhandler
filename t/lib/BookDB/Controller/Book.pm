@@ -9,7 +9,7 @@ use BookDB::Form::Book;
 use BookDB::Form::BookView;
 
 has 'edit_form' => ( isa => 'BookDB::Form::Book', is => 'rw',
-   lazy => 1, default => sub { BookDB::Form::Book->new( verbose => 1 ) } );
+   lazy => 1, default => sub { BookDB::Form::Book->new } );
 has 'view_form' => ( isa => 'BookDB::Form::BookView', is => 'rw',
    lazy => 1, default => sub { BookDB::Form::BookView->new } );
 

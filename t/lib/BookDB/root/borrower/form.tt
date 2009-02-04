@@ -3,7 +3,7 @@
 <p>[%message%]</p>
 [% FOR field IN form.error_fields %]
   [% FOR error IN field.errors %]
-    <div class='error' id=error>[% field.name _ ': ' _ error %] </div>
+    <div class='error' id=error>[% error %] </div>
   [% END %]
 [% END %]
 

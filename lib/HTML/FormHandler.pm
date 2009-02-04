@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 =head1 NAME
 
@@ -928,7 +928,7 @@ sub validate
    warn "HFH: validate ", $self->name, "\n" if $self->verbose;
 
    # Set params 
-   $self->params($params) if ($params && keys %{$params});
+   $self->params($params) if (ref $params eq 'HASH');
    $params = $self->params; 
    $self->set_dependency;    # set required dependencies
 
@@ -1230,9 +1230,7 @@ sub make_field
       ? $self->name_prefix . '.' . $name
       : $name;
    $attr->{form} = $self;
-
    my $field = $class->new( %{$attr} );
-
    return $field;
 }
 

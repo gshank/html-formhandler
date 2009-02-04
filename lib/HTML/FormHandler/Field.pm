@@ -902,9 +902,10 @@ sub dump
 
    require Data::Dumper;
    warn "HFH: -----  ",  $self->name, " -----\n";
-   warn "HFH: type: ", ref($self), "\n";
+   warn "HFH: type: ", $self->type, "\n";
    warn "HFH: required: ", ( $self->required || '0' ), "\n";
-   warn "HFH: password: ", ( $self->password || '0' ), "\n";
+   warn "HFH: label: ", $self->label, "\n";
+   warn "HFH: widget: ", $self->widget, "\n";
    my $v = $self->value;
    warn "HFH: value: ", Data::Dumper::Dumper $v if $v;
    my $iv = $self->init_value;

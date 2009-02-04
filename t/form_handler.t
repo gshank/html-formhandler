@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 10;
+my $tests = 11;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
@@ -51,10 +51,13 @@ my $good = {
 
 ok( $form->validate( $good ), 'Good data' );
 
+ok( !$form->validate( {} ), 'form doesn\'t validate with empty params' );
+
 my $bad_1 = {
     optname => 'not req',
     fruit   => 4,
 };
+
 
 ok( !$form->validate( $bad_1 ), 'bad 1' );
 

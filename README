@@ -17,7 +17,8 @@ To install this module, run the following commands:
 EXAMPLE
 
 The test directory contains an example Catalyst application.
-Execute it by executing 't/script/bookdb_server.pl'.
+Execute it by executing 't/script/bookdb_server.pl' from the
+distribution root directory.
 
 SUPPORT AND DOCUMENTATION
 

@@ -1,7 +1,7 @@
 [% PROCESS scaffold/header.tt %]
 <p>[% message %]</p>
 [% FOR efield IN form.error_fields %]
-<div class='error' id=error>[% efield.name _ ': ' _ efield.errors %] </div>
+<div class='error' id=error>[% efield.errors %] </div>
 [% END %]
 <form action="[% action %]" method="post">
    <p>

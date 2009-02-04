@@ -17,7 +17,6 @@ Catalyst Controller.
 
 
 has '+item_class' => ( default => 'Borrower' );
-has '+name_prefix' => ( default => 'borrower' );
 
 __PACKAGE__->meta->make_immutable;
 
