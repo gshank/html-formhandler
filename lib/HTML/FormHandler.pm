@@ -61,7 +61,12 @@ The example above has the forms as a persistent part of the application.
 If you prefer, it also works fine to create the form on each request:
     
     my $form = MyApp::Form->new;
-    my $validated = $form->process( item => $book, params => $params );
+    my $validated = $form->update( item => $book, params => $params );
+
+or, for a non-database form:
+
+    my $form = MyApp::Form->new;
+    my $validated = $form->validate( $params );
    
 An example of a form class:
 
@@ -930,6 +935,7 @@ sub validate
    # Set params 
    $self->params($params) if (ref $params eq 'HASH');
    $params = $self->params; 
+   return unless $self->has_params;
    $self->set_dependency;    # set required dependencies
 
    foreach my $field ( $self->fields )
