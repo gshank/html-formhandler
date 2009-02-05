@@ -1,6 +1,6 @@
 Revision history for HTML::FormHandler 
 
-0.13 We Feb 04 2009, 23:00
+0.13 Wed Feb 04 2009, 23:00
     Fix validate to set params if hash
 
 0.12 Wed Feb 04 2009, 18:00
