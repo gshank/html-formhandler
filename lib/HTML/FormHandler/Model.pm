@@ -175,6 +175,14 @@ Clear out any dynamic data for persistent object
 
 sub clear_model { }
 
+=head2 update_model
+
+Update the model with validated fields
+
+=cut
+
+sub update_model { }
+
 =head1 AUTHOR
 
 Gerda Shank, gshank@cpan.org

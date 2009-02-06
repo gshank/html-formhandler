@@ -1,5 +1,8 @@
 Revision history for HTML::FormHandler 
 
+0.14 Fri Feb 06 2009, 18:00
+    Wrong version in META.yml. Fix fif for password fields.
+
 0.13 Wed Feb 04 2009, 23:00
     Fix validate to set params if hash
 

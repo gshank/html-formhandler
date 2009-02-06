@@ -187,13 +187,6 @@ FillInForm:
    sub render : ActionClass('RenderView') { }
 
 
-=head1 The Form
-
-A "form" class is where fields and validation routines are defined. It is a
-subclass of a FormHandler model class (for database forms) or FormHandler
-itself (for non-database forms). Since it is a subclass, many aspects of
-FormHandler behavior can be changed in a particular form.
-
 =head1 Form Models 
 
 If you are not using a database interface, the base class for your forms is 

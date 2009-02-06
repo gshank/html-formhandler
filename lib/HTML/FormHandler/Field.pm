@@ -126,7 +126,8 @@ has 'value' => (
    is      => 'rw',
    trigger => sub {
       my ( $self, $value ) = @_;
-      $self->fif($self->fif_value($value));
+      $self->fif($self->fif_value($value)) 
+            unless ($self->password && $self->password == 1);
       return $value;
    }
 );
@@ -143,7 +144,8 @@ has 'input' => (
    is      => 'rw',
    trigger => sub {
       my ( $self, $input ) = @_;
-      $self->fif($input);
+      $self->fif($input)
+            unless ($self->password && $self->password == 1);
       return $input;
    }
 );
@@ -154,13 +156,7 @@ For filling in forms. Input or value.
 
 =cut
 
-has 'fif' => ( is => 'rw', reader => '_fif' );
-
-sub fif
-{
-   my $self = shift;
-   return $self->_fif unless $self->password;
-}
+has 'fif' => ( is => 'rw' ); 
 
 =head2 temp
 

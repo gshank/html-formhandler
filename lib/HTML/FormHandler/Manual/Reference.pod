@@ -96,7 +96,6 @@ These attributes are usually accessed in a subroutine or in a template.
 =head2 Other Form attributes
 
    name           Form name
-   name_prefix    Flag to add/remove formname from field name in params
    validated      Flag that form has validated
    ran_validation Flag that validation has already been run
    field_name_space  Where to look for your fields
@@ -110,19 +109,32 @@ These attributes are usually accessed in a subroutine or in a template.
    required       Array of required fields
    parent_field   For subforms
    active_column  The 'active' column for all select lists in the form
+   html_prefix    Flag to prefix html field names with the form name
+   submit
+   http_method
+   action
+   user_data
+   ctx
+    
     
 =head2 Form methods
 
+   has_field       Moose-y sugar for declaring fields
    clear           Useful in tests
+   fields
    sorted_fields
    field( $name )
    field_exists( $name )
-   validate( $params )
    has_error       Ran_validation & !validated
    error_fields
    errors
    error_field_names
    uuid
+
+   process
+   update
+   validate( $params )
+  
    
 =head2  Subroutines for your form
 

@@ -17,7 +17,7 @@ Use CPAN to install L<HTML::FormHandler>
 
 =head1 Use the Tutorial application
 
-We'll use the files that were created in the L<Catalyst::Tutorial>, in
+We'll use the files that were created in the L<Catalyst::Manual::Tutorial>, in
 order to concentrate on just the bits where HTML::FormHandler is useful.
 You can download a tar file of the tutorial files from the Catalyst
 code repository. (See L<Catalyst::Manual::Tutorial::Intro>.)
