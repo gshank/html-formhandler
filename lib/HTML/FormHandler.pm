@@ -604,6 +604,7 @@ sub BUILD
 
    warn "HFH: build_form for ", $self->name, ", ", ref($self), "\n" if
       $self->verbose;
+
    $self->build_form;    # create the form fields
    return if defined $self->item_id && !$self->item;
    $self->init_from_object;    # load values from object, if item exists;
@@ -1147,10 +1148,10 @@ This is called by the BUILD method. Users don't need to call this.
 sub build_form
 {
    my $self = shift;
-  
-   my $meta_flist = $self->meta->field_list if $self->meta->can('field_list');
-   my $flist = $self->field_list;
+
+   my $meta_flist = $self->_build_meta_field_list;
    $self->_build_fields( $meta_flist, 0 ) if $meta_flist; 
+   my $flist = $self->field_list;
    $self->_build_fields( $flist->{'required'}, 1 ) if $flist->{'required'}; 
    $self->_build_fields( $flist->{'optional'}, 0 ) if $flist->{'optional'};
    $self->_build_fields( $flist->{'fields'}, 0 )   if $flist->{'fields'};
@@ -1171,6 +1172,20 @@ sub build_form
       $order++;
    }
 
+}
+
+sub _build_meta_field_list
+{
+   my $self = shift;
+   my @field_list;
+   foreach my $sc ( reverse $self->meta->linearized_isa )
+   {
+      if ( $sc->meta->can('field_list') && defined $sc->meta->field_list )
+      {
+         push @field_list, @{$sc->meta->field_list};
+      }
+   }
+   return \@field_list if scalar @field_list;
 }
 
 sub _build_fields

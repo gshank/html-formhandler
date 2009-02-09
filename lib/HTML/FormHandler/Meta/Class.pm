@@ -13,7 +13,8 @@ Add metaclass to field_list attribute
 
 =cut
 
-has 'field_list' => ( is => 'rw', isa => 'ArrayRef', predicate => 'has_field_list' );
+has 'field_list' => ( is => 'rw', isa => 'ArrayRef', 
+   predicate => 'has_field_list' );
 
 =head1 AUTHOR
 

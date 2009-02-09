@@ -1,6 +1,5 @@
 package  HTML::FormHandler::Moose;
 
-use Moose;
 use Moose::Exporter;
 use HTML::FormHandler::Meta::Class;
 
@@ -31,7 +30,7 @@ Moose::Exporter->setup_import_methods(
 );
 
 sub init_meta {
-   shift;
+   my $self = shift;
    Moose->init_meta( @_, metaclass => 'HTML::FormHandler::Meta::Class' );   
 }
 
@@ -40,18 +39,6 @@ sub has_field
    my ( $class, $name, %options ) = @_;
 
    my $value = $class->meta->field_list || [];
-   if( scalar @{$value} == 0 )
-   {
-      # first time in this class.
-      foreach my $sc ( $class->meta->superclasses )
-      {
-         last if $sc eq 'HTML::FormHandler';
-         if ( $sc->meta->can('field_list') )
-         {
-            push @{$value}, @{$sc->meta->field_list};
-         }
-      }
-   }
    push @{$value}, ($name => \%options); 
    $class->meta->field_list($value);
 }
