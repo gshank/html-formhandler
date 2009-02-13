@@ -31,7 +31,7 @@ And include them in a generic template:
 
    [% PROCESS widget/form_start.tt %]
 
-   [% FOREACH f in form.sorted_fields %]
+   [% FOREACH f IN form.sorted_fields %]
       [% PROCESS widget/${f.widget}.tt %]
    [% END %]
 

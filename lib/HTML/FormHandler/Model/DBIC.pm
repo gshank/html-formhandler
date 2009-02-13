@@ -22,7 +22,7 @@ Subclass your form from HTML::FormHandler::Model::DBIC:
     extends 'HTML::FormHandler::Model::DBIC';
 
 There are two ways to get a valid DBIC model: specify the 'item_id' (primary key),
-'item_class' (source_name), and 'schema', or pass in an 'item'.
+'item_class' (or source_name), and 'schema', or pass in an 'item'.
 
 You can specify the "item_class" in your form: 
 
@@ -89,13 +89,6 @@ has 'source_name' => (
 # tell Moose to make this class immutable
 HTML::FormHandler::Model::DBIC->meta->make_immutable;
 
-sub BUILDARGS
-{
-   my ( $self, @args ) = @_;
-   return {@args};
-}
-
-
 =head2 validate_model
 
 The place to put validation that requires database-specific lookups.
@@ -122,7 +115,6 @@ sub clear_model
    my $self = shift;
    $self->item(undef);
    $self->item_id(undef);
-   $self->schema(undef);
 }
 
 =head2 update_model
@@ -415,13 +407,14 @@ sub lookup_options
    my @rows =
       $self->schema->resultset( $source->source_name )
       ->search( $criteria, { order_by => $sort_col } )->all;
-
-   return [
-      map {
-         my $label = $_->$label_column;
-         $_->id, $active_col && !$_->$active_col ? "[ $label ]" : "$label"
-         } @rows
-   ];
+   my @options;
+   foreach my $row (@rows)
+   {
+      my $label = $row->$label_column;
+      next unless $label;   # this means there's an invalid value
+      push @options, $row->id, $active_col && !$row->$active_col ? "[ $label ]" : "$label";
+   }
+   return \@options;
 }
 
 =head2 init_value
@@ -602,6 +595,7 @@ a relationship.
 sub resultset
 {
    my ( $self, $f_class ) = @_;
+   die "You must supply a schema for your FormHandler form" unless $self->schema;
    return $self->schema->resultset( $self->source_name || $self->item_class );
 }
 

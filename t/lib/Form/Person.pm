@@ -7,5 +7,5 @@ has_field 'name';
 has_field 'telephone';
 has_field 'email';
 
-use HTML::FormHandler::Moose;
+no HTML::FormHandler::Moose;
 1;

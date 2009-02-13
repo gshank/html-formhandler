@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 =head1 NAME
 
@@ -281,11 +281,18 @@ has 'init_object' => ( isa => 'HashRef', is => 'rw' );
 
 =head2 ran_validation
 
-Flag to indicate that validation has been run.
+Flag to indicate that validation has been run. This flag will be
+false when the form is initially loaded and displayed, since
+validation is not run until FormHandler has params to validate.
+It normally shouldn't be necessary for users to check this flag.
 
 =head2 validated
 
-Flag that indicates if form has been validated
+Flag that indicates if form has been validated. If you're using the
+'update', 'process', or 'validate' methods, you probably won't
+need to use this flag, since the return value of those methods 
+is this flag. You might want to use this flag if you've
+written a method to replace 'update' or 'process'.
 
 =head2 verbose
 
@@ -395,7 +402,7 @@ the field name in the HTML form could be "book.borrower", and
 the field name in the FormHandler form (and the database column)
 would be just "borrower".
 
-   has '+name' => ( default => 'edit_form' );
+   has '+name' => ( default => 'book' );
    has '+html_prefix' => ( default => 1 );
 
 Also see the Field attribute "prename", a convenience function which
@@ -454,7 +461,13 @@ has 'submit' => ( is => 'rw' );
 
 Stores HTTP parameters. 
 Also: set_param, get_param, _params, delete_param, from
-Moose 'Collection::Hash' metaclass.
+Moose 'Collection::Hash' metaclass. The 'munge_params'
+method is called whenever params is set
+
+The 'set_param' method could be used to add an additional field
+input:
+
+   $form->set_param('title', 'This is a title');
 
 =cut
 
@@ -587,15 +600,15 @@ to load values for select fields.
 
 sub BUILDARGS
 {
-   my ( $class, @args ) = @_;
+   my $class = shift;
 
-   if ( @args == 1 )
+   if ( @_ == 1 )
    {
-      my $id = $args[0];
+      my $id = $_[0];
       return { item => $id, item_id => $id->id } if (blessed $id);
       return { item_id => $id };
    }
-   return {@args};
+   return $class->SUPER::BUILDARGS(@_); 
 }
 
 sub BUILD
@@ -636,6 +649,9 @@ this method clears the schema, item and item_id.
 This method can also be used for non-database forms:
 
     $form->process( params => $params );
+
+The return value of this method tells you whether the form validated.
+There is no need to check the 'validated' flag.
 
 =cut 
 
@@ -715,12 +731,11 @@ sub validate
 {
    my ( $self, $params ) = @_;
 
-   $self->clear_state; 
+   $self->clear_state;
    warn "HFH: validate ", $self->name, "\n" if $self->verbose;
    # Set params for validate called separately
    if ( ref $params eq 'HASH' )
    {
-      $self->clear_state;
       $self->params($params);
    }
    return unless $self->has_params;
@@ -730,7 +745,8 @@ sub validate
    foreach my $field ( $self->fields )
    {
       # Trim values and move to "input" slot
-      $field->input( $field->trim_value( $params->{$field->full_name} ) );
+      $field->input( $field->trim_value( $params->{$field->full_name} ) )
+         if $params->{$field->full_name};
       next if $field->clear;    # Skip validation
       # Validate each field and "inflate" input -> value.
       $field->validate_field;
@@ -741,6 +757,8 @@ sub validate
       $field_name =~ s/^$prefix\.//g if $prefix;
       my $method = 'validate_' . $field_name;
       $self->$method($field) if $self->can($method);
+      $method = $field->validate_meth;
+      $self->$method($field) if $method && $self->can($method); 
       if ( $self->verbose )
       {
          my $field_validated = $field->has_errors ? 'has errors' : 'validated';
@@ -766,6 +784,25 @@ sub validate
 
    
    return $self->validated;
+}
+
+=head2 db_validate
+
+Convenience function to allow validating values in the database object.
+
+   my $form = MyApp::Form::Book->new( item => $item );
+   my $validated = $form->db_validate;
+
+=cut
+
+sub db_validate
+{
+   my $self = shift;
+   foreach my $field ($self->fields)
+   {
+      $self->set_param( $field->full_name, $field->value );
+   }
+   return $self->validate;
 }
 
 =head2 clear
@@ -1091,7 +1128,7 @@ sub error_fields
    return grep { $_->has_errors } shift->sorted_fields;
 }
 
-=head2 error_field_name
+=head2 error_field_names
 
 Returns a list of the names of the fields with errors.
 

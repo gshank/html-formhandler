@@ -156,10 +156,48 @@ set those attributes on every request or clear them yourself.
 You can also create a new form on each request with new:
 
    my $form = BookDB::Form::Book->new( item => $book );
-   return unless $form->process( params => $c->req->parameters );
+   return unless $form->update( params => $c->req->parameters );
 
-If you want to use FillInForm to fill in values instead of the field's
-fif attribute, you will need to set that up yourself in an 'end' routine
+Here you use 'update', because 'process' is a convenience function
+that calls 'clear' and 'update', and you don't want to clear. There is 
+normally no need to check the 'validated' flag, since that is the 
+return value from the 'process', 'update', and 'validate' methods. 
+
+Form processing is a two-pass operation. The first time through
+the parameters will be an empty hashref, since the form has not been
+submitted yet. FormHandler will load values from the database object
+(item_id/schema or item) or from an 'init_object', and return false
+because the form has not validated yet. At this point the 'return'
+(in Catalyst) will cause the renderview processing to take place and 
+the form will be displayed with initialized values (from a template 
+using the 'fif' values or from L<HTML::FillInForm>) to allow user input.
+
+When the form is submitted, the action in the HTML form's 'action'
+value will be called (the same one that just displayed the form
+usually), and the second pass of calling the FormHandler 
+update/process/validate method will occur.
+
+This time there WILL be values in the parameters, and FormHandler
+will call the validation routines. If the validation succeeds, FormHandler
+will return a 'true' value, and execution will fall through to after
+the "return unless ...." line. At this point you will either redirect
+to some other page, or in some cases redisplay the form with a message
+that saving succeeded. If the validation fails, the 'return' will cause
+the form to be displayed again.
+
+The values to be used to fill in your form are automatically created
+by FormHandler, and are available in the field's 'fif' attribute:
+
+   $field->fif
+
+or in the form's fif hash, which will contain the fill-in-form values
+for all the form's fields:
+
+   $form->fif
+
+If you want to use L<HTML::FillInForm> to fill in values instead of the 
+doing it in directly in a template using either the field or the form 'fif'
+methods, you will need to set that up yourself in an 'end' routine
 or a finalize method. One option would be to set the 'fif' hash in a
 stash variable:
 
@@ -200,10 +238,10 @@ FormHandler will use relationships to populate single and multiple
 selection lists, and validate input. It doesn't yet do anything with other
 relationships, although it will return a hash of the relationship.
 
-You can pass in either the primary key or a row object to the form. If a
-primary key is passed in, the model will use the item_class (DBIC source
-name) to fetch the row from the database. The database row is stored in the
-form's "item" attribute.
+You can pass in either the primary key or a row object to the form. (Do
+not make a field for the primary key.) If a primary key is passed in, 
+the model will use the item_class (DBIC source name) to fetch the row 
+from the database. The database row is stored in the form's "item" attribute.
 
 The C<< $form->process >> or C<< $form->update >> methods will validate 
 the parameters and then update or create the database row object.  
@@ -221,7 +259,7 @@ The possible keys in the field_list hashref are:
    auto_required
    auto_optional
 
-The field_list one way to define the fields in your form (though
+The field_list is one way to define the fields in your form (though
 you can also add fields individually). 
 
 You can categorize your fields as required and optional with two separate 
@@ -336,6 +374,9 @@ it's this internal value that is stored or used by your application.
 By default, the validation is simply to copy the data from the "input" to the "value"
 field attribute, but you might have a field that must be converted from a text
 representation to an object (e.g. month, day, year to DateTime).
+
+Do not put the primary_key of your database row into your form as a field. It
+is not necessary. 
 
 =head1 Common form attributes
 
@@ -485,6 +526,68 @@ it is possible to have FormHandler process HTML forms that have no template
 references to the form object at all, as long as the field names are correct.
 If you think that FillInForm is evil, then you could manage with only
 using FormHandler to fill in the form.
+
+=head1 Testing
+
+It's much easier to write unit tests for FormHandler forms than for
+Catalyst controllers. The 't' directory of the downloaded distribution 
+has lots of examples. Here is an example of a test script for a DBIC form:
+
+
+   use Test::More tests => 14;
+   use lib 't/lib';
+
+   use_ok( 'BookDB::Form::Book');
+   use_ok( 'BookDB::Schema::DB');
+
+   my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
+   ok($schema, 'get db schema');
+
+   my $form = BookDB::Form::Book->new(schema => $schema);
+
+   # This is munging up the equivalent of param data from a form
+   my $good = {
+       'title' => 'How to Test Perl Form Processors',
+       'author' => 'I.M. Author',
+       'genres' => [2, 4],
+       'format'       => 2,
+       'isbn'   => '123-02345-0502-2' ,
+       'publisher' => 'EreWhon Publishing',
+   };
+   ok( $form->update( params => $good ), 'Good data' );
+
+   my $book = $form->item;
+   END { $book->delete };
+   ok ($book, 'get book object from form');
+   my $num_genres = $book->genres->count;
+   is( $num_genres, 2, 'multiple select list updated ok');
+   is( $form->value('format'), 2, 'get value for format' );
+
+   my $bad_1 = {
+       notitle => 'not req',
+       silly_field   => 4,
+   };
+   ok( !$form->validate( $bad_1 ), 'bad 1' );
+
+   my $bad_2 = {
+       'title' => "Another Silly Test Book",
+       'author' => "C. Foolish",
+       'year' => '1590',
+       'pages' => 'too few',
+       'format' => '22',
+   };
+   ok( !$form->validate( $bad_2 ), 'bad 2');
+   ok( $form->field('year')->has_errors, 'year has error' );
+   ok( $form->field('pages')->has_errors, 'pages has error' );
+   ok( !$form->field('author')->has_errors, 'author has no error' );
+   ok( $form->field('format')->has_errors, 'format has error' );
+
+   $form->set_param( year => 1999 );
+   $form->set_param( pages => 101 );
+   $form->set_param( format => 2 );
+   ok( $form->validate, 'now form validates' );
+   
+
 
 =head1 AUTHORS
 

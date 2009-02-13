@@ -13,8 +13,6 @@ use BookDB::Form::Book;
 my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
 ok($schema, 'get db schema');
 
-my $book_id = 3;
-
 my $form = BookDB::Form::Book->new(schema => $schema);
 
 # set "comment" accessor

@@ -17,8 +17,6 @@ use_ok( 'BookDB::Schema::DB');
 my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
 ok($schema, 'get db schema');
 
-my $book_id = 1;
-
 use_ok( 'BookDB::Form::BookHTML' );
 
 my $form = BookDB::Form::BookHTML->new(item_id => undef, schema => $schema);

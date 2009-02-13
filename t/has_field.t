@@ -1,4 +1,4 @@
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 use lib 't/lib';
 
@@ -26,8 +26,10 @@ ok( $form->field_exists('optname'), 'base field exists');
 
 use_ok( 'Form::Multiple' );
 
-my $form = Form::Multiple->new;
+$form = Form::Multiple->new;
 
 ok( $form, 'create multiple inheritance form' );
 
 ok( $form->field('city'), 'field from superclass exists' );
+
+ok( $form->field('telephone'), 'field from other superclass exists' );

@@ -1,5 +1,8 @@
 Revision history for HTML::FormHandler 
 
+0.15 XXX 
+    Fix inheritance of has_field.
+
 0.14 Fri Feb 06 2009, 18:00
     Wrong version in META.yml. Fix fif for password fields.
 

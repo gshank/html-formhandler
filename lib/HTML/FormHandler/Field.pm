@@ -120,6 +120,8 @@ triggers setting the 'fif' attribute.
 
 The "validate" field method usually sets this value if the field validates.
 
+The user does not need to set this field except in validation methods.
+
 =cut
 
 has 'value' => (
@@ -134,9 +136,12 @@ has 'value' => (
 
 =head2 input
 
-Input value for the field, usually from a parameter hash, but could
-also be set with an accessor. Validation is performed on the 'input'
-attributes. A change in this attribute triggers setting 'fif'.
+Input value for the field, moved from the parameter hash.
+The setter for this attribute is for internal use for fields
+in L<HTML::FormHandler>. If you want to set an input value, use 
+the 'set_param' method.  A field validation routine may copy 
+the value of this attribute to the 'value' attribute.  A change in this 
+attribute triggers setting 'fif'. 
 
 =cut
 
@@ -152,7 +157,12 @@ has 'input' => (
 
 =head2 fif
 
-For filling in forms. Input or value.
+For filling in forms. Input or value. The user does not need to set this field.
+It is set by FormHandler from the values in your database object or the
+input parameters. The normal use would be to a access this field from a template:
+
+   [% f = form.field('title') %]
+   [% f.fif %]
 
 =cut
 
@@ -505,14 +515,6 @@ __PACKAGE__->meta->make_immutable;
 
 Create a new instance of a field.  Initial values are passed 
 as a list of parameters.
-
-=cut
-
-sub BUILDARGS
-{
-   my ( $self, @args ) = @_;
-   return {@args};
-}
 
 =head2 full_name
 

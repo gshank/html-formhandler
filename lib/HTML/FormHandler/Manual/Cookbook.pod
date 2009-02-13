@@ -6,6 +6,49 @@ HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
 
 Collection of use recipes for L<HTML::FormHandler>
 
+=head1 Passing in even fewer parameters 
+
+If you like to bring the number of parameters down to the absolute minimum,
+you could either create a base controller that would set the schema and params
+in the form on each call using L<Catalyst::Component::InstancePerContext>,  
+or set them in a base Chained method. For a persistent form:
+
+   has 'edit_form' => ( isa => 'BookDB::Form::Book', is => 'rw',
+      lazy => 1, default => sub { BookDB::Form::Book->new } );
+
+   sub book_base : Chained PathPart('book') CaptureArgs(0)
+   {
+      my ( $self, $c ) = @_;
+      $self->edit_form->clear;  
+      $self->edit_form->schema( $c->model('DB')->schema );
+      $self->edit_form->params( $c->req->parameters );
+   }
+
+or if you want a new form on each call:
+
+   has 'edit_form' => ( isa => 'BookDB::Form::Book', is => 'rw' );
+
+   sub book_base : Chained PathPart('book') CaptureArgs(0)
+   {
+      my ( $self, $c ) = @_;
+      $self->edit_form( MyApp::Form->new( schema => $c->model('DB)->schema,
+          params => $c->req->parameters ) );
+   }
+
+Then you could just pass in the item_id. You could simplify even that by 
+creating a method that takes a simple ID. (You have to use 'update' here
+instead of 'process', because 'process' would clear out the schema and
+params you've already set.)
+
+   sub form {
+     my ( $self, $id ) = @_;
+     return $self->form->update( item_id => $id ); 
+   }
+
+and in your controller action:
+
+   return unless $self->form($id);
+
 =head1 Select lists
 
 If you want to set the initial value of a select field to 0 (or some other
@@ -30,7 +73,7 @@ a 'no choice' choice, in your template:
      [% END %] 
    </select>
 
-Customize the select list in an 'options_' method:
+Or customize the select list in an 'options_' method:
 
    sub options_country
    {
@@ -130,6 +173,55 @@ Or you can make these customizations Moose roles.
    with 'MyApp::Form::Role::Base';
    ...
    
+=head2 Split up your forms into reusable pieces
+
+A person form:
+
+   package Form::Person;
+
+   use HTML::FormHandler::Moose; 
+   extends 'HTML::FormHandler';
+
+   has_field 'name';
+   has_field 'telephone';
+   has_field 'email' => ( type => 'Email' );
+
+   sub validate_name {
+    ....
+   }
+
+   no HTML::FormHandler::Moose;
+   1;
+
+An address form:
+
+   package Form::Address;
+
+   use HTML::FormHandler::Moose; 
+   extends 'HTML::FormHandler';
+
+   has_field 'street';
+   has_field 'city';
+   has_field 'state' => ( type => 'Select' );
+   has_field 'zip' => ( type => '+Zip' );
+
+   sub options_state {
+     ...
+   }
+
+   no HTML::FormHandler::Moose;
+   1;
+
+A form that extends them both:
+
+   package Form::Member;
+
+   use Moose;
+   extends ('Form::Person', 'Form::Address');
+
+   no Moose;
+   1;
+
 =head2 Access a user record in the form 
 
 You might need the user_id to create specialized select lists, or do other form processing. Add a user_id attribute to your form:
