@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 15;
+my $tests = 18;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
@@ -16,6 +16,8 @@ use_ok( 'HTML::FormHandler' );
    has_field 'optname' => ( temp => 'First' );
 
    has_field 'reqname' => ( required => 1 );
+
+   has_field 'somename';
 
    sub field_list {
        return {
@@ -50,11 +52,17 @@ my $good = {
 };
 
 ok( $form->validate( $good ), 'Good data' );
+is( $form->field('somename')->value, undef, 'no value for somename');
+ok( !$form->field('somename')->has_value, 'predicate no value');
+$form->field('somename')->input('testing');
+$form->validate;
+is( $form->field('somename')->value, 'testing', 'use input for extra data');
 
 ok( !$form->validate( {} ), 'form doesn\'t validate with empty params' );
 is( $form->num_errors, 0, 'form doesn\'t have errors with empty params' );
 
 my $bad_1 = {
+    reqname => '',
     optname => 'not req',
     fruit   => 4,
 };

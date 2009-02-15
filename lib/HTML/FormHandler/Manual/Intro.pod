@@ -160,8 +160,11 @@ You can also create a new form on each request with new:
 
 Here you use 'update', because 'process' is a convenience function
 that calls 'clear' and 'update', and you don't want to clear. There is 
-normally no need to check the 'validated' flag, since that is the 
-return value from the 'process', 'update', and 'validate' methods. 
+often no need to check the 'validated' flag, since that is the 
+return value from the 'process', 'update', and 'validate' methods, 
+although it can be useful if you are doing anything between the 
+update/process/validate call and displaying the form, such as setting
+the fillinform stash key.
 
 Form processing is a two-pass operation. The first time through
 the parameters will be an empty hashref, since the form has not been
@@ -201,9 +204,9 @@ methods, you will need to set that up yourself in an 'end' routine
 or a finalize method. One option would be to set the 'fif' hash in a
 stash variable:
 
-    my $validated = $self->form->process( ... );
+    $self->form->process( ... );
     $c->stash( fillinform => $self->form->fif );
-    return unless $validated;
+    return unless $form->validated;
  
 and then check for the stash variable in your end routine and call
 FillInForm:
@@ -246,7 +249,67 @@ from the database. The database row is stored in the form's "item" attribute.
 The C<< $form->process >> or C<< $form->update >> methods will validate 
 the parameters and then update or create the database row object.  
 
+=head1 has_field
 
+This is not actually a Moose attribute. It is just sugar to allow the
+declarative specification of fields. It will not create accessors for the
+fields. The 'type' is not a Moose type, but an L<HTML::FormHandler::Field>
+type. To use this sugar, you must do 
+
+   use HTML::FormHandler::Moose;
+
+instead of C< use Moose; >. Don't forget C< no HTML::FormHandler::Moose; > at
+the end of the package. Use the syntax:
+
+   has_field 'title' => ( type => 'Text', required => 1 );
+   has_field 'authors' => ( type => 'Select' );
+
+instead of:
+
+   sub field_list {
+      return {
+         fields => {
+            title => {
+               type => 'Text',
+               required => 1,
+            },
+            authors => 'Select',
+         }
+      }            
+   }
+         
+Fields specified in a field_list will overwrite fields specified with 'has_field'.
+After processing, fields live in the 'fields' array, and can be accessed with the
+field method: C<< $form->field('title') >>. 
+
+Forms with 'has_field' field declarations may be subclassed. Or use 
+L<HTML::FormHandler::Moose::Role> to create roles with the 'has_field' syntax:
+
+   package Form::Role::Address;
+
+   use HTML::FormHandler::Moose::Role; 
+
+   has_field 'street' => ( type => 'Text', size => '50' );
+   has_field 'city' => ( type = 'Text', size => 24 );
+   has_field 'state' => ( type => 'Select );
+   has_field 'zip' => ( type => '+Zip', required => 1 );
+
+   no HTML::FormHandler::Moose::Role;
+   1;
+
+You can use roles to define fields and validations and include them in form
+classes using 'with':
+
+   package Form::Member;
+   use HTML::FormHandler::Moose;
+   with ('Form::Role::Person', 'Form::Role::Address');
+   extends 'HTML::FormHandler::Model::DBIC';
+
+   has_field 'user_name' => ( type => 'Text', required => 1 );
+
+   no HTML::FormHandler::Moose;
+   1;   
+   
 =head1 The form field_list
 
 Returns a hashref of field definitions.
@@ -473,6 +536,15 @@ Do per-field validation customization not handled by the Field class.
         $field->add_error('Sorry, you must be 18')
             if $field->value < 18;
     }
+
+A different form method name for this can be specified with the field's 
+'validate_meth' attribute:
+
+    has_field 'age' => ( type => 'Text', validate_meth => 'check_age' );
+
+    sub check_age {
+       ...
+    } 
 
 =item cross_validate
 

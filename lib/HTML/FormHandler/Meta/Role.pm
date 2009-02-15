@@ -1,11 +1,11 @@
 package  # hide from Pause
-   HTML::FormHandler::Meta::Class;
-use Moose;
-extends 'Moose::Meta::Class';
+   HTML::FormHandler::Meta::Role;
+
+use Moose::Role;
 
 =head1 NAME
 
-HTML::FormHandler::Meta::Class
+HTML::FormHandler::Meta::Role
 
 =head1 SYNOPSIS
 
@@ -22,8 +22,10 @@ Gerda Shank, gshank@cpan.org
 
 =head1 COPYRIGHT
 
-Same terms as Perl itself.
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
 
 =cut
 
+no Moose::Role;
 1;

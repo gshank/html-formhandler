@@ -126,6 +126,8 @@ The user does not need to set this field except in validation methods.
 
 has 'value' => (
    is      => 'rw',
+   clearer => 'clear_value',
+   predicate => 'has_value',
    trigger => sub {
       my ( $self, $value ) = @_;
       $self->fif($self->fif_value($value)) 
@@ -137,16 +139,19 @@ has 'value' => (
 =head2 input
 
 Input value for the field, moved from the parameter hash.
-The setter for this attribute is for internal use for fields
-in L<HTML::FormHandler>. If you want to set an input value, use 
-the 'set_param' method.  A field validation routine may copy 
-the value of this attribute to the 'value' attribute.  A change in this 
-attribute triggers setting 'fif'. 
+In L<HTML::FormHandler>, the setter for this attribute is for internal 
+use. If you want to set an input value, use the 'set_param' method. 
+A field validation routine may copy the value of this attribute to 
+the 'value' attribute. The setter may be used in field tests and
+if a field class is used standalone. A change in this attribute triggers 
+setting 'fif'. 
 
 =cut
 
 has 'input' => (
    is      => 'rw',
+   clearer => 'clear_input',
+   predicate => '_has_input',
    trigger => sub {
       my ( $self, $input ) = @_;
       $self->fif($input)
@@ -501,10 +506,26 @@ has 'errors' => (
 =head2 validate_meth
 
 Specify the form method to be used to validate this field.
+The default is C<< 'validate_' . $field->name >>. (Periods in
+field names will be changed to underscores.) If you have
+a number of fields that require the same validation and don't
+want to write a field class, you could set them all to the same 
+method name.
+
+   has_field 'title' => ( isa => 'Str', validate_meth => 'check_title' );
+   has_field 'subtitle' => ( isa => 'Str', validate_meth => 'check_title' );
 
 =cut
 
-has 'validate_meth' => ( isa => 'Str', is => 'rw' );
+has 'validate_meth' => ( isa => 'Str', is => 'rw', lazy => 1,
+    default => sub { 
+       my $self = shift; 
+       my $name = $self->name;
+       $name =~ s/\./_/g;
+       return 'validate_' . $name;
+    }
+);
+
 
 # tell Moose to make this class immutable
 __PACKAGE__->meta->make_immutable;
@@ -624,7 +645,7 @@ sub validate_field
    my $field = shift;
 
    $field->clear_errors;
-   $field->value(undef);
+   $field->clear_value;
 
    # See if anything was submitted
    unless ( $field->has_input )
@@ -791,7 +812,7 @@ Returns true if $self->input contains any non-blank input.
 sub has_input
 {
    my ($self) = @_;
-
+   return unless $self->_has_input;
    my $value = $self->input;
    # check for one value as defined
    return grep { /\S/ } @$value

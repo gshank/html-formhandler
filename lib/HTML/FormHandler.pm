@@ -139,51 +139,10 @@ L<HTML::FormHandler::Manual>.
 
 =head2 has_field
 
-This is not actually a Moose attribute. It is just sugar to allow the
-declarative specification of fields. It will not create accessors for the
-fields. The 'type' is not a Moose type, but an L<HTML::FormHandler::Field>
-type. To use this sugar, you must do 
-
-   use HTML::FormHandler::Moose;
-
-instead of C< use Moose; >. Don't forget C< no HTML::FormHandler::Moose; > at
-the end of the package. Use the syntax:
+See L<HTML::FormHandler::Manual::Intro> for a description of the 'has_field'
+syntax.
 
    has_field 'title' => ( type => 'Text', required => 1 );
-   has_field 'authors' => ( type => 'Select' );
-
-instead of:
-
-   has '+field_list' => ( default => sub { {
-         fields => {
-             title => {
-                type => 'Text',
-                required => 1,
-             },
-             authors => 'Select',
-             } 
-          }
-       }
-    );
- 
-or:
-
-   sub field_list {
-      return {
-         fields => {
-            title => {
-               type => 'Text',
-               required => 1,
-            },
-            authors => 'Select',
-         }
-      }            
-   }
-         
-Fields specified in a field_list will overwrite fields specified with 'has_field'.
-After processing, fields live in the 'fields' array, and can be accessed with the
-field method: C<< $form->field('title') >>. 
-
 
 =head2 field_list
 
@@ -460,14 +419,16 @@ has 'submit' => ( is => 'rw' );
 =head2 params
 
 Stores HTTP parameters. 
-Also: set_param, get_param, _params, delete_param, from
-Moose 'Collection::Hash' metaclass. The 'munge_params'
+Also: set_param, get_param, clear_params, delete_param, 
+has_params from Moose 'Collection::Hash' metaclass. The 'munge_params'
 method is called whenever params is set
 
-The 'set_param' method could be used to add an additional field
-input:
+The 'set_param' method could be used to add additional field
+input that doesn't come from the HTML form, similar to a hidden field:
 
-   $form->set_param('title', 'This is a title');
+   my $form = MyApp::Form->new( $item, $params );
+   $form->set_param('comment', 'updated by edit form');
+   return unless $form->update;
 
 =cut
 
@@ -650,8 +611,7 @@ This method can also be used for non-database forms:
 
     $form->process( params => $params );
 
-The return value of this method tells you whether the form validated.
-There is no need to check the 'validated' flag.
+This method returns the 'validated' flag. (C<< $form->validated >>)
 
 =cut 
 
@@ -683,10 +643,10 @@ sub update
    warn "HFH: update ", $self->name, "\n" if $self->verbose;
    $self->init_from_object;
    $self->load_options;
-   my $validated = $self->validate if $self->has_params;
-   $self->update_model if $validated;
+   $self->validate if $self->has_params;
+   $self->update_model if $self->validated;
    $self->dump_fields if $self->verbose;
-   return $validated;
+   return $self->validated;
 }
 
 =head2 validate
@@ -746,23 +706,14 @@ sub validate
    {
       # Trim values and move to "input" slot
       $field->input( $field->trim_value( $params->{$field->full_name} ) )
-         if $params->{$field->full_name};
+         if exists $params->{$field->full_name};
       next if $field->clear;    # Skip validation
       # Validate each field and "inflate" input -> value.
-      $field->validate_field;
+      $field->validate_field;  # this calls the field's 'validate' routine
       next unless defined $field->value;
       # these methods have access to the inflated values
-      my $field_name = $field->name;
-      my $prefix     = $self->name_prefix;
-      $field_name =~ s/^$prefix\.//g if $prefix;
-      my $method = 'validate_' . $field_name;
-      $self->$method($field) if $self->can($method);
-      $method = $field->validate_meth;
+      my $method = $field->validate_meth;
       $self->$method($field) if $method && $self->can($method); 
-      if ( $self->verbose )
-      {
-         my $field_validated = $field->has_errors ? 'has errors' : 'validated';
-      }
    }
 
    $self->cross_validate($params);
@@ -781,14 +732,19 @@ sub validate
    $self->validated( !$errors );
 
    $self->dump_validated if $self->verbose;
+   $_->clear_input for $self->fields;
 
-   
    return $self->validated;
 }
 
 =head2 db_validate
 
 Convenience function to allow validating values in the database object.
+This is not intended for use with HTML forms. If you've written some nice
+validators for form data, but there is unvalidated data in the
+database, this function could be used in a script to check the validity
+of values in the database. See the test script in 
+L<HTML::FormHandler::Manual::Intro>, and the t/db_validate.t test.
 
    my $form = MyApp::Form::Book->new( item => $item );
    my $validated = $form->db_validate;
@@ -855,8 +811,7 @@ sub clear_values
    my $self = shift;
    for ( $self->fields )
    {
-      $_->value(undef);
-      $_->input(undef);
+      $_->clear_value;
       $_->clear_errors;
    }
 }
@@ -896,50 +851,13 @@ sub dump_validated
       for $self->fields;
 }
 
-=head2 init_from_object
-
-Populates the field 'value' attributes from $form->item
-by calling a form's custom init_value_$fieldname method, passing in
-the field and the item. If a custom init_value_ method doesn't exist,
-uses the generic 'init_value' routine from the model.
-
-The value is stored in both the 'init_value' attribute, and the 'value'
-attribute.
-
-=cut
-
-sub init_from_object
-{
-   my $self = shift;
-
-   $self->item( $self->build_item ) if $self->item_id && !$self->item;
-   my $item = $self->init_object || $self->item || return;
-   warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
-   for my $field ( $self->fields )
-   {
-      my @values;
-      my $method = 'init_value_' . $field->name;
-      if ( $self->can($method) )
-      {
-         @values = $self->$method( $field, $item );
-      }
-      else
-      {
-         @values = $self->init_value( $field, $item );
-      }
-      my $value = @values > 1 ? \@values : shift @values;
-
-      # Handy for later compare
-      $field->init_value($value);
-      $field->value($value);
-   }
-}
-
-
 =head2 fif  (fill in form)
 
 Returns a hash of values suitable for use with HTML::FillInForm
 or for filling in a form with C<< $form->fif->{fieldname} >>.
+The fif value for a 'title' field in a TT form:
+
+   [% form.fif.title %] 
 
 =cut
 
@@ -1217,9 +1135,21 @@ sub _build_meta_field_list
    my @field_list;
    foreach my $sc ( reverse $self->meta->linearized_isa )
    {
-      if ( $sc->meta->can('field_list') && defined $sc->meta->field_list )
+      my $meta = $sc->meta;
+      my $role_comp = $meta->roles->[0];
+      if( $role_comp )
       {
-         push @field_list, @{$sc->meta->field_list};
+         foreach my $role ( @{$role_comp->get_roles} )
+         {
+            if ( $role->can('field_list') && defined $role->field_list )
+            {
+               push @field_list, @{$role->field_list};
+            }
+         }
+      }
+      if ( $meta->can('field_list') && defined $meta->field_list )
+      {
+         push @field_list, @{$meta->field_list};
       }
    }
    return \@field_list if scalar @field_list;
@@ -1313,6 +1243,46 @@ sub make_field
    my $field = $class->new( %{$attr} );
    return $field;
 }
+
+=head2 init_from_object
+
+Populates the field 'value' attributes from $form->item
+by calling a form's custom init_value_$fieldname method, passing in
+the field and the item. If a custom init_value_ method doesn't exist,
+uses the generic 'init_value' routine from the model.
+
+The value is stored in both the 'init_value' attribute, and the 'value'
+attribute.
+
+=cut
+
+sub init_from_object
+{
+   my $self = shift;
+
+   $self->item( $self->build_item ) if $self->item_id && !$self->item;
+   my $item = $self->init_object || $self->item || return;
+   warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
+   for my $field ( $self->fields )
+   {
+      my @values;
+      my $method = 'init_value_' . $field->name;
+      if ( $self->can($method) )
+      {
+         @values = $self->$method( $field, $item );
+      }
+      else
+      {
+         @values = $self->init_value( $field, $item );
+      }
+      my $value = @values > 1 ? \@values : shift @values;
+
+      # Handy for later compare
+      $field->init_value($value);
+      $field->value($value);
+   }
+}
+
 
 =head2 load_options
 

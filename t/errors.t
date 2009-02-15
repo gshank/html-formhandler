@@ -19,7 +19,10 @@ use_ok( 'HTML::FormHandler' );
                },
                fruit       => 'Select',
                optname     => 'Text',
-               silly_name  => 'Text',
+               silly_name  => {
+                  type =>'Text',
+                  validate_meth => 'valid_silly'
+               }
            },
        };
    }
@@ -30,7 +33,7 @@ use_ok( 'HTML::FormHandler' );
            3   => 'kiwi',
        );
    }
-   sub validate_silly_name
+   sub valid_silly
    {
       my ( $self, $field ) = @_;
       $field->add_error( 'Not a valid silly_name' )

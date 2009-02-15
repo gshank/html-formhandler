@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 18;
+   plan tests => 20;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -46,15 +46,13 @@ is_deeply( $fif, {
       pages => '702',
    }, 'get form fif' );
 
-$form->clear_state;
-
 $fif->{pages} = '501';
 $form = BookDB::Form::Book->new(item => $book, schema => $schema, params => $fif);
 ok( $form, 'use params parameters on new' );
 
 is( $form->field('pages')->fif, 702, 'get field fif value' );
 
-is( $form->params->{pages}, '501', 'params contains new value' );
+is( $form->get_param('pages'), '501', 'params contains new value' );
 
 is( $form->field('author')->fif, 'S.Else', 'get another field fif value' );
 
@@ -62,12 +60,17 @@ my $validated = $form->validate;
 
 ok( $validated, 'validated without params' );
 
+is( $form->field('author')->fif, 'S.Else', 'get field fif value after validate' );
+ok( !$form->field('author')->has_input, 'no input for field');
+
+
 $form->clear_state;
 my $params = {
    title => 'Testing form',
    isbn => '02340234',
    pages => '699',
    author => 'J.Doe',
+   publisher => '',
 };
 
 $form = BookDB::Form::Book->new(item => $book, schema => $schema, params => $params);
@@ -84,5 +87,5 @@ is_deeply( $form->fif, {
    title => 'Testing form',
    isbn => '02340234',
    pages => '699',
-   author => 'J.Doe'}, 'get form fif after validation' );
+   author => 'J.Doe' }, 'get form fif after validation' );
 
