@@ -302,7 +302,8 @@ classes using 'with':
 
    package Form::Member;
    use HTML::FormHandler::Moose;
-   with ('Form::Role::Person', 'Form::Role::Address');
+   with ''Form::Role::Person';
+   with 'Form::Role::Address';
    extends 'HTML::FormHandler::Model::DBIC';
 
    has_field 'user_name' => ( type => 'Text', required => 1 );

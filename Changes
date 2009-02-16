@@ -1,7 +1,9 @@
 Revision history for HTML::FormHandler 
 
-0.15 XXX 
-    Fix inheritance of has_field.
+0.15 Mon Feb 16 2009, 19:00 
+    Fix inheritance of has_field. Add ability to use has_field
+    in roles. Some refactoring of 'clear'. If a field is not
+    in params, don't touch in db.
 
 0.14 Fri Feb 06 2009, 18:00
     Wrong version in META.yml. Fix fif for password fields.

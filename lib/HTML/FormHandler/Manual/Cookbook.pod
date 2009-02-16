@@ -222,6 +222,47 @@ A form that extends them both:
    no Moose;
    1;
 
+Or if you don't need to use the pieces of your forms as forms themself, you can
+use roles;
+
+   package Form::Role::Address;
+
+   use HTML::FormHandler::Moose::Role; 
+
+   has_field 'street';
+   has_field 'city';
+   has_field 'state' => ( type => 'Select' );
+   has_field 'zip' => ( type => '+Zip' );
+
+   sub options_state {
+     ...
+   }
+
+   no HTML::FormHandler::Moose::Role;
+   1;
+
+You could make roles that are collections of validations:
+
+   package Form::Role::Member;
+
+   use Moose::Role;
+
+   sub check_zip {
+      ...
+   }
+
+   sub check_email {
+      ...
+   }
+
+   1;
+
+And then specify the validate_meth on the fields:
+  
+   with 'Form::Role::Member';
+   has_field 'zip' => ( type => 'Integer', validate_meth => 'check_zip' );
+ 
+
 =head2 Access a user record in the form 
 
 You might need the user_id to create specialized select lists, or do other form processing. Add a user_id attribute to your form:

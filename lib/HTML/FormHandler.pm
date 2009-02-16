@@ -18,9 +18,9 @@ HTML::FormHandler - form handler written in Moose
 
 =head1 SYNOPSIS
 
-HTML::FormHandler allows you to define HTML form fields and validators, and will
-automatically update or create rows in a database, although it can also be
-used for non-database forms.
+HTML::FormHandler allows you to define HTML form fields and validators. It can
+be used for both database and non-database forms, and will
+automatically update or create rows in a database;
 
 One of its goals is to keep the controller interface as simple as possible,
 and to minimize the duplication of code. 
@@ -57,7 +57,8 @@ to update a 'Book' record:
       $c->res->redirect( $c->uri_for('list') );
    }
 
-The example above has the forms as a persistent part of the application.
+The example above creates the form as a persistent part of the application
+with the Moose <C has 'edit_form' > declaration.
 If you prefer, it also works fine to create the form on each request:
     
     my $form = MyApp::Form->new;
@@ -120,6 +121,10 @@ HTML::FormHandler differs from other form frameworks in that each form is
 a Perl object. This allows concentrating form definition and validation in
 one place, and permits easy customization.
 
+The L<HTML::FormHandler> module is documented here.  For more extensive 
+documentation on use and a tutorial, see the manual at 
+L<HTML::FormHandler::Manual>.
+
 HTML::FormHandler does not provide a complex HTML generating facility,
 but a simple, sample rendering role is provided by 
 L<HTML::FormHandler::Render::Simple>, which will output HTML formatted
@@ -130,17 +135,13 @@ L<HTML::FormHandler::Manual::Templates>.
 The typical application for FormHandler would be in a Catalyst, DBIx::Class, 
 Template Toolkit web application, but use is not limited to that.
 
-The L<HTML::FormHandler> module is documented here.  For more extensive 
-documentation on use and a tutorial, see the manual at 
-L<HTML::FormHandler::Manual>.
-
 
 =head1 ATTRIBUTES
 
 =head2 has_field
 
 See L<HTML::FormHandler::Manual::Intro> for a description of the 'has_field'
-syntax.
+field declaration syntax.
 
    has_field 'title' => ( type => 'Text', required => 1 );
 
@@ -208,7 +209,8 @@ has 'fields' => (
 =head2 name
 
 The form's name.  Useful for multiple forms.
-It's also used to construct the default 'id' for fields. 
+It used to construct the default 'id' for fields, and is used
+for the HTML field name when 'html_prefix' is set. 
 The default is "form" + a one to three digit random number.
 
 In your form:
@@ -227,10 +229,11 @@ has 'name' => (
 =head2 init_object
 
 If an 'init_object' is supplied on form creation, it will be used instead 
-of the 'item' to pre-populate the values in the form.
-
-This can be useful when populating a form from default values stored in
-a similar but different object than the one the form is creating.
+of the 'item' to pre-populate the values in the form. This can be useful 
+when populating a form from default values stored in a similar but different 
+object than the one the form is creating. The 'init_object' should be either
+a hash or the same type of object that the model uses (a DBIx::Class row for
+the DBIC model).
 
 See 'init_from_object' method
 
@@ -248,18 +251,24 @@ It normally shouldn't be necessary for users to check this flag.
 =head2 validated
 
 Flag that indicates if form has been validated. If you're using the
-'update', 'process', or 'validate' methods, you probably won't
+'update', 'process', or 'validate' methods, you many not 
 need to use this flag, since the return value of those methods 
 is this flag. You might want to use this flag if you've
-written a method to replace 'update' or 'process'.
+written a method to replace 'update' or 'process', or you're
+doing something in between update/validate, such as set a stash key.
+
+   $form->update( ... );
+   $c->stash->{...} = ...;
+   return unless $form->validated;
 
 =head2 verbose
 
-Flag to print out additional diagnostic information 
+Flag to print out additional diagnostic information. See 'dump_fields' and
+'dump_validated'.
 
 =head2 readonly
 
-"Readonly" is not used by F::P.
+"Readonly" is not used by HFH. 
 
 =cut
 
@@ -367,6 +376,9 @@ would be just "borrower".
 Also see the Field attribute "prename", a convenience function which
 will return the form name + "." + field name
 
+If you want to use some other pattern to create the HTML field name,
+you could subclass 'munge_params'.
+
 =cut
 
 has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
@@ -386,7 +398,9 @@ has 'name_prefix' => ( isa => 'Str', is => 'rw' );
 
 =head2 active_column
 
-The column in tables used for select list that marks an option 'active'
+The column in tables used for select list that marks an option 'active'.
+You might use this if all of your tables have the same 'active' column
+name, instead of setting this for each field.
 
 =cut
 
@@ -402,7 +416,7 @@ has 'http_method' => ( isa => 'Str', is => 'rw', default => 'post' );
 
 =head2  action
 
-Store the form 'action' on submission
+Store the form 'action' on submission. No default value.
 
 =cut
 
@@ -410,7 +424,7 @@ has 'action' => ( is => 'rw' );
 
 =head2 submit
 
-Store form submit field info
+Store form submit field info. No default value.
 
 =cut
 
@@ -421,7 +435,7 @@ has 'submit' => ( is => 'rw' );
 Stores HTTP parameters. 
 Also: set_param, get_param, clear_params, delete_param, 
 has_params from Moose 'Collection::Hash' metaclass. The 'munge_params'
-method is called whenever params is set
+method is a trigger called whenever params is set.
 
 The 'set_param' method could be used to add additional field
 input that doesn't come from the HTML form, similar to a hidden field:
@@ -429,6 +443,8 @@ input that doesn't come from the HTML form, similar to a hidden field:
    my $form = MyApp::Form->new( $item, $params );
    $form->set_param('comment', 'updated by edit form');
    return unless $form->update;
+
+(Note: 'process' clears params, so you have to use 'update' ); 
 
 =cut
 
@@ -448,6 +464,19 @@ has 'params' => (
    },
 );
 
+=head2 dependency
+
+Arrayref of arrayrefs of fields. If one of a group of fields has a
+value, then all of the group are set to 'required'.
+
+  has '+dependency' => ( default => sub { [
+     ['street', 'city', 'state', 'zip' ],] }
+  );
+
+=cut
+
+has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
+
 has '_required' => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef[HTML::FormHandler::Field]',
@@ -459,20 +488,6 @@ has '_required' => (
       push  => 'add_required'
    }
 );
-
-=head2 dependency
-
-Arrayref of arrayrefs of fields. If one of a group of fields has a
-value, then all of the group are set to 'required'.
-
-  has '+dependency' => ( default => sub { [
-     ['street', 'city', 'state', 'zip' ],] }
-  );
-
-    
-=cut
-
-has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
 
 =head2 parent_field
 
@@ -507,7 +522,7 @@ may be supplied:
     MyForm->new( $item );
 
 If you will be processing a persistent form with 'process', no arguments
-are necessary. Do not pass in item, item_id, or schema if you use 'process',
+are necessary. Do not pass in item or item_id if you use 'process',
 because they will be cleared.
 
 The common attributes to be passed in to the constructor are:
@@ -589,7 +604,8 @@ sub BUILD
 
 =head2 process
 
-For persistent FormHandler instances, processes a form
+A convenience method for persistent FormHandler instances. This method
+calls 'clear' and 'update' to processes a form:
 
    my $validated = $form->process( item => $book, 
        params => $c->req->parameters );
@@ -599,13 +615,11 @@ or:
    my $validated = $form->process( item_id => $item_id,
        schema => $schema, params => $c->req->parameters );
 
-Calls 'clear' to clear previous values, calls 'update' to process the form.
-$self->dump_fields if $self->verbose;
 If you set attributes that are not cleared and you have a persistent form,
 you must either set that attribute on each request or clear it.
 
 If your form is not persistent, you should call 'update' instead, because 
-this method clears the schema, item and item_id.
+this method clears the item and item_id.
 
 This method can also be used for non-database forms:
 
@@ -630,6 +644,11 @@ Pass in item or item_id/schema and parameters.
     my $form = MyApp::Form::Book->new;
     $form->update( item => $item, schema => $schema );
 
+It set attributes from the parameters passed in, calls 'init_from_object',
+loads select options, calls validate if there are parameters, and calls
+update_model if the form validated.  It returns the 'validated' flag.
+
+
 =cut
 
 sub update
@@ -638,7 +657,7 @@ sub update
    my $hashref = {@args};
    while ( my ($key, $value) = each %{$hashref} )
    {
-      $self->$key($value);
+      $self->$key($value) if $self->can($key);
    } 
    warn "HFH: update ", $self->name, "\n" if $self->verbose;
    $self->init_from_object;
@@ -658,9 +677,6 @@ by itself for a non-database form (although 'process' will also work).
 
 Validates the form from the HTTP request parameters.
 The parameters must be a hash ref with multiple values as array refs.
-
-Returns false if validation fails.
-
 Params may be passed in to validate, or else may be set earlier
 on new, or by using the params setter. If params are passed in, 
 'clear_state' is also called, for convenience with persistent forms.
@@ -684,6 +700,7 @@ The method does the following:
     7) counts errors, sets 'ran_validation' and 'validated' flags
     8) returns 'validated' flag
 
+Returns true if validation succeeds, false if validation fails.
 
 =cut
 
@@ -743,7 +760,8 @@ Convenience function to allow validating values in the database object.
 This is not intended for use with HTML forms. If you've written some nice
 validators for form data, but there is unvalidated data in the
 database, this function could be used in a script to check the validity
-of values in the database. See the test script in 
+of values in the database. All it does is copy the fill-in-form fields
+to the parameter hash and call validate. See the test script in 
 L<HTML::FormHandler::Manual::Intro>, and the t/db_validate.t test.
 
    my $form = MyApp::Form::Book->new( item => $item );
@@ -756,7 +774,7 @@ sub db_validate
    my $self = shift;
    foreach my $field ($self->fields)
    {
-      $self->set_param( $field->full_name, $field->value );
+      $self->set_param( $field->full_name, $field->fif );
    }
    return $self->validate;
 }
@@ -796,26 +814,34 @@ sub clear_state
    $self->validated(0);
    $self->ran_validation(0);
    $self->num_errors(0);
-   $self->clear_values; 
+#   $self->clear_values; 
+   $self->clear_errors;
    $self->updated_or_created(undef);
 }
 
 =head2 clear_values
 
-Clears field value, input, errors
+Clears field values
 
 =cut
 
 sub clear_values
 {
    my $self = shift;
-   for ( $self->fields )
-   {
-      $_->clear_value;
-      $_->clear_errors;
-   }
+   $_->clear_value for ( $self->fields );
 }
 
+=head2 clear errors
+
+Clears field errors
+
+=cut
+
+sub clear_errors
+{
+   my $self = shift;
+   $_->clear_errors for $self->fields;
+}
 
 =head2 dump_fields
 
@@ -1136,15 +1162,11 @@ sub _build_meta_field_list
    foreach my $sc ( reverse $self->meta->linearized_isa )
    {
       my $meta = $sc->meta;
-      my $role_comp = $meta->roles->[0];
-      if( $role_comp )
+      foreach my $role ( $meta->calculate_all_roles )
       {
-         foreach my $role ( @{$role_comp->get_roles} )
+         if ( $role->can('field_list') && defined $role->field_list )
          {
-            if ( $role->can('field_list') && defined $role->field_list )
-            {
-               push @field_list, @{$role->field_list};
-            }
+            push @field_list, @{$role->field_list};
          }
       }
       if ( $meta->can('field_list') && defined $meta->field_list )
@@ -1246,10 +1268,10 @@ sub make_field
 
 =head2 init_from_object
 
-Populates the field 'value' attributes from $form->item
+Populates the field 'value' attributes from an 'init_object' or $form->item
 by calling a form's custom init_value_$fieldname method, passing in
 the field and the item. If a custom init_value_ method doesn't exist,
-uses the generic 'init_value' routine from the model.
+uses the 'init_value' routine from the model.
 
 The value is stored in both the 'init_value' attribute, and the 'value'
 attribute.

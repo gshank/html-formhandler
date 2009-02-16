@@ -151,7 +151,7 @@ setting 'fif'.
 has 'input' => (
    is      => 'rw',
    clearer => 'clear_input',
-   predicate => '_has_input',
+   predicate => 'input_exists',
    trigger => sub {
       my ( $self, $input ) = @_;
       $self->fif($input)
@@ -645,17 +645,15 @@ sub validate_field
    my $field = shift;
 
    $field->clear_errors;
-   $field->clear_value;
-
    # See if anything was submitted
    unless ( $field->has_input )
    {
-      $field->add_error( $field->required_message )
-         if $field->required;
-
-      return !$field->required;
+      $field->add_error( $field->required_message) if( $field->required );
+      $field->clear_value if( $field->input_exists);
+      return;
    }
 
+   $field->clear_value;
    return unless $field->test_multiple;
    return unless $field->test_options;
    return unless $field->validate;
@@ -812,7 +810,7 @@ Returns true if $self->input contains any non-blank input.
 sub has_input
 {
    my ($self) = @_;
-   return unless $self->_has_input;
+   return unless $self->input_exists;
    my $value = $self->input;
    # check for one value as defined
    return grep { /\S/ } @$value

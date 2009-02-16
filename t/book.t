@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 18;
+   plan tests => 19;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -53,6 +53,12 @@ my $bad_1 = {
 
 ok( !$form->validate( $bad_1 ), 'bad 1' );
 
+$form = BookDB::Form::Book->new(item => $book, schema => $schema);
+ok( $form, 'create form from db object');
+
+my $genres_field = $form->field('genres');
+is_deeply( sort $genres_field->value, [2, 4], 'value of multiple field is correct');
+
 my $bad_2 = {
     'title' => "Another Silly Test Book",
     'author' => "C. Foolish",
@@ -73,9 +79,6 @@ $form->set_param( format => 2 );
 my $validated = $form->validate;
 ok( $validated, 'now form validates' );
 
-$form = BookDB::Form::Book->new(item => $book, schema => $schema);
-ok( $form, 'create form from db object');
-
-my $genres_field = $form->field('genres');
-is_deeply( sort $genres_field->value, [2, 4], 'value of multiple field is correct');
+$form->update;
+is( $book->publisher, 'EreWhon Publishing', 'publisher has not changed');
 

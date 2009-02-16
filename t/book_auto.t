@@ -42,6 +42,7 @@ $book->delete;
 $form->clear_state;
 
 my $bad_1 = {
+    'book.title' => '',
     notitle => 'not req',
     silly_field   => 4,
 };
