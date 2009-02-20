@@ -73,7 +73,7 @@ INSERT INTO "author" VALUES ("Fyodor", "Dostoyevsky", "Russia", "1821-11-11 00:0
 INSERT INTO "author" VALUES ("Neil", "Stephenson", "United States", "1959-10-31 00:00:00" );
 CREATE TABLE user (
    user_id INTEGER PRIMARY KEY,
-   user_name VARCHAR(100),
+   user_name VARCHAR(32),
    fav_cat VARCHAR(32),
    fav_book VARCHAR(32),
    occupation VARCHAR(32)

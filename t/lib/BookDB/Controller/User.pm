@@ -1,4 +1,4 @@
-package BookDB::Controller::Book;
+package BookDB::Controller::User;
 
 BEGIN {
    use Moose;
