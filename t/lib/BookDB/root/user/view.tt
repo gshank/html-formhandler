@@ -1,0 +1,16 @@
+[% PROCESS scaffold/header.tt %]
+
+<p>[% message %]</p>
+[% FOR field IN form.error_fields %]
+<div class='error' id=error>[% field.name _ ': ' _ field.errors %] </div>
+[% END %]
+
+[% FOR col IN user.columns %]
+   <p>
+    <b class="[% col %]">[% col %]</b>
+    <p>[% user.$col %]</p>
+   </p>
+[% END %]
+<p><a class="big" href="[% c.uri_for('list') %]">&gt; LIST</a></p>
+
+[% PROCESS scaffold/footer.tt %]

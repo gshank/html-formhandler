@@ -1,0 +1,25 @@
+[% PROCESS scaffold/header.tt %]
+<table id="books" cellspacing="0" summary="The list of all books">
+<caption>Table: List of Users</caption>
+  <tr>
+    [% FOR column IN users.result_source.columns %]
+    <th scope="col">[% column %]</th>
+    [% END %]
+    <th/>
+    [% counter = 0 %]
+  </tr>
+  [% WHILE (user = users.next) %] 
+  <tr[% IF (counter % 2) == 0 %] class="alt"[% END %]>
+    [% FOR column IN users.result_source.columns %] 
+    <td>[% user.$column %]</td>
+    [% END %]
+    <td>
+      <a href="[% '/user/' _ user.id  %]">View</a>
+      <a href="[% '/user/' _ user.id _ '/edit' %]">Edit</a>
+      <a href="[% '/user/' _ user.id _ '/delete' %]">Delete</a>
+    </td>[% counter = counter + 1 %]
+  </tr>[% END %]
+</table>
+<p><a class="big" href="[% '/user/create' %]">+ ADD</a></p>
+
+[% PROCESS scaffold/footer.tt %]

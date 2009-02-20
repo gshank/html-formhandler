@@ -7,8 +7,8 @@ BEGIN {
 
 use BookDB::Form::User;
 
-has 'form' => ( isa => 'BookDB::Form::Book', is => 'rw',
-   lazy => 1, default => sub { BookDB::Form::Book->new } );
+has 'user_form' => ( isa => 'BookDB::Form::User', is => 'rw',
+   lazy => 1, default => sub { BookDB::Form::User->new } );
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ User Controller
 =cut
 
 
-sub user_base : Chained PathPart('author') CaptureArgs(0)
+sub user_base : Chained PathPart('user') CaptureArgs(0)
 {
    my ( $self, $c ) = @_;
 }
@@ -45,8 +45,8 @@ sub list : Chained('user_base') PathPart('list') Args(0)
 sub do_list
 {
    my ( $self, $c ) = @_;
-
-   my $users = [ $c->model('DB::User')->all ];
+$DB::single=1;
+   my $users = $c->model('DB::User');
    $c->stash( users => $users, template => 'user/list.tt' );
 }
 
@@ -74,13 +74,24 @@ sub form
 {
    my ( $self, $c ) = @_;
 
-   $c->stash( form => $self->form, template => 'user/form.tt',
+   my $user = $c->stash->{user};
+   $c->stash( form => $self->user_form, template => 'user/form.tt',
       action => $c->chained_uri_for->as_string );
-   return unless $self->form->validate( 
-      init_object => $c->stash->{user}->inflated_columns,
+   # this is quite silly... Taking the data from the database
+   # and storing it again outside of FormHandler
+   # but it demonstrates the use of a non-db form
+   my $user_hashref = {
+      user_name => $user->user_name,
+      fav_cat => $user->fav_cat,
+      fav_book => $user->fav_bookan,
+      occupation => $user->occupation }; 
+   $self->user_form->validate( 
+      init_object => $user_hashref,
       params => $c->req->parameters );
-   my $result = $self->form->values;
-   $c->stash->{user}->update_or_create($result);
+   return unless $self->user_form->validated;
+   my $result = $self->user_form->values;
+   $user->set_columns($result);
+   $user->update_or_insert;
    $c->res->redirect( $c->uri_for('list') );
 }
 
