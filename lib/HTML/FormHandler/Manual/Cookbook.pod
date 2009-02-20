@@ -101,9 +101,9 @@ to do it in the form.
          }
       }
 
-The 'noupdate' flag is only used if an accessor actually exists in the
-result class, because in that case FormHandler will attempt to use the accessor
-to do an update. With a non-updatable field, you can process the input for the 
+The 'noupdate' flag is set in order to skip an attempt to update the database
+for this field (it would not be necessary if the field doesn't actually exist
+in the database...).  You can process the input for the non-updatable field 
 field in a number of different places, depending on what is most logical. 
 Some of the choices are: 
 
@@ -118,6 +118,10 @@ When the field is flagged 'writeonly', the value from the database will not
 be used to fill in the form (put in the C<< $form->fif >> hash, or the
 field C<< $field->fif >>), but a value entered in the form WILL be used
 to update the database.
+
+If you want to enter fields from an additional table that is related to
+this one in a 'single' relationship, you can use the DBIx::Class 'proxy'
+feature to create accessors for those fields.
 
 =head1 Set up form base classes or roles for your application
 
@@ -257,7 +261,8 @@ You could make roles that are collections of validations:
 
    1;
 
-And then specify the validate_meth on the fields:
+And if the validations apply to fields with different names, specify the 
+'validate_meth' on the fields:
   
    with 'Form::Role::Member';
    has_field 'zip' => ( type => 'Integer', validate_meth => 'check_zip' );
