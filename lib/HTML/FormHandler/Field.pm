@@ -228,7 +228,7 @@ contained in a form.  This is a reference to that form.
 
 =cut
 
-has 'sub_form' => ( is => 'rw' );
+has 'sub_form' => ( isa => 'HTML::FormHandler', is => 'rw' );
 
 =head2 form
 
