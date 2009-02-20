@@ -4,7 +4,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 6;
+   plan tests => 10;
 }
 
 use_ok('HTML::FormHandler::Model::DBIC');
@@ -19,22 +19,14 @@ $record->delete if $record;
 
 {
    package My::Form;
-   use Moose;
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler::Model::DBIC';
 
    has '+item_class' => ( default => 'Book' );
 
-   sub field_list {
-       return {
-           fields    => [
-               title     => {
-                  type => 'Text',
-                  required => 1,
-               },
-               author    => 'Text',
-           ],
-       };
-   }
+   has_field 'title' => ( type => 'Text', required => 1 );
+   has_field 'author';
+   no HTML::FormHandler::Moose;
 }
 
 my $form = My::Form->new( item_id => $id, schema => $schema );
@@ -57,8 +49,29 @@ ok( $form->validate( $params ), 'validate data' );
 ok( $form->update_model, 'update validated data');
 
 my $book = $form->item;
+END { $book->delete }
 
 ok($book->id != 99,'book row ID does not match ID passed in object from form');
-$book->delete;
 
-#------------------------
+is( $book->publisher, undef, 'No publisher, because no field');
+
+# make sure that primary keys included by error do not update
+{
+   package My::Form2;
+   use HTML::FormHandler::Moose;
+   extends 'My::Form';
+
+   has_field 'id' => ( type => 'Integer' );
+
+   no HTML::FormHandler::Moose;
+}
+
+$id = $book->id;
+$form = My::Form2->new( $book );
+ok( $form, 'get form for Form2' );
+
+$form->update( params => { title => 'How to Test, Volume 2' } );
+
+is( $book->title, 'How to Test, Volume 2', 'get new title');
+
+is( $book->id, $id, 'id is correct' );

@@ -61,4 +61,27 @@ INSERT INTO "genre" VALUES(3, 'Mystery');
 INSERT INTO "genre" VALUES(4, 'Historical');
 INSERT INTO "genre" VALUES(5, 'Fantasy');
 INSERT INTO "genre" VALUES(6, 'Technical');
+CREATE TABLE author (
+   first_name VARCHAR(100),
+   last_name VARCHAR(100),
+   country VARCHAR(100),
+   birthdate DATETIME,
+   CONSTRAINT name PRIMARY KEY (first_name, last_name)
+);
+INSERT INTO "author" VALUES ("J.K.", "Rowling", "U.K.", "2003-01-16 00:00:00" );
+INSERT INTO "author" VALUES ("Fyodor", "Dostoyevsky", "Russia", "1821-11-11 00:00:00" );
+INSERT INTO "author" VALUES ("Neil", "Stephenson", "United States", "1959-10-31 00:00:00" );
+CREATE TABLE user (
+   user_id INTEGER PRIMARY KEY,
+   user_name VARCHAR(100),
+   fav_cat VARCHAR(32),
+   fav_book VARCHAR(32),
+   occupation VARCHAR(32)
+);
+INSERT INTO "user" VALUES ( 1, 'jdoe', 'Sci-Fi', 'Necronomicon', 'management' );
+INSERT INTO "user" VALUES ( 2, 'muffet', 'Fantasy', 'Cooking Fungi', 'none' );
+INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'programmer' );
+INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed' );
+INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor' );
+
 COMMIT;

@@ -29,7 +29,7 @@ ok( !$form->db_validate, 'Bad db data doesn\'t validate' );
 
 $form->set_param( year => 1999 );
 $form->set_param( pages => 101 );
-my $validated = $form->validate;
+my $validated = $form->validate_form;
 ok( $validated, 'now form validates' );
 
 $form->update;

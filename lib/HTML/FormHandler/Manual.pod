@@ -28,5 +28,15 @@ Builds on the Catalyst tutorial. Step-by-step guide.
 
 Cut-and-paste examples of templates to use with FormHandler
 
+=head1 SUPPORT
+
+IRC:
+
+   Join #formhandler on irc.perl.org
+
+=head1 AUTHOR
+
+gshank: Gerda Shank <gshank@cpan.org>
+
 =cut
 

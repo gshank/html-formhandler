@@ -76,7 +76,7 @@ ok( $form->field('format')->has_errors, 'format has error' );
 $form->set_param( year => 1999 );
 $form->set_param( pages => 101 );
 $form->set_param( format => 2 );
-my $validated = $form->validate;
+my $validated = $form->validate_form;
 ok( $validated, 'now form validates' );
 
 $form->update;
