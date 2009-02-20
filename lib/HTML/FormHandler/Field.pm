@@ -173,6 +173,16 @@ input parameters. The normal use would be to a access this field from a template
 
 has 'fif' => ( is => 'rw', clearer => 'clear_fif', predicate => 'has_fif' ); 
 
+=head2 accessor
+
+If the name of your field is different than your database accessor, use
+this attribute to provide the name of accessor.
+
+=cut
+
+has 'accessor' => ( isa => 'Str', is => 'rw', lazy => 1, 
+   default => sub { shift->name } );
+
 =head2 temp
 
 Temporary attribute. Not used by HTML::FormHandler.

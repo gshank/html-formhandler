@@ -1193,16 +1193,29 @@ sub build_form
    $self->_build_fields( $flist->{'auto_optional'}, 0, 'auto' ) 
                                               if $flist->{'auto_optional'};
    return unless $self->has_fields;
+   # get highest order number
    my $order = 0;
    foreach my $field ( $self->fields)
    {
       $order++ if $field->order > $order;
    }
    $order++;
+   # number all unordered fields
    foreach my $field ( $self->fields )
    {
       $field->order( $order ) unless $field->order;
       $order++;
+   }
+   # set field accessor if name_prefix is set
+   if( $self->name_prefix )
+   {
+      foreach my $field ( $self->fields )
+      {
+         my $name = $field->name;
+         my $prefix = $self->name_prefix;
+         $name =~ s/$prefix\.//g if $prefix;
+         $field->accessor( $name );
+      }
    }
 
 }

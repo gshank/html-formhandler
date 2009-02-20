@@ -142,7 +142,6 @@ sub update_model
 
    warn "HFH: update_model for ", $self->name, "\n" if $self->verbose;
    # get a hash of all fields, skipping fields marked 'noupdate'
-   my $prefix = $self->name_prefix;
    my %columns;
    my %multiple_has_many;
    my %multiple_m2m;
@@ -155,35 +154,34 @@ sub update_model
    foreach $field ( $self->fields )
    {
       next if $field->noupdate;
-      my $name = $field->name;
-      $name =~ s/^$prefix\.//g if $prefix;
+      my $accessor = $field->accessor;
       # If the field is flagged "clear" then set to NULL.
       $value = $field->clear ? undef : $field->value;
-      if ( $source->has_relationship($name) )
+      if ( $source->has_relationship($accessor) )
       {
          if ($field->can('options'))
          {
-            $select{$name} = $value;
+            $select{$accessor} = $value;
          } 
          else
          {
             # for now just remove other relationships because
             # they aren't handled here, and could be handled in a subclass
-            $other_rel{$name} = $value;
+            $other_rel{$accessor} = $value;
          }
       }
-      elsif ( $source->has_column($name) )
+      elsif ( $source->has_column($accessor) )
       {
-         $columns{$name} = $value;
+         $columns{$accessor} = $value;
       }
       elsif ( $field->can('multiple' ) && $field->multiple == 1 )
       {
          # didn't have a relationship and is multiple, so must be m2m
-         $multiple_m2m{$name} = $value;
+         $multiple_m2m{$accessor} = $value;
       }
       else    # neither a column nor a rel
       {
-         $other{$name} = $value;
+         $other{$accessor} = $value;
       }
    }
 
@@ -191,13 +189,13 @@ sub update_model
    # Handle database columns
    if ($item)
    {
-      for my $field_name ( keys %columns )
+      for my $accessor ( keys %columns )
       {
-         $value = $columns{$field_name};
-         my $cur = $item->$field_name;
+         $value = $columns{$accessor};
+         my $cur = $item->$accessor;
          next unless $value || $cur;
          next if ( ( $value && $cur ) && ( $value eq $cur ) );
-         $item->$field_name($value);
+         $item->$accessor($value);
          $changed++;
       }
       $self->updated_or_created('updated');
@@ -210,29 +208,29 @@ sub update_model
    }
 
    # Set single select lists with rel different from column
-   for my $field_name ( keys %select )
+   for my $accessor ( keys %select )
    {
-      my $rel_info = $item->relationship_info($field_name);
+      my $rel_info = $item->relationship_info($accessor);
       my ($cond)     = values %{ $rel_info->{cond} };
       my ($self_col) = $cond =~ m/^self\.(\w+)$/;
-      $item->$self_col( $select{$field_name} );
+      $item->$self_col( $select{$accessor} );
       $changed++;
    }
 
    # set non-column, non-rel attributes
-   for my $field_name ( keys %other )
+   for my $accessor ( keys %other )
    {
-      next unless $item->can($field_name);
-      $item->$field_name( $other{$field_name} );
+      next unless $item->can($accessor);
+      $item->$accessor( $other{$accessor} );
       $changed++;
    }
    # update db
    $item->update_or_insert if $changed;
 
    # process Multiple field 'many_to_many' relationships
-   for my $field_name ( keys %multiple_m2m )
+   for my $accessor ( keys %multiple_m2m )
    {
-      $value = $multiple_m2m{$field_name};
+      $value = $multiple_m2m{$accessor};
       my %keep;
       %keep = map { $_ => 1 } ref $value ? @$value : ($value)
          if defined $value;
@@ -240,18 +238,18 @@ sub update_model
       my $row;
       if ( $self->updated_or_created eq 'updated' )
       {
-         foreach $row ( $item->$field_name->all )
+         foreach $row ( $item->$accessor->all )
          {
-            $meth = 'remove_from_' . $field_name;
+            $meth = 'remove_from_' . $accessor;
             $item->$meth( $row ) 
                unless delete $keep{ $row->id };
          }
       }
-      my $source_name = $item->$field_name->result_source->source_name;
+      my $source_name = $item->$accessor->result_source->source_name;
       foreach my $id ( keys %keep )
       {
          $row = $self->schema->resultset($source_name)->find($id);
-         $meth = 'add_to_' . $field_name;
+         $meth = 'add_to_' . $accessor;
          $item->$meth( $row );
       }
    }
@@ -362,22 +360,20 @@ sub lookup_options
    my ( $self, $field ) = @_;
 
    return unless $self->schema;
-   my $field_name = $field->name;
-   my $prefix     = $self->name_prefix;
-   $field_name =~ s/^$prefix\.//g if $prefix;
+   my $accessor = $field->accessor;
 
    # if this field doesn't refer to a foreign key, return
    my $f_class;
    my $source;
-   if ($self->source->has_relationship($field_name) )
+   if ($self->source->has_relationship($accessor) )
    {
-      $f_class = $self->source->related_class($field_name);
+      $f_class = $self->source->related_class($accessor);
       $source = $self->schema->source($f_class);
    }
-   elsif ($self->resultset->new_result({})->can("add_to_$field_name") )
+   elsif ($self->resultset->new_result({})->can("add_to_$accessor") )
    {
       # Multiple field with many_to_many relationship
-      $source = $self->resultset->new_result({})->$field_name->result_source;
+      $source = $self->resultset->new_result({})->$accessor->result_source;
    }
    return unless $source; 
 
@@ -434,51 +430,49 @@ sub init_value
 
    return unless $item;
    return if $field->writeonly;
-   my $name = $field->name;
-   my $prefix = $self->name_prefix;
-   $name =~ s/$prefix\.//g if $prefix;
+   my $accessor = $field->accessor;
    $item ||= $self->item;
-   return $item->{$name} if ref($item) eq 'HASH';
-   return unless $item->isa('DBIx::Class') && $item->can($name);
-   return unless defined $item->$name;
+   return $item->{$accessor} if ref($item) eq 'HASH';
+   return unless $item->isa('DBIx::Class') && $item->can($accessor);
+   return unless defined $item->$accessor;
 
    my $source = $self->source;
-   if ( $source->has_relationship($name) )
+   if ( $source->has_relationship($accessor) )
    {
       if ($field->can('options'))
       {
-         return $item->$name->id; 
+         return $item->$accessor->id; 
       } 
       else # some other relationship (unsupported)
       {
-         my $rel_info = $source->relationship_info($name);
+         my $rel_info = $source->relationship_info($accessor);
          if ( $rel_info->{attrs}->{accessor} eq 'single' ||
               $rel_info->{attrs}->{accessor} eq 'filter' )
          {
-            return $item->$name->get_inflated_columns; 
+            return $item->$accessor->get_inflated_columns; 
          }
          else # multi relationship (unsupported)
          {
-            my $rs = $item->$name;
+            my $rs = $item->$accessor;
             $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
             return $rs->all;
          }
       }
    }
-   elsif ( $source->has_column($name) )
+   elsif ( $source->has_column($accessor) )
    {
-      return $item->$name; 
+      return $item->$accessor; 
    }
    elsif ( $field->can('multiple' ) && $field->multiple == 1 )
    {
       return unless $item->id; 
-      my @rows = $item->$name->all;
+      my @rows = $item->$accessor->all;
       my @values = map { $_->id } @rows;
       return @values;
    }
    else    # neither a column nor a rel
    {
-      return $item->$name;
+      return $item->$accessor;
    }
    return;
 }
@@ -502,19 +496,17 @@ sub validate_unique
       next if $field->has_errors;
       my $value = $field->value;
       next unless defined $value;
-      my $name   = $field->name;
-      my $prefix = $self->name_prefix;
-      $name =~ s/^$prefix\.//g if $prefix;
+      my $accessor   = $field->accessor;
 
       # look for rows with this value 
-      my $count = $rs->search( { $name => $value } )->count;
+      my $count = $rs->search( { $accessor => $value } )->count;
       # not found, this one is unique
       next if $count < 1;
       # found this value, but it's the same row we're updating
       next
          if $count == 1
             && $self->item_id 
-            && $self->item_id == $rs->search( { $name => $value } )->first->id;
+            && $self->item_id == $rs->search( { $accessor => $value } )->first->id;
       my $field_error = $field->unique_message || 'Duplicate value for ' . $field->label;
       $field->add_error( $field_error );
       $found_error++;

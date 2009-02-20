@@ -17,6 +17,8 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
    name          Field name. Must be the same as database column name or rel
    type          Field type. From a Field class: 'Text', 'Select', etc
+   accessor      Database accessor name if different than field name
+   validate_meth Name of validation method in form. Default is validate_$fieldname
    required      Field is required
    required_message  If this field is required, the message to display on failure 
    id            Useful for javascript that requires unique id. Set in Field.

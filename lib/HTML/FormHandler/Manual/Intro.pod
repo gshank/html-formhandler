@@ -249,6 +249,26 @@ from the database. The database row is stored in the form's "item" attribute.
 The C<< $form->process >> or C<< $form->update >> methods will validate 
 the parameters and then update or create the database row object.  
 
+=head1 Field names
+
+The standard way to use FormHandler is with field names that match your
+database accessors. If you want to prepend the HTML field names with a
+name plus dot, you can set the form 'name' and use the 'html_prefix'
+flag to have "$name." stripped from the beginning of the HTML fields
+in 'munge_params' before the parameters are set in FormHandler. 
+If you want the FormHandler field name to be different than the
+database accessor, set 'accessor' on your fields. (It defaults to the field
+name). You could then use any name that you want for your field. 
+
+If you want to do something complicated and specific with the field names,
+you can subclass 'munge_params' and do any kind of field name 'normalization'
+that you want.
+
+You can actually process multiple FormHandler forms at the same time (using
+the same HTML form) with multiple form objects and multiple process/update
+calls. You would have to ensure that there are no duplicate field names or
+use 'html_prefix'.
+
 =head1 has_field
 
 This is not actually a Moose attribute. It is just sugar to allow the

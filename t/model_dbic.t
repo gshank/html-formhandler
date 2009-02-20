@@ -24,9 +24,10 @@ ok($schema, 'get schema');
    has '+field_list' => ( default => sub {
          {
            fields    => [
-               title     => {
+               book_title   => {
                   type => 'Text',
                   required => 1,
+                  accessor => 'title',
                },
                author    => 'Text',
                extra     => 'Text',
@@ -37,7 +38,7 @@ ok($schema, 'get schema');
 
 my $form = My::Form->new( item_id => 1, schema => $schema );
 ok( $form, 'get form');
-my $title_field = $form->field('title');
+my $title_field = $form->field('book_title');
 my $author_field = $form->field('author');
 
 ok( $title_field->value eq 'Harry Potter and the Order of the Phoenix', 'get title from form');
