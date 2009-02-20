@@ -27,17 +27,16 @@ ok( $form, 'get form with multiple primary key' );
 is( $form->item->country, 'U.K.', 'got right row');
 
 my $pk_hashref = { last_name => 'Rowling', first_name => 'J.K.' };
-my $author = $schema->resultset('Author')->find( $pk_hashref );
+$author = $schema->resultset('Author')->find( $pk_hashref );
 ok( $author, 'get author from db with hashref');
 
 $form = BookDB::Form::Author->new(item_id => $pk_hashref, schema => $schema);
 ok( $form, 'get form with array of hashref primary key' );
 is( $form->item->country, 'U.K.', 'got right row');
 
-
 my $pk_hashlist = [{ last_name => 'Rowling', first_name => 'J.K.' },
                    { key => 'primary' }];
-my $author = $schema->resultset('Author')->find( @{$pk_hashlist} );
+$author = $schema->resultset('Author')->find( @{$pk_hashlist} );
 ok( $author, 'get author from db with hashref');
 
 $form = BookDB::Form::Author->new(item_id => $pk_hashlist, schema => $schema);

@@ -171,7 +171,7 @@ input parameters. The normal use would be to a access this field from a template
 
 =cut
 
-has 'fif' => ( is => 'rw' ); 
+has 'fif' => ( is => 'rw', clearer => 'clear_fif', predicate => 'has_fif' ); 
 
 =head2 temp
 

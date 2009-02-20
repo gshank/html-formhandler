@@ -5,11 +5,9 @@ use warnings;
 
 use base 'DBIx::Class';
 
-__PACKAGE__->load_components("Core");
+__PACKAGE__->load_components("InflateColumn::DateTime", "Core");
 __PACKAGE__->table("author");
 __PACKAGE__->add_columns(
-  "id",
-  { data_type => "INTEGER", is_nullable => 0, size => undef },
   "last_name",
   { data_type => "VARCHAR", is_nullable => 0, size => 16 },
   "first_name",
@@ -17,14 +15,14 @@ __PACKAGE__->add_columns(
   "country",
   { data_type => "VARCHAR", is_nullable => 0, size => 16 },
   "birthdate",
-  { data_type => "VARCHAR", is_nullable => 0, size => 10 },
+  { data_type => "DATETIME", is_nullable => 0 },
 );
-__PACKAGE__->set_primary_key("id");
-__PACKAGE__->has_many(
-  "books",
-  "BookDB::Schema::DB::Book",
-  { "foreign.author_id" => "self.id" },
-);
+__PACKAGE__->set_primary_key("first_name", "last_name");
+#__PACKAGE__->has_many(
+#  "books",
+#  "BookDB::Schema::DB::Book",
+#  { "foreign.author_id" => "self.id" },
+#);
 
 
 1;

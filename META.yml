@@ -1,7 +1,7 @@
 ---
 abstract: 'form handler written in Moose '
 author:
-  - 'Gerda Shank, gshank@cpan.org'
+  - 'gshank: Gerda Shank <gshank@cpan.org>'
 build_requires:
   Test::More: 0.77
 distribution_type: module
@@ -32,4 +32,4 @@ requires:
   perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.15
+version: 0.17

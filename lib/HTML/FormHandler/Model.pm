@@ -131,23 +131,6 @@ The default for label_column is "name".
 
 sub lookup_options { return }
 
-=head2 init_value
-
-This method populates a form field's value from the item object.
-
-=cut
-
-sub init_value
-{
-   my ( $self, $field, $item ) = @_;
-   my $name = $field->name;
-
-   return $item->can($name) ? $item->$name : undef
-      if blessed($item);
-
-   return $item->{$name};
-
-}
 
 =head2 validate_model
 

@@ -4,7 +4,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 7;
+   plan tests => 11;
 }
 
 use_ok('HTML::FormHandler::Model::DBIC');
@@ -19,10 +19,8 @@ my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
    extends 'HTML::FormHandler::Model::DBIC';
 
    has '+item_class' => ( default => 'Book' );
-
    has_field 'title' => ( type => 'Text', required => 1 );
    has_field 'author' => ( type => 'Text' );
-
    sub init_value_author
    {
       'Pick a Better Author'
@@ -59,3 +57,23 @@ is( $book->title, 'We Love to Test Perl Form Processors', 'title updated');
 
 $book->delete;
 
+{
+   package My::Form;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   has '+name' => ( default => 'testform_' );
+   has_field 'optname' => ( temp => 'First' );
+   has_field 'reqname' => ( required => 1 );
+   has_field 'somename';
+}
+
+
+$form = My::Form->new( init_object => {reqname => 'Starting Perl',
+                                       optname => 'Over Again' } );
+ok( $form, 'non-db form created OK');
+is( $form->field('optname')->value, 'Over Again', 'get right value from form');
+$form->validate({});
+ok( !$form->validated, 'form validated' );
+is( $form->field('reqname')->fif, 'Starting Perl', 
+                      'get right fif with init_object');

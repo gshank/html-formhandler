@@ -544,7 +544,8 @@ sub build_item
    my $self = shift;
 
    my $item_id = $self->item_id or return;
-   my $item = $self->resultset->find($item_id);
+   my $item = $self->resultset->find( ref $item_id eq 'ARRAY' ? 
+                @{$item_id} : $item_id);
    $self->item_id(undef) unless $item;
    return $item;
 }
@@ -598,7 +599,6 @@ sub resultset
    die "You must supply a schema for your FormHandler form" unless $self->schema;
    return $self->schema->resultset( $self->source_name || $self->item_class );
 }
-
 
 =head1 SUPPORT
 
