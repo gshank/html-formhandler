@@ -151,7 +151,7 @@ setting 'fif'.
 has 'input' => (
    is      => 'rw',
    clearer => 'clear_input',
-   predicate => 'input_exists',
+   predicate => 'has_input',
    trigger => sub {
       my ( $self, $input ) = @_;
       $self->fif($input)
@@ -181,7 +181,17 @@ this attribute to provide the name of accessor.
 =cut
 
 has 'accessor' => ( isa => 'Str', is => 'rw', lazy => 1, 
-   default => sub { shift->name } );
+   default => sub { 
+     my $self = shift;
+     if ( $self->form && $self->form->name_prefix )
+     {
+         my $prefix = $self->form->name_prefix;
+         (my $name = $self->name) =~ s/$prefix\.//g;
+         return $name;
+     }
+     return $self->name;
+   } 
+);
 
 =head2 temp
 
@@ -246,7 +256,7 @@ A reference to the containing form.
 
 =cut
 
-has 'form' => ( is => 'rw', weak_ref => 1 );
+has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
 
 =head2 prename
 
@@ -653,13 +663,12 @@ The field's error list and internal value are reset upon entry.
 sub validate_field
 {
    my $field = shift;
-
    $field->clear_errors;
    # See if anything was submitted
-   unless ( $field->has_input )
+   unless ( $field->input_defined )
    {
       $field->add_error( $field->required_message) if( $field->required );
-      $field->clear_value if( $field->input_exists);
+      $field->clear_value if( $field->has_input);
       return;
    }
 
@@ -811,16 +820,16 @@ sub test_multiple
    return 1;
 }
 
-=head2 has_input
+=head2 input_defined
 
 Returns true if $self->input contains any non-blank input.
 
 =cut
 
-sub has_input
+sub input_defined
 {
    my ($self) = @_;
-   return unless $self->input_exists;
+   return unless $self->has_input;
    my $value = $self->input;
    # check for one value as defined
    return grep { /\S/ } @$value

@@ -154,6 +154,7 @@ sub update_model
    foreach $field ( $self->fields )
    {
       next if $field->noupdate;
+      next unless $field->has_value;
       my $accessor = $field->accessor;
       # If the field is flagged "clear" then set to NULL.
       $value = $field->clear ? undef : $field->value;
@@ -184,7 +185,6 @@ sub update_model
          $other{$accessor} = $value;
       }
    }
-
    my $changed;
    # Handle database columns
    if ($item)
@@ -415,7 +415,7 @@ sub lookup_options
 
 =head2 init_value
 
-This method returns a field's value (for $field->value) with
+This method sets a field's value (for $field->value) with
 either a scalar or an array ref from the object stored in $form->item.
 
 This method is not called if a method "init_value_$field_name" is found 
@@ -431,50 +431,63 @@ sub init_value
    return unless $item;
    return if $field->writeonly;
    my $accessor = $field->accessor;
-   $item ||= $self->item;
-   return $item->{$accessor} if ref($item) eq 'HASH';
-   return unless $item->isa('DBIx::Class') && $item->can($accessor);
-   return unless defined $item->$accessor;
-
-   my $source = $self->source;
-   if ( $source->has_relationship($accessor) )
+   my @values;
+   if( ref($item) eq 'HASH' && exists $item->{$accessor} )
    {
-      if ($field->can('options'))
+      @values = $item->{$accessor};
+   }
+   elsif( !$item->isa('DBIx::Class') && $item->can($accessor) )
+   {
+      @values = $item->$accessor;
+   }
+   elsif( $item->isa('DBIx::Class') && $item->can($accessor) )
+   {
+
+      my $source = $self->source;
+      if ( $source->has_relationship($accessor) )
       {
-         return $item->$accessor->id; 
-      } 
-      else # some other relationship (unsupported)
-      {
-         my $rel_info = $source->relationship_info($accessor);
-         if ( $rel_info->{attrs}->{accessor} eq 'single' ||
-              $rel_info->{attrs}->{accessor} eq 'filter' )
+         if ($field->can('options'))
          {
-            return $item->$accessor->get_inflated_columns; 
-         }
-         else # multi relationship (unsupported)
+            @values = $item->get_column($accessor); 
+         } 
+         else # some other relationship (unsupported)
          {
-            my $rs = $item->$accessor;
-            $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
-            return $rs->all;
+            my $rel_info = $source->relationship_info($accessor);
+            if ( $rel_info->{attrs}->{accessor} eq 'single' ||
+                 $rel_info->{attrs}->{accessor} eq 'filter' )
+            {
+               @values = $item->$accessor->get_inflated_columns; 
+            }
+            else # multi relationship (unsupported)
+            {
+               my $rs = $item->$accessor;
+               $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
+               @values = $rs->all;
+            }
          }
       }
-   }
-   elsif ( $source->has_column($accessor) )
+      elsif ( $source->has_column($accessor) )
+      {
+         @values = $item->$accessor; 
+      }
+      elsif ( $field->can('multiple' ) && $field->multiple == 1 )
+      {
+         return unless $item->id; 
+         my @rows = $item->$accessor->all;
+         @values = map { $_->id } @rows;
+      }
+      else    # neither a column nor a rel
+      {
+         @values = $item->$accessor;
+      }
+   } 
+   else
    {
-      return $item->$accessor; 
+      return;
    }
-   elsif ( $field->can('multiple' ) && $field->multiple == 1 )
-   {
-      return unless $item->id; 
-      my @rows = $item->$accessor->all;
-      my @values = map { $_->id } @rows;
-      return @values;
-   }
-   else    # neither a column nor a rel
-   {
-      return $item->$accessor;
-   }
-   return;
+   my $value = @values > 1 ? \@values : shift @values;
+   $field->init_value($value);
+   $field->value($value);
 }
 
 =head2 validate_unique

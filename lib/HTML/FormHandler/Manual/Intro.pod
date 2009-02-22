@@ -33,7 +33,7 @@ You can execute the sample from a downloaded distribution package with:
 
    perl -Ilib t/script/bookdb_server.pl
 
-=head1 SYNOPSIS
+=head1 Basics
 
 To use HTML::FormHandler, you need to create a form class, call the
 form class from a controller, and choose a method of displaying
@@ -227,13 +227,28 @@ FillInForm:
    }
    sub render : ActionClass('RenderView') { }
 
+=head1 Non-database forms
+
+The base class for a  non-database form is HTML::FormHandler instead
+of a model class.
+You do not initialize a non-database form with an item or item_id,
+although you can use an init_object for the initial values. You 
+use the 'validate' method instead of 'update' or 'process'.  
+
+After validation, you can get a hashref of values back from 
+the 'values' method. 
+
+   my $form = MyApp::Form::Book->new( init_object => { ... } );
+   $form->validate( $params );
+   return unless $form->validated;
+   my $result = $form->values;
+
 
 =head1 Form Models 
 
-If you are not using a database interface, the base class for your forms is 
-HTML::FormHandler. For use with a database, use a model base class--
-a class that knows how to work with your data objects, such as
-L<HTML::FormHandler::Model::DBIC> or L<HTML::FormHandler::Model::CDBI>.
+For a database form, use a model base class that interfaces with the 
+database, such as L<HTML::FormHandler::Model::DBIC> or 
+L<HTML::FormHandler::Model::CDBI>.
 
 When using a database model, form field values for the row are retrieved from
 the database using the field names as database class accessors. 
@@ -241,10 +256,11 @@ FormHandler will use relationships to populate single and multiple
 selection lists, and validate input. It doesn't yet do anything with other
 relationships, although it will return a hash of the relationship.
 
-You can pass in either the primary key or a row object to the form. (Do
-not make a field for the primary key.) If a primary key is passed in, 
-the model will use the item_class (DBIC source name) to fetch the row 
-from the database. The database row is stored in the form's "item" attribute.
+You can pass in either the primary key or a row object to the form. If a 
+primary key (item_id) is passed in, the model will use the item_class 
+(DBIC source name) to fetch the row from the database. If you pass in
+a row object (item), the schema, source_class, and item_id will be set 
+from the row. 
 
 The C<< $form->process >> or C<< $form->update >> methods will validate 
 the parameters and then update or create the database row object.  
@@ -254,20 +270,23 @@ the parameters and then update or create the database row object.
 The standard way to use FormHandler is with field names that match your
 database accessors. If you want to prepend the HTML field names with a
 name plus dot, you can set the form 'name' and use the 'html_prefix'
-flag to have "$name." stripped from the beginning of the HTML fields
-in 'munge_params' before the parameters are set in FormHandler. 
+flag. "$name." will be stripped from the beginning of the HTML fields
+in 'munge_params' before the parameters are set, and will be added in
+'fif'. The field's 'prename' convenience attribute will return this
+name for use in templates.
+
 If you want the FormHandler field name to be different than the
 database accessor, set 'accessor' on your fields. (It defaults to the field
 name). You could then use any name that you want for your field. 
 
 If you want to do something complicated and specific with the field names,
-you can subclass 'munge_params' and do any kind of field name 'normalization'
-that you want.
+you can subclass 'munge_params' and 'fif' and do any kind of field name 
+'normalization' that you want.
 
-You can actually process multiple FormHandler forms at the same time (using
+You can process multiple FormHandler forms at the same time (using
 the same HTML form) with multiple form objects and multiple process/update
-calls. You would have to ensure that there are no duplicate field names or
-use 'html_prefix'.
+calls. You would have to ensure that there are no duplicate field names by
+using one of the methods mentioned above.
 
 =head1 has_field
 
@@ -406,7 +425,8 @@ in the model.
     auto_optional => ['hobbies', 'address', 'city', 'state'],
 
 The 'guess_field_type' method could be customized to provide more
-sophisticated determination of types. See the model class. 
+sophisticated determination of types. For the DBIC model, the schema
+class must be available when the auto fields are constructed.
 
 
 =head1 Fields
@@ -461,6 +481,37 @@ representation to an object (e.g. month, day, year to DateTime).
 
 Do not put the primary_key of your database row into your form as a field. It
 is not necessary. 
+
+=head2 Creating custom fields
+
+Subclass a custom field from L<HTML::FormHandler::Field>, or one of the
+existing subclasses. 
+
+The simplest subclasses contain only a 'validate' routine, which is called
+by the base Field class from 'validate_field'. Look at 
+L<HTML::FormHandler::Field::Email>, for example.
+
+If the field's value will be an object instead of a simple scalar, such
+as a DateTime, then you will also need a 'fif_format' method to reformat
+the object into a form suitable for an HTML form field.
+
+Some custom field might only require setting certain attributes to
+defaults, such as the L<HTML::FormHandler::Field::Hour> field, which
+set 'range_start' to 0 and 'range_end' to 23. A 'select' field might
+override the 'build_options' builder for the 'options' array, like
+L<HTML::FormHandler::Field::IntRange>. A field may add additional 
+attributes, such as 'label_format' in L<HTML::FormHandler::Field::IntRange>,
+or set the 'required_message'.
+
+Some fields subclass 'input_to_value' to change the way that the form
+input is converted to the value, in addition to providing 'fif_value'
+to convert the other way.
+
+The DateTime field even subclasses 'validate_field' in order to skip
+all of the other standard validations.
+
+An alternative to new field classes for many field validations might
+be roles with collections of validations.
 
 =head1 Common form attributes
 

@@ -7,6 +7,7 @@ our $VERSION = '0.01';
 has '+widget' => ( default => 'password' );
 has '+min_length' => ( default => 6 );
 has '+password' => ( default => 1 );
+has '+required_message' => ( default => 'Please enter a password in this field' );
 
 __PACKAGE__->meta->make_immutable;
 
@@ -34,7 +35,6 @@ sub validate {
     return 1;
 }
 
-sub required_message { 'Please enter a password in this field' }
 
 
 =head1 NAME

@@ -83,7 +83,7 @@ sub form
    my $user_hashref = {
       user_name => $user->user_name,
       fav_cat => $user->fav_cat,
-      fav_book => $user->fav_bookan,
+      fav_book => $user->fav_book,
       occupation => $user->occupation }; 
    $self->user_form->validate( 
       init_object => $user_hashref,

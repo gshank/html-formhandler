@@ -22,7 +22,8 @@ recommends 'Template';
 recommends 'Test::WWW::Mechanize::Catalyst';
 
 # things the tests need
-build_requires 'Test::More'      => '0.77';
+test_requires 'Test::More'      => '0.77';
+test_requires 'DateTime::Format::MySQL';
 
 tests_recursive();
 

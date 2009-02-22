@@ -54,7 +54,7 @@ These attributes are usually accessed in a subroutine or in a template.
    init_value    Initial value from the database (or see init_value_$fieldname) 
    value         The value of your field. Initially, init_value, then from input.
    input         Input value from parameter or initial value from database
-   fif           For filling in the value in a form (from input or value)
+   fif           Retrieve (do not set) values for filling in a form 
    options       Select lists. Sorted array of hashes, keys: "value", "label"
 
 =head2 Field subroutines to subclass in a Field class
@@ -122,20 +122,29 @@ These attributes are usually accessed in a subroutine or in a template.
 =head2 Form methods
 
    has_field       Moose-y sugar for declaring fields
-   clear           Useful in tests
-   fields
-   sorted_fields
-   field( $name )
-   field_exists( $name )
-   has_error       Ran_validation & !validated
-   error_fields
-   errors
-   error_field_names
-   uuid
+   clear           Resets state. Used in persistent forms. 
 
-   process
-   update
-   validate( $params )
+   fields          The array of fields
+   sorted_fields   The sorted array of fields
+   field( $name )  Returns a field object
+   value( $name )  Returns the value for a field object
+   field_exists( $name ) Returns a field object if it exists, otherwise undef
+   values          Returns a hashref of values (with accessor keys)
+   fif             Returns a hashref for filling in form  
+
+   has_error       Ran_validation & !validated
+   has_errors      True if any field has errors 
+   num_errors      The number of fields with errors
+   error_fields    Returns an array of fields with errors
+   errors          Returns an array of all errors 
+   error_field_names Returns an array of field names with errors
+
+   uuid            Creates an HTML element 'form_uuid'
+
+   process         Does 'clear' and 'update' for persistent forms
+   update          Sets up form, validates form, updates model
+   validate        For non-db forms: sets up, clears, validates
+   validate_form   Validates form
   
    
 =head2  Subroutines for your form

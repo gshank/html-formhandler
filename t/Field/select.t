@@ -13,7 +13,6 @@ use_ok( $class );
 my $field = $class->new(
     name    => 'test_field',
     type    => $name,
-    form    => undef,
 );
 
 ok( $field->options, 'Test for init_options failure in 0.09' );

@@ -12,7 +12,6 @@ use_ok( $class );
 my $field = $class->new(
     name    => 'test_field',
     type    => $name,
-    form    => undef,
 );
 
 ok( defined $field,  'new() called' );

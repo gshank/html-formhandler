@@ -229,18 +229,27 @@ sub init_value {
     my $column = $field->name;
 
     $item ||= $self->item;
-
     return if $field->writeonly;
-    return $item->{$column} if ref($item) eq 'HASH';
-    # Use "can" instead of "find_column" because could be a related column
-    return unless $item && $item->isa('Class::DBI') && $item->can($column);
-
-    # @options can be a collection of CDBI objects (has_many) or a
-    # CDBI objects get turned into IDs.  
-    my @values =
+    return unless $item && ($item->can($column) || 
+       ( ref $item eq 'HASH' && exists $item->{$column}));
+    my @values;
+    if( ref $item eq 'HASH' )
+    {
+       @values = $item->{$column} if ref($item) eq 'HASH';
+    }
+    elsif( !$item->isa('Class::DBI') )
+    {
+       @values = $item->$column;
+    }
+    else
+    {
+       @values =
         map { ref $_ && $_->isa('Class::DBI') ? $_->id : $_ } $item->$column;
+    }
 
-    return @values;
+   my $value = @values > 1 ? \@values : shift @values;
+   $field->init_value($value);
+   $field->value($value);
 }
 
 =head2 validate_model

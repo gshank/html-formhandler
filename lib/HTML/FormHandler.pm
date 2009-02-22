@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.17';
+our $VERSION = '0.18';
 
 =head1 NAME
 
@@ -181,7 +181,8 @@ Example of a field_list hashref:
 
 For the "auto" field_list keys, provide a list of field names.  
 The field types will be determined by calling 'guess_field_type' 
-in the model.  
+in the model. For the DBIC model, the schema must be available for
+this to work.  
 
     auto_required => ['name', 'age', 'sex', 'birthdate'],
     auto_optional => ['hobbies', 'address', 'city', 'state'],
@@ -302,7 +303,7 @@ has 'field_name_space' => (
 
 =head2 num_errors
 
-Total number of errors. Set by the validation routine.
+Total number of fields with errors. Set by the validation routine.
 
 =cut
 
@@ -331,7 +332,7 @@ Place to store application context
 
 =cut
 
-has 'ctx' => ( is => 'rw', weak_ref => 1 );
+has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
 
 =head2 language_handle, build_language_handle
 
@@ -392,17 +393,6 @@ you could subclass 'munge_params'.
 =cut
 
 has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
-
-=head2 name_prefix
-
-You don't need this attribute unless you have a compound field. 
-Prefix is used for field names in compound fields.  The collection
-of fields can be a complete form.  An example might be a field
-that represents a DateTime object, but is made up of separate
-day, month, and year fields. Adds the 'name_prefix' plus a dot to
-the beginning of the field name.
-
-=cut
 
 has 'name_prefix' => ( isa => 'Str', is => 'rw' );
 
@@ -733,6 +723,7 @@ sub validate_form
    my $params = $self->params; 
    $self->set_dependency;    # set required dependencies
 
+
    foreach my $field ( $self->fields )
    {
       # Trim values and move to "input" slot
@@ -805,10 +796,9 @@ sub clear
    my $self = shift;
    warn "HFH: clear ", $self->name, "\n" if $self->verbose;
    $self->clear_state;
-#   $self->clear_fif;
    $self->clear_params;
-   $self->clear_model if $self->can('clear_model');
-   $self->ctx(undef) if $self->ctx;
+   $self->clear_model;
+   $self->clear_ctx;
 }
 
 =head2 clear_state
@@ -819,7 +809,7 @@ Clears out state information in the form.
    ran_validation
    num_errors
    updated_or_created
-   fields: errors   
+   fields: errors, fif  
    params
 
 =cut
@@ -832,7 +822,6 @@ sub clear_state
    $self->num_errors(0);
    $self->clear_errors;
    $self->clear_fif;
-#   $self->clear_values;
    $self->updated_or_created(undef);
 }
 
@@ -845,7 +834,7 @@ Clears field values
 sub clear_values
 {
    my $self = shift;
-   $_->clear_value for ( $self->fields );
+   $_->clear_value for $self->fields;
 }
 
 =head2 clear_errors
@@ -936,10 +925,11 @@ sub fif
 
 Returns a hashref of all field values. Useful for non-database forms.
 The 'fif' and 'values' hashrefs will be the same unless there's a
-difference in format between the HTML field values and the saved value.
-Such a format conversion would be done in a field's 'validate' routine,
-and would require a 'fif_format' method to convert in the other direction.
-A 'DateTime' field is an example of a field that would be different.
+difference in format between the HTML field values (in fif) and the saved value
+or unless the field 'name' and 'accessor' are different. 'fif' returns
+a hash with the field names for the keys and the field's 'fif' for the
+values; 'values' returns a hash with the field accessors for the keys, and the
+field's 'value' for the the values. 
 
 =cut
 
@@ -950,7 +940,7 @@ sub values
    foreach my $field( $self->fields )
    {
       next unless $field->has_value;
-      $values->{$field->name} = $field->value;
+      $values->{$field->accessor} = $field->value;
    }
    return $values;
 }
@@ -1153,8 +1143,15 @@ sub errors
 
 =head2 uuid
 
-Generates a hidden html field with a unique ID which
-the model class can use to check for duplicate form postings.
+Generates a hidden html field with a unique ID using Data::UUID which
+the can be used to check for duplicate form postings.
+Creates following html:
+
+  <input type="hidden" name="form_uuid" value="..some_uuid..">
+
+Call with:
+
+  [% form.uuid %]
 
 =cut
 
@@ -1206,18 +1203,6 @@ sub build_form
       $field->order( $order ) unless $field->order;
       $order++;
    }
-   # set field accessor if name_prefix is set
-   if( $self->name_prefix )
-   {
-      foreach my $field ( $self->fields )
-      {
-         my $name = $field->name;
-         my $prefix = $self->name_prefix;
-         $name =~ s/$prefix\.//g if $prefix;
-         $field->accessor( $name );
-      }
-   }
-
 }
 
 sub _build_meta_field_list
@@ -1381,16 +1366,14 @@ sub init_from_object
       if ( $self->can($method) )
       {
          @values = $self->$method( $field, $item );
+         my $value = @values > 1 ? \@values : shift @values;
+         $field->init_value($value) if $value;
+         $field->value($value) if $value;
       }
       else
       {
-         @values = $self->init_value( $field, $item );
+         $self->init_value( $field, $item );
       }
-      my $value = @values > 1 ? \@values : shift @values;
-
-      # Handy for later compare
-      $field->init_value($value) if $value;
-      $field->value($value) if $value;
    }
 }
 
@@ -1403,11 +1386,24 @@ This method populates a form field's value from the item object.
 sub init_value
 {
    my ( $self, $field, $item ) = @_;
-   my $name = $field->name;
-
-   return $item->can($name) ? $item->$name : undef
-      if blessed($item);
-   return $item->{$name};
+   my $accessor = $field->accessor;
+   
+   my @values;
+   if (blessed $item && $item->can($accessor))
+   {
+      @values = $item->$accessor;
+   }
+   elsif ( exists $item->{$accessor} )
+   {
+      @values = $item->{$accessor};
+   }
+   else
+   {
+      return;
+   }
+   my $value = @values > 1 ? \@values : shift @values;
+   $field->init_value($value);
+   $field->value($value);
 }
 
 =head2 load_options

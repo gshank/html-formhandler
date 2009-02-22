@@ -13,7 +13,6 @@ use_ok( $class );
 my $field = $class->new(
     name    => 'test_field',
     type    => $name,
-    form    => undef,
     range_start => 30,
     range_end   => 39,
 );

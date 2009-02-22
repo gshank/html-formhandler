@@ -1,5 +1,10 @@
 Revision history for HTML::FormHandler 
 
+0.18 Sun Feb 22 2009, 15:00
+    Add missing test prereq DateTime::Format::MySQL.
+    Add 'values' method to form. Add 'accessor' attribute
+    to field.
+
 0.17 Thurs Feb 19 2009, 17:30
     Refactor validate, adding validate_form method
 
