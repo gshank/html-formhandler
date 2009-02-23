@@ -10,7 +10,7 @@ use Locale::Maketext;
 use HTML::FormHandler::I18N;    # base class for language files
 
 use 5.008;
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 =head1 NAME
 
@@ -752,7 +752,6 @@ sub validate_form
    $self->num_errors( $errors || 0 );
    $self->ran_validation(1);
    $self->validated( !$errors );
-
    $self->dump_validated if $self->verbose;
    $_->clear_input for $self->fields;
 
@@ -916,7 +915,18 @@ sub fif
    {
       next if $field->password;
       next unless $field->fif;
-      $params->{ $prefix . $field->name } = $field->fif;
+      my $fif = $field->fif;
+      if ( ref $fif eq 'HASH' )
+      {
+         foreach my $key ( keys %{$fif} )
+         {
+            $params->{ $prefix . $key } = $fif->{$key};
+         }
+      }
+      else
+      {
+         $params->{ $prefix . $field->name } = $field->fif;
+      }
    }
    return $params;
 }

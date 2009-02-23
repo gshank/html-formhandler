@@ -377,7 +377,6 @@ sub update_model {
 
     # Save item in form object
     $self->item($item);
-    $self->reset_params;    # force reload of parameters from values
     return $item;
 }
 

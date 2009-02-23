@@ -45,7 +45,7 @@ sub list : Chained('user_base') PathPart('list') Args(0)
 sub do_list
 {
    my ( $self, $c ) = @_;
-$DB::single=1;
+
    my $users = $c->model('DB::User');
    $c->stash( users => $users, template => 'user/list.tt' );
 }

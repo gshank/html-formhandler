@@ -256,7 +256,6 @@ sub update_model
 
    # Save item in form object
    $self->item($item);
-   $self->clear_params;    # force reload of parameters from values
    warn "HFH: finished update_model for ", $self->name, "\n" if $self->verbose;
    return $item;
 }
