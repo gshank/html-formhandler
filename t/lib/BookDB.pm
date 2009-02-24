@@ -28,28 +28,23 @@ Catalyst based application.
 
 =over 4
 
-=item action_uri
-
-    <a href="[% c.action_uri('Foo::Bar','baz',5) %]">BAZ!</a>
-
-=cut
-
-sub action_uri
-{
-   my ($c, $controller, $action, @params) = @_;
-   return $c->uri_for($c->controller($controller)->action_for($action), @params);
-}
 
 =item chained_uri_for
 
 =cut
 
-sub chained_uri_for 
+sub this_chained_uri 
 {
    my $c = shift;
    return $c->uri_for($c->action,$c->req->captures,@_);    
 }
 
+sub chained_uri_for
+{
+   my ($c, $controller, $action, $captures) = @_;
+   return $c->uri_for($c->controller($controller)->action_for($action),
+            $captures );
+}
 
 =back
 

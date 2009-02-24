@@ -43,7 +43,7 @@
 Checked out to <a href="[%base _ 'borrower/view/' _ form.item.borrower.id%]">[%form.item.borrower.name%]</a> ([%form.item.borrowed%])<br/>
 <a href="[% form.item_id _ '/return' %]">Return it</a>
 [%ELSE%]
-<form action="[% '/book/' _ form.item.id %]" method="post">
+<form action="[% c.chained_uri_for %]" method="post">
    <p>
    [% SET f = form.field('borrower') %]
    <label class="label" for="[% f.name %]">Not borrowed.</label>

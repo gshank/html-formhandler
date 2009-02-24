@@ -197,6 +197,31 @@ sub render_radio
    return $output;
 }
 
+=head2 render_textarea
+
+Output an HTML string for a textarea widget
+
+=cut
+
+sub render_textarea {
+    my ( $self, $field ) = @_;
+    my $fif   = $field->fif || '';
+    my $id    = $field->id;
+    my $cols  = $field->cols || 10;
+    my $rows  = $field->rows || 5;
+    my $name  = $field->name;
+    my $label = $field->label;
+
+    my $output =
+        qq(\n<label class="label" for="$name">) .
+        qq($label: </label>)                    .
+        qq(<textarea name="$name" id="$id" )    .
+        qq(rows="$rows" cols="$cols">$fif</textarea>);
+
+   return $output;
+}
+
+
 =head1 AUTHORS
 
 Gerda Shank, gshank@cpan.org
