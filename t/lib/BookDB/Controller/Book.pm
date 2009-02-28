@@ -80,7 +80,7 @@ sub form
    my ( $self, $c ) = @_;
 
    $c->stash( form => $self->edit_form, template => 'book/form.tt',
-      action => $c->uri_for($self->action, $c->req->captures);
+      action => $c->uri_for($self->action, $c->req->captures) );
    return unless $self->edit_form->process( item => $c->stash->{book},
       params => $c->req->parameters );
    $c->res->redirect( $c->uri_for($self->action_for('list')) );
@@ -91,7 +91,7 @@ sub delete : Chained('item') PathPart('delete') Args(0)
    my ( $self, $c ) = @_;
 
    $c->stash->{book}->delete;
-   $c->res->redirect( $c->uri_for($action_for('list')) );
+   $c->res->redirect( $c->uri_for($c->action_for('list')) );
 }
 
 sub view : Chained('item') PathPart('') Args(0)
@@ -114,7 +114,7 @@ sub do_return : Chained('item') PathPart('return') Args(0)
    $book->update;
 
    $c->res->redirect( '/book/' . $book->id );
-   $c->res->redirect( $c->uri_for($self->action_for('', [$book->id]) );
+   $c->res->redirect( $c->uri_for($self->action_for('', [$book->id]) ));
    $c->detach;
 }
 

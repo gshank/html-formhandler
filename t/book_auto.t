@@ -24,10 +24,10 @@ $form->clear_state;
 
 # This is munging up the equivalent of param data from a form
 my $good = {
-    'book.title' => 'How to Test Perl Form Processors',
-    'book.author' => 'I.M. Author',
-    'book.isbn'   => '123-02345-0502-2' ,
-    'book.publisher' => 'EreWhon Publishing',
+    'title' => 'How to Test Perl Form Processors',
+    'author' => 'I.M. Author',
+    'isbn'   => '123-02345-0502-2' ,
+    'publisher' => 'EreWhon Publishing',
 };
 
 ok( $form->validate( $good ), 'Good data' );
@@ -51,11 +51,11 @@ ok( !$form->validate( $bad_1 ), 'bad 1' );
 $form->clear_state;
 
 my $bad_2 = {
-    'book.title' => "Another Silly Test Book",
-    'book.author' => "C. Foolish",
-    'book.year' => '1590',
-    'book.pages' => 'too few',
-    'book.format' => '22',
+    'title' => "Another Silly Test Book",
+    'author' => "C. Foolish",
+    'year' => '1590',
+    'pages' => 'too few',
+    'format' => '22',
 };
 
 ok( !$form->validate( $bad_2 ), 'bad 2');

@@ -131,10 +131,16 @@ has 'value' => (
    trigger => sub {
       my ( $self, $value ) = @_;
       $self->fif($self->fif_value($value)) 
-            unless ($self->password && $self->password == 1);
+            unless (($self->password && $self->password == 1)
+                    || $self->has_children );
       return $value;
    }
 );
+
+has 'parent' => ( isa => 'Str', is => 'rw', predicate => 'has_parent' );
+has 'parent_field' => ( isa => 'HTML::FormHandler::Field', is => 'rw' );
+sub has_children {}
+
 
 =head2 input
 
@@ -182,14 +188,10 @@ this attribute to provide the name of accessor.
 
 has 'accessor' => ( isa => 'Str', is => 'rw', lazy => 1, 
    default => sub { 
-     my $self = shift;
-     if ( $self->form && $self->form->name_prefix )
-     {
-         my $prefix = $self->form->name_prefix;
-         (my $name = $self->name) =~ s/$prefix\.//g;
-         return $name;
-     }
-     return $self->name;
+       my $self = shift;
+       my $accessor = $self->name;
+       $accessor =~ s/^(.*)\.//g if ($accessor =~ /\./);
+       return $accessor; 
    } 
 );
 
@@ -636,10 +638,7 @@ This method does standard validation, which currently tests:
 
     required        -- if field is required and value exists
 
-Then if a value exists:
-
-    test_multiple   -- looks for multiple params passed in when not allowed
-    test_options    -- tests if the params passed in are valid options
+Then if a value exists, calls the 'augment' validate_field method in subclasses.
 
 If these tests pass, the field's validate method is called
 
@@ -673,8 +672,8 @@ sub validate_field
    }
 
    $field->clear_value;
-   return unless $field->test_multiple;
-   return unless $field->test_options;
+
+   inner();
    return unless $field->validate;
    return unless $field->test_ranges;
 
@@ -798,27 +797,6 @@ sub trim_value
    return @values > 1 ? \@values : $values[0];
 }
 
-=head2 test_multiple
-
-Returns false if the field is a multiple field
-and the input for the field is a list.
-
-
-=cut
-
-sub test_multiple
-{
-   my ($self) = @_;
-
-   my $value = $self->input;
-   if ( ref $value eq 'ARRAY'
-      && !( $self->can('multiple') && $self->multiple ) )
-   {
-      $self->add_error('This field does not take multiple values');
-      return;
-   }
-   return 1;
-}
 
 =head2 input_defined
 
@@ -837,39 +815,6 @@ sub input_defined
    return defined $value && $value =~ /\S/;
 }
 
-=head2 test_options
-
-If the field has an "options" method then the input value (or values
-if an array ref) is tested to make sure they all are valid options.
-
-Returns true or false
-
-=cut
-
-sub test_options
-{
-   my ($self) = @_;
-
-   return 1 unless $self->can('options');
-
-   # create a lookup hash
-   my %options = map { $_->{value} => 1 } $self->options;
-
-   my $input = $self->input;
-
-   return 1 unless defined $input;    # nothing to check
-
-   for my $value ( ref $input eq 'ARRAY' ? @$input : ($input) )
-   {
-      unless ( $options{$value} )
-      {
-         $self->add_error("'$value' is not a valid value");
-         return;
-      }
-   }
-
-   return 1;
-}
 
 =head2 fif_value
 

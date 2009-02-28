@@ -1,9 +1,17 @@
-
 use strict;
 use warnings;
-use Test::More;
+use Test::More tests => 3;
 
-plan tests => 1;
 
-ok( 1 );
+my $class = 'HTML::FormHandler::Field::TextArea';
 
+use_ok( $class );
+
+my $field = $class->new( name => 'comments', cols => 40, rows => 3 );
+ok( $field, 'get TextArea field');
+
+$field->input("Testing, testing, testing... This is a test");
+
+$field->validate_field;
+
+ok( !$field->has_errors, 'field has no errors');

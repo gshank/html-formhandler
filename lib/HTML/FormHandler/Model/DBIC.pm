@@ -202,6 +202,7 @@ sub update_model
    }
    else    # create new item
    {
+$DB::single=1;
       $item = $self->resultset->create( \%columns );
       $self->item($item);
       $self->updated_or_created('created');

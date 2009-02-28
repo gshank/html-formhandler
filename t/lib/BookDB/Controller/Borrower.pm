@@ -72,7 +72,7 @@ sub form
    my ( $self, $c ) = @_;
 
    $c->stash( form => $self->my_form, template => 'borrower/form.tt',
-      action => $c->uri_for($c->action, $c->req->captures );
+      action => $c->uri_for($c->action, $c->req->captures ));
    return unless $self->my_form->process( item => $c->stash->{borrower},
       params => $c->req->parameters );
    $c->res->redirect( $c->uri_for($self->action_for('list')) );
@@ -83,7 +83,7 @@ sub delete : Chained('item') PathPart('delete') Args(0)
    my ( $self, $c ) = @_;
 
    $c->stash->{borrower}->delete;
-   $c->res->redirect( $c->uri_for($self->action_for('list')) );
+   $c->res->redirect( $c->uri_for($c->action_for('list')) );
 }
 
 sub view : Chained('item') PathPart('') Args(0)

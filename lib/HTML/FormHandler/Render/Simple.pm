@@ -3,7 +3,7 @@ package HTML::FormHandler::Render::Simple;
 use Moose::Role;
 use HTML::Entities;
 
-requires ('sorted_fields', 'field');
+requires( 'sorted_fields', 'field' );
 
 our $VERSION = 0.01;
 
@@ -59,7 +59,7 @@ sub render
 {
    my $self = shift;
    my $output;
-   foreach my $field ($self->sorted_fields)
+   foreach my $field ( $self->sorted_fields )
    {
       $output .= "\n<div>" . $self->render_field($field) . "</div>\n";
    }
@@ -78,12 +78,14 @@ Render a field passing in a field object or a field name
 sub render_field
 {
    my ( $self, $field ) = @_;
-   unless ( $field->isa( 'HTML::FormHandler::Field' ) )
+   unless ( $field->isa('HTML::FormHandler::Field') )
    {
-      $field = $self->field( $field );
+      $field = $self->field($field);
    }
    my $method = 'render_' . $field->widget;
-   return $self->$method( $field );
+   die "Widget method $method not implemented in H::F::Render::Simple"
+      unless $self->can($method);
+   return $self->$method($field);
 }
 
 =head2 render_text
@@ -96,10 +98,10 @@ sub render_text
 {
    my ( $self, $field ) = @_;
    # label
-   my $fif = $field->fif || ''; 
+   my $fif = $field->fif || '';
    my $output .= "\n<label class=\"label\" for=\"";
-   $output .= $field->name . "\">";
-   $output .= $field->label . ":</label>";
+   $output    .= $field->name . "\">";
+   $output    .= $field->label . ":</label>";
    # input
    $output .= "<input type=\"text\" name=\"";
    $output .= $field->name . "\"";
@@ -119,30 +121,30 @@ sub render_select
 {
    my ( $self, $field ) = @_;
 
-   my $fif = $field->fif || ''; 
+   my $fif = $field->fif || '';
    my $output = "<label class=\"label\" for=\"";
    $output .= $field->name . "\">" . $field->label . "</label>";
-   $output .= "<select name=\"" . $field->name . "\""; 
+   $output .= "<select name=\"" . $field->name . "\"";
    $output .= " multiple=\"multiple\" size=\"5\"" if $field->multiple == 1;
    $output .= "\">";
-   foreach my $option ($field->options)
+   foreach my $option ( $field->options )
    {
-      $output .= "<option value=\"" . $option->{value} ."\" ";
-      
-      if ( $fif )
+      $output .= "<option value=\"" . $option->{value} . "\" ";
+
+      if ($fif)
       {
          if ( $field->multiple == 1 )
          {
-            foreach my $optval ( @{$field->fif} )
+            foreach my $optval ( @{ $field->fif } )
             {
-               $output .= " selected=\"selected\"" 
-                     if $optval == $option->{value};
+               $output .= " selected=\"selected\""
+                  if $optval == $option->{value};
             }
          }
          else
          {
-         $output .= "selected=\"selected\"" 
-                if $option->{value} eq $fif;
+            $output .= "selected=\"selected\""
+               if $option->{value} eq $fif;
          }
       }
       $output .= ">" . $option->{label} . "</option>";
@@ -150,7 +152,6 @@ sub render_select
    $output .= "</select>";
    return $output;
 }
-
 
 =head2 render_checkbox
 
@@ -164,8 +165,8 @@ The equivalent of:
 sub render_checkbox
 {
    my ( $self, $field ) = @_;
-   
-   my $fif = $field->fif || ''; 
+
+   my $fif = $field->fif || '';
    my $output = "<input type=\"checkbox\" name=\"";
    $output .= $field->name . "\" value=\"1\"";
    $output .= " checked=\"checked\"" if $fif eq '1';
@@ -184,13 +185,13 @@ sub render_radio
    my ( $self, $field ) = @_;
 
    my $output = "\n";
-   my $fif = $field->fif || ''; 
-   foreach my $option ($field->options)
+   my $fif = $field->fif || '';
+   foreach my $option ( $field->options )
    {
       $output = "<label class=\"label\" for=\"";
       $output .= $field->name . "\">" . $option->{label} . "</label>";
       $output .= "<input name=\"" . $field->name;
-      $output .= " type=\"radio\" value=\"" . $option->{value} ."\"";
+      $output .= " type=\"radio\" value=\"" . $option->{value} . "\"";
       $output .= " selected=\"selected\"" if $option->{value} eq $fif;
       $output .= " />\n";
    }
@@ -203,24 +204,24 @@ Output an HTML string for a textarea widget
 
 =cut
 
-sub render_textarea {
-    my ( $self, $field ) = @_;
-    my $fif   = $field->fif || '';
-    my $id    = $field->id;
-    my $cols  = $field->cols || 10;
-    my $rows  = $field->rows || 5;
-    my $name  = $field->name;
-    my $label = $field->label;
+sub render_textarea
+{
+   my ( $self, $field ) = @_;
+   my $fif   = $field->fif || '';
+   my $id    = $field->id;
+   my $cols  = $field->cols || 10;
+   my $rows  = $field->rows || 5;
+   my $name  = $field->name;
+   my $label = $field->label;
 
-    my $output =
-        qq(\n<label class="label" for="$name">) .
-        qq($label: </label>)                    .
-        qq(<textarea name="$name" id="$id" )    .
-        qq(rows="$rows" cols="$cols">$fif</textarea>);
+   my $output =
+        qq(\n<label class="label" for="$name">)
+      . qq($label: </label>)
+      . qq(<textarea name="$name" id="$id" )
+      . qq(rows="$rows" cols="$cols">$fif</textarea>);
 
    return $output;
 }
-
 
 =head1 AUTHORS
 

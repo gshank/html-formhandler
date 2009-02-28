@@ -18,7 +18,6 @@ Catalyst Form.
 =cut
 
 has '+item_class' => ( default => 'Book' );
-has '+name_prefix' => ( default => 'book' );
 
 __PACKAGE__->meta->make_immutable;
 

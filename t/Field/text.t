@@ -11,15 +11,10 @@ my $name = $1 if $class =~ /::([^:]+)$/;
 
 use_ok( $class );
 
-
-
-
 my $field = $class->new(
     name    => 'test_field',
     type    => $name,
 );
-
-
 
 ok( defined $field,  'new() called' );
 

@@ -3,6 +3,7 @@ abstract: 'form handler written in Moose '
 author:
   - 'gshank: Gerda Shank <gshank@cpan.org>'
 build_requires:
+  DateTime::Format::MySQL: 0
   Test::More: 0.77
 distribution_type: module
 generated_by: 'Module::Install version 0.77'
@@ -19,7 +20,7 @@ recommends:
   Catalyst: 0
   Catalyst::Component::InstancePerContext: 0
   Template: 0
-  Test::WWW::Mechanize::Catalyst: 0
+  Test::WWW::Mechanize::Catalyst: 0.50
 requires:
   Carp: 0
   DBIx::Class: 0
@@ -32,4 +33,4 @@ requires:
   perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.17
+version: 0.19

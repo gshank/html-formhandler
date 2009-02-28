@@ -19,7 +19,7 @@ requires 'HTML::Entities';
 recommends 'Catalyst';
 recommends 'Catalyst::Component::InstancePerContext';
 recommends 'Template';
-recommends 'Test::WWW::Mechanize::Catalyst';
+recommends 'Test::WWW::Mechanize::Catalyst' => '0.50';
 
 # things the tests need
 test_requires 'Test::More'      => '0.77';

@@ -1,0 +1,24 @@
+package HTML::FormHandler::Field::Nested;
+
+use Moose;
+extends 'HTML::FormHandler::Field';
+
+=head1 NAME
+
+HTML::FormHandler::Field::Nested - for nested elements of compound fields
+
+=head1 SYNOPSIS
+
+This field class is intended for nested elements of compound fields. It
+does no particular validation, since the compound field should handle
+that.
+
+=head2 parent
+
+This attribute must be set on a nested field
+
+=cut
+
+__PACKAGE__->meta->make_immutable;
+no Moose;
+1;

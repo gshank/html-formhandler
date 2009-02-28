@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use HTML::FormHandler::Field::Text;
 
@@ -21,7 +21,8 @@ use HTML::FormHandler::Field::Text;
             },
             fruit => 'Select',
             vegetables => 'Multiple',
-            active => 'Checkbox'
+            active => 'Checkbox',
+            comments => 'TextArea',
          }
       },
    }
@@ -59,6 +60,9 @@ ok( $output3, 'output from select multiple field');
 
 my $output4 = $form->render_field( $form->field('active') );
 ok( $output4, 'output from checkbox field');
+
+my $output5 = $form->render_field( $form->field('comments') );
+ok( $output5, 'output from textarea' );
 
 $output = $form->render;
 ok( $output, 'get rendered output from form');

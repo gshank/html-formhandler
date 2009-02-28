@@ -14,7 +14,7 @@
     <td>[% book.$column %]</td>
     [% END %]
     <td>
-      <a href="[% c.chained_uri_for('book', '', [book.id]  %]">View</a>
+      <a href="[% c.chained_uri_for('book', '', [book.id]) %]">View</a>
       <a href="[% '/book/' _ book.id _ '/edit' %]">Edit</a>
       <a href="[% '/book/' _ book.id _ '/delete' %]">Delete</a>
     </td>[% counter = counter + 1 %]
