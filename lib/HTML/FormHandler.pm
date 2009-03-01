@@ -722,8 +722,18 @@ sub validate_form
    my $params = $self->params; 
    $self->set_dependency;    # set required dependencies
 
-
+   # make sure parent fields are validated last
+   my @fields;
+   my @parent_fields;
    foreach my $field ( $self->fields )
+   {
+      push @fields, $field unless $field->has_children;
+      push @parent_fields, $field if $field->has_children;
+   }
+   push @fields, @parent_fields;
+
+   # validate all fields
+   foreach my $field ( @fields )
    {
       # Trim values and move to "input" slot
       $field->input( $field->trim_value( $params->{$field->full_name} ) )
@@ -949,7 +959,7 @@ sub values
    foreach my $field( $self->fields )
    {
       next unless $field->has_value;
-      next unless $field->has_parent;
+      next if $field->has_parent;
       $values->{$field->accessor} = $field->value;
    }
    return $values;
@@ -1062,7 +1072,8 @@ sub munge_params
    {
       $new_params = $new_params->{$self->name};
    }
-   $self->{params} = $new_params;
+   my $final_params = {%{$params}, %{$new_params}};
+   $self->{params} = $final_params;
 }
 
 =head2 cross_validate
@@ -1208,7 +1219,9 @@ sub build_form
       if( $field->can('parent') && $field->parent )
       {
          my $parent = $self->field($field->parent);
-         $parent->add_child($field) if $parent;
+         die "Parent field for " . $field->name . "not found" unless $parent;
+         $parent->add_child($field);
+         $field->parent_field($parent);
       }
    }
 

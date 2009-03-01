@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 19;
+   plan tests => 21;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -38,6 +38,9 @@ my $book = $form->item;
 END { $book->delete };
 
 ok ($book, 'get book object from form');
+
+is_deeply( $form->values, $good, 'values correct' );
+is_deeply( $form->fif, $good, 'fif correct' );
 
 my $num_genres = $book->genres->count;
 is( $num_genres, 2, 'multiple select list updated ok');

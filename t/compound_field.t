@@ -2,9 +2,9 @@ use Test::More tests => 9;
 
 use lib 't/lib';
 
-use_ok( 'Field::Duration');
+use_ok( 'HTML::FormHandler::Field::Duration');
 
-my $field = Field::Duration->new( name => 'duration' );
+my $field = HTML::FormHandler::Field::Duration->new( name => 'duration' );
 
 ok( $field, 'get compound field');
 
@@ -25,7 +25,7 @@ is_deeply( $field->fif, $input, 'field fif is same');
    extends 'HTML::FormHandler';
 
    has_field 'name' => ( type => 'Text' );
-   has_field 'duration' => ( type => '+Field::Duration' );
+   has_field 'duration' => ( type => 'Duration' );
    has_field 'duration.hours' => ( type => 'Nested', parent => 'duration' );
    has_field 'duration.minutes' => ( type => 'Nested', parent => 'duration' );
 

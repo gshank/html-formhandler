@@ -139,6 +139,7 @@ has 'value' => (
 
 has 'parent' => ( isa => 'Str', is => 'rw', predicate => 'has_parent' );
 has 'parent_field' => ( isa => 'HTML::FormHandler::Field', is => 'rw' );
+has 'errors_on_parent' => ( isa => 'Bool', is => 'rw' );
 sub has_children {}
 
 
@@ -617,7 +618,6 @@ sub add_error
    if ($form)
    {
       $lh = $form->language_handle;
-
       # If we are a sub-form then redirect errors to the parent field
       $error_field = $form->parent_field if $form->parent_field;
    }
@@ -627,7 +627,8 @@ sub add_error
          || HTML::FormHandler::I18N->get_handle
          || die "Failed call to Locale::Maketext->get_handle";
    }
-   $self->push_errors( $lh->maketext(@_) );
+   $error_field = $self->parent_field if $self->errors_on_parent;
+   $error_field->push_errors( $lh->maketext(@_) );
    return;
 }
 

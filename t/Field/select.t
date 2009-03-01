@@ -28,7 +28,6 @@ ok( defined $field,  'new() called' );
 $field->input( 1 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );
-# Hum, should this be an array?
 is( $field->value, 1, 'Test true == 1' );
 
 $field->input( [1] );
