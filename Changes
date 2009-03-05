@@ -1,5 +1,8 @@
 Revision history for HTML::FormHandler 
 
+0.19 Thu Mar 05, 2009, 17:00
+    Fix problem with empty values from form. Add Compound field.
+
 0.18 Sun Feb 22 2009, 15:00
     Add missing test prereq DateTime::Format::MySQL.
     Add 'values' method to form. Add 'accessor' attribute

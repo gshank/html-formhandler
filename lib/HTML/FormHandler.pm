@@ -741,8 +741,7 @@ sub validate_form
       next if $field->clear;    # Skip validation
       # Validate each field and "inflate" input -> value.
       $field->validate_field;  # this calls the field's 'validate' routine
-#      next unless $field->has_value;
-      next unless $field->value;
+      next unless $field->value; 
       # these methods have access to the inflated values
       my $method = $field->validate_meth;
       $self->$method($field) if $method && $self->can($method); 
