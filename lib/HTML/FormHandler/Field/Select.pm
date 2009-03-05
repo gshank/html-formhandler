@@ -156,10 +156,11 @@ sub as_label {
     return;
 }
 
-=head2 test_options
+=head2 validate_field 
 
-If the field has an "options" method then the input value (or values
-if an array ref) is tested to make sure they all are valid options.
+Checks that this is a multiple field if the input is an array. 
+The input value (or values if an array ref) is tested to make 
+sure they all are valid options.
 
 Returns true or false
 
@@ -176,6 +177,13 @@ augment 'validate_field' => sub
 
    return 1 unless defined $input;    # nothing to check
 
+   if ( ref $input eq 'ARRAY'
+      && !( $self->can('multiple') && $self->multiple ) )
+   {
+      $self->add_error('This field does not take multiple values');
+      return;
+   }
+
    for my $value ( ref $input eq 'ARRAY' ? @$input : ($input) )
    {
       unless ( $options{$value} )
@@ -187,6 +195,7 @@ augment 'validate_field' => sub
    inner();
    return 1;
 };
+
 
 =head1 AUTHORS
 

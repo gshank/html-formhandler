@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-my $tests = 15;
+my $tests = 14;
 plan tests => $tests;
 
 my $class = 'HTML::FormHandler::Field::Text';
@@ -61,9 +61,3 @@ $field->min_length( 4 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test plenty long enough' );
 
-# Make sure there's an error if passed an array.
-$field->size(undef);
-$field->min_length(undef);
-$field->input([qw/ hello there /]);
-$field->validate_field;
-ok( $field->has_errors, 'Passed array to non-multiple field' );

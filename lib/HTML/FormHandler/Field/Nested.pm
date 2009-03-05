@@ -19,6 +19,8 @@ This attribute must be set on a nested field
 
 =cut
 
+has '+errors_on_parent' => ( default => 1 );
+
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;

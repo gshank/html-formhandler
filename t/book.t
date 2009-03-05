@@ -39,6 +39,9 @@ END { $book->delete };
 
 ok ($book, 'get book object from form');
 
+is_deeply( $form->values, $good, 'values correct' );
+is_deeply( $form->fif, $good, 'fif correct' );
+
 my $num_genres = $book->genres->count;
 is( $num_genres, 2, 'multiple select list updated ok');
 
