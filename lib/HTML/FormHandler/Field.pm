@@ -667,7 +667,7 @@ sub validate_field
    unless ( $field->input_defined )
    {
       $field->add_error( $field->required_message) if( $field->required );
-      $field->clear_value if( $field->has_input);
+      $field->value(undef) if( $field->has_input );
       return;
    }
 

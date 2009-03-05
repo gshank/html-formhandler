@@ -91,7 +91,7 @@ sub delete : Chained('item') PathPart('delete') Args(0)
    my ( $self, $c ) = @_;
 
    $c->stash->{book}->delete;
-   $c->res->redirect( $c->uri_for($c->action_for('list')) );
+   $c->res->redirect( $c->uri_for($self->action_for('list')) );
 }
 
 sub view : Chained('item') PathPart('') Args(0)

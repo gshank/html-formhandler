@@ -722,7 +722,6 @@ sub validate_form
    my $params = $self->params; 
    $self->set_dependency;    # set required dependencies
 
-
    foreach my $field ( $self->fields )
    {
       # Trim values and move to "input" slot
@@ -731,7 +730,8 @@ sub validate_form
       next if $field->clear;    # Skip validation
       # Validate each field and "inflate" input -> value.
       $field->validate_field;  # this calls the field's 'validate' routine
-      next unless defined $field->value;
+#      next unless $field->has_value;
+      next unless $field->value;
       # these methods have access to the inflated values
       my $method = $field->validate_meth;
       $self->$method($field) if $method && $self->can($method); 
@@ -949,7 +949,7 @@ sub values
    foreach my $field( $self->fields )
    {
       next unless $field->has_value;
-      next unless $field->has_parent;
+      next if $field->has_parent;
       $values->{$field->accessor} = $field->value;
    }
    return $values;

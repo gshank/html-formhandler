@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 19;
+   plan tests => 23;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -45,6 +45,18 @@ is( $num_genres, 2, 'multiple select list updated ok');
 is( $form->value('format'), 2, 'get value for format' );
 
 my $id = $book->id;
+
+$DB::single=1;
+$good->{author} = '';
+$form->update($good);
+
+ok( $form->validated, 'form validated with null author');
+
+is( $book->author, undef, 'updated author with null value');
+is( $form->field('author')->value, undef, 'author value right in form');
+is( $form->field('publisher')->value, 'Erewhon Publishing', 'right publisher');
+
+is_deeply( $form->values, $good, 'get right values from form');
 
 my $bad_1 = {
     notitle => 'not req',
