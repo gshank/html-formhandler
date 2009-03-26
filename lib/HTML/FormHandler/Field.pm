@@ -132,7 +132,7 @@ has 'value' => (
       my ( $self, $value ) = @_;
       $self->fif($self->fif_value($value)) 
             unless (($self->password && $self->password == 1)
-                    || $self->has_children );
+                    || $self->has_fields );
       return $value;
    }
 );
@@ -140,7 +140,7 @@ has 'value' => (
 has 'parent' => ( isa => 'Str', is => 'rw', predicate => 'has_parent' );
 has 'parent_field' => ( isa => 'HTML::FormHandler::Field', is => 'rw' );
 has 'errors_on_parent' => ( isa => 'Bool', is => 'rw' );
-sub has_children {}
+sub has_fields {}
 
 
 =head2 input
@@ -550,15 +550,13 @@ has 'validate_meth' => ( isa => 'Str', is => 'rw', lazy => 1,
 );
 
 
-# tell Moose to make this class immutable
-__PACKAGE__->meta->make_immutable;
-
 =head1 METHODS
 
 =head2 new [parameters]
 
 Create a new instance of a field.  Initial values are passed 
 as a list of parameters.
+
 
 =head2 full_name
 
@@ -917,5 +915,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

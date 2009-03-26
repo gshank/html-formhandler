@@ -15,6 +15,7 @@ requires 'Locale::Maketext'   => '1.09';
 requires 'DateTime';
 requires 'DBIx::Class';
 requires 'HTML::Entities';
+requires 'MooseX::Getopt' => '0.16';
 
 recommends 'Catalyst';
 recommends 'Catalyst::Component::InstancePerContext';

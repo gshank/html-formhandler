@@ -139,6 +139,7 @@ sub update_model
    my ($self) = @_;
    my $item   = $self->item;
    my $source = $self->source;
+   my $updated_or_created;
 
    warn "HFH: update_model for ", $self->name, "\n" if $self->verbose;
    # get a hash of all fields, skipping fields marked 'noupdate'
@@ -198,13 +199,13 @@ sub update_model
          $item->$accessor($value);
          $changed++;
       }
-      $self->updated_or_created('updated');
+      $updated_or_created = 'updated';
    }
    else    # create new item
    {
       $item = $self->resultset->create( \%columns );
       $self->item($item);
-      $self->updated_or_created('created');
+      $updated_or_created = 'created';
    }
 
    # Set single select lists with rel different from column
@@ -236,7 +237,7 @@ sub update_model
          if defined $value;
       my $meth;
       my $row;
-      if ( $self->updated_or_created eq 'updated' )
+      if ( $updated_or_created eq 'updated' )
       {
          foreach $row ( $item->$accessor->all )
          {
