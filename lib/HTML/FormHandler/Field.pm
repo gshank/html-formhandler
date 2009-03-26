@@ -576,7 +576,7 @@ sub full_name
    my $name   = $field->name;
    my $form   = $field->form || return $name;
    my $parent = $form->parent_field || return $name;
-   return $parent->name . '.' . $name;
+   return $parent->full_name . '.' . $name;
 }
 
 =head2 set_order
