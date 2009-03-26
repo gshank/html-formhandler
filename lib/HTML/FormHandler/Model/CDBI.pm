@@ -320,6 +320,7 @@ sub update_model
    # Grab either the item or the object class.
    my $item = $self->item;
    my $class = ref($item) || $self->item_class;
+   my $updated_or_created;
 
    # get a hash of all fields
    my %fields = map { $_->name, $_ } grep { !$_->noupdate } $self->fields;
@@ -349,13 +350,13 @@ sub update_model
    if ($item)
    {
       $item->update;
-      $self->updated_or_created('updated');
+      $updated_or_created = 'updated';
    }
    else
    {
       $item = $class->create( \%data );
       $self->item($item);
-      $self->updated_or_created('created');
+      $updated_or_created = 'created';
    }
 
    # Now check for mapping/has_many in any left over fields

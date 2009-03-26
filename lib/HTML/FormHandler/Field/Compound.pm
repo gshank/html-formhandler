@@ -3,6 +3,7 @@ package HTML::FormHandler::Field::Compound;
 use Moose;
 use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Field';
+with 'HTML::FormHandler::Fields';
 
 =head1 NAME
 
@@ -39,25 +40,11 @@ Widget type is 'compound'
 
 has '+widget' => ( default => 'compound' );
 
-=head2 children
-
-This is a Moose Collection::Array of child field references.
-A child class will have have a 'parent_field' reference in
-addition to the 'parent' field name.
-
-=cut
-
-has 'children' => ( isa => 'ArrayRef', 
-   is => 'rw',
-   metaclass => 'Collection::Array',
-   auto_deref => 1,
-   default => sub {[]},
-   provides => {
-      push => 'add_child',
-      empty => 'has_children',
-      clear => 'clear_children',
-   }
-);
+sub BUILD
+{
+   my $self = shift;
+   $self->build_form;
+}
 
 augment 'validate_field' => sub {
    shift->clear_fif;

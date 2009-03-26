@@ -32,7 +32,7 @@ sub validate
     my ( $self ) = @_;
 
     my @dur_parms;
-    foreach my $child ($self->children)
+    foreach my $child ($self->fields)
     {
        unless ( $child->value =~ /^\d+$/ )
        {

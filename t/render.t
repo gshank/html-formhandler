@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 7;
 
 use HTML::FormHandler::Field::Text;
 
@@ -23,7 +23,6 @@ use HTML::FormHandler::Field::Text;
             vegetables => 'Multiple',
             active => 'Checkbox',
             comments => 'TextArea',
-            hidden => 'Hidden',
          }
       },
    }
@@ -64,9 +63,6 @@ ok( $output4, 'output from checkbox field');
 
 my $output5 = $form->render_field( $form->field('comments') );
 ok( $output5, 'output from textarea' );
-
-my $output6 = $form->render_field( $form->field('hidden') );
-ok( $output6 =~ m/type="hidden"/, 'output from hidden field' );
 
 $output = $form->render;
 ok( $output, 'get rendered output from form');
