@@ -168,7 +168,7 @@ sub get_elements {
             # - generated schemas have not is_auto_increment set so
             # so the below needs to be commented out
             # and $info->{is_auto_increment} ){  
-            $new_element->{type} = 'Integer';
+            $new_element->{type} = 'Hidden';
         }   
         else{
             next if grep { $_ eq $col } @exclude;

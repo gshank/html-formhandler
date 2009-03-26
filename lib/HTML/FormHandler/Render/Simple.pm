@@ -111,6 +111,29 @@ sub render_text
    return $output;
 }
 
+=head2 render_text
+
+Output an HTML string for a hidden input widget
+
+=cut
+
+sub render_hidden
+{
+   my ( $self, $field ) = @_;
+   # label
+   my $fif = $field->fif || '';
+   my $output .= "\n<label class=\"label\" for=\"";
+   $output    .= $field->name . "\">";
+   $output    .= $field->label . ":</label>";
+   # input
+   $output .= "<input type=\"hidden\" name=\"";
+   $output .= $field->name . "\"";
+   $output .= " id=\"" . $field->id . "\"";
+   $output .= " value=\"" . $fif . "\">";
+   # value
+   return $output;
+}
+
 =head2 render_select
 
 Output an HTML string for a 'select' widget, single or multiple
