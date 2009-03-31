@@ -19,10 +19,12 @@ use HTML::FormHandler::Field::Text;
                id    => 'f99',
                value => 'something'
             },
-            fruit => 'Select',
+            fruit      => 'Select',
             vegetables => 'Multiple',
-            active => 'Checkbox',
-            comments => 'TextArea',
+            active     => 'Checkbox',
+            comments   => 'TextArea',
+            hidden     => 'Hidden',
+            selected   => 'Boolean',
          }
       },
    }
@@ -63,6 +65,12 @@ ok( $output4, 'output from checkbox field');
 
 my $output5 = $form->render_field( $form->field('comments') );
 ok( $output5, 'output from textarea' );
+
+my $output6 = $form->render_field( $form->field('hidden') );
+ok( $output6, 'output from textarea' );
+
+my $output7 = $form->render_field( $form->field('selected') );
+ok( $output7, 'output from boolean' );
 
 $output = $form->render;
 ok( $output, 'get rendered output from form');

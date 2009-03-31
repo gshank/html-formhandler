@@ -1352,25 +1352,31 @@ IRC:
 
   Join #formhandler on irc.perl.org
 
+Mailing list:
+
+  http://groups.google.com/group/formhandler
+
+Code repository:
+
+  http://github.com/gshank/html-formhandler/tree/master
+
 =head1 SEE ALSO
 
 L<HTML::FormHandler::Manual>
 
-L<HTML::FormHandler::Tutorial>
+L<HTML::FormHandler::Manual::Tutorial>
 
-L<HTML::FormHandler::Intro>
+L<HTML::FormHandler::Manual::Intro>
 
-L<HTML::FormHandler::Templates>
+L<HTML::FormHandler::Manual::Templates>
 
-L<HTML::FormHandler::Cookbook>
+L<HTML::FormHandler::Manual::Cookbook>
 
 L<HTML::FormHandler::Field>
 
 L<HTML::FormHandler::Model::DBIC>
 
 L<HTML::FormHandler::Moose>
-
-L<HTML::FormHandler::Moose::Role>
 
 
 =head1 AUTHOR

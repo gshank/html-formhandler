@@ -197,13 +197,16 @@ sub render_checkbox
    return $output;
 }
 
-=head2 render_radio
 
-Output an HTML string for a 'radio' widget
+=head2 render_radio_group
+
+Output an HTML string for a 'radio_group' selection widget.
+This widget should be for a field that inherits from 'Select',
+since it requires the existance of an 'options' array.
 
 =cut
 
-sub render_radio
+sub render_radio_group
 {
    my ( $self, $field ) = @_;
 
