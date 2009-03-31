@@ -1,4 +1,4 @@
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 use HTML::FormHandler::Field::Text;
 
@@ -67,7 +67,7 @@ my $output5 = $form->render_field( $form->field('comments') );
 ok( $output5, 'output from textarea' );
 
 my $output6 = $form->render_field( $form->field('hidden') );
-ok( $output6, 'output from textarea' );
+ok( $output6 =~ m/type="hidden"/, 'output from hidden field' );
 
 my $output7 = $form->render_field( $form->field('selected') );
 ok( $output7, 'output from boolean' );
