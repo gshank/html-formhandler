@@ -4,7 +4,7 @@ use Moose;
 extends 'HTML::FormHandler::Field';
 our $VERSION = '0.03';
 
-has '+widget' => ( default => 'radio' );
+has '+widget' => ( default => 'checkbox' );
 
 __PACKAGE__->meta->make_immutable;
 
@@ -25,7 +25,7 @@ HTML::FormHandler::Field::Boolean - A true or false field
 
 =head1 DESCRIPTION
 
-This field returnes undef if no value is defined, 0 if defined and false,
+This field returns undef if no value is defined, 0 if defined and false,
 and 1 if defined and true. The widget type is 'radio'
 
 =head1 AUTHORS

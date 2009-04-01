@@ -1,4 +1,4 @@
-use Test::More tests => 9;
+use Test::More tests => 13;
 
 use lib 't/lib';
 
@@ -20,7 +20,7 @@ is_deeply( $field->input, $input, 'field input is correct');
 is_deeply( $field->fif, $input, 'field fif is same');
 
 {
-   package Compound::Form;
+   package Duration::Form;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
@@ -31,7 +31,7 @@ is_deeply( $field->fif, $input, 'field fif is same');
 
 }
 
-my $form = Compound::Form->new;
+my $form = Duration::Form->new;
 ok( $form, 'get compound form' );
 ok( $form->field('duration'), 'duration field' );
 ok( $form->field('duration.hours'), 'duration.hours field' );
@@ -42,4 +42,28 @@ $form->validate( params => $params );
 ok( $form->validated, 'form validated' );
 
 is_deeply($form->fif, $params, 'get fif with right value');
+is( $form->value('duration')->hours, 2, 'duration value is correct');
+
+{
+   package Form::Start;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   has_field 'name' => ( type => 'Text' );
+   has_field 'start_date' => ( type => 'DateTime' );
+   has_field 'start_date.month' => ( type => 'Month', parent => 'start_date' );
+   has_field 'start_date.day' => ( type => 'MonthDay', parent => 'start_date' );
+   has_field 'start_date.year' => ( type => 'Year', parent => 'start_date' );
+
+}
+
+my $dtform = Form::Start->new;
+ok( $dtform, 'datetime form' );
+$params = { name => 'DT_testing', 'start_date.month' => '10',
+    'start_date.day' => '2', 'start_date.year' => '2008' };
+$dtform->validate( params => $params );
+
+ok( $dtform->validated, 'form validated' );
+
+is( $dtform->value('start_date')->mdy, '10-02-2008', 'datetime value');
 

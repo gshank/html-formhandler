@@ -20,11 +20,11 @@ my $pk = ['J.K.', 'Rowling'];
 my $authors = $schema->resultset('Author');
 my $author = $schema->resultset('Author')->find( @{$pk} );
 ok( $author, 'get author from db' );
-is( $author->country, 'U.K.', 'correct value in author');
+is( $author->country_iso, 'GB', 'correct value in author');
 
 my $form = BookDB::Form::Author->new(item_id => $pk, schema => $schema);
 ok( $form, 'get form with multiple primary key' );
-is( $form->item->country, 'U.K.', 'got right row');
+is( $form->item->country_iso, 'GB', 'got right row');
 
 my $pk_hashref = { last_name => 'Rowling', first_name => 'J.K.' };
 $author = $schema->resultset('Author')->find( $pk_hashref );
@@ -32,7 +32,7 @@ ok( $author, 'get author from db with hashref');
 
 $form = BookDB::Form::Author->new(item_id => $pk_hashref, schema => $schema);
 ok( $form, 'get form with array of hashref primary key' );
-is( $form->item->country, 'U.K.', 'got right row');
+is( $form->item->country_iso, 'GB', 'got right row');
 
 my $pk_hashlist = [{ last_name => 'Rowling', first_name => 'J.K.' },
                    { key => 'primary' }];
@@ -41,4 +41,4 @@ ok( $author, 'get author from db with hashref');
 
 $form = BookDB::Form::Author->new(item_id => $pk_hashlist, schema => $schema);
 ok( $form, 'get form with array of hashref primary key' );
-is( $form->item->country, 'U.K.', 'got right row');
+is( $form->item->country_iso, 'GB', 'got right row');

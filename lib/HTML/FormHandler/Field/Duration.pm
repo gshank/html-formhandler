@@ -19,10 +19,10 @@ Subfield names:
 For example:
 
    has 'duration' => ( type => 'Compound' );
-   has 'duration.hours' => ( type => 'Hours', 
-        parent => 'class_duration');
-   has 'duration.minutes' => ( type => 'Minutes', 
-        parent => 'class_duration' );
+   has 'duration.hours' => ( type => 'Nested', 
+        parent => 'duration');
+   has 'duration.minutes' => ( type => 'Nested', 
+        parent => 'duration' );
 
 
 =cut
@@ -39,7 +39,6 @@ sub validate
           $self->add_error( "Invalid value for " . $self->label . " " . $child->label );
           next;
        }
-       
        push @dur_parms, ($child->accessor => $child->value); 
     }
 

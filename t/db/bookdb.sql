@@ -64,13 +64,13 @@ INSERT INTO "genre" VALUES(6, 'Technical');
 CREATE TABLE author (
    first_name VARCHAR(100),
    last_name VARCHAR(100),
-   country VARCHAR(100),
+   country_iso char(2),
    birthdate DATETIME,
    CONSTRAINT name PRIMARY KEY (first_name, last_name)
 );
-INSERT INTO "author" VALUES ("J.K.", "Rowling", "U.K.", "2003-01-16 00:00:00" );
-INSERT INTO "author" VALUES ("Fyodor", "Dostoyevsky", "Russia", "1821-11-11 00:00:00" );
-INSERT INTO "author" VALUES ("Neil", "Stephenson", "United States", "1959-10-31 00:00:00" );
+INSERT INTO "author" VALUES ("J.K.", "Rowling", "GB", "2003-01-16 00:00:00" );
+INSERT INTO "author" VALUES ("Fyodor", "Dostoyevsky", "RU", "1821-11-11 00:00:00" );
+INSERT INTO "author" VALUES ("Neil", "Stephenson", "US", "1959-10-31 00:00:00" );
 CREATE TABLE user (
    user_id INTEGER PRIMARY KEY,
    user_name VARCHAR(32),
@@ -84,4 +84,42 @@ INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'program
 INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed' );
 INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor' );
 
+
+-- iso_country_list.sql
+--
+-- This will create and then populate a MySQL table with a list of the names and
+-- ISO 3166 codes for countries in existence as of the date below.
+--
+-- Usage:
+--    mysql -u username -ppassword database_name < ./iso_country_list.sql
+--
+-- For updates to this file, see http://27.org/isocountrylist/
+-- For more about ISO 3166, see http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html
+--
+-- Created by getisocountrylist.pl on Sun Nov  2 14:59:20 2003.
+-- Wm. Rhodes <iso_country_list@27.org>
+--
+
+CREATE TABLE IF NOT EXISTS country (
+  iso CHAR(2) NOT NULL PRIMARY KEY,
+  name VARCHAR(80) NOT NULL,
+  printable_name VARCHAR(80) NOT NULL,
+  iso3 CHAR(3),
+  numcode SMALLINT
+);
+
+DELETE from country;
+
+INSERT INTO country VALUES ('AU','AUSTRALIA','Australia','AUS','036');
+INSERT INTO country VALUES ('CZ','CZECH REPUBLIC','Czech Republic','CZE','203');
+INSERT INTO country VALUES ('DK','DENMARK','Denmark','DNK','208');
+INSERT INTO country VALUES ('FR','FRANCE','France','FRA','250');
+INSERT INTO country VALUES ('DE','GERMANY','Germany','DEU','276');
+INSERT INTO country VALUES ('PL','POLAND','Poland','POL','616');
+INSERT INTO country VALUES ('PT','PORTUGAL','Portugal','PRT','620');
+INSERT INTO country VALUES ('RO','ROMANIA','Romania','ROM','642');
+INSERT INTO country VALUES ('RU','RUSSIAN FEDERATION','Russian Federation','RUS','643');
+INSERT INTO country VALUES ('GB','UNITED KINGDOM','United Kingdom','GBR','826');
+INSERT INTO country VALUES ('US','UNITED STATES','United States','USA','840');
+INSERT INTO country VALUES ('ZW','ZIMBABWE','Zimbabwe','ZWE','716');
 COMMIT;

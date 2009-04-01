@@ -696,31 +696,15 @@ sub validate_form
    my $params = $self->params; 
    $self->set_dependency;    # set required dependencies
 
-   # make sure parent fields are validated last
-   my @fields;
-   my @parent_fields;
    foreach my $field ( $self->fields )
-   {
-      push @fields, $field unless $field->has_fields;
-      push @parent_fields, $field if $field->has_fields;
-   }
-   push @fields, @parent_fields;
-
-   # validate all fields
-   foreach my $field ( @fields )
    {
       # Trim values and move to "input" slot
       $field->input( $field->trim_value( $params->{$field->full_name} ) )
          if exists $params->{$field->full_name};
-      next if $field->clear;    # Skip validation
-      # Validate each field and "inflate" input -> value.
-      $field->validate_field;  # this calls the field's 'validate' routine
-      next unless $field->value; 
-      # these methods have access to the inflated values
-      my $method = $field->validate_meth;
-      $self->$method($field) if $method && $self->can($method); 
    }
 
+   $self->fields_validate;
+      
    $self->cross_validate($params);
    # model specific validation 
    $self->validate_model;
@@ -1352,25 +1336,31 @@ IRC:
 
   Join #formhandler on irc.perl.org
 
+Mailing list:
+
+  http://groups.google.com/group/formhandler
+
+Code repository:
+
+  http://github.com/gshank/html-formhandler/tree/master
+
 =head1 SEE ALSO
 
 L<HTML::FormHandler::Manual>
 
-L<HTML::FormHandler::Tutorial>
+L<HTML::FormHandler::Manual::Tutorial>
 
-L<HTML::FormHandler::Intro>
+L<HTML::FormHandler::Manual::Intro>
 
-L<HTML::FormHandler::Templates>
+L<HTML::FormHandler::Manual::Templates>
 
-L<HTML::FormHandler::Cookbook>
+L<HTML::FormHandler::Manual::Cookbook>
 
 L<HTML::FormHandler::Field>
 
 L<HTML::FormHandler::Model::DBIC>
 
 L<HTML::FormHandler::Moose>
-
-L<HTML::FormHandler::Moose::Role>
 
 
 =head1 AUTHOR

@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use HTML::FormHandler::Field::Text;
 
@@ -19,11 +19,12 @@ use HTML::FormHandler::Field::Text;
                id    => 'f99',
                value => 'something'
             },
-            fruit => 'Select',
+            fruit      => 'Select',
             vegetables => 'Multiple',
-            active => 'Checkbox',
-            comments => 'TextArea',
-            hidden => 'Hidden',
+            active     => 'Checkbox',
+            comments   => 'TextArea',
+            hidden     => 'Hidden',
+            selected   => 'Boolean',
          }
       },
    }
@@ -67,6 +68,9 @@ ok( $output5, 'output from textarea' );
 
 my $output6 = $form->render_field( $form->field('hidden') );
 ok( $output6 =~ m/type="hidden"/, 'output from hidden field' );
+
+my $output7 = $form->render_field( $form->field('selected') );
+ok( $output7, 'output from boolean' );
 
 $output = $form->render;
 ok( $output, 'get rendered output from form');

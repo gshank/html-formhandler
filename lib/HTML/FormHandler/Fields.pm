@@ -233,5 +233,26 @@ sub field
    croak "Field '$name' not found in form '$self'";
 }
 
+sub fields_validate
+{
+   my $self = shift;
+   # validate all fields
+   foreach my $field ( $self->fields )
+   {
+      next if $field->clear;    # Skip validation
+      # parent fields will call validation for children
+      next if $field->parent_field && $self->isa('HTML::FormHandler'); 
+      # Validate each field and "inflate" input -> value.
+      $field->validate_field;  # this calls the field's 'validate' routine
+      next unless $field->value; 
+      # these methods have access to the inflated values
+      my $form = $self if $self->isa('HTML::FormHandler');
+      $form = $self->form if ( $self->isa('HTML::Field') && self->form );
+      my $method = $field->validate_meth;
+      next unless $form && $form->can($method);
+      $form->$method($field);
+   }
+}
+
 no Moose::Role;
 1;

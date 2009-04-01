@@ -672,7 +672,9 @@ sub validate_field
 
    $field->clear_value;
 
+   # allow augment 'validate_field' calls here
    inner();
+
    return unless $field->validate;
    return unless $field->test_ranges;
 
