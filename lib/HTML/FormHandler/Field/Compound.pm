@@ -47,7 +47,10 @@ sub BUILD
 }
 
 augment 'validate_field' => sub {
-   shift->clear_fif;
+   my $self = shift;
+   $self->clear_fif;
+   return unless $self->has_fields;
+   $self->fields_validate;
 };
 
 __PACKAGE__->meta->make_immutable;
