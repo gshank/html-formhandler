@@ -1,0 +1,22 @@
+
+09/04/01 gshank
+  call lookup_options even if no item
+  init_values fails if you have a belongs_to relation that has a name 
+       different from the column name
+  refactor to handle calling form methods for validate_<fieldname> and 
+       options_<fieldname> from fields (probably with coderefs)
+  improve auto field support 
+  investigate a Catalyst View to provide better template support (like Reaction)
+  investigate other Form processing HTML generation
+  improve testing of Render::Simple. Make sure all field types are handled.
+  clean up DateTime fields (make consistent), better tests
+  testcases for noupdate and clear flags
+  look for other missing tests
+  View::TT FillInForm role (check with jhannah)
+
+bigger stuff
+  field constraints
+  support related rows, multiple rows
+    first step? handle related records with custom code. Gradually move to generic.
+   
+
