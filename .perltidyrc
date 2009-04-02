@@ -1,0 +1,8 @@
+--opening-brace-on-new-line
+--continuation-indentation=3
+--indent-columns=3
+--maximum-line-length=96
+--nooutdent-long-lines
+--nospace-for-semicolon
+--break-after-all-operators
+--noblanks-before-comments
