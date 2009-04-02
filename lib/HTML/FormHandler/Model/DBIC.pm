@@ -5,6 +5,7 @@ extends 'HTML::FormHandler';
 use Carp;
 use UNIVERSAL::require;
 use DBIx::Class::ResultClass::HashRefInflator;
+use Scalar::Util qw(blessed);
 
 our $VERSION = '0.03';
 
@@ -448,8 +449,18 @@ sub init_value
       {
          if ($field->can('options'))
          {
-            @values = $item->get_column($accessor); 
-         } 
+           my $rel_info = $source->relationship_info($accessor);
+           if( $rel_info->{attrs}->{accessor} eq 'multi' ){
+                my ( $pk ) = _get_pk_for_related( $item, $accessor );
+                @values = map{ $_->$pk } $item->$accessor();
+            }
+            else{
+                @values = ($item->$accessor());
+                if( blessed $values[0] && $values[0]->isa('DBIx::Class::Row')){
+                    $values[0] = $values[0]->id;
+                }
+            }
+         }
          else # some other relationship (unsupported)
          {
             my $rel_info = $source->relationship_info($accessor);
@@ -488,6 +499,14 @@ sub init_value
    my $value = @values > 1 ? \@values : shift @values;
    $field->init_value($value);
    $field->value($value);
+}
+
+sub _get_pk_for_related {
+    my ( $object, $relation ) = @_;
+
+    my $rs = $object->result_source->resultset;
+    my $result_source = _get_related_source( $rs, $relation );
+    return $result_source->primary_columns;
 }
 
 =head2 validate_unique

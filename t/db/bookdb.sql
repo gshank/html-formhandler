@@ -1,4 +1,18 @@
 BEGIN TRANSACTION;
+CREATE TABLE user (
+   user_id INTEGER PRIMARY KEY,
+   user_name VARCHAR(32),
+   fav_cat VARCHAR(32),
+   fav_book VARCHAR(32),
+   occupation VARCHAR(32),
+   country_iso char(2)
+);
+INSERT INTO "user" VALUES ( 1, 'jdoe', 'Sci-Fi', 'Necronomicon', 'management', 'US' );
+INSERT INTO "user" VALUES ( 2, 'muffet', 'Fantasy', 'Cooking Fungi', 'none', 'GB' );
+INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'programmer', 'US' );
+INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed', 'RU' );
+INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor', 'PL' );
+
 CREATE TABLE book (
     id INTEGER PRIMARY KEY,
     isbn varchar(100),
@@ -10,14 +24,16 @@ CREATE TABLE book (
     format int REFERENCES format,
     genre int REFERENCES genre,
     borrower int REFERENCES borrower,
-    borrowed varchar(100)
+    borrowed varchar(100),
+    owner int REFERENCES user
 );
-INSERT INTO "book" VALUES(1, '0-7475-5100-6', 'Harry Potter and the Order of the Phoenix', 'J.K. Rowling', 'Boomsbury', 766, 2001, 1, 5, 1, '');
-INSERT INTO "book" VALUES(2, '9 788256006199', 'Idioten', 'Fjodor Mikhajlovitsj Dostojevskij', 'Interbook', 303, 1901, 2, 3, 2, '2004-00-10');
-INSERT INTO "book" VALUES(3, '434012386', 'The Confusion', 'Neal Stephenson', 'Heinemann', 345, 2002, 2, NULL, 2, '2009-01-16');
-INSERT INTO "book" VALUES(4, '782128254', 'The Complete Java 2 Certification Study Guide: Programmer''s and Developers Exams (With CD-ROM)', 'Simon Roberts/Philip Heller/Michael Ernest', 'Sybex Inc', NULL, 1999, NULL, NULL, NULL, NULL);
-INSERT INTO "book" VALUES(5, '123-1234-0-123', 'Winnie The Pooh', 'A.A.Milne', 'Houghton Mifflin', 345, 1935, 2, NULL, 4, '2008-11-14');
-INSERT INTO "book" VALUES(6, '0-596-10092-2', 'Perl Testing: A Developer''s Notebook', 'Ian Langworth & chromatic', 'O''Reilly', 182, 2005, 3, NULL, 2, '2009-01-16');
+INSERT INTO "book" VALUES(1, '0-7475-5100-6', 'Harry Potter and the Order of the Phoenix', 'J.K. Rowling', 'Boomsbury', 766, 2001, 1, 5, 1, '', 2);
+INSERT INTO "book" VALUES(2, '9 788256006199', 'Idioten', 'Fjodor Mikhajlovitsj Dostojevskij', 'Interbook', 303, 1901, 2, 3, 2, '2004-00-10', 2);
+INSERT INTO "book" VALUES(3, '434012386', 'The Confusion', 'Neal Stephenson', 'Heinemann', 345, 2002, 2, NULL, 2, '2009-01-16', 1);
+INSERT INTO "book" VALUES(4, '782128254', 'The Complete Java 2 Certification Study Guide: Programmer''s and Developers Exams (With CD-ROM)', 'Simon Roberts/Philip Heller/Michael Ernest', 'Sybex Inc', NULL, 1999, NULL, NULL, NULL, NULL, 3);
+INSERT INTO "book" VALUES(5, '123-1234-0-123', 'Winnie The Pooh', 'A.A.Milne', 'Houghton Mifflin', 345, 1935, 2, NULL, 4, '2008-11-14', 5);
+INSERT INTO "book" VALUES(6, '0-596-10092-2', 'Perl Testing: A Developer''s Notebook', 'Ian Langworth & chromatic', 'O''Reilly', 182, 2005, 3, NULL, 2, '2009-01-16', 3);
+
 CREATE TABLE borrower (
     id INTEGER PRIMARY KEY,
     name varchar(100),
@@ -71,19 +87,6 @@ CREATE TABLE author (
 INSERT INTO "author" VALUES ("J.K.", "Rowling", "GB", "2003-01-16 00:00:00" );
 INSERT INTO "author" VALUES ("Fyodor", "Dostoyevsky", "RU", "1821-11-11 00:00:00" );
 INSERT INTO "author" VALUES ("Neil", "Stephenson", "US", "1959-10-31 00:00:00" );
-CREATE TABLE user (
-   user_id INTEGER PRIMARY KEY,
-   user_name VARCHAR(32),
-   fav_cat VARCHAR(32),
-   fav_book VARCHAR(32),
-   occupation VARCHAR(32)
-);
-INSERT INTO "user" VALUES ( 1, 'jdoe', 'Sci-Fi', 'Necronomicon', 'management' );
-INSERT INTO "user" VALUES ( 2, 'muffet', 'Fantasy', 'Cooking Fungi', 'none' );
-INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'programmer' );
-INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed' );
-INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor' );
-
 
 -- iso_country_list.sql
 --

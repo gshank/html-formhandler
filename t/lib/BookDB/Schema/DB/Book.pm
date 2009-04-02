@@ -42,6 +42,13 @@ BookDB::Schema::DB::Book->add_columns(
   },
   "borrowed",
   { data_type => "varchar", is_nullable => 0, size => 100 },
+  "owner",
+  {
+    data_type => "INTEGER",
+    is_foreign_key => 1,
+    is_nullable => 0,
+    size => undef,
+  },
 );
 BookDB::Schema::DB::Book->set_primary_key("id");
 BookDB::Schema::DB::Book->belongs_to(
@@ -53,6 +60,11 @@ BookDB::Schema::DB::Book->belongs_to(
   "borrower",
   "BookDB::Schema::DB::Borrower",
   { id => "borrower" },
+);
+BookDB::Schema::DB::Book->belongs_to(
+  "owner",
+  "BookDB::Schema::DB::User",
+  { id => "owner" },
 );
 BookDB::Schema::DB::Book->has_many(
   "books_genres",

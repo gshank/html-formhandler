@@ -1,13 +1,15 @@
 package BookDB::Form::User;
 
 use HTML::FormHandler::Moose;
-extends 'HTML::FormHandler';
+extends 'HTML::FormHandler::Model::DBIC';
 with 'HTML::FormHandler::Render::Simple';
 
 has_field 'user_name';
 has_field 'fav_cat' => ( label => 'Favorite Book Category' );
 has_field 'fav_book' => ( label => 'Favorite Book' );
 has_field 'occupation';
+has_field 'country' => ( type => 'Select' );
+
 
 sub validate_occupation
 {
