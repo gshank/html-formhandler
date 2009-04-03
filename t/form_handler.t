@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 24;
+my $tests = 25;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
@@ -15,6 +15,7 @@ use_ok( 'HTML::FormHandler' );
    has_field 'optname' => ( temp => 'First' );
    has_field 'reqname' => ( required => 1 );
    has_field 'somename';
+   has_field 'my_selected' => ( type => 'Checkbox' );
    sub field_list {
        return {
            fields    => {
@@ -52,6 +53,7 @@ ok( !$form->field('somename')->has_value, 'predicate no value');
 $form->field('somename')->input('testing');
 $form->validate;
 is( $form->field('somename')->value, 'testing', 'use input for extra data');
+is( $form->field('my_selected')->value, 0, 'correct value for unselected checkbox');
 
 ok( !$form->validate( {} ), 'form doesn\'t validate with empty params' );
 is( $form->num_errors, 0, 'form doesn\'t have errors with empty params' );

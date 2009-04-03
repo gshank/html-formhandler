@@ -167,6 +167,16 @@ has 'input' => (
    }
 );
 
+=head2 value_when_no_input
+
+Value for this field if there is no input. Needed for checkbox,
+since an unchecked checkbox does not return a parameter.
+
+=cut
+
+has 'value_when_no_input' => ( is => 'rw',
+    predicate => 'has_value_when_no_input' );
+
 =head2 fif
 
 For filling in forms. Input or value. The user does not need to set this field.

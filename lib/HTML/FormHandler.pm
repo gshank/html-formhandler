@@ -699,8 +699,14 @@ sub validate_form
    foreach my $field ( $self->fields )
    {
       # Trim values and move to "input" slot
-      $field->input( $field->trim_value( $params->{$field->full_name} ) )
-         if exists $params->{$field->full_name};
+      if ( exists $params->{$field->full_name} )
+      {
+         $field->input( $field->trim_value( $params->{$field->full_name} ) )
+      }
+      elsif ( $field->has_value_when_no_input )
+      {
+         $field->input( $field->value_when_no_input );
+      }
    }
 
    $self->fields_validate;

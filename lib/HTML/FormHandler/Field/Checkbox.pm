@@ -5,6 +5,7 @@ extends 'HTML::FormHandler::Field::Boolean';
 our $VERSION = '0.01';
 
 has '+widget' => ( default => 'checkbox' );
+has '+value_when_no_input' => ( default => 0 );
 
 __PACKAGE__->meta->make_immutable;
 
