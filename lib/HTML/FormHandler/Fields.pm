@@ -3,6 +3,7 @@ package HTML::FormHandler::Fields;
 use Moose::Role;
 use Carp;
 use UNIVERSAL::require;
+use Class::Inspector;
 
 =head1 NAME
 
@@ -188,8 +189,10 @@ sub make_field
          ? $self->field_name_space . "::" . $type
          : $type
       : 'HTML::FormHandler::Field::' . $type;
-   $class->require
-      or die "Could not load field class '$type' for field '$name'"; 
+      
+   $class->require 
+      or die "Could not load field class '$type' $class for field '$name'"
+      if !Class::Inspector->loaded($class);
 
    # Add field name and reference to form 
    $attr->{name} = $name;
