@@ -1,8 +1,6 @@
 
 09/04/01 gshank
-  call lookup_options even if no item
-  init_values fails if you have a belongs_to relation that has a name 
-       different from the column name
+09/04/04 - deleted stuff zby
   refactor to handle calling form methods for validate_<fieldname> and 
        options_<fieldname> from fields (probably with coderefs)
   improve auto field support 
