@@ -38,15 +38,15 @@ has 'fields' => (
    }
 );
 
-=head2 build_form
+=head2 build_fields
 
-This parses the form field_list and creates the individual
+This parses the field lists and creates the individual
 field objects.  It calls the make_field() method for each field.
 This is called by the BUILD method. Users don't need to call this.
 
 =cut
 
-sub build_form
+sub build_fields
 {
    my $self = shift;
 
@@ -230,7 +230,7 @@ sub field
       return $field if $field->name eq $name;
    }
    return if $no_die;
-   croak "Field '$name' not found in form '$self'";
+   croak "Field '$name' not found in '$self'";
 }
 
 sub fields_validate
@@ -244,7 +244,7 @@ sub fields_validate
       next if $field->parent_field && $self->isa('HTML::FormHandler'); 
       # Validate each field and "inflate" input -> value.
       $field->validate_field;  # this calls the field's 'validate' routine
-      next unless $field->value; 
+      next unless $field->has_value && defined $field->value; 
       # these methods have access to the inflated values
       my $form = $self if $self->isa('HTML::FormHandler');
       $form = $self->form if ( $self->isa('HTML::Field') && self->form );

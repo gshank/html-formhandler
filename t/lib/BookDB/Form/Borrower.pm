@@ -1,6 +1,6 @@
 package BookDB::Form::Borrower;
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Model::DBIC';
 with 'HTML::FormHandler::Render::Simple';
 
@@ -20,39 +20,31 @@ has '+item_class' => ( default => 'Borrower' );
 
 __PACKAGE__->meta->make_immutable;
 
-sub field_list {
-	return {
-		fields => {
-			name         => {
+has_field 'name' => (
                 type => 'Text',
                 required => 1,
                 order    => 1,
                 label    => "Name",
                 unique   => 1,
                 unique_message => 'That name is already in our user directory',
-            },
-			email        => {
+);
+has_field 'email'      => (
                 type => 'Email',
                 required => 1,
                 order => 4,
                 label => "Email",
-            },
-			phone        => {
+            );
+has_field 'phone' => (
                 type => 'Text',
                 order => 2,
                 label => "Telephone",
-            },
-			url          => {
+            );
+has_field 'url' => (
                 type => 'Text',
                 order => 3,
                 label => 'URL',
-            },
-		},
-      unique => {
-         name => 'That name is already in our user directory'
-      },
-	};
-}
+            );
+has_field 'active' => ( type => 'Boolean', label => "Active?" );
 
 
 =head1 AUTHOR
@@ -66,4 +58,6 @@ modify it under the same terms as Perl itself. See L<perlartistic>.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+no HTML::FormHandler::Moose;
 1;

@@ -39,12 +39,13 @@ CREATE TABLE borrower (
     name varchar(100),
     phone varchar(20),
     url varchar(100),
-    email varchar(100)
+    email varchar(100),
+    active integer
 );
-INSERT INTO "borrower" VALUES(1, 'In Shelf', NULL, '', '');
-INSERT INTO "borrower" VALUES(2, 'Ole Øyvind Hove', '23 23 14 97', 'http://thefeed.no/oleo', 'oleo@trenger.ro');
-INSERT INTO "borrower" VALUES(3, 'John Doe', '607-222-3333', 'http://www.somewhere.com/', 'john@gmail.com');
-INSERT INTO "borrower" VALUES(4, 'Mistress Muffet', '999-000-2222', NULL, 'muffet@tuffet.org');
+INSERT INTO "borrower" VALUES(1, 'In Shelf', NULL, '', '', 0);
+INSERT INTO "borrower" VALUES(2, 'Ole Øyvind Hove', '23 23 14 97', 'http://thefeed.no/oleo', 'oleo@trenger.ro', 1);
+INSERT INTO "borrower" VALUES(3, 'John Doe', '607-222-3333', 'http://www.somewhere.com/', 'john@gmail.com', 1);
+INSERT INTO "borrower" VALUES(4, 'Mistress Muffet', '999-000-2222', NULL, 'muffet@tuffet.org', 1);
 CREATE TABLE format (
     id INTEGER PRIMARY KEY,
     name varchar(100)

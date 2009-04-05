@@ -90,7 +90,7 @@ sub view : Chained('item') PathPart('') Args(0)
 {
    my ( $self, $c, $id ) = @_;
 
-   my @columns = ( 'name', 'email', 'phone', 'url' );
+   my @columns = ( 'name', 'email', 'phone', 'url', 'active' );
    $c->stash( columns => \@columns, template => 'borrower/view.tt' );
 }
 

@@ -43,7 +43,7 @@ has '+widget' => ( default => 'compound' );
 sub BUILD
 {
    my $self = shift;
-   $self->build_form;
+   $self->build_fields;
 }
 
 augment 'validate_field' => sub {

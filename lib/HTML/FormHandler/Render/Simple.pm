@@ -190,9 +190,11 @@ sub render_checkbox
    my ( $self, $field ) = @_;
 
    my $fif = $field->fif || '';
-   my $output = "<input type=\"checkbox\" name=\"";
-   $output .= $field->name . "\" value=\"1\"";
-   $output .= " checked=\"checked\"" if $fif eq '1';
+   my $output = "<label class=\"label\" for=\"";
+   $output .= $field->name . "\">" . $field->label . "</label>";
+   $output .= "<input type=\"checkbox\" name=\"";
+   $output .= $field->name . '" value="' . $field->checkbox_value . '"';
+   $output .= " checked=\"checked\"" if $fif eq $field->checkbox_value;
    $output .= "/>";
    return $output;
 }
@@ -216,8 +218,8 @@ sub render_radio_group
    {
       $output = "<label class=\"label\" for=\"";
       $output .= $field->name . "\">" . $option->{label} . "</label>";
-      $output .= "<input name=\"" . $field->name;
-      $output .= " type=\"radio\" value=\"" . $option->{value} . "\"";
+      $output .= "<input type=\"radio\" value=\"" . $option->{value} . "\"";
+      $output .= " name=\"" . $field->name;
       $output .= " selected=\"selected\"" if $option->{value} eq $fif;
       $output .= " />\n";
    }

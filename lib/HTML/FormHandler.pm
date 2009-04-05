@@ -13,7 +13,7 @@ use HTML::FormHandler::Params;
 
 
 use 5.008;
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 =head1 NAME
 
@@ -538,7 +538,7 @@ These are called when the form object is first created (by Moose).
 A single argument is an "item" parameter if it's a reference, 
 otherwise it's an "item_id".
 
-First BUILD calls the build_form method, which reads the field_list and creates
+First BUILD calls the build_fields method, which reads the field_list and creates
 the fields object array.
 
 Then 'init_from_object' is called to load each field's internal value
@@ -564,10 +564,10 @@ sub BUILD
 {
    my $self = shift;
 
-   warn "HFH: build_form for ", $self->name, ", ", ref($self), "\n" if
+   warn "HFH: build_fields for ", $self->name, ", ", ref($self), "\n" if
       $self->verbose;
 
-   $self->build_form;    # create the form fields
+   $self->build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    $self->init_from_object;    # load values from object, if item exists;
    $self->load_options;        # load options -- need to do after loading item
@@ -703,9 +703,9 @@ sub validate_form
       {
          $field->input( $field->trim_value( $params->{$field->full_name} ) )
       }
-      elsif ( $field->has_value_when_no_input )
+      elsif ( $field->has_input_without_param )
       {
-         $field->input( $field->value_when_no_input );
+         $field->input( $field->input_without_param );
       }
    }
 

@@ -8,10 +8,9 @@
 [% END %]
 
 <form action="[% action %]" method="post">
-    [% FOREACH f IN form.sorted_fields %] 
+    [% FOREACH field IN form.sorted_fields %] 
         <p>
-        <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
-        <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
+        [% form.render_field(field) %]
         </p>
     [% END %]
     <input type="submit" value="Save"/>

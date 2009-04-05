@@ -5,6 +5,25 @@ use DBIx::Class;
 use Template;
 use version; our $VERSION = qv('0.0.1');
 
+=head1 NAME
+
+HTML::FormHandler::Generator::DBIC - generate form classes from DBIC schema 
+
+=head1 SYNOPSIS
+
+   form_generator.pl --rs_name=Book --schema_name=BookDB::Schema::DB 
+          --db_dsn=dbi:SQLite:t/db/book.db
+
+=head1 DESCRIPTION
+
+Options:
+
+  rs_name       -- Resultset Name
+  schema_name   -- Schema Name 
+  db_dsn           -- dsn connect info
+
+
+=cut
 
 has db_dsn => ( 
     is => 'ro', 
@@ -239,70 +258,18 @@ sub get_self_cols{
 }
 
 
-#################### main pod documentation begin ###################
-## Below is the stub of documentation for your module. 
-## You better edit it!
-
-
-=head1 NAME
-
-HTML::FormFu::ConfigGenerator - Module abstract (<= 44 characters) goes here
-
-=head1 SYNOPSIS
-
-  use HTML::FormFu::ConfigGenerator;
-  blah blah blah
-
-
-=head1 DESCRIPTION
-
-Stub documentation for this module was created by ExtUtils::ModuleMaker.
-It looks like the author of the extension was negligent enough
-to leave the stub unedited.
-
-Blah blah blah.
-
-
-=head1 USAGE
-
-
-
-=head1 BUGS
-
-
-
-=head1 SUPPORT
-
-
 
 =head1 AUTHOR
 
-    HASH(0x8152c28)
-    CPAN ID: MODAUTHOR
-    XYZ Corp.
-    a.u.thor@a.galaxy.far.far.away
-    http://a.galaxy.far.far.away/modules
+Zbigniew Lukasiak
 
 =head1 COPYRIGHT
 
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 
-The full text of the license can be found in the
-LICENSE file included with this module.
-
-
-=head1 SEE ALSO
-
-perl(1).
-
 =cut
 
-#################### main pod documentation end ###################
-
-
+__PACKAGE__->meta->make_immutable;
+no Moose;
 1;
-# The preceding line will help the module return a true value
-
-
-

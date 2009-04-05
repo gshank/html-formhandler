@@ -1,23 +1,8 @@
 package HTML::FormHandler::Field::Boolean;
 
 use Moose;
-extends 'HTML::FormHandler::Field';
+extends 'HTML::FormHandler::Field::Checkbox';
 our $VERSION = '0.03';
-
-has '+widget' => ( default => 'checkbox' );
-
-__PACKAGE__->meta->make_immutable;
-
-sub value {
-    my $self = shift;
-
-    my $v = $self->SUPER::value(@_);
-
-    return unless defined $v;
-
-    return $v ? 1 : 0;
-}
-
 
 =head1 NAME
 
@@ -25,8 +10,18 @@ HTML::FormHandler::Field::Boolean - A true or false field
 
 =head1 DESCRIPTION
 
-This field returns undef if no value is defined, 0 if defined and false,
-and 1 if defined and true. The widget type is 'radio'
+This field returns 1 if true, 0 if false.  The widget type is 'checkbox'.
+Similar to Checkbox, except only returns values of 1 or 0.
+
+=cut
+
+sub value {
+    my $self = shift;
+
+    my $v = $self->SUPER::value(@_);
+
+    return $v ? 1 : 0;
+}
 
 =head1 AUTHORS
 
@@ -39,5 +34,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

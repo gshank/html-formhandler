@@ -167,15 +167,15 @@ has 'input' => (
    }
 );
 
-=head2 value_when_no_input
+=head2 input_without_param
 
-Value for this field if there is no input. Needed for checkbox,
+Input for this field if there is no param. Needed for checkbox,
 since an unchecked checkbox does not return a parameter.
 
 =cut
 
-has 'value_when_no_input' => ( is => 'rw',
-    predicate => 'has_value_when_no_input' );
+has 'input_without_param' => ( is => 'rw',
+    predicate => 'has_input_without_param' );
 
 =head2 fif
 
@@ -727,7 +727,7 @@ sub input_to_value
 {
    my $field = shift;
 
-   return if defined $field->value;    # already set by validate method.
+   return if $field->has_value;    # already set by validate method.
    my $format = $field->value_sprintf;
    if ($format)
    {

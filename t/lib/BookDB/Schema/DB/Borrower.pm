@@ -18,6 +18,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 0, size => 100 },
   "email",
   { data_type => "varchar", is_nullable => 0, size => 100 },
+  "active",
+  { data_type => "integer", is_nullable => 0, size => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(

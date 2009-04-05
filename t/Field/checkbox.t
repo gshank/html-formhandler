@@ -30,7 +30,7 @@ is( $field->value, 0, 'input 0 is 0' );
 $field->input( 'checked' );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 3' );
-is( $field->value, 1, 'input checked is 1' );
+is( $field->value, 'checked', 'value is "checked"' );
 
 
 $field->input( undef );
