@@ -29,8 +29,9 @@ requires:
   Locale::Maketext: 1.09
   Moose: 0.59
   MooseX::AttributeHelpers: 0.14
+  MooseX::Getopt: 0.16
   UNIVERSAL::require: 0
   perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.19
+version: 0.20

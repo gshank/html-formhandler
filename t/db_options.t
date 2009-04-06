@@ -31,7 +31,7 @@ is( @$options, 12, 'Options loaded from the model' );
 #warn Dumper( $options ); use Data::Dumper;
 
 $form = BookDB::Form::BookWithOwner->new( schema => $schema, source_name => 'Book' );
-ok( $form, 'Book with Onwer form created' );
+ok( $form, 'Book with Owner form created' );
 $options = $form->field( 'owner' )->field(  'country' )->options;
 # is( @$options, 12, 'Options loaded from the model' );
 
