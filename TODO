@@ -1,4 +1,6 @@
-
+09/04/05
+  recursive automatic construction of fif?
+ 
 09/04/01 gshank
 09/04/04 - deleted stuff zby
   refactor to handle calling form methods for validate_<fieldname> and 

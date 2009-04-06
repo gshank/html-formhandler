@@ -78,7 +78,7 @@ sub build_fields
       $field->order( $order ) unless $field->order;
       $order++;
       # collect child references in parent field
-      if( $field->can('parent') && $field->parent && !$field->parent_field )
+      if( $field->parent && !$field->parent_field )
       {
          my $parent = $self->field($field->parent);
          die "Parent field for " . $field->name . "not found" unless $parent;
@@ -154,7 +154,7 @@ sub _set_field
    my $field = $self->make_field( $name, $type );
    return unless $field;
    $field->required($required) unless ( $field->required == 1 );
-   my $index = $self->field_index($name);
+   my $index = $self->field_index($field->full_name);
    if( defined $index )
       { $self->set_field_at($index, $field); }
    else
@@ -196,11 +196,23 @@ sub make_field
 
    # Add field name and reference to form 
    $attr->{name} = $name;
-   $attr->{form} = $self if $self->isa('HTML::FormHandler');
-   if( $self->isa('HTML::FormHandler::Field') )
+   if ( $self->isa('HTML::FormHandler') )
+   {
+      $attr->{form} = $self;
+      if( $name =~ /\./ )
+      {
+         my @names = split /\./, $name;
+         my $simple_name = pop @names;
+         my $parent = pop @names;
+         $attr->{parent} = $parent;
+         $attr->{name} = $simple_name; 
+      }
+   }
+   elsif( $self->isa('HTML::FormHandler::Field') )
    {
       $attr->{parent} = $self->name;
       $attr->{parent_field} = $self;
+      $attr->{form} = $self->form if $self->form;
    }
    my $field = $class->new( %{$attr} );
    return $field;
@@ -208,17 +220,17 @@ sub make_field
 
 =head2 field_index
 
-Convenience function for for use with 'set_field_at'.
+Convenience function for use with 'set_field_at'.
 
 =cut 
 
 sub field_index
 {
-   my ( $self, $name ) = @_;
+   my ( $self, $full_name ) = @_;
    my $index = 0;
    for my $field ( $self->fields )
    {
-      return $index if $field->name eq $name;
+      return $index if $field->full_name eq $full_name;
       $index++;
    }
    return;
@@ -230,7 +242,7 @@ sub field
 
    for my $field ( $self->fields )
    {
-      return $field if $field->name eq $name;
+      return $field if ($field->full_name eq $name || $field->name eq $name);
    }
    return if $no_die;
    croak "Field '$name' not found in '$self'";

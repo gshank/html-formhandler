@@ -251,6 +251,24 @@ sub render_textarea
    return $output;
 }
 
+=head2 render_compound
+
+Renders field with 'compound' widget
+
+=cut
+
+sub render_compound
+{
+   my ( $self, $field ) = @_;
+
+   my $output = '<fieldset class="' . $field->name . '">';
+   foreach my $subfield ($field->fields)
+   {
+      $output .= $self->render_field($subfield);
+   }
+   $output .= "</fieldset>";
+}
+
 =head1 AUTHORS
 
 Gerda Shank, gshank@cpan.org

@@ -896,7 +896,7 @@ sub fif
       }
       else
       {
-         $params->{ $prefix . $field->name } = $field->fif;
+         $params->{ $prefix . $field->full_name } = $field->fif;
       }
    }
    return $params;
@@ -944,20 +944,6 @@ Dies on not found.
 Pass a second true value to not die on errors.
  
     my $field = $form->field('something', 1 );
-
-=cut
-
-sub field
-{
-   my ( $self, $name, $no_die ) = @_;
-
-   for my $field ( $self->fields )
-   {
-      return $field if $field->name eq $name;
-   }
-   return if $no_die;
-   croak "Field '$name' not found in form '$self'";
-}
 
 =head2 sorted_fields
 
@@ -1300,6 +1286,7 @@ sub set_dependency
          next unless defined $value;
          # The exception is a boolean can be zero which we count as not set.
          # This is to allow requiring a field when a boolean is true.
+         my $field = $self->field_exists($name);
          next if $self->field($name)->type eq 'Boolean' && $value == 0;
          if ( ref $value )
          {

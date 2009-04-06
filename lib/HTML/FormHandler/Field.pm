@@ -582,8 +582,7 @@ sub full_name
    my $field = shift;
 
    my $name   = $field->name;
-   my $form   = $field->form || return $name;
-   my $parent = $form->parent_field || return $name;
+   my $parent = $field->parent_field || return $name;
    return $parent->full_name . '.' . $name;
 }
 
