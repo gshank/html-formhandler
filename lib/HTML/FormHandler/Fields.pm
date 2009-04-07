@@ -256,7 +256,7 @@ sub fields_validate
    {
       next if $field->clear;    # Skip validation
       # parent fields will call validation for children
-      next if $field->parent_field && $self->isa('HTML::FormHandler'); 
+      next if $field->parent_field && $field->parent_field != $self;
       # Validate each field and "inflate" input -> value.
       $field->validate_field;  # this calls the field's 'validate' routine
       next unless $field->has_value && defined $field->value; 
