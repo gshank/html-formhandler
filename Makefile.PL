@@ -28,7 +28,7 @@ test_requires 'DateTime::Format::MySQL';
 
 tests_recursive();
 
-install_script 'form_generator.pl'; 
+# install_script 'form_generator.pl'; 
 auto_install();
 
 WriteAll();
