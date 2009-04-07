@@ -358,23 +358,24 @@ The currently selected values in a Multiple list are grouped at the top
 
 sub lookup_options
 {
-   my ( $self, $field ) = @_;
+   my ( $self, $field, $self_source ) = @_;
 
    return unless $self->schema;
+   $self_source ||= $self->source;
    my $accessor = $field->accessor;
 
    # if this field doesn't refer to a foreign key, return
    my $f_class;
    my $source;
-   if ($self->source->has_relationship($accessor) )
+   if ($self_source->has_relationship($accessor) )
    {
-      $f_class = $self->source->related_class($accessor);
+      $f_class = $self_source->related_class($accessor);
       $source = $self->schema->source($f_class);
    }
    elsif ($self->resultset->new_result({})->can("add_to_$accessor") )
    {
       # Multiple field with many_to_many relationship
-      $source = $self->resultset->new_result({})->$accessor->result_source;
+      $source = $self_source->resultset->new_result({})->$accessor->result_source;
    }
    return unless $source; 
 
@@ -504,9 +505,22 @@ sub init_value
 sub _get_pk_for_related {
     my ( $object, $relation ) = @_;
 
-    my $rs = $object->result_source->resultset;
-    my $result_source = _get_related_source( $rs, $relation );
+    my $source = $object->result_source;
+    my $result_source = _get_related_source( $source, $relation );
     return $result_source->primary_columns;
+}
+
+sub _get_related_source {
+    my ( $source, $name ) = @_;
+    if( $source->has_relationship( $name ) ){
+        return $source->related_source( $name );
+    }
+    # many to many case
+    my $row = $source->resultset->new({});
+    if ( $row->can( $name ) and $row->can( 'add_to_' . $name ) and $row->can( 'set_' . $name ) ){
+        return $row->$name->result_source;
+    }
+    return;
 }
 
 =head2 validate_unique
@@ -623,6 +637,16 @@ sub resultset
    die "You must supply a schema for your FormHandler form" unless $self->schema;
    return $self->schema->resultset( $self->source_name || $self->item_class );
 }
+
+sub compute_model_stuff {
+    my ( $self, $field, $source ) = @_;
+    if( ! $source ){
+        return if !$self->schema;
+        $source = $self->source;
+    }
+    return _get_related_source( $source, $field->accessor );
+}
+ 
 
 =head1 SUPPORT
 

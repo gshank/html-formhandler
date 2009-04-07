@@ -1226,10 +1226,19 @@ See L<HTML::FormHandler::Field::Select>
 
 sub load_options
 {
-   my $self = shift;
+   my ( $self, $node, $model_stuff ) = @_;
 
-   warn "HFH: load_options ", $self->name, "\n" if $self->verbose;
-   $self->load_field_options($_) for $self->fields;
+   $node ||= $self;
+   warn "HFH: load_options ", $node->name, "\n" if $self->verbose;
+   for my $field ( $node->fields ){
+       if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
+           my $new_model_stuff = $self->compute_model_stuff( $field, $model_stuff );
+           $self->load_options( $field, $new_model_stuff );
+       }
+       else {
+           $self->load_field_options($field, $model_stuff);
+       }
+   }
 }
 
 =head2 load_field_options
@@ -1241,7 +1250,7 @@ and, optionally, an options array.
 
 sub load_field_options
 {
-   my ( $self, $field, @options ) = @_;
+   my ( $self, $field, $model_stuff, @options ) = @_;
 
    return unless $field->can('options');
 
@@ -1249,7 +1258,7 @@ sub load_field_options
    @options =
         $self->can($method)
       ? $self->$method($field)
-      : $self->lookup_options($field)
+      : $self->lookup_options($field, $model_stuff)
       unless @options;
    return unless @options;
 

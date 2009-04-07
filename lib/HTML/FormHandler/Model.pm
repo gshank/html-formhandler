@@ -166,6 +166,8 @@ Update the model with validated fields
 
 sub update_model { }
 
+sub compute_model_stuff {}
+
 =head1 AUTHOR
 
 Gerda Shank, gshank@cpan.org

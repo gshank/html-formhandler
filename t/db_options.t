@@ -7,7 +7,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 9;
+   plan tests => 10;
 }
 
 use_ok( 'BookDB::Form::User');
@@ -19,9 +19,12 @@ ok($schema, 'get db schema');
 
 my $user = $schema->resultset('User')->find( 1 );
 
-my $form = BookDB::Form::User->new( item => $user );
+my $form;
+my $options;
+
+$form = BookDB::Form::User->new( item => $user );
 ok( $form, 'User form created' );
-my $options = $form->field( 'country' )->options;
+$options = $form->field( 'country' )->options;
 is( @$options, 12, 'Options loaded from the model' );
 
 $form = BookDB::Form::User->new( schema => $schema, source_name => 'User' );
@@ -33,5 +36,5 @@ is( @$options, 12, 'Options loaded from the model' );
 $form = BookDB::Form::BookWithOwner->new( schema => $schema, source_name => 'Book' );
 ok( $form, 'Book with Owner form created' );
 $options = $form->field( 'owner' )->field(  'country' )->options;
-# is( @$options, 12, 'Options loaded from the model' );
+is( @$options, 12, 'Options loaded from the model' );
 
