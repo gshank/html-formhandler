@@ -445,15 +445,14 @@ sub init_value
    elsif( $item->isa('DBIx::Class') && $item->can($accessor) )
    {
 
-      my $source = $self->source;
+      my $source = $item->result_source;
       if ( $source->has_relationship($accessor) )
       {
          if ($field->can('options'))
          {
            my $rel_info = $source->relationship_info($accessor);
            if( $rel_info->{attrs}->{accessor} eq 'multi' ){
-                my ( $pk ) = _get_pk_for_related( $item, $accessor );
-                @values = map{ $_->$pk } $item->$accessor();
+                @values = map{ $_->id } $item->$accessor();
             }
             else{
                 @values = ($item->$accessor());

@@ -64,7 +64,7 @@ BookDB::Schema::DB::Book->belongs_to(
 BookDB::Schema::DB::Book->belongs_to(
   "owner",
   "BookDB::Schema::DB::User",
-  { id => "owner" },
+  { user_id => "owner" },
 );
 BookDB::Schema::DB::Book->has_many(
   "books_genres",

@@ -1151,26 +1151,34 @@ attribute.
 
 sub init_from_object
 {
-   my $self = shift;
-
+   my ( $self, $node, $item ) = @_;
+   $node ||= $self;
    $self->item( $self->build_item ) if $self->item_id && !$self->item;
-   my $item = $self->init_object || $self->item || return;
+   $item ||= $self->init_object || $self->item || return;
    warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
-   for my $field ( $self->fields )
+   for my $field ( $node->fields )
    {
-      my @values;
-      my $method = 'init_value_' . $field->name;
-      if ( $self->can($method) )
-      {
-         @values = $self->$method( $field, $item );
-         my $value = @values > 1 ? \@values : shift @values;
-         $field->init_value($value) if $value;
-         $field->value($value) if $value;
+      if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
+          $DB::single = 1; 
+          my $accessor = $field->accessor;
+          my $new_item = $item->$accessor;
+          $self->init_from_object( $field, $new_item );
       }
-      else
-      {
-         $self->init_value( $field, $item );
-      }
+      else{
+         my @values;
+         my $method = 'init_value_' . $field->name;
+         if ( $self->can($method) )
+         {
+            @values = $self->$method( $field, $item );
+            my $value = @values > 1 ? \@values : shift @values;
+            $field->init_value($value) if $value;
+            $field->value($value) if $value;
+         }
+         else
+         {
+            $self->init_value( $field, $item );
+         }
+     }
    }
 }
 
