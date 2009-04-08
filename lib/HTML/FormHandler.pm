@@ -1159,7 +1159,6 @@ sub init_from_object
    for my $field ( $node->fields )
    {
       if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
-          $DB::single = 1; 
           my $accessor = $field->accessor;
           my $new_item = $item->$accessor;
           $self->init_from_object( $field, $new_item );
