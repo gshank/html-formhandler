@@ -559,6 +559,7 @@ has 'validate_meth' => ( isa => 'Str', is => 'rw', lazy => 1,
     }
 );
 
+has 'constraints' => ( isa => 'ArrayRef', is => 'rw' );
 
 =head1 METHODS
 
@@ -708,7 +709,44 @@ method is to return true.
 
 =cut
 
-sub validate { 1 }
+sub named_constraints {
+    return {
+        required => {
+            predicate => sub { defined $_[0] and length $_[0] },
+            message   => 'is required',
+        },
+    }
+}
+
+sub validate { 
+    my $self = shift;
+    my $input = $self->input;
+#    warn 'validating ' . $self->label;
+    for my $constraint ( @{ $self->constraints || [] } ){
+        if( ! ref $constraint ){
+            $constraint = {
+                named => $constraint,
+            }
+        }
+        if( $constraint->{named} ){
+            my $named = named_constraints()->{ $constraint->{named} };
+            $constraint->{predicate} = $named->{predicate};
+            $constraint->{message} ||= $self->label . ' ' . $named->{message};
+        }
+        # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
+        if( ref $constraint->{predicate} eq 'CODE' ){ 
+            if( !$constraint->{predicate}->($input) ){
+                $self->add_error( $constraint->{message} );
+            }
+        }
+        if( ref $constraint->{predicate} eq 'Regexp' ){ 
+            if( $input !~ $constraint->{predicate} ){
+                $self->add_error( $constraint->{message} );
+            }
+        }
+    }
+    return ! $self->has_errors;
+}
 
 
 =head2 input_to_value
