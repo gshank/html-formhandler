@@ -137,8 +137,7 @@ has 'value' => (
    }
 );
 
-has 'parent' => ( isa => 'Str', is => 'rw', predicate => 'has_parent' );
-has 'parent_field' => ( isa => 'HTML::FormHandler::Field', is => 'rw' );
+has 'parent' => ( is => 'rw', predicate => 'has_parent' );
 has 'errors_on_parent' => ( isa => 'Bool', is => 'rw' );
 sub has_fields {}
 
@@ -536,7 +535,7 @@ has 'errors' => (
 );
 
 
-=head2 validate_meth
+=head2 set_validate
 
 Specify the form method to be used to validate this field.
 The default is C<< 'validate_' . $field->name >>. (Periods in
@@ -545,19 +544,67 @@ a number of fields that require the same validation and don't
 want to write a field class, you could set them all to the same 
 method name.
 
-   has_field 'title' => ( isa => 'Str', validate_meth => 'check_title' );
-   has_field 'subtitle' => ( isa => 'Str', validate_meth => 'check_title' );
+   has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
+   has_field 'subtitle' => ( isa => 'Str', set_validate => 'check_title' );
 
 =cut
 
-has 'validate_meth' => ( isa => 'Str', is => 'rw', lazy => 1,
-    default => sub { 
-       my $self = shift; 
-       my $name = $self->name;
+has 'set_validate' => ( isa => 'Str', is => 'rw',
+       lazy => 1,
+       default => sub {
+       my $self = shift;
+       my $name = $self->full_name;
        $name =~ s/\./_/g;
        return 'validate_' . $name;
     }
 );
+
+sub _can_validate
+{
+   my $self = shift;
+   return unless $self->form && 
+                 $self->set_validate &&
+                 $self->form->can( $self->set_validate);
+   return 1;
+}
+
+sub _validate
+{
+   my $self = shift;
+   return unless $self->_can_validate;
+   my $meth = $self->set_validate;
+   $self->form->$meth( $self );
+}
+
+=head2 set_init
+
+The name of the method in the form that provides a field's initial value
+
+=cut
+
+has 'set_init' => ( isa => 'Str', is => 'rw',
+       default => sub {
+       my $self = shift;
+       my $name = $self->full_name;
+       $name =~ s/\./_/g;
+       return 'init_value_' . $name;
+    }
+);
+sub _can_init
+{
+   my $self = shift;
+   return unless $self->form && 
+                 $self->set_init &&
+                 $self->form->can( $self->set_init);
+   return 1;
+}
+sub _init
+{
+   my $self = shift;
+   return unless $self->_can_init;
+   my $meth = $self->set_init;
+   $self->form->$meth( $self );
+}
 
 
 =head1 METHODS
@@ -582,7 +629,7 @@ sub full_name
    my $field = shift;
 
    my $name   = $field->name;
-   my $parent = $field->parent_field || return $name;
+   my $parent = $field->parent || return $name;
    return $parent->full_name . '.' . $name;
 }
 
@@ -617,16 +664,11 @@ sub add_error
 {
    my $self = shift;
 
-   my $form = $self->form;
    my $lh;
-   # By default errors get attached to the field where they happen.
-   my $error_field = $self;
    # Running without a form object?
-   if ($form)
+   if ($self->form)
    {
-      $lh = $form->language_handle;
-      # If we are a sub-form then redirect errors to the parent field
-      $error_field = $form->parent_field if $form->parent_field;
+      $lh = $self->form->language_handle;
    }
    else
    {
@@ -634,8 +676,8 @@ sub add_error
          || HTML::FormHandler::I18N->get_handle
          || die "Failed call to Locale::Maketext->get_handle";
    }
-   $error_field = $self->parent_field if $self->errors_on_parent;
-   $error_field->push_errors( $lh->maketext(@_) );
+   $self->push_errors( $lh->maketext(@_) ) unless $self->errors_on_parent;
+   $self->parent->push_errors( $lh->maketext(@_) ) if $self->parent;
    return;
 }
 

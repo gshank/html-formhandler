@@ -73,18 +73,25 @@ sub build_fields
    }
    $order++;
    # number all unordered fields
+   my @expand_fields;
    foreach my $field ( $self->fields )
    {
       $field->order( $order ) unless $field->order;
       $order++;
       # collect child references in parent field
-      if( $field->parent && !$field->parent_field )
-      {
-         my $parent = $self->field($field->parent);
-         die "Parent field for " . $field->name . "not found" unless $parent;
-         $parent->add_field($field);
-         $field->parent_field($parent);
-      }
+      push @expand_fields, $field if $field->name =~ /\./;
+   }
+   @expand_fields = sort { $a->name cmp $b->name } @expand_fields;
+   foreach my $field ( @expand_fields )
+   {
+      my @names = split /\./, $field->name;
+      my $simple_name = pop @names;
+      my $parent_name = pop @names;
+      my $parent = $self->field($parent_name);
+      next unless $parent;
+      $field->parent($parent);
+      $field->name( $simple_name ); 
+      $parent->add_field($field);
    }
 
 }
@@ -115,6 +122,8 @@ sub _build_fields
 {
    my ( $self, $fields, $required, $auto ) = @_;
 
+   warn "HFH: build_fields for ", $self->name, ", ", ref($self), "\n" if
+      $self->form && $self->form->verbose;
    return unless $fields;
    my $field;
    my $name;
@@ -196,24 +205,8 @@ sub make_field
 
    # Add field name and reference to form 
    $attr->{name} = $name;
-   if ( $self->isa('HTML::FormHandler') )
-   {
-      $attr->{form} = $self;
-      if( $name =~ /\./ )
-      {
-         my @names = split /\./, $name;
-         my $simple_name = pop @names;
-         my $parent = pop @names;
-         $attr->{parent} = $parent;
-         $attr->{name} = $simple_name; 
-      }
-   }
-   elsif( $self->isa('HTML::FormHandler::Field') )
-   {
-      $attr->{parent} = $self->name;
-      $attr->{parent_field} = $self;
-      $attr->{form} = $self->form if $self->form;
-   }
+   $attr->{form} = $self->form if $self->form;
+   $attr->{parent} = $self unless ($self->form && $self == $self->form);
    my $field = $class->new( %{$attr} );
    return $field;
 }
@@ -236,6 +229,10 @@ sub field_index
    return;
 }
 
+=head2 field
+
+=cut
+
 sub field
 {
    my ( $self, $name, $no_die ) = @_;
@@ -248,6 +245,25 @@ sub field
    croak "Field '$name' not found in '$self'";
 }
 
+=head2 sorted_fields
+
+Calls fields and returns them in sorted order by their "order"
+value. Non-sorted fields are retrieved with 'fields'. 
+
+=cut
+
+sub sorted_fields
+{
+   my $self = shift;
+
+   my @fields = sort { $a->order <=> $b->order } $self->fields;
+   return wantarray ? @fields : \@fields;
+}
+
+=head2 fields_validate
+
+=cut
+
 sub fields_validate
 {
    my $self = shift;
@@ -256,16 +272,12 @@ sub fields_validate
    {
       next if $field->clear;    # Skip validation
       # parent fields will call validation for children
-      next if $field->parent_field && $field->parent_field != $self;
+      next if $field->parent && $field->parent != $self;
       # Validate each field and "inflate" input -> value.
       $field->validate_field;  # this calls the field's 'validate' routine
       next unless $field->has_value && defined $field->value; 
       # these methods have access to the inflated values
-      my $form = $self if $self->isa('HTML::FormHandler');
-      $form = $self->form if ( $self->isa('HTML::Field') && self->form );
-      my $method = $field->validate_meth;
-      next unless $form && $form->can($method);
-      $form->$method($field);
+      $field->_validate($field); # will execute a form-field validation routine
    }
 }
 

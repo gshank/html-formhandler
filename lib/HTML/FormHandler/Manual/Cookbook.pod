@@ -262,10 +262,10 @@ You could make roles that are collections of validations:
    1;
 
 And if the validations apply to fields with different names, specify the 
-'validate_meth' on the fields:
+'set_validate' on the fields:
   
    with 'Form::Role::Member';
-   has_field 'zip' => ( type => 'Integer', validate_meth => 'check_zip' );
+   has_field 'zip' => ( type => 'Integer', set_validate => 'check_zip' );
  
 
 =head2 Access a user record in the form 

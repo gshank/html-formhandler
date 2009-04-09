@@ -26,8 +26,8 @@ is_deeply( $field->fif, $input, 'field fif is same');
 
    has_field 'name' => ( type => 'Text' );
    has_field 'duration' => ( type => 'Duration' );
-   has_field 'duration.hours' => ( type => 'Nested', parent => 'duration' );
-   has_field 'duration.minutes' => ( type => 'Nested', parent => 'duration' );
+   has_field 'duration.hours' => ( type => 'Nested' );
+   has_field 'duration.minutes' => ( type => 'Nested' );
 
 }
 
@@ -51,9 +51,9 @@ is( $form->value('duration')->hours, 2, 'duration value is correct');
 
    has_field 'name' => ( type => 'Text' );
    has_field 'start_date' => ( type => 'DateTime' );
-   has_field 'start_date.month' => ( type => 'Month', parent => 'start_date' );
-   has_field 'start_date.day' => ( type => 'MonthDay', parent => 'start_date' );
-   has_field 'start_date.year' => ( type => 'Year', parent => 'start_date' );
+   has_field 'start_date.month' => ( type => 'Month' );
+   has_field 'start_date.day' => ( type => 'MonthDay' );
+   has_field 'start_date.year' => ( type => 'Year' );
 
 }
 
