@@ -21,7 +21,7 @@ use_ok( 'HTML::FormHandler' );
                optname     => 'Text',
                silly_name  => {
                   type =>'Text',
-                  validate_meth => 'valid_silly'
+                  set_validate => 'valid_silly'
                }
            },
        };

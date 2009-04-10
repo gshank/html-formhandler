@@ -610,9 +610,9 @@ Do per-field validation customization not handled by the Field class.
     }
 
 A different form method name for this can be specified with the field's 
-'validate_meth' attribute:
+'set_validate' attribute:
 
-    has_field 'age' => ( type => 'Text', validate_meth => 'check_age' );
+    has_field 'age' => ( type => 'Text', set_validate => 'check_age' );
 
     sub check_age {
        ...

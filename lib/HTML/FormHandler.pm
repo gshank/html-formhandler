@@ -221,6 +221,10 @@ has 'name' => (
    default => sub { return 'form' . int( rand 1000 ) }
 );
 
+# to avoid fiddly 'isa' checks when passing through $self->form 
+has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1,
+   lazy => 1, default => sub { shift });
+has 'parent' => ( is => 'rw' );
 
 =head2 init_object
 
@@ -462,17 +466,6 @@ has '_required' => (
    }
 );
 
-=head2 parent_field
-
-This value can be used to link a sub-form to the parent field.
-
-If a form has a parent_field associated with it, errors in the field will be 
-pushed onto the parent_field instead of the current field. 
-This stores a weakened value.
-
-=cut
-
-has 'parent_field' => ( is => 'rw', weak_ref => 1 );
 
 # tell Moose to make this class immutable
 HTML::FormHandler->meta->make_immutable;
@@ -564,9 +557,6 @@ sub BUILD
 {
    my $self = shift;
 
-   warn "HFH: build_fields for ", $self->name, ", ", ref($self), "\n" if
-      $self->verbose;
-
    $self->build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    $self->init_from_object;    # load values from object, if item exists;
@@ -574,6 +564,7 @@ sub BUILD
    $self->dump_fields if $self->verbose;
    return;
 }
+
 
 =head2 process
 
@@ -945,21 +936,6 @@ Pass a second true value to not die on errors.
  
     my $field = $form->field('something', 1 );
 
-=head2 sorted_fields
-
-Calls fields and returns them in sorted order by their "order"
-value. Non-sorted fields are retrieved with 'fields'. 
-
-=cut
-
-sub sorted_fields
-{
-   my $form = shift;
-
-   my @fields = sort { $a->order <=> $b->order } $form->fields;
-   return wantarray ? @fields : \@fields;
-}
-
 =head2 value
 
 Convenience function to return the value of the field. Returns
@@ -1165,10 +1141,9 @@ sub init_from_object
       }
       else{
          my @values;
-         my $method = 'init_value_' . $field->name;
-         if ( $self->can($method) )
+         if ( $field->_can_init )
          {
-            @values = $self->$method( $field, $item );
+            @values = $field->_init( $field, $item );
             my $value = @values > 1 ? \@values : shift @values;
             $field->init_value($value) if $value;
             $field->value($value) if $value;

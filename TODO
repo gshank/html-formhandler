@@ -1,3 +1,5 @@
+09/04/09 
+  rebuild book.db automatically when running make test
 09/04/05
   recursive automatic construction of fif?
  

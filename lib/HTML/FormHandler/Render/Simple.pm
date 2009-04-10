@@ -262,7 +262,7 @@ sub render_compound
    my ( $self, $field ) = @_;
 
    my $output = '<fieldset class="' . $field->name . '">';
-   foreach my $subfield ($field->fields)
+   foreach my $subfield ($field->sorted_fields)
    {
       $output .= $self->render_field($subfield);
    }

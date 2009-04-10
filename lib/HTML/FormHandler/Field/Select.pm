@@ -33,6 +33,36 @@ has 'options' => ( isa => 'ArrayRef[HashRef]', is => 'rw',
                    builder => 'build_options' );
 sub build_options { [] };
 
+=head2 set_options
+
+Name of form method that sets options
+
+=cut
+
+has 'set_options' => ( isa => 'Str', is => 'rw',
+       default => sub {
+       my $self = shift;
+       my $name = $self->full_name;
+       $name =~ s/\./_/g;
+       return 'validate_' . $name;
+    }
+);
+sub _can_options
+{
+   my $self = shift;
+   return unless $self->form && 
+                 $self->set_options && 
+                 $self->form->can( $self->set_options);
+   return 1;
+}
+sub _options
+{
+   my $self = shift;
+   return unless $self->_can_options;
+   my $meth = $self->set_options;
+   $self->form->$meth( $self );
+}
+
 =head2 multiple
 
 If true allows multiple input values
