@@ -628,13 +628,11 @@ has 'constraints' => (
 
 =head2 named_constraints
 
-Not sure about this. Should named constraints be specified on fields or 
-forms? Both? Why specify here AND in 'constraints'? Maybe we need something
-like 'has_field':  
+I think we need something like 'has_field':  
 
-has_constraint 'contains_aaa' => ( action => sub {....}, message => 'Does not contain "aaa"' );
-
-has_field 'test_field' => ( type => 'Text', constraints => ['contains_aaa'] );
+   has_constraint 'contains_aaa' => ( action => sub {....}, 
+                          message => 'does not contain "aaa"' );
+   has_field 'test_field' => ( type => 'Text', constraints => ['contains_aaa'] );
 
 =cut
 
@@ -802,6 +800,12 @@ method is to return true.
 =cut
 
 sub validate { 1 }
+
+=head2 check_constraints
+
+Performs the defined constraints
+
+=cut
 
 sub check_constraints { 
     my $self = shift;
