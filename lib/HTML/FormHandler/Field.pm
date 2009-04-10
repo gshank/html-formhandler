@@ -559,8 +559,6 @@ has 'set_validate' => ( isa => 'Str', is => 'rw',
     }
 );
 
-has 'constraints' => ( isa => 'ArrayRef', is => 'rw' );
-
 sub _can_validate
 {
    my $self = shift;
@@ -607,6 +605,58 @@ sub _init
    my $meth = $self->set_init;
    $self->form->$meth( $self );
 }
+
+=head2 constraints
+
+An ArrayRef of constraints to be executed on the field at validation
+
+=cut
+
+has 'constraints' => ( 
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef',
+   is         => 'rw',
+   auto_deref => 1,
+   default    => sub {[]},
+   provides   => { 
+      'push'  => 'push_constraint', 
+      'count' => 'num_constraints',
+      'empty' => 'has_constraints',
+      'clear' => 'clear_constraints',
+   }
+);
+
+=head2 named_constraints
+
+Not sure about this. Should named constraints be specified on fields or 
+forms? Both? Why specify here AND in 'constraints'? Maybe we need something
+like 'has_field':  
+
+has_constraint 'contains_aaa' => ( action => sub {....}, message => 'Does not contain "aaa"' );
+
+has_field 'test_field' => ( type => 'Text', constraints => ['contains_aaa'] );
+
+=cut
+
+has 'named_constraints' => (
+   metaclass => 'Collection::Hash',
+   is        => 'ro',
+   isa       => 'HashRef',
+   default   => sub { { 
+        required => {
+            action => sub { defined $_[0] and length $_[0] },
+            message   => 'is required',
+        },
+      },
+   },
+   provides  => {
+      'set' => 'set_named_constraint',
+      'get' => 'get_named_constraint',
+      'empty' => 'has_named_constraints',
+      'count' => 'num_named_constraints',
+      'delete' => 'delete_named_constraint',
+   }
+);   
 
 
 =head1 METHODS
@@ -709,8 +759,6 @@ The field's error list and internal value are reset upon entry.
 
 =cut
 
-# TODO: move test_multiple and test_options to the field classes?
-#
 sub validate_field
 {
    my $field = shift;
@@ -724,6 +772,7 @@ sub validate_field
    }
 
    $field->clear_value;
+   $field->check_constraints;
 
    # allow augment 'validate_field' calls here
    inner();
@@ -752,28 +801,17 @@ method is to return true.
 
 =cut
 
-sub named_constraints {
-    return {
-        required => {
-            predicate => sub { defined $_[0] and length $_[0] },
-            message   => 'is required',
-        },
-    }
-}
+sub validate { 1 }
 
-sub validate { 
+sub check_constraints { 
     my $self = shift;
     my $input = $self->input;
 #    warn 'validating ' . $self->label;
     for my $constraint ( @{ $self->constraints || [] } ){
-        if( ! ref $constraint ){
-            $constraint = {
-                named => $constraint,
-            }
-        }
-        if( $constraint->{named} ){
-            my $named = named_constraints()->{ $constraint->{named} };
-            $constraint->{predicate} = $named->{predicate};
+        if( ! ref $constraint ) {
+            my $named = $self->get_named_constraint( $constraint );
+            next unless $named;
+            $constraint = $named; 
             $constraint->{message} ||= $self->label . ' ' . $named->{message};
         }
         # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
@@ -788,7 +826,6 @@ sub validate {
             }
         }
     }
-    return ! $self->has_errors;
 }
 
 
