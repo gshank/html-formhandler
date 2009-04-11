@@ -725,6 +725,8 @@ sub validate_field
 
    $field->clear_value;
 
+   $field->_check_constraints;
+   
    # allow augment 'validate_field' calls here
    inner();
 
@@ -736,6 +738,82 @@ sub validate_field
    return;
 }
 
+sub _make_named_constraint {
+    my ( $self, $constraint ) = @_;
+    my $name = $constraint->{named};
+
+    if( $name eq 'required' ){
+        $constraint->{check} = sub { defined $_[0] and length $_[0] };
+        $constraint->{message} = $self->label . ' is required';
+    }
+    elsif( $name eq 'range' ){
+        my $low  = $constraint->{range_start};
+        my $high = $constraint->{range_end};
+        if ( defined $low && defined $high ) {
+            $constraint->{check} = sub { $_[0] >= $low && $_[0] <= $high };
+            $constraint->{message} = [ 'value must be between [_1] and [_2]', $low, $high ];
+        }
+        elsif( defined $low ){
+            $constraint->{check} = sub { $_[0] >= $low };
+            $constraint->{message} = [ 'value must be greater or queal to [_1]', $low ];
+        }
+        elsif( defined $high ){
+            $constraint->{check} = sub { $_[0] <= $high };
+            $constraint->{message} = [ 'value must be less than or queal to [_1]', $high ];
+        }
+    }
+    elsif( $name eq 'size' ){
+        my $low  = $constraint->{minlength};
+        my $high = $constraint->{maxlength};
+        if ( defined $low && defined $high ) {
+            $constraint->{check} = sub {warn 'length: ' .length($_[0]);  length($_[0]) >= $low && length($_[0]) <= $high };
+            $constraint->{message} = [ 'length must be between [_1] and [_2]', $low, $high ];
+        }
+        elsif( defined $low ){
+            $constraint->{check} = sub { length($_[0]) >= $low };
+            $constraint->{message} = [ 'length must be greater or queal to [_1]', $low ];
+        }
+        elsif( defined $high ){
+            $constraint->{check} = sub { length($_[0]) <= $high };
+            $constraint->{message} = [ 'length must be less than or queal to [_1]', $high ];
+        }
+    }
+        
+}
+
+sub _check_constraints {
+   my $self = shift;
+   my $input = $self->input;
+   for my $constraint ( @{ $self->constraints || [] } ){
+      if( ! ref $constraint ){
+          $constraint = {
+              named => $constraint,
+          }
+      }
+      if( $constraint->{named} ){
+          $self->_make_named_constraint( $constraint );
+      }
+      my @message;
+      if( ref $constraint->{message} ){
+          @message = @{$constraint->{message}};
+      }
+      else{
+          @message = ( $constraint->{message} );
+      }
+      # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
+      if( ref $constraint->{check} eq 'CODE' ){ 
+          if( !$constraint->{check}->($input) ){
+              $self->add_error( @message );
+          }
+      }
+      if( ref $constraint->{check} eq 'Regexp' ){ 
+          if( $input !~ $constraint->{check} ){
+              $self->add_error( @message );
+          }
+      }
+   }
+}
+ 
 =head2 validate
 
 This method validates the input data for the field and returns true if
@@ -752,45 +830,7 @@ method is to return true.
 
 =cut
 
-sub named_constraints {
-    return {
-        required => {
-            predicate => sub { defined $_[0] and length $_[0] },
-            message   => 'is required',
-        },
-    }
-}
-
-sub validate { 
-    my $self = shift;
-    my $input = $self->input;
-#    warn 'validating ' . $self->label;
-    for my $constraint ( @{ $self->constraints || [] } ){
-        if( ! ref $constraint ){
-            $constraint = {
-                named => $constraint,
-            }
-        }
-        if( $constraint->{named} ){
-            my $named = named_constraints()->{ $constraint->{named} };
-            $constraint->{predicate} = $named->{predicate};
-            $constraint->{message} ||= $self->label . ' ' . $named->{message};
-        }
-        # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
-        if( ref $constraint->{predicate} eq 'CODE' ){ 
-            if( !$constraint->{predicate}->($input) ){
-                $self->add_error( $constraint->{message} );
-            }
-        }
-        if( ref $constraint->{predicate} eq 'Regexp' ){ 
-            if( $input !~ $constraint->{predicate} ){
-                $self->add_error( $constraint->{message} );
-            }
-        }
-    }
-    return ! $self->has_errors;
-}
-
+sub validate { 1 }
 
 =head2 input_to_value
 
