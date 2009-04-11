@@ -559,8 +559,6 @@ has 'set_validate' => ( isa => 'Str', is => 'rw',
     }
 );
 
-has 'constraints' => ( isa => 'ArrayRef', is => 'rw' );
-
 sub _can_validate
 {
    my $self = shift;
@@ -608,6 +606,25 @@ sub _init
    $self->form->$meth( $self );
 }
 
+=head2 constraints
+
+An ArrayRef of constraints to be executed on the field at validation
+
+=cut
+
+has 'constraints' => ( 
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef',
+   is         => 'rw',
+   auto_deref => 1,
+   default    => sub {[]},
+   provides   => { 
+      'push'  => 'push_constraint', 
+      'count' => 'num_constraints',
+      'empty' => 'has_constraints',
+      'clear' => 'clear_constraints',
+   }
+);
 
 =head1 METHODS
 
@@ -709,8 +726,6 @@ The field's error list and internal value are reset upon entry.
 
 =cut
 
-# TODO: move test_multiple and test_options to the field classes?
-#
 sub validate_field
 {
    my $field = shift;
@@ -766,7 +781,7 @@ sub _make_named_constraint {
         my $low  = $constraint->{minlength};
         my $high = $constraint->{maxlength};
         if ( defined $low && defined $high ) {
-            $constraint->{check} = sub {warn 'length: ' .length($_[0]);  length($_[0]) >= $low && length($_[0]) <= $high };
+            $constraint->{check} = sub { length($_[0]) >= $low && length($_[0]) <= $high };
             $constraint->{message} = [ 'length must be between [_1] and [_2]', $low, $high ];
         }
         elsif( defined $low ){

@@ -44,9 +44,27 @@ sub has_field
 {
    my ( $class, $name, %options ) = @_;
 
+   $class->meta->add_to_field_list( $name, \%options );
+}
+
+=pod
+
+sub has_field
+{
+   my ( $class, $name, %options ) = @_;
+
    my $value = $class->meta->field_list || [];
    push @{$value}, ($name => \%options); 
    $class->meta->field_list($value);
+}
+
+=cut
+
+sub has_constraint
+{
+   my ( $class, $name, %options ) = @_;
+   
+   $class->meta->set_named_constraint( $name, \%options );
 }
 
 =head1 AUTHOR

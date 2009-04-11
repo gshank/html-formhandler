@@ -105,12 +105,12 @@ sub _build_meta_field_list
       my $meta = $sc->meta;
       foreach my $role ( $meta->calculate_all_roles )
       {
-         if ( $role->can('field_list') && defined $role->field_list )
+         if ( $role->can('field_list') && $role->has_field_list )
          {
             push @field_list, @{$role->field_list};
          }
       }
-      if ( $meta->can('field_list') && defined $meta->field_list )
+      if ( $meta->can('field_list') && $meta->has_field_list )
       {
          push @field_list, @{$meta->field_list};
       }
