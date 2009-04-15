@@ -753,61 +753,89 @@ sub validate_field
    return;
 }
 
-sub _make_named_constraint {
-    my ( $self, $constraint ) = @_;
-    my $name = $constraint->{named};
 
-    if( $name eq 'required' ){
-        $constraint->{check} = sub { defined $_[0] and length $_[0] };
-        $constraint->{message} = $self->label . ' is required';
+sub _make_range_constraint {
+    my( $self, $low, $high ) = @_;
+    my $constraint;
+    if ( defined $low && defined $high ) {
+        $constraint->{check} = sub { $_[0] >= $low && $_[0] <= $high };
+        $constraint->{message} = [ 'value must be between [_1] and [_2]', $low, $high ];
     }
-    elsif( $name eq 'range' ){
-        my $low  = $constraint->{range_start};
-        my $high = $constraint->{range_end};
-        if ( defined $low && defined $high ) {
-            $constraint->{check} = sub { $_[0] >= $low && $_[0] <= $high };
-            $constraint->{message} = [ 'value must be between [_1] and [_2]', $low, $high ];
+    elsif( defined $low ){
+        $constraint->{check} = sub { $_[0] >= $low };
+        $constraint->{message} = [ 'value must be greater or queal to [_1]', $low ];
+    }
+    elsif( defined $high ){
+        $constraint->{check} = sub { $_[0] <= $high };
+        $constraint->{message} = [ 'value must be less than or queal to [_1]', $high ];
+    }
+    return $constraint;
+}
+
+sub _make_size_constraint {
+    my( $self, $low, $high ) = @_;
+    my $constraint;
+    if ( defined $low && defined $high ) {
+        $constraint->{check} = sub { length($_[0]) >= $low && length($_[0]) <= $high };
+        $constraint->{message} = [ 'length must be between [_1] and [_2]', $low, $high ];
+    }
+    elsif( defined $low ){
+        $constraint->{check} = sub { length($_[0]) >= $low };
+        $constraint->{message} = [ 'length must be greater or queal to [_1]', $low ];
+    }
+    elsif( defined $high ){
+        $constraint->{check} = sub { length($_[0]) <= $high };
+        $constraint->{message} = [ 'length must be less than or queal to [_1]', $high ];
+    }
+    return $constraint;
+}
+
+sub _make_constraint {
+    my ( $self, $constraint ) = @_;
+    my $name;
+    my $new_constraint;
+    if( ref $constraint eq 'ARRAY' ){
+        $name = $constraint->[0];
+        if( $name eq 'range' ){
+            $new_constraint = $self->_make_range_constraint( $constraint->[1] ,$constraint->[2] );
         }
-        elsif( defined $low ){
-            $constraint->{check} = sub { $_[0] >= $low };
-            $constraint->{message} = [ 'value must be greater or queal to [_1]', $low ];
+        elsif( $name eq 'size' ){
+            $new_constraint = $self->_make_size_constraint( $constraint->[1] ,$constraint->[2] );
         }
-        elsif( defined $high ){
-            $constraint->{check} = sub { $_[0] <= $high };
-            $constraint->{message} = [ 'value must be less than or queal to [_1]', $high ];
+        else{
+           $new_constraint = {
+               check => $constraint->[0],
+               message => $constraint->[1],
+           }
         }
     }
-    elsif( $name eq 'size' ){
-        my $low  = $constraint->{minlength};
-        my $high = $constraint->{maxlength};
-        if ( defined $low && defined $high ) {
-            $constraint->{check} = sub { length($_[0]) >= $low && length($_[0]) <= $high };
-            $constraint->{message} = [ 'length must be between [_1] and [_2]', $low, $high ];
+    elsif( ref $constraint eq 'HASH' ){
+        $name = $constraint->{named};
+        if( ! defined $name ){
+           $new_constraint = $constraint;
         }
-        elsif( defined $low ){
-            $constraint->{check} = sub { length($_[0]) >= $low };
-            $constraint->{message} = [ 'length must be greater or queal to [_1]', $low ];
+        elsif( $name eq 'range' ){
+            $new_constraint = $self->_make_range_constraint( $constraint->{range_start} ,$constraint->{range_end} );
         }
-        elsif( defined $high ){
-            $constraint->{check} = sub { length($_[0]) <= $high };
-            $constraint->{message} = [ 'length must be less than or queal to [_1]', $high ];
+        elsif( $name eq 'size' ){
+            $new_constraint = $self->_make_size_constraint( $constraint->{minlength} ,$constraint->{maxlength} );
         }
     }
-        
+    elsif( ! ref $constraint ){
+        $name = $constraint;
+    }
+    if( defined($name) && $name eq 'required' ){
+        $new_constraint->{check} = sub { defined $_[0] and length $_[0] };
+        $new_constraint->{message} = $self->label . ' is required';
+    }
+    return $new_constraint;
 }
 
 sub _check_constraints {
    my $self = shift;
    my $input = $self->input;
    for my $constraint ( @{ $self->constraints || [] } ){
-      if( ! ref $constraint ){
-          $constraint = {
-              named => $constraint,
-          }
-      }
-      if( $constraint->{named} ){
-          $self->_make_named_constraint( $constraint );
-      }
+      $constraint = $self->_make_constraint( $constraint );
       my @message;
       if( ref $constraint->{message} ){
           @message = @{$constraint->{message}};
@@ -823,6 +851,11 @@ sub _check_constraints {
       }
       if( ref $constraint->{check} eq 'Regexp' ){ 
           if( $input !~ $constraint->{check} ){
+              $self->add_error( @message );
+          }
+      }
+      if( ref $constraint->{check} eq 'ARRAY' ){ 
+          if( ! grep { $input eq $_ } @{$constraint->{check}} ){
               $self->add_error( @message );
           }
       }
