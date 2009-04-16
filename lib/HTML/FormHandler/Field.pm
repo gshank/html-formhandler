@@ -626,6 +626,21 @@ has 'constraints' => (
    }
 );
 
+has 'filters' => ( 
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef',
+   is         => 'rw',
+   auto_deref => 1,
+   default    => sub {[]},
+   provides   => { 
+      'push'  => 'push_filter', 
+      'count' => 'num_filters',
+      'empty' => 'has_filters',
+      'clear' => 'clear_filters',
+   }
+);
+
+
 =head1 METHODS
 
 =head2 new [parameters]
@@ -744,6 +759,7 @@ sub validate_field
    inner();
    
    $field->_check_constraints;
+   $field->_apply_filters;
 
    return unless $field->validate;
    return unless $field->test_ranges;
@@ -858,6 +874,62 @@ sub _check_constraints {
           if( ! grep { $input eq $_ } @{$constraint->{check}} ){
               $self->add_error( @message );
           }
+      }
+   }
+}
+
+sub _make_filter {
+    my ( $self, $filter ) = @_;
+    my $name;
+    my $new_filter;
+    if( ref $filter eq 'ARRAY' ){
+        $name = $filter->[0];
+        if( $name eq 'range' ){
+        }
+        else{
+           $new_filter = {
+               action  => $filter->[0],
+               message => $filter->[1],
+           }
+        }
+    }
+    if( ref $filter eq 'CODE' ){
+        $new_filter = {
+            action  => $filter,
+        }
+    }
+    elsif( ref $filter eq 'HASH' ){
+        $name = $filter ->{named};
+        if( ! defined $name ){
+           $new_filter = $filter;
+        }
+    }
+    elsif( ! ref $filter ){
+        $name = $filter;
+    }
+    if( defined($name) && $name eq 'required' ){
+    }
+    return $new_filter;
+}
+
+sub _apply_filters {
+   my $self = shift;
+   my $input = $self->input;
+   for my $filter ( @{ $self->filters || [] } ){
+      $filter = $self->_make_filter( $filter );
+      eval{ $self->input( $filter->{action}->($input) ) };
+      if( $@ ){
+          my @message;
+          if( ref $filter->{message} ){
+              @message = @{$filter->{message}};
+          }
+          elsif( defined $filter->{message} ){
+              @message = ( $filter->{message} );
+          }
+          else{
+              @message = ( $@ );
+          }
+          $self->add_error( @message );
       }
    }
 }
