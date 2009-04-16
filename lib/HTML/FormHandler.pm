@@ -880,10 +880,10 @@ sub fif
       my $fif = $field->fif;
       if ( ref $fif eq 'HASH' )
       {
-         foreach my $key ( keys %{$fif} )
-         {
-            $params->{ $prefix . $key } = $fif->{$key};
-         }
+#         foreach my $key ( keys %{$fif} )
+#         {
+#            $params->{ $prefix . $key } = $fif->{$key};
+#         }
       }
       else
       {

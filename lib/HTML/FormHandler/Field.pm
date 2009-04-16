@@ -740,10 +740,10 @@ sub validate_field
 
    $field->clear_value;
 
-   $field->_check_constraints;
-   
    # allow augment 'validate_field' calls here
    inner();
+   
+   $field->_check_constraints;
 
    return unless $field->validate;
    return unless $field->test_ranges;
