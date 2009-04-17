@@ -103,11 +103,14 @@ sub _build_meta_field_list
    foreach my $sc ( reverse $self->meta->linearized_isa )
    {
       my $meta = $sc->meta;
-      foreach my $role ( $meta->calculate_all_roles )
+      if( $meta->can('calculate_all_roles') )
       {
-         if ( $role->can('field_list') && $role->has_field_list )
+         foreach my $role ( $meta->calculate_all_roles )
          {
-            push @field_list, @{$role->field_list};
+            if ( $role->can('field_list') && $role->has_field_list )
+            {
+               push @field_list, @{$role->field_list};
+            }
          }
       }
       if ( $meta->can('field_list') && $meta->has_field_list )

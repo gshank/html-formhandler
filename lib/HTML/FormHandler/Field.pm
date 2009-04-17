@@ -3,6 +3,7 @@ package HTML::FormHandler::Field;
 use Moose;
 use MooseX::AttributeHelpers;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
+with 'HTML::FormHandler::Constraints';
 
 our $VERSION = '0.02';
 
@@ -648,6 +649,13 @@ has 'filters' => (
 Create a new instance of a field.  Initial values are passed 
 as a list of parameters.
 
+=cut
+
+sub BUILD
+{
+   my $self = shift;
+   $self->_build_named_constraints;
+}
 
 =head2 full_name
 

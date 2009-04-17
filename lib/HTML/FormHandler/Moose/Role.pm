@@ -24,7 +24,7 @@ Use this module instead of C< use Moose::Role; >
 =cut
 
 Moose::Exporter->setup_import_methods(
-   with_caller => [ 'has_field' ],
+   with_caller => [ 'has_field', 'has_constraint' ],
    also        => 'Moose::Role',
 );
 
@@ -64,7 +64,7 @@ sub has_constraint
 {
    my ( $class, $name, %options ) = @_;
    
-   $class->meta->set_named_constraint( $name, \%options );
+   $class->meta->set_meta_constraint( $name, \%options );
 }
 
 =head1 AUTHOR

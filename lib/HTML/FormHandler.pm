@@ -4,6 +4,7 @@ use Moose;
 use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Model';
 with 'HTML::FormHandler::Fields';
+with 'HTML::FormHandler::Constraints';
 
 use Carp;
 use UNIVERSAL::require;
@@ -558,6 +559,7 @@ sub BUILD
    my $self = shift;
 
    $self->build_fields;    # create the form fields
+   $self->_build_named_constraints;
    return if defined $self->item_id && !$self->item;
    $self->init_from_object;    # load values from object, if item exists;
    $self->load_options;        # load options -- need to do after loading item

@@ -25,15 +25,16 @@ has 'field_list' => (
    }
 );
 
-has 'named_constraints' => (
+has 'meta_constraints' => (
    metaclass => 'Collection::Hash',
    is        => 'rw',
    isa       => 'HashRef',
    default   => sub { { } },
+   auto_deref => 1,
    provides  => {
-      'set' => 'set_named_constraint',
-      'get' => 'get_named_constraint',
-      'empty' => 'has_named_constraints',
+      'set' => 'set_meta_constraint',
+      'get' => 'get_meta_constraint',
+      'empty' => 'has_meta_constraints',
    }
 );   
 
