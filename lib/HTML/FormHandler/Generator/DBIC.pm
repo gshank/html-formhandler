@@ -83,16 +83,26 @@ has 'm2m' => (
 );
 
 my $form_template = <<'END';
-[% FOR form = forms %]
 {
-    package [% form.class %]Form;
+    package [% config.class %]Form;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
     with 'HTML::FormHandler::Render::Simple';
     
-    [% FOR field = form.fields -%]
+    [% FOR field = config.fields -%]
     [%- SET field_name = field.name; field.delete( 'name' ); -%]
-    has_field '[% field_name %]' => ( [% FOREACH attr IN field.pairs %] [% attr.key %] => '[% attr.value %]', [% END %] );
+has_field '[% field_name %]' => ( [% FOREACH attr IN field.pairs %] [% attr.key %] => '[% attr.value %]', [% END %] );
+    [% END %]
+}
+[% FOR cf = config.sub_forms %]
+{
+    package [% cf.class %]Field;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler::Field::Compound';
+    
+    [% FOR field = cf.fields -%]
+    [%- SET field_name = field.name; field.delete( 'name' ); -%]
+has_field '[% field_name %]' => ( [% FOREACH attr IN field.pairs %] [% attr.key %] => '[% attr.value %]', [% END %] );
     [% END %]
 }
 [% END %]
@@ -103,9 +113,9 @@ sub generate_form {
     my ( $self ) = @_;
     my $config = $self->get_config;
     my $output;
-    my %sub_forms = map { $_->{class} => $_ } @{$config->{sub_forms}};
+    # warn Dumper( $config ); use Data::Dumper;
     my $tmpl_params = {
-        forms => [ $config, values %sub_forms ], 
+        config => $config,
     };
     $tmpl_params->{single} = 1 if defined $self->style && $self->style eq 'single';
     $self->tt->process( \$form_template, $tmpl_params, \$output )
@@ -178,6 +188,10 @@ sub get_elements {
             $config->{class} = $target_class;
             $config->{name} = $rel;
             push @sub_forms, $config;
+            push @fields, {
+                type => "+${target_class}Field",
+                name => $rel,
+            };
         }
     }
     for my $col ( $source->columns ) {
