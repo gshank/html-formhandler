@@ -607,13 +607,13 @@ sub _init
    $self->form->$meth( $self );
 }
 
-=head2 constraints
+=head2 actions
 
 An ArrayRef of constraints to be executed on the field at validation
 
 =cut
 
-has 'constraints' => ( 
+has 'actions' => ( 
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef',
    is         => 'rw',
@@ -626,21 +626,6 @@ has 'constraints' => (
       'clear' => 'clear_constraints',
    }
 );
-
-has 'filters' => ( 
-   metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef',
-   is         => 'rw',
-   auto_deref => 1,
-   default    => sub {[]},
-   provides   => { 
-      'push'  => 'push_filter', 
-      'count' => 'num_filters',
-      'empty' => 'has_filters',
-      'clear' => 'clear_filters',
-   }
-);
-
 
 =head1 METHODS
 
@@ -766,8 +751,7 @@ sub validate_field
    # allow augment 'validate_field' calls here
    inner();
    
-   $field->_check_constraints;
-   $field->_apply_filters;
+   $field->_apply_actions;
 
    return unless $field->validate;
    return unless $field->test_ranges;
@@ -778,169 +762,68 @@ sub validate_field
 }
 
 
-sub _make_range_constraint {
-    my( $self, $low, $high ) = @_;
-    my $constraint;
-    if ( defined $low && defined $high ) {
-        $constraint->{check} = sub { $_[0] >= $low && $_[0] <= $high };
-        $constraint->{message} = [ 'value must be between [_1] and [_2]', $low, $high ];
-    }
-    elsif( defined $low ){
-        $constraint->{check} = sub { $_[0] >= $low };
-        $constraint->{message} = [ 'value must be greater or queal to [_1]', $low ];
-    }
-    elsif( defined $high ){
-        $constraint->{check} = sub { $_[0] <= $high };
-        $constraint->{message} = [ 'value must be less than or queal to [_1]', $high ];
-    }
-    return $constraint;
-}
-
-sub _make_size_constraint {
-    my( $self, $low, $high ) = @_;
-    my $constraint;
-    if ( defined $low && defined $high ) {
-        $constraint->{check} = sub { length($_[0]) >= $low && length($_[0]) <= $high };
-        $constraint->{message} = [ 'length must be between [_1] and [_2]', $low, $high ];
-    }
-    elsif( defined $low ){
-        $constraint->{check} = sub { length($_[0]) >= $low };
-        $constraint->{message} = [ 'length must be greater or queal to [_1]', $low ];
-    }
-    elsif( defined $high ){
-        $constraint->{check} = sub { length($_[0]) <= $high };
-        $constraint->{message} = [ 'length must be less than or queal to [_1]', $high ];
-    }
-    return $constraint;
-}
-
-sub _make_constraint {
-    my ( $self, $constraint ) = @_;
-    my $name;
-    my $new_constraint;
-    if( ref $constraint eq 'ARRAY' ){
-        $name = $constraint->[0];
-        if( $name eq 'range' ){
-            $new_constraint = $self->_make_range_constraint( $constraint->[1] ,$constraint->[2] );
-        }
-        elsif( $name eq 'size' ){
-            $new_constraint = $self->_make_size_constraint( $constraint->[1] ,$constraint->[2] );
-        }
-        else{
-           $new_constraint = {
-               check => $constraint->[0],
-               message => $constraint->[1],
-           }
-        }
-    }
-    elsif( ref $constraint eq 'HASH' ){
-        $name = $constraint->{named};
-        if( ! defined $name ){
-           $new_constraint = $constraint;
-        }
-        elsif( $name eq 'range' ){
-            $new_constraint = $self->_make_range_constraint( $constraint->{range_start} ,$constraint->{range_end} );
-        }
-        elsif( $name eq 'size' ){
-            $new_constraint = $self->_make_size_constraint( $constraint->{minlength} ,$constraint->{maxlength} );
-        }
-    }
-    elsif( ! ref $constraint ){
-        $name = $constraint;
-    }
-    if( defined($name) && $name eq 'required' ){
-        $new_constraint->{check} = sub { defined $_[0] and length $_[0] };
-        $new_constraint->{message} = $self->label . ' is required';
-    }
-    return $new_constraint;
-}
-
-sub _check_constraints {
+sub _apply_actions {
    my $self = shift;
    my $input = $self->input;
-   for my $constraint ( @{ $self->constraints || [] } ){
-      $constraint = $self->_make_constraint( $constraint );
-      my @message;
-      if( ref $constraint->{message} ){
-          @message = @{$constraint->{message}};
-      }
-      else{
-          @message = ( $constraint->{message} );
-      }
-      # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
-      if( ref $constraint->{check} eq 'CODE' ){ 
-          if( !$constraint->{check}->($input) ){
-              $self->add_error( @message );
-          }
-      }
-      if( ref $constraint->{check} eq 'Regexp' ){ 
-          if( $input !~ $constraint->{check} ){
-              $self->add_error( @message );
-          }
-      }
-      if( ref $constraint->{check} eq 'ARRAY' ){ 
-          if( ! grep { $input eq $_ } @{$constraint->{check}} ){
-              $self->add_error( @message );
-          }
-      }
+   for my $action( @{ $self->actions || [] } ){
+#      $constraint = $self->_make_constraint( $constraint );
+        my $error_message;
+        if( ! ref $action ){
+            my $tobj = Moose::Util::TypeConstraints::find_type_constraint($action) or die 'Cannot find type constraint';
+            my $new_value = $input;
+            if( $tobj->has_coercion ){
+                eval{ $new_value = $tobj->coerce( $new_value ) };
+                if( $@ ){
+                    if( $tobj->has_message ){
+                        $error_message = $tobj->message->( $new_value );
+                    }
+                    else{
+                        $error_message = $@;
+                    }
+                }
+            }
+            $error_message ||= $tobj->validate( $new_value );
+            if( ! $error_message ){
+                $self->input( $new_value );
+            }
+        }
+        # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
+        elsif( ref $action->{check} eq 'CODE' ){ 
+            if( !$action->{check}->($input) ){
+                $error_message = 'Wrong value'; 
+            }
+        }
+        elsif( ref $action->{check} eq 'Regexp' ){ 
+            if( $input !~ $action->{check} ){
+                $error_message = "\"$input\" does not match"
+            }
+        }
+        elsif( ref $action->{check} eq 'ARRAY' ){ 
+            if ( ! grep { $input eq $_ } @{$action->{check}} ){
+                $error_message = "\"$input\" not allowed"
+            }
+        }
+        elsif( ref $action->{transform} eq 'CODE' ){
+            eval{ $self->input( $action->{transform}->($input) ) };
+            if( $@ ){
+                $error_message = $@;
+            }
+        }
+        if( defined $error_message ){
+            my @message = ( $error_message );
+            if( ref $action ){
+                if( ref $action->{message} ){
+                    @message = @{$action->{message}};
+                }
+                else{
+                    @message = ( $action->{message} );
+                }
+            }
+            $self->add_error( @message );
+        }
    }
 }
 
-sub _make_filter {
-    my ( $self, $filter ) = @_;
-    my $name;
-    my $new_filter;
-    if( ref $filter eq 'ARRAY' ){
-        $name = $filter->[0];
-        if( $name eq 'range' ){
-        }
-        else{
-           $new_filter = {
-               action  => $filter->[0],
-               message => $filter->[1],
-           }
-        }
-    }
-    if( ref $filter eq 'CODE' ){
-        $new_filter = {
-            action  => $filter,
-        }
-    }
-    elsif( ref $filter eq 'HASH' ){
-        $name = $filter ->{named};
-        if( ! defined $name ){
-           $new_filter = $filter;
-        }
-    }
-    elsif( ! ref $filter ){
-        $name = $filter;
-    }
-    if( defined($name) && $name eq 'required' ){
-    }
-    return $new_filter;
-}
-
-sub _apply_filters {
-   my $self = shift;
-   my $input = $self->input;
-   for my $filter ( @{ $self->filters || [] } ){
-      $filter = $self->_make_filter( $filter );
-      eval{ $self->input( $filter->{action}->($input) ) };
-      if( $@ ){
-          my @message;
-          if( ref $filter->{message} ){
-              @message = @{$filter->{message}};
-          }
-          elsif( defined $filter->{message} ){
-              @message = ( $filter->{message} );
-          }
-          else{
-              @message = ( $@ );
-          }
-          $self->add_error( @message );
-      }
-   }
-}
  
 =head2 validate
 
