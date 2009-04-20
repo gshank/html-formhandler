@@ -1,4 +1,4 @@
-use Test::More tests => 13;
+use Test::More tests => 15;
 
 use lib 't/lib';
 
@@ -66,4 +66,32 @@ $dtform->validate( params => $params );
 ok( $dtform->validated, 'form validated' );
 
 is( $dtform->value('start_date')->mdy, '10-02-2008', 'datetime value');
+
+{
+   package Field::MyCompound;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler::Field::Compound';
+
+   has_field 'aaa' => ( type => 'Text' );
+   has_field 'bbb' => ( type => 'Text' );
+}
+
+
+{
+   package Form::TestValues;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   has_field 'compound' => ( type => '+Field::MyCompound' );
+}
+my $form = Form::Start->new;
+ok( cform, 'Compound form with separate fields declarations created' );
+
+$params = { 
+    'compound.aaa' => 'aaa',
+    'compound.bbb' => 'bbb',
+};
+$form->validate( params => $params );
+is_deeply( $form->values, { compound => { aaa => 'aaa', bbb => 'bbb' } }, 'Compound with separate fields - values in hash' );
+
 
