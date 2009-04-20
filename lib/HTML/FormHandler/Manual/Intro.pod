@@ -479,8 +479,11 @@ By default, the validation is simply to copy the data from the "input" to the "v
 field attribute, but you might have a field that must be converted from a text
 representation to an object (e.g. month, day, year to DateTime).
 
-Do not put the primary_key of your database row into your form as a field. It
-is not necessary. 
+=head2 Filters and Constraints
+
+L<HTML::FormHandler> has a flexible system of of filters and constraints. You can
+use Moose types to constrain the allowable values in a field and use coercions to
+inflate the HTML field input, such as for a DateTime.
 
 =head2 Creating custom fields
 

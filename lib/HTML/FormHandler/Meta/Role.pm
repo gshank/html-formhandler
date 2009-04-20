@@ -25,18 +25,6 @@ has 'field_list' => (
    }
 );
 
-has 'meta_constraints' => (
-   metaclass => 'Collection::Hash',
-   is        => 'rw',
-   isa       => 'HashRef',
-   default   => sub { { } },
-   auto_deref => 1,
-   provides  => {
-      'set' => 'set_meta_constraint',
-      'get' => 'get_meta_constraint',
-      'empty' => 'has_meta_constraints',
-   }
-);   
 
 =head1 AUTHOR
 
