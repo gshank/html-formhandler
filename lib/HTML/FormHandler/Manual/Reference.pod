@@ -61,7 +61,6 @@ These attributes are usually accessed in a subroutine or in a template.
 
    validate          Main part of Field subclasses. Generic validation that
                        applies to all fields of this type.
-   validate_field    If you want to override the validation in a H::F::Field
    trim_value        If you don't want the default trimming 
    input_to_value    To process the field before storing, after validation
    Add your own field attributes in your custom Field classes.

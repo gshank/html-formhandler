@@ -3,7 +3,6 @@ package HTML::FormHandler::Field;
 use Moose;
 use MooseX::AttributeHelpers;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
-with 'HTML::FormHandler::Constraints';
 
 our $VERSION = '0.02';
 
@@ -79,8 +78,8 @@ Inheritance hierarchy of the distribution's field classes:
 See the documentation or source for the individual fields.
 
 Normally you would implement a 'validate' routine in a custom
-field class, but you can also override the base validation routine
-by overriding 'validate_field'.
+field class, but you can also override the base validation process
+by overriding 'process'.
 
 =head1 ATTRIBUTES
 
@@ -609,7 +608,7 @@ sub _init
 
 =head2 actions
 
-An ArrayRef of constraints to be executed on the field at validation
+An ArrayRef of constraints and coercions to be executed on the field at validation
 
 =cut
 
@@ -633,14 +632,6 @@ has 'actions' => (
 
 Create a new instance of a field.  Initial values are passed 
 as a list of parameters.
-
-=cut
-
-sub BUILD
-{
-   my $self = shift;
-   $self->_build_named_constraints;
-}
 
 =head2 full_name
 
@@ -709,7 +700,7 @@ sub add_error
 }
 
 
-=head2 validate_field
+=head2 process
 
 This method does standard validation, which currently tests:
 
@@ -734,7 +725,7 @@ The field's error list and internal value are reset upon entry.
 
 =cut
 
-sub validate_field
+sub process
 {
    my $field = shift;
    $field->clear_errors;
@@ -748,7 +739,7 @@ sub validate_field
 
    $field->clear_value;
 
-   # allow augment 'validate_field' calls here
+   # allow augment 'process' calls here
    inner();
    
    $field->_apply_actions;
@@ -759,6 +750,11 @@ sub validate_field
    # Now move data from input -> value
    $field->input_to_value;
    return;
+}
+
+sub validate_field
+{
+   return shift->process(@_);
 }
 
 

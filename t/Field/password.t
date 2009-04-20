@@ -27,36 +27,36 @@ my $field = $class->new(
 ok( defined $field,  'new() called' );
 
 $field->input( '2192ab201def' );
-$field->validate_field;
+$field->process;
 ok( !$field->has_errors, 'Test for errors 1' );
 
 $field->input( 'f oo' );
-$field->validate_field;
+$field->process;
 ok( $field->has_errors, 'has spaces' );
 
 $field->input( 'abc%^%' );
-$field->validate_field;
+$field->process;
 ok( $field->has_errors, 'match \W' );
 
 $field->input( '123456' );
-$field->validate_field;
+$field->process;
 ok( $field->has_errors, 'all digits' );
 
 $field->input( 'ab1' );
-$field->validate_field;
+$field->process;
 ok( $field->has_errors, 'too short' );
 
 $field->input( 'my4login55' );
-$field->validate_field;
+$field->process;
 ok( $field->has_errors, 'matches login' );
 
 $field->input( 'my4username' );
-$field->validate_field;
+$field->process;
 ok( $field->has_errors, 'matches username' );
 
 my $pass = 'my4user5name';
 $field->input( $pass );
-$field->validate_field;
+$field->process;
 ok( !$field->has_errors, 'just right' );
 is ( $field->value, $pass, 'Input and value match' );
 

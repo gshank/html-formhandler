@@ -22,6 +22,8 @@ your fields (with many possible attributes), and initialization
 and validation routines. Because it's a Perl class, you have a lot of 
 flexibility.
 
+You can use your own Moose type constraints, listed in the 'actions' field array,
+to validate the fields.
 You can define your own L<HTML::FormHandler::Field> classes to
 create your own field types, and perform specialized validation. And you
 can subclass the methods in HTML::FormHandler::Model::DBIC and 
@@ -490,8 +492,8 @@ inflate the HTML field input, such as for a DateTime.
 Subclass a custom field from L<HTML::FormHandler::Field>, or one of the
 existing subclasses. 
 
-The simplest subclasses contain only a 'validate' routine, which is called
-by the base Field class from 'validate_field'. Look at 
+The simplest subclasses contain only a 'validate' routine or an actions attribute,
+which is called by the base Field class from 'process'. Look at 
 L<HTML::FormHandler::Field::Email>, for example.
 
 If the field's value will be an object instead of a simple scalar, such
@@ -510,8 +512,8 @@ Some fields subclass 'input_to_value' to change the way that the form
 input is converted to the value, in addition to providing 'fif_value'
 to convert the other way.
 
-The DateTime field even subclasses 'validate_field' in order to skip
-all of the other standard validations.
+The DateTime field even subclasses 'process' in order to skip
+the other standard validations.
 
 An alternative to new field classes for many field validations might
 be roles with collections of validations.

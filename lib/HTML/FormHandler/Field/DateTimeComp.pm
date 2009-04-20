@@ -18,7 +18,7 @@ sub validate {
     my ( $self ) = @_;
 
 
-    # check for required has been done in 'validate_field' using
+    # check for required has been done in 'process' using
     # the presence of input as a check. Requires that the sub-fields
     # be named <parent_name>.<accessor>
     my @dt_parms;

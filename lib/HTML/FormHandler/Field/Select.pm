@@ -186,7 +186,7 @@ sub as_label {
     return;
 }
 
-=head2 validate_field 
+=head2 process 
 
 Checks that this is a multiple field if the input is an array. 
 The input value (or values if an array ref) is tested to make 
@@ -196,7 +196,7 @@ Returns true or false
 
 =cut
 
-augment 'validate_field' => sub
+augment 'process' => sub
 {
    my ($self) = @_;
 

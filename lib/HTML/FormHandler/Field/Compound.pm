@@ -46,7 +46,7 @@ sub BUILD
    $self->build_fields;
 }
 
-augment 'validate_field' => sub {
+augment 'process' => sub {
    my $self = shift;
    $self->clear_fif;
    return unless $self->has_fields;

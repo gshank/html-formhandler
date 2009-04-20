@@ -4,7 +4,6 @@ use Moose;
 use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Model';
 with 'HTML::FormHandler::Fields';
-with 'HTML::FormHandler::Constraints';
 
 use Carp;
 use UNIVERSAL::require;
@@ -32,7 +31,7 @@ An example of a form class:
     has '+item_class' => ( default => 'User' );
 
     has_field 'name' => ( type => 'Text' );
-    has_field 'age' => ( type => 'PosInteger' );
+    has_field 'age' => ( type => 'PosInteger', actions => [ 'MinimumAge' ] );
     has_field 'birthdate' => ( type => 'DateTime' );
     has_field 'hobbies' => ( type => 'Multiple' );
     has_field 'address' => ( type => 'Text' );
@@ -45,12 +44,11 @@ An example of a form class:
        }
     );
 
-    sub validate_age {
-        my ( $self, $field ) = @_;
-        $field->add_error('Sorry, you must be 18')
-            if $field->value < 18;
-    }
-
+    subtype 'MinimumAge'
+       => as 'Int'
+       => where { $_ > 13 }
+       => message { "You are not old enough to register" };
+    
     no HTML::FormHandler::Moose;
     1;
 
@@ -131,9 +129,10 @@ control of what, where, and how much is done automatically.
 
 You can split the pieces of your forms up into logical parts and compose
 complete forms from FormHandler classes, roles, fields, collections of
-validations. You can write custom methods to process forms, add any
-attribute you like, use Moose before/after/around. FormHandler forms are
-Perl classes, so there's a lot of flexibility in what you can do.  
+validations, and Moose type constraints. You can write custom methods to 
+process forms, add any attribute you like, use Moose before/after/around. 
+FormHandler forms are Perl classes, so there's a lot of flexibility in what 
+you can do.  
 
 The L<HTML::FormHandler> module is documented here.  For more extensive 
 documentation on use and a tutorial, see the manual at 
@@ -559,7 +558,6 @@ sub BUILD
    my $self = shift;
 
    $self->build_fields;    # create the form fields
-   $self->_build_named_constraints;
    return if defined $self->item_id && !$self->item;
    $self->init_from_object;    # load values from object, if item exists;
    $self->load_options;        # load options -- need to do after loading item
@@ -664,7 +662,7 @@ The method does the following:
  
     1) sets required dependencies
     2) trims params and saves in field 'input' attribute
-    3) calls the field's 'validate_field' routine which:
+    3) calls the field's 'process' routine which:
         1) validates that required fields have a value
         2) calls the field's 'validate' routine (the one that is provided
            by custom field classes)

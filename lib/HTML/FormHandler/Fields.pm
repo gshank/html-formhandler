@@ -277,7 +277,7 @@ sub fields_validate
       # parent fields will call validation for children
       next if $field->parent && $field->parent != $self;
       # Validate each field and "inflate" input -> value.
-      $field->validate_field;  # this calls the field's 'validate' routine
+      $field->process;  # this calls the field's 'validate' routine
       next unless $field->has_value && defined $field->value; 
       # these methods have access to the inflated values
       $field->_validate($field); # will execute a form-field validation routine
