@@ -32,6 +32,21 @@ Error messages will be applied to both parent classes and child
 classes unless the 'errors_on_parent' flag is set. (This flag is
 set for the 'Nested' field class.)
 
+The process method of this field runs the process methods on the child fields
+and then builds a hash of these fields values.  This hash is available for 
+further processing by L<HTML::FormHandler::Field/actions> and the validate method.
+
+Example:
+
+  has_field 'date_time' => ( 
+      type => 'Compound',
+      actions => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
+  );
+  has_field 'date_time.year' => ( type => 'Text', );
+  has_field 'date_time.month' => ( type => 'Text', );
+  has_field 'date_time.day' => ( type => 'Text', );
+
+
 =head2 widget
 
 Widget type is 'compound'
