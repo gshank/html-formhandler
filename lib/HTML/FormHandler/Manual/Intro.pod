@@ -7,7 +7,7 @@ HTML::FormHandler::Manual::Intro - basic usage of FormHandler
 HTML::FormHandler is a form handling class primarily useful for getting HMTL form
 data into the database. It provides attributes on fields that can be used
 for creating a set of widgets and highly automatic templates, but does
-not actually create the templates themselves, although there is an example of a
+not actually create the HTML code themselves, although there is an example of a
 rendering role.
 
 The DBIC & CDBI  models will save form fields automatically to the database, will
@@ -23,7 +23,7 @@ and validation routines. Because it's a Perl class, you have a lot of
 flexibility.
 
 You can use your own Moose type constraints, listed in the 'actions' field array,
-to validate the fields.
+to validate the fields (see L<HTML::FormHandler::Field/actions>).
 You can define your own L<HTML::FormHandler::Field> classes to
 create your own field types, and perform specialized validation. And you
 can subclass the methods in HTML::FormHandler::Model::DBIC and 

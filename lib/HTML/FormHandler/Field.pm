@@ -608,7 +608,63 @@ sub _init
 
 =head2 actions
 
-An ArrayRef of constraints and coercions to be executed on the field at validation
+An ArrayRef of constraints and coercions to be executed on the field at process time.  
+In general the action can be of three types: a Moose type (which is represented by it's name),
+a transformation (which is a callback called on the value of the field) or a constraint
+which performes a 'smart match' on the value of the field.  Currently we implement the smart match
+in our code - but in the future when Perl 5.10 is more widely used we'll switch to the core
+L<http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail> smart
+match operator.  The Moose type action first tries to coerce the value - then it checks the result,
+so you can use it instead of both constraints and tranformations - TIMTOWTDI.
+
+Examples:
+
+A Moose type:
+  subtype 'MyStr'
+      => as 'Str'
+      => where { /^a/ };
+
+This is a simple constraint checking if the value string starts with the letter 'a'.
+
+Another Moose type:
+  subtype 'MyInt'
+      => as 'Int';
+  coerce 'MyInt'
+      => from 'MyStr'
+      => via { return $1 if /(\d+)/ };
+
+This type contains a coercion.
+
+You can use them in a field like this:
+
+   has_field 'some_text_to_int' => (
+       actions => [ 'MyStr', 'MyInt' ]
+   );
+
+This will check if the field contains a string starting with 'a' - and then coerce it
+to an integer by extracting the first continues string of digits.
+
+A simple constraint:
+
+  has_field 'some_text' => (
+      actions => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
+  );
+
+This should be self-explanatory.
+
+And a simple transformation:
+
+  has_field 'sprintf_filter' => (
+      actions => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
+  );
+
+As you can see above all three types define a message to be presented to user in 
+the case of failure. Transformations and coercions
+are called in an eval - to catch the errors.
+
+All the actions are called in the order that they are defined - so you can check constraints
+after some transformations and vice versa, you can weave all three types of actions in any 
+order you need.
 
 =cut
 

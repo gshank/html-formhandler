@@ -129,10 +129,11 @@ control of what, where, and how much is done automatically.
 
 You can split the pieces of your forms up into logical parts and compose
 complete forms from FormHandler classes, roles, fields, collections of
-validations, and Moose type constraints. You can write custom methods to 
+validations, transformations and Moose type constraints. 
+You can write custom methods to 
 process forms, add any attribute you like, use Moose before/after/around. 
 FormHandler forms are Perl classes, so there's a lot of flexibility in what 
-you can do.  
+you can do. See L<HTML::FormHandler::Field/actions> for more info.
 
 The L<HTML::FormHandler> module is documented here.  For more extensive 
 documentation on use and a tutorial, see the manual at 
