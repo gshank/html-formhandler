@@ -37,29 +37,29 @@ BEGIN
 
 
    has_field 'sprintf_filter' => (
-      actions => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
+      apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
    );
    has_field 'date_time_error' => (
-      actions => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
+      apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
    );
    has_field 'date_time' => ( 
       type => 'Compound',
-      actions => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
+      apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
    );
    has_field 'date_time.year' => ( type => 'Text', );
    has_field 'date_time.month' => ( type => 'Text', );
    has_field 'date_time.day' => ( type => 'Text', );
 
    has_field 'coerce_error' => (
-      actions => [ 'MyInt' ]
+      apply => [ 'MyInt' ]
    );
    has_field 'coerce_pass' => (
-      actions => [ 'MyInt' ]
+      apply => [ 'MyInt' ]
    );
    
    has_field 'date_coercion_pass' => ( 
       type => 'Compound',
-      actions => [ 'MyDateTime' ],
+      apply => [ 'MyDateTime' ],
    );
    has_field 'date_coercion_pass.year' => ( type => 'Text', );
    has_field 'date_coercion_pass.month' => ( type => 'Text', );
@@ -67,7 +67,7 @@ BEGIN
 
    has_field 'date_coercion_error' => ( 
       type => 'Compound',
-      actions => [ 'MyDateTime' ],
+      apply => [ 'MyDateTime' ],
    );
    has_field 'date_coercion_error.year' => ( type => 'Text', );
    has_field 'date_coercion_error.month' => ( type => 'Text', );

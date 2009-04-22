@@ -23,8 +23,8 @@ and validation routines. Because it's a Perl class, you have a lot of
 flexibility.
 
 You can use transformations. Moose type constraints, and coercions, listed 
-in the 'actions' field array, to validate the fields 
-(see L<HTML::FormHandler::Field/actions>).  You can define your own 
+in the 'apply' field array, to validate or inflate the fields 
+(see L<HTML::FormHandler::Field/apply>).  You can define your own 
 L<HTML::FormHandler::Field> classes to create your own field types, and 
 perform specialized validation. And you can subclass the methods in 
 L<HTML::FormHandler::Model::DBIC> and L<HTML::FormHandler>.
@@ -486,7 +486,7 @@ representation to an object (e.g. month, day, year to DateTime).
 L<HTML::FormHandler> has a flexible system of of filters and constraints. You can
 use Moose types to constrain the allowable values in a field and use coercions to
 inflate the HTML field input, such as for a DateTime. You can also create
-non-Moose transformations and constraints. See the 'actions' attribute
+non-Moose transformations and constraints. See the 'apply' attribute
 in L<HTML::FormHandler::Field>.
 
 You can also create a simple subroutine in your form class to perform validation.
@@ -502,7 +502,7 @@ either method.
 Subclass a custom field from L<HTML::FormHandler::Field>, or one of the
 existing subclasses. 
 
-The simplest subclasses contain only a 'validate' routine or an actions attribute,
+The simplest subclasses contain only a 'validate' routine or an 'apply' attribute,
 which is called by the base Field class from 'process'. Look at 
 L<HTML::FormHandler::Field::Email>, for example.
 

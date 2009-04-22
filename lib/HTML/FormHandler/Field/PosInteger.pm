@@ -14,10 +14,10 @@ sub validate {
     # remove plus sign.
     my $value = $self->input;
     if ( $value =~ s/^\+// ) {
-        $self->input( $value );
+        $self->value( $value );
     }
     return $self->add_error('Value must be a positive integer')
-        unless $self->input >= 0;
+        unless $self->value >= 0;
     return 1;
 }
 

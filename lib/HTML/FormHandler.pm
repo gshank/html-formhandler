@@ -31,7 +31,7 @@ An example of a form class:
     has '+item_class' => ( default => 'User' );
 
     has_field 'name' => ( type => 'Text' );
-    has_field 'age' => ( type => 'PosInteger', actions => [ 'MinimumAge' ] );
+    has_field 'age' => ( type => 'PosInteger', apply => [ 'MinimumAge' ] );
     has_field 'birthdate' => ( type => 'DateTime' );
     has_field 'hobbies' => ( type => 'Multiple' );
     has_field 'address' => ( type => 'Text' );
@@ -133,7 +133,7 @@ validations, transformations and Moose type constraints.
 You can write custom methods to 
 process forms, add any attribute you like, use Moose before/after/around. 
 FormHandler forms are Perl classes, so there's a lot of flexibility in what 
-you can do. See L<HTML::FormHandler::Field/actions> for more info.
+you can do. See L<HTML::FormHandler::Field/apply> for more info.
 
 The L<HTML::FormHandler> module is documented here.  For more extensive 
 documentation on use and a tutorial, see the manual at 
@@ -869,7 +869,7 @@ The fif value for a 'title' field in a TT form:
 sub fif
 {
    my $self = shift;
-$DB::single=1;
+
    my $prefix = '';
    $prefix = $self->name . "." if $self->html_prefix;
    my $params;

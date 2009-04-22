@@ -4,10 +4,15 @@ use Moose;
 extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.01';
 
-has '+value_sprintf' => ( default => '%.2f' );
-
-__PACKAGE__->meta->make_immutable;
-
+has '+apply' => ( default => sub { [ 
+      { transform => sub{ 
+            my $value = shift; 
+            $value =~ s/^\$//;
+            return $value;
+      } },
+      { transform => sub{ sprintf '<%.2f>', $_[0] } },
+   ] } 
+);
 
 sub validate {
     my $self = shift;
@@ -17,7 +22,7 @@ sub validate {
     my $value = $self->input;
     return unless defined $value;
     if ( $value =~ s/^\$// ) {
-        $self->input( $value );
+        $self->value( $value );
     }
     return $self->add_error('Value must be a real number')
         unless $value =~ /^-?\d+\.?\d*$/;
@@ -46,5 +51,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

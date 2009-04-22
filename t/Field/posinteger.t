@@ -35,12 +35,12 @@ ok( $field->has_errors, 'Test non integer' );
 
 $field->input( '+10' );
 $field->process;
-ok( !$field->has_errors, 'Test postive' );
+ok( !$field->has_errors, 'Test positive' );
 is( $field->value, 10, 'Test value == 10' );
 
 $field->input( '-10' );
 $field->process;
-ok( $field->has_errors, 'Test postive' );
+ok( $field->has_errors, 'Test negative' );
 
 
 $field->input( '-10.123' );

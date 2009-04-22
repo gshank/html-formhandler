@@ -418,8 +418,15 @@ must only be used on appropriate fields
 has 'range_start' => ( isa => 'Int|Undef', is => 'rw', default => undef );
 has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
 
-# removed pod because we are deprecating in favor of actions
-has 'value_sprintf' => ( isa => 'Str|Undef', is => 'rw' );
+sub value_sprintf
+{
+   die "The 'value_sprintf' attribute has been removed. Please use a Moose coercion instead.";
+}
+
+sub input_to_value
+{
+   die "The 'input_to_value' method has been removed.";
+}
 
 =head2 id, build_id
 
@@ -607,7 +614,7 @@ sub _init
    $self->form->$meth($self);
 }
 
-=head2 actions
+=head2 apply
 
 An ArrayRef of constraints and coercions to be executed on the field at process 
 time.  In general the action can be of three types: a Moose type (which is 
@@ -642,7 +649,7 @@ This type contains a coercion.
 You can use them in a field like this:
 
    has_field 'some_text_to_int' => (
-       actions => [ 'MyStr', 'MyInt' ]
+       apply => [ 'MyStr', 'MyInt' ]
    );
 
 This will check if the field contains a string starting with 'a' - and then coerce it
@@ -651,7 +658,7 @@ to an integer by extracting the first continues string of digits.
 A simple constraint:
 
   has_field 'some_text' => (
-      actions => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
+      apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
   );
 
 This should be self-explanatory.
@@ -659,7 +666,7 @@ This should be self-explanatory.
 And a simple transformation:
 
   has_field 'sprintf_filter' => (
-      actions => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
+      apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
   );
 
 As you can see above, all three types define a message to be presented to the 
@@ -672,7 +679,7 @@ actions in any order you need.
 
 =cut
 
-has 'actions' => (
+has 'apply' => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef',
    is         => 'rw',
@@ -792,7 +799,10 @@ sub process
 
    $field->clear_value;
 
-   $field->value( $field->input );
+   # the trim_value here should be removed after we have support
+   # for default actions, when it should be done in '_apply_actions'
+   # and deprecated
+   $field->value( $field->trim_value($field->input) );
 
    # allow augment 'process' calls here
    inner();
@@ -803,8 +813,6 @@ sub process
    return unless $field->validate;
    return unless $field->test_ranges;
 
-   # Now move data from input -> value
-#   $field->input_to_value;
    $field->_build_fif if $field->can('_build_fif');
    return;
 }
@@ -817,9 +825,10 @@ sub validate_field
 sub _apply_actions
 {
    my $self  = shift;
-   my $input = $self->value;
-   for my $action ( @{ $self->actions || [] } )
+$DB::single=1;
+   for my $action ( @{ $self->apply || [] } )
    {
+      my $input = $self->value;
       my $error_message;
       if ( !ref $action )
       {
@@ -921,23 +930,6 @@ method is to return true.
 
 sub validate { 1 }
 
-# removed pod because we are going to refactor this
-sub input_to_value
-{
-   my $field = shift;
-   $DB::single = 1;
-   return if $field->has_value;    # already set by validate method.
-   my $format = $field->value_sprintf;
-   if ($format)
-   {
-      $field->value( sprintf( $format, $field->input ) );
-   }
-   else
-   {
-      $field->value( $field->input );
-   }
-}
-
 =head2 test_ranges
 
 If range_start and/or range_end is set AND the field
@@ -996,7 +988,7 @@ sub trim_value
       s/^\s+//;
       s/\s+$//;
    }
-   return @values > 1 ? \@values : $values[0];
+   return ref $value eq 'ARRAY' ? \@values : $values[0];
 }
 
 =head2 input_defined

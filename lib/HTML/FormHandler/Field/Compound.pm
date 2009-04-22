@@ -99,7 +99,6 @@ augment 'process' => sub {
 sub _build_fif 
 {
    my $self = shift;
-$DB::single=1;
 
    my $fif; 
    for my $field ($self->fields)

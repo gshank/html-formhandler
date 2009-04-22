@@ -35,12 +35,12 @@ ok( $field->has_errors, 'Test non integer' );
 
 $field->input( '+10' );
 $field->process;
-ok( !$field->has_errors, 'Test postive' );
+ok( !$field->has_errors, 'Test positive' );
 is( $field->value, 10, 'Test value == 10' );
 
 $field->input( '-10' );
 $field->process;
-ok( !$field->has_errors, 'Test postive' );
+ok( !$field->has_errors, 'Test negative' );
 is( $field->value, -10, 'Test value == -10' );
 
 
@@ -88,16 +88,6 @@ TODO: {
     local $TODO = 'What if the datastore has a non integer?';
     is( $field->fif_value, '123', 'Test non-integer formatted ' );
 }
-
-
-
-
-
-
-
-
-
-
 
 
 1;

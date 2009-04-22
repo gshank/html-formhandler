@@ -45,7 +45,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    range_end     Range end for number fields    
    unique        Field should be unique in the database 
    unique_message If field is not unique, error message.
-   actions       Array of constraints/coercions
+   apply         Array of constraint/coercion/transformation actions
 
 =head2 Field attributes not set in a user form
 
@@ -155,7 +155,7 @@ These attributes are usually accessed in a subroutine or in a template.
 =head2 Methods to subclass from HTML::FormHandler::Model::DBIC
 
    validate_model    Add additional database type validation
-   update_model      To add additional actions on update
+   update_model      To perform additional database actions update
    guess_field_type  To create better field type assignment for auto forms 
      
 =head1 Useful in a template

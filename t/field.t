@@ -1,4 +1,4 @@
-use Test::More tests => 9;
+use Test::More tests => 8;
 
 use_ok('HTML::FormHandler::Field');
 
@@ -27,8 +27,4 @@ ok( $field->order == 3, 'field order' );
 
 $field->add_error('This is an error string');
 ok( $field->errors, 'added error' );
-
-$field->input('128');
-$field->input_to_value;
-ok( $field->value == 128, 'move input to value');
 

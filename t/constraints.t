@@ -32,16 +32,16 @@ BEGIN
    no Moose::Util::TypeConstraints;
    
    has_field 'empty_field' => (
-      actions => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
+      apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
    );
    has_field 'regex_error' => (
-      actions => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
+      apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
    );
    has_field 'regex_correct' => (
-      actions => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
+      apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
    );
    has_field 'set_error' => (
-      actions => [
+      apply => [
          {
             check   => [ 'aaa', 'bbb' ],
             message => 'Must be "aaa" or "bbb"'
@@ -49,7 +49,7 @@ BEGIN
       ]
    );
    has_field 'set_correct' => (
-      actions => [
+      apply => [
          {
             check   => [ 'aaa', 'bbb' ],
             message => 'Must be "aaa" or "bbb"'
@@ -57,7 +57,7 @@ BEGIN
       ]
    );
    has_field 'callback_error' => (
-      actions => [
+      apply => [
          {
              check => sub { if ( $_[0] =~ /(\d+)/ ) { return $1 > 10 } },
              message => 'Must contain number greater than 10',
@@ -65,7 +65,7 @@ BEGIN
       ]
    );
    has_field 'callback_pass' => (
-      actions => [
+      apply => [
          {
              check => sub { if ( $_[0] =~ /(\d+)/ ) { return $1 > 10 } },
              message => 'Must contain number greater than 10',
@@ -73,10 +73,10 @@ BEGIN
       ]
    );
    has_field 'less_than_ten_error' => (
-      actions => [ 'NaturalLessThanTen' ]
+      apply => [ 'NaturalLessThanTen' ]
    );
    has_field 'less_than_ten_pass' => (
-      actions => [ 'NaturalLessThanTen' ]
+      apply => [ 'NaturalLessThanTen' ]
    );
 }
 
