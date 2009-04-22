@@ -8,7 +8,7 @@ use DateTime;
 
 BEGIN
 {
-   plan tests => 10;
+   plan tests => 11;
 }
 
 {
@@ -98,6 +98,7 @@ $form->validate($params);
 
 is( $form->field('sprintf_filter')->value, '<1e+02>', 'sprintf filter' );
 ok( $form->field('date_time_error')->has_errors,      'DateTime error catched' );
+ok( $form->field('date_time_error')->errors->[0] ne 'field is invalid', 'error message');
 is( ref $form->field('date_time')->value, 'DateTime',   'DateTime object created' );
 ok( $form->field('coerce_error')->has_errors,     'no suitable coercion - error' );
 is( $form->field('coerce_pass')->value, 10, 'coercion filter' );

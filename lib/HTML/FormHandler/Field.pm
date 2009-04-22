@@ -747,9 +747,13 @@ See $form->language_handle for details. Returns undef.
 
 sub add_error
 {
-   my $self = shift;
+   my ($self, @message) = @_;
 
    my $lh;
+   unless( defined $message[0] )
+   {
+      @message = ('field is invalid');
+   }
    # Running without a form object?
    if ( $self->form )
    {
@@ -761,8 +765,9 @@ sub add_error
          || HTML::FormHandler::I18N->get_handle
          || die "Failed call to Locale::Maketext->get_handle";
    }
-   $self->push_errors( $lh->maketext(@_) ) unless $self->errors_on_parent;
-   $self->parent->push_errors( $lh->maketext(@_) ) if $self->parent;
+   my $message = $lh->maketext(@message);
+   $self->push_errors( $message ) unless $self->errors_on_parent;
+   $self->parent->push_errors( $message ) if $self->parent;
    return;
 }
 
@@ -825,6 +830,7 @@ sub validate_field
 sub _apply_actions
 {
    my $self  = shift;
+
    for my $action ( @{ $self->apply || [] } )
    {
       my $input = $self->value;
@@ -879,8 +885,8 @@ sub _apply_actions
       }
       elsif ( ref $action->{transform} eq 'CODE' )
       {
-         my $new_value;
-         eval { $new_value = $action->{transform}->($input); };
+$DB::single=1;
+         my $new_value = eval { $action->{transform}->($input) };
          if ($@)
          {
             $error_message = $@;
