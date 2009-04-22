@@ -84,6 +84,12 @@ augment 'process' => sub {
    $self->clear_fif;
    return unless $self->has_fields;
    $self->fields_validate;
+   my %value_hash;
+   for my $field ( $self->fields )
+   { 
+      $value_hash{ $field->accessor } = $field->value;
+   }
+   $self->value( \%value_hash );
 };
 
 

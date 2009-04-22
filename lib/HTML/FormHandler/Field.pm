@@ -792,16 +792,19 @@ sub process
 
    $field->clear_value;
 
+   $field->value( $field->input );
+
    # allow augment 'process' calls here
    inner();
 
    $field->_apply_actions;
 
+   return if $field->has_errors;
    return unless $field->validate;
    return unless $field->test_ranges;
 
    # Now move data from input -> value
-   $field->input_to_value;
+#   $field->input_to_value;
    $field->_build_fif if $field->can('_build_fif');
    return;
 }
@@ -814,7 +817,7 @@ sub validate_field
 sub _apply_actions
 {
    my $self  = shift;
-   my $input = $self->input;
+   my $input = $self->value;
    for my $action ( @{ $self->actions || [] } )
    {
       my $error_message;
@@ -841,7 +844,7 @@ sub _apply_actions
          $error_message ||= $tobj->validate($new_value);
          if ( !$error_message )
          {
-            $self->input($new_value);
+            $self->value($new_value);
          }
       }
       # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
@@ -868,8 +871,8 @@ sub _apply_actions
       }
       elsif ( ref $action->{transform} eq 'CODE' )
       {
-         my $tr_input;
-         eval { $tr_input = $action->{transform}->($input); };
+         my $new_value;
+         eval { $new_value = $action->{transform}->($input); };
          if ($@)
          {
             $error_message = $@;
@@ -878,8 +881,7 @@ sub _apply_actions
          {
             # need to put in value so we know to skip
             # the default creation of value
-            $self->input($tr_input);
-            $self->value($tr_input);
+            $self->value($new_value);
          }
       }
       if ( defined $error_message )
