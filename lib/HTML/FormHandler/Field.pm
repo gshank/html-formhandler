@@ -623,9 +623,9 @@ the value of the field), or a constraint which performes a 'smart match'
 on the value of the field.  Currently we implement the smart match
 in our code - but in the future when Perl 5.10 is more widely used we'll switch 
 to the core
-L<http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail> smart
-match operator.  The Moose type action first tries to coerce the value - then 
-it checks the result, so you can use it instead of both constraints and 
+L<http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail>
+smart match operator.  The Moose type action first tries to coerce the value - 
+then it checks the result, so you can use it instead of both constraints and 
 tranformations - TIMTOWTDI.
 
 Examples:
@@ -831,10 +831,17 @@ sub _apply_actions
 {
    my $self  = shift;
 
+   my $error_message;
+   local $SIG{__WARN__} = sub {
+      my $error = shift;
+      $error_message = $error;
+      return 1;
+   };
    for my $action ( @{ $self->apply || [] } )
    {
+      $error_message = undef;
       my $input = $self->value;
-      my $error_message;
+      # Moose constraints 
       if ( !ref $action )
       {
          my $tobj = Moose::Util::TypeConstraints::find_type_constraint($action)
@@ -862,6 +869,7 @@ sub _apply_actions
          }
       }
       # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
+      # actions in a hashref
       elsif ( ref $action->{check} eq 'CODE' )
       {
          if ( !$action->{check}->($input) )
@@ -885,11 +893,13 @@ sub _apply_actions
       }
       elsif ( ref $action->{transform} eq 'CODE' )
       {
-$DB::single=1;
-         my $new_value = eval { $action->{transform}->($input) };
+         my $new_value = eval { 
+            no warnings 'all';
+            $action->{transform}->($input);
+         };
          if ($@)
          {
-            $error_message = $@;
+            $error_message = $@ || 'error occurred';
          }
          else
          {
@@ -898,6 +908,7 @@ $DB::single=1;
             $self->value($new_value);
          }
       }
+$DB::single=1;
       if ( defined $error_message )
       {
          my @message = ($error_message);
@@ -907,7 +918,7 @@ $DB::single=1;
             {
                @message = @{ $action->{message} };
             }
-            else
+            elsif ( defined $action->{message} )
             {
                @message = ( $action->{message} );
             }

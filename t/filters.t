@@ -40,7 +40,8 @@ BEGIN
       apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
    );
    has_field 'date_time_error' => (
-      apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
+      apply => [ { transform => sub{ DateTime->new( $_[0] ) },
+                   message => 'Not a valid DateTime' } ],
    );
    has_field 'date_time' => ( 
       type => 'Compound',
@@ -98,7 +99,7 @@ $form->validate($params);
 
 is( $form->field('sprintf_filter')->value, '<1e+02>', 'sprintf filter' );
 ok( $form->field('date_time_error')->has_errors,      'DateTime error catched' );
-ok( $form->field('date_time_error')->errors->[0] ne 'field is invalid', 'error message');
+is( $form->field('date_time_error')->errors->[0], 'Not a valid DateTime', 'error message');
 is( ref $form->field('date_time')->value, 'DateTime',   'DateTime object created' );
 ok( $form->field('coerce_error')->has_errors,     'no suitable coercion - error' );
 is( $form->field('coerce_pass')->value, 10, 'coercion filter' );
