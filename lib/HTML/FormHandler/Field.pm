@@ -825,7 +825,6 @@ sub validate_field
 sub _apply_actions
 {
    my $self  = shift;
-$DB::single=1;
    for my $action ( @{ $self->apply || [] } )
    {
       my $input = $self->value;
