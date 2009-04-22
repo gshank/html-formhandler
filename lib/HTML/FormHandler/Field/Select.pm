@@ -44,7 +44,7 @@ has 'set_options' => ( isa => 'Str', is => 'rw',
        my $self = shift;
        my $name = $self->full_name;
        $name =~ s/\./_/g;
-       return 'validate_' . $name;
+       return 'options' . $name;
     }
 );
 sub _can_options

@@ -22,12 +22,12 @@ your fields (with many possible attributes), and initialization
 and validation routines. Because it's a Perl class, you have a lot of 
 flexibility.
 
-You can use your own Moose type constraints, listed in the 'actions' field array,
-to validate the fields (see L<HTML::FormHandler::Field/actions>).
-You can define your own L<HTML::FormHandler::Field> classes to
-create your own field types, and perform specialized validation. And you
-can subclass the methods in HTML::FormHandler::Model::DBIC and 
-HTML::FormHandler.
+You can use transformations. Moose type constraints, and coercions, listed 
+in the 'actions' field array, to validate the fields 
+(see L<HTML::FormHandler::Field/actions>).  You can define your own 
+L<HTML::FormHandler::Field> classes to create your own field types, and 
+perform specialized validation. And you can subclass the methods in 
+L<HTML::FormHandler::Model::DBIC> and L<HTML::FormHandler>.
 
 The L<HTML::FormHandler> package includes a working 
 example using a SQLite database and a number of forms in the test directory.
@@ -481,11 +481,21 @@ By default, the validation is simply to copy the data from the "input" to the "v
 field attribute, but you might have a field that must be converted from a text
 representation to an object (e.g. month, day, year to DateTime).
 
-=head2 Filters and Constraints
+=head2 Filters, transformations, and constraints
 
 L<HTML::FormHandler> has a flexible system of of filters and constraints. You can
 use Moose types to constrain the allowable values in a field and use coercions to
-inflate the HTML field input, such as for a DateTime.
+inflate the HTML field input, such as for a DateTime. You can also create
+non-Moose transformations and constraints. See the 'actions' attribute
+in L<HTML::FormHandler::Field>.
+
+You can also create a simple subroutine in your form class to perform validation.
+The default name of this subroutine is 'validate_<fieldname>', but the name can
+also be set in the field with the 'set_validate' attribute. 
+
+If you need to access form attributes such as the schema, the 'set_validate'
+subroutine may be preferable, but most validations can be performed using
+either method.
 
 =head2 Creating custom fields
 

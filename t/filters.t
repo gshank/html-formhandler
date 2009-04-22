@@ -8,7 +8,7 @@ use DateTime;
 
 BEGIN
 {
-   plan tests => 9;
+   plan tests => 10;
 }
 
 {
@@ -79,8 +79,7 @@ BEGIN
 my $form = My::Form->new();
 ok( $form, 'get form' );
 
-my $params = $form->validate(
-   {
+my $params = {
       sprintf_filter   => '100',
       date_time_error  => 'aaa',
       'date_time.year' => 2009,
@@ -94,8 +93,8 @@ my $params = $form->validate(
       'date_coercion_error.year' => 2009,
       'date_coercion_error.month' => 20,
       'date_coercion_error.day' => 16,
-   }
-);
+};
+$form->validate($params);
 
 is( $form->field('sprintf_filter')->value, '<1e+02>', 'sprintf filter' );
 ok( $form->field('date_time_error')->has_errors,      'DateTime error catched' );
@@ -106,4 +105,7 @@ is( ref $form->field('date_coercion_pass')->value, 'DateTime',   'values coerced
 ok( $form->field('date_coercion_error')->has_errors,     'DateTime coercion error' );
 my ( $message ) = $form->field('date_coercion_error')->errors;
 is( $message, 'This is not a correct date', 'Error message for coercion' );
+$params->{coerce_pass} = '10';
+$params->{sprintf_filter} = '<1e+02>';
+is_deeply( $form->fif, $params, 'fif is correct' );
 

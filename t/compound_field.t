@@ -1,4 +1,4 @@
-use Test::More tests => 15;
+use Test::More tests => 16;
 
 use lib 't/lib';
 
@@ -84,8 +84,8 @@ is( $dtform->value('start_date')->mdy, '10-02-2008', 'datetime value');
 
    has_field 'compound' => ( type => '+Field::MyCompound' );
 }
-my $form = Form::Start->new;
-ok( cform, 'Compound form with separate fields declarations created' );
+$form = Form::TestValues->new;
+ok( $form, 'Compound form with separate fields declarations created' );
 
 $params = { 
     'compound.aaa' => 'aaa',
@@ -93,5 +93,7 @@ $params = {
 };
 $form->validate( params => $params );
 is_deeply( $form->values, { compound => { aaa => 'aaa', bbb => 'bbb' } }, 'Compound with separate fields - values in hash' );
+is_deeply( $form->fif, $params, 'get fif from compound field' );
+
 
 

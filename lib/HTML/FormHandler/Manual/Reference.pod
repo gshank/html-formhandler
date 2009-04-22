@@ -27,7 +27,6 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    widget        Used by templates to decide widget usage. Set by field classes.
    style         Style to use for css formatting. Not used by FormHandler; for templates.
    title         For HTML titles. Not used by FormHandler.
-   value_sprintf Sprintf format to use when converting input to value
    password      Remove from params and do not display in forms. 
    disabled      HTML hint to not do updates (for templates) Init: 0
    readonly      HTML hint to make the field readonly (for templates) Init: 0 
@@ -46,6 +45,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    range_end     Range end for number fields    
    unique        Field should be unique in the database 
    unique_message If field is not unique, error message.
+   actions       Array of constraints/coercions
 
 =head2 Field attributes not set in a user form
 
@@ -61,8 +61,6 @@ These attributes are usually accessed in a subroutine or in a template.
 
    validate          Main part of Field subclasses. Generic validation that
                        applies to all fields of this type.
-   trim_value        If you don't want the default trimming 
-   input_to_value    To process the field before storing, after validation
    Add your own field attributes in your custom Field classes.
 
 =head2 Miscellaneous field subroutines
@@ -108,7 +106,7 @@ These attributes are usually accessed in a subroutine or in a template.
    params         HTTP parameters 
    fields         Field array
    required       Array of required fields
-   parent         For compound/related fields 
+   parent         For compound/related fields: parent field reference 
    active_column  The 'active' column for all select lists in the form
    html_prefix    Flag to prefix html field names with the form name
    submit

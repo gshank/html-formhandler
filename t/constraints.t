@@ -3,7 +3,7 @@ use lib 't/lib';
 
 BEGIN
 {
-   plan tests => 11;
+   plan tests => 12;
 }
 
 {
@@ -83,8 +83,7 @@ BEGIN
 my $form = My::Form->new();
 ok( $form, 'get form' );
 
-my $params = $form->validate(
-   {
+my $params = {
       empty_field              => '',
       regex_error              => 'bbb',
       regex_correct            => 'bbb aaa',
@@ -94,8 +93,8 @@ my $params = $form->validate(
       callback_pass            => 'asdf 20 asd',
       less_than_ten_error => 10,
       less_than_ten_pass  => 9,
-   }
-);
+};
+$form->validate($params);
 # ok( $form->field('empty_field')->has_errors, 'empty does not pass required constraint' );
 ok( $form->field('regex_error')->has_errors,    'regexp constraint - error' );
 ok( !$form->field('regex_correct')->has_errors, 'regexp constraint - pass' );
@@ -109,3 +108,5 @@ my ( $message ) = $form->field('less_than_ten_error')->errors;
 is( $message, "This number (10) is not less than ten!", 'type constraint - error message' );
 ok( !$form->field('less_than_ten_pass')->has_errors,     'type constraint - pass' );
 #warn Dumper( $form ); use Data::Dumper;
+delete $params->{empty_field};
+is_deeply( $form->fif, $params, 'fif is correct');

@@ -687,7 +687,6 @@ sub validate_form
    my $self = shift;
    my $params = $self->params; 
    $self->set_dependency;    # set required dependencies
-
    foreach my $field ( $self->fields )
    {
       # Trim values and move to "input" slot
@@ -870,7 +869,7 @@ The fif value for a 'title' field in a TT form:
 sub fif
 {
    my $self = shift;
-
+$DB::single=1;
    my $prefix = '';
    $prefix = $self->name . "." if $self->html_prefix;
    my $params;
@@ -881,10 +880,10 @@ sub fif
       my $fif = $field->fif;
       if ( ref $fif eq 'HASH' )
       {
-#         foreach my $key ( keys %{$fif} )
-#         {
-#            $params->{ $prefix . $key } = $fif->{$key};
-#         }
+          foreach my $key ( keys %{$fif} )
+          {
+             $params->{ $prefix . $key } = $fif->{$key};
+          }
       }
       else
       {
