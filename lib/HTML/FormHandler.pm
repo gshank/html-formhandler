@@ -663,20 +663,13 @@ The method does the following:
  
     1) sets required dependencies
     2) trims params and saves in field 'input' attribute
-    3) calls the field's 'process' routine which:
-        1) validates that required fields have a value
-        2) calls the field's 'validate' routine (the one that is provided
-           by custom field classes)
-        3) calls 'input_to_value' to move the data from the 'input' attribute 
-           to the 'value' attribute if it hasn't happened already in 'validate'
-    4) calls the form's validate_$fieldname, if the method exists and
-       if there's a value in the field
-    5) calls cross_validate for validating fields that might be blank and
+    3) calls the 'fields_validate' routine from HTML::FormHandler::Fields
+    4) calls cross_validate for validating fields that might be blank and
        checking more complex dependencies. (If this field, then not that field...) 
-    6) calls the model's validation method. By default, this only checks for
+    5) calls the model's validation method. By default, this only checks for
        database uniqueness.
-    7) counts errors, sets 'ran_validation' and 'validated' flags
-    8) returns 'validated' flag
+    6) counts errors, sets 'ran_validation' and 'validated' flags
+    7) returns 'validated' flag
 
 Returns true if validation succeeds, false if validation fails.
 
@@ -692,6 +685,7 @@ sub validate_form
       # Trim values and move to "input" slot
       if ( exists $params->{$field->full_name} )
       {
+         # trim_value may be replaced by some kind of filter in the future
          $field->input( $field->trim_value( $params->{$field->full_name} ) )
       }
       elsif ( $field->has_input_without_param )

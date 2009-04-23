@@ -23,7 +23,7 @@ and validation routines. Because it's a Perl class, you have a lot of
 flexibility.
 
 You can use transformations. Moose type constraints, and coercions, listed 
-in the 'apply' field array, to validate or inflate the fields 
+in the field's 'apply' attribute, to validate or inflate the fields 
 (see L<HTML::FormHandler::Field/apply>).  You can define your own 
 L<HTML::FormHandler::Field> classes to create your own field types, and 
 perform specialized validation. And you can subclass the methods in 
@@ -253,16 +253,18 @@ database, such as L<HTML::FormHandler::Model::DBIC> or
 L<HTML::FormHandler::Model::CDBI>.
 
 When using a database model, form field values for the row are retrieved from
-the database using the field names as database class accessors. 
+the database using the field 'accessor' attributes (defaults to fieldname) 
+as database class accessors. 
 FormHandler will use relationships to populate single and multiple 
 selection lists, and validate input. It doesn't yet do anything with other
-relationships, although it will return a hash of the relationship.
+relationships (though there are plans), but it will return a hash of the 
+relationship created with HashRefInflator.
 
-You can pass in either the primary key or a row object to the form. If a 
-primary key (item_id) is passed in, the model will use the item_class 
-(DBIC source name) to fetch the row from the database. If you pass in
-a row object (item), the schema, source_class, and item_id will be set 
-from the row. 
+You can pass in either the primary key and or a row object to the form. If a 
+primary key (item_id) is passed in, you must also provide the schema. 
+The model will use the item_class (DBIC source name) to fetch the row from the 
+database. If you pass in a row object (item), the schema, source_class, and 
+item_id will be set from the row. 
 
 The C<< $form->process >> or C<< $form->update >> methods will validate 
 the parameters and then update or create the database row object.  
@@ -292,15 +294,18 @@ using one of the methods mentioned above.
 
 =head1 has_field
 
-This is not actually a Moose attribute. It is just sugar to allow the
+This is not actually a Moose attribute. It is sugar to allow the
 declarative specification of fields. It will not create accessors for the
 fields. The 'type' is not a Moose type, but an L<HTML::FormHandler::Field>
-type. To use this sugar, you must do 
+class name. To use this sugar, you must do 
 
    use HTML::FormHandler::Moose;
 
-instead of C< use Moose; >. Don't forget C< no HTML::FormHandler::Moose; > at
-the end of the package. Use the syntax:
+instead of C< use Moose; >. (Moose best practice advises putting 
+C< no HTML::FormHandler::Moose; > or C<< use namespace:clean -except => 'meta' >> at
+the end of the package to keep the namespace clean of imported methods.) 
+
+To declare fields use the syntax:
 
    has_field 'title' => ( type => 'Text', required => 1 );
    has_field 'authors' => ( type => 'Select' );
@@ -352,6 +357,14 @@ classes using 'with':
    no HTML::FormHandler::Moose;
    1;   
    
+If you prefix the field name with a '+' the attributes in this definition
+will modify existing attributes or be added to an existing field definition: 
+
+    has_field 'user' => ( type => 'Text', ...., required => 1 );
+    ....
+    has_field '+user' => ( required => 0 );
+
+
 =head1 The form field_list
 
 Returns a hashref of field definitions.
@@ -430,6 +443,8 @@ The 'guess_field_type' method could be customized to provide more
 sophisticated determination of types. For the DBIC model, the schema
 class must be available when the auto fields are constructed.
 
+Note that field_lists do not have the same flexibility in subclassing
+that 'has_field' fields do.
 
 =head1 Fields
 
@@ -458,18 +473,15 @@ be set with the form's "field_name_space" attribute:
     has_field 'name' => ( type => 'Text' ); # HTML::FormHandler::Field::Text
     has_field 'foo'  => ( type => +Foo' );  # MyApp::Form::Field::Foo
 
-The most basic type is "Text", which takes a single scalar value.  A "Select"
+The most basic type is "Text", which takes a single scalar value. (If the
+type of a field is not specified, it will be set to 'Text'.)  A "Select"
 class is similar, but its value must be a valid choice from a list of options.
 A "Multiple" type is like "Select" but it allows selecting more than one value
 at a time.
 
 Each field has a "value" method, which is the field's internal value.  This is
 the value your database object would have (e.g. scalar, boolean 0 or 1,
-DateTime object).  A field's internal value is converted to the external value
-by use of the field's C< fif_value > method.  This method returns a hash which
-allows a single internal value to be made up of multiple fields externally.
-For example, a DateTime object internally might be formatted as a day, month, and
-year externally.
+DateTime object).  
 
 When data is passed in to validate the form, it is trimmed of leading and trailing
 whitespace by the base field class and placed in the field's "input" attribute.  
@@ -479,7 +491,8 @@ it's this internal value that is stored or used by your application.
 
 By default, the validation is simply to copy the data from the "input" to the "value"
 field attribute, but you might have a field that must be converted from a text
-representation to an object (e.g. month, day, year to DateTime).
+representation to an object (e.g. month, day, year to DateTime). These sorts of
+conversions can also be done by Moose type constraints or apply transformations.
 
 =head2 Filters, transformations, and constraints
 
@@ -488,6 +501,13 @@ use Moose types to constrain the allowable values in a field and use coercions t
 inflate the HTML field input, such as for a DateTime. You can also create
 non-Moose transformations and constraints. See the 'apply' attribute
 in L<HTML::FormHandler::Field>.
+
+   has_field 'some_field' => ( apply => [ 'MooseType', 
+       { transform => sub {...}, message => 'xxxx' },
+       { check => sub { ... }, message => 'xxxx' } ] );
+
+The actions in the 'apply' array will be performed in the order they are
+specified, allowing fine-grained control over inflation and validation.
 
 You can also create a simple subroutine in your form class to perform validation.
 The default name of this subroutine is 'validate_<fieldname>', but the name can
@@ -500,7 +520,9 @@ either method.
 =head2 Creating custom fields
 
 Subclass a custom field from L<HTML::FormHandler::Field>, or one of the
-existing subclasses. 
+existing subclasses. Almost everything that is done in a custom field
+class can also be done declaratively. The advantage of a field class
+is that it can simplify declaration of often-repeated sets of attributes. 
 
 The simplest subclasses contain only a 'validate' routine or an 'apply' attribute,
 which is called by the base Field class from 'process'. Look at 
@@ -517,13 +539,6 @@ override the 'build_options' builder for the 'options' array, like
 L<HTML::FormHandler::Field::IntRange>. A field may add additional 
 attributes, such as 'label_format' in L<HTML::FormHandler::Field::IntRange>,
 or set the 'required_message'.
-
-Some fields subclass 'input_to_value' to change the way that the form
-input is converted to the value, in addition to providing 'fif_value'
-to convert the other way.
-
-The DateTime field even subclasses 'process' in order to skip
-the other standard validations.
 
 An alternative to new field classes for many field validations might
 be roles with collections of validations.

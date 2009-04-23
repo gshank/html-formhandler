@@ -137,8 +137,22 @@ has 'value' => (
    }
 );
 
+=head2 parent
+
+A reference to the parent of this field.
+
+=cut
+
 has 'parent' => ( is => 'rw', predicate => 'has_parent' );
+
+=head2 errors_on_parent
+
+Flag indicating that errors should not be set on this field class
+
+=cut
+
 has 'errors_on_parent' => ( isa => 'Bool', is => 'rw' );
+
 sub has_fields { }
 
 =head2 input
@@ -295,7 +309,7 @@ sub build_prename
 {
    my $self = shift;
    my $prefix = $self->form ? $self->form->name . "." : '';
-   return $prefix . $self->name;
+   return $prefix . $self->full_name;
 }
 
 =head2 widget
@@ -420,12 +434,12 @@ has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
 
 sub value_sprintf
 {
-   die "The 'value_sprintf' attribute has been removed. Please use a Moose coercion instead.";
+   die "The 'value_sprintf' attribute has been removed. Please use a transformation instead.";
 }
 
 sub input_to_value
 {
-   die "The 'input_to_value' method has been removed.";
+   die "The 'input_to_value' method has been removed. Use a transformation or move to the 'validate' method.";
 }
 
 =head2 id, build_id
@@ -804,10 +818,7 @@ sub process
 
    $field->clear_value;
 
-   # the trim_value here should be removed after we have support
-   # for default actions, when it should be done in '_apply_actions'
-   # and deprecated
-   $field->value( $field->trim_value($field->input) );
+   $field->value( $field->input );
 
    # allow augment 'process' calls here
    inner();
@@ -1023,22 +1034,9 @@ sub input_defined
    return defined $value && $value =~ /\S/;
 }
 
-=head2 fif_value
-
-A field class can use this method to format an internal
-value into hash for form parameters.
-
-A Date field subclass might expand the value into:
-
-    my $name = $field->name;
-    return (
-        $name . 'd'  => $day,
-        $name . 'm' => $month,
-        $name . 'y' => $year,
-    );
-
-=cut
-
+# removed pod to discourage use of fif_value
+# This method will probably be replaced by deflate or something
+# similar in the near future
 sub fif_value
 {
    my ( $self, $value ) = @_;

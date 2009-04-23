@@ -2,18 +2,17 @@ package HTML::FormHandler::Field::WeekdayStr;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Weekday';
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 __PACKAGE__->meta->make_immutable;
 
 # Join the list of values into a single string
 
-sub input_to_value {
-    my $field = shift;
-
-    my $input = $field->input;
-
-    return $field->value( join '', ref $input ? @{$input} : $input );
+sub validate
+{
+   my $field = shift;
+   my $input = $field->input;
+   $field->value( join '', ref $input ? @{$input} : $input );
 }
 
 sub fif_value {
