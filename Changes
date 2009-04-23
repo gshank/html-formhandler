@@ -1,5 +1,11 @@
 Revision history for HTML::FormHandler 
 
+0.20 Thu Apr 23, 2009, 17:00
+    Added apply constraints, transforms, checks. Refactored code for future
+    use of nested fields. Improvements to compound fields. Bug fix for
+    checkboxes. Added ability to redefine attributes of existing fields
+    with '+fieldname'. 
+
 0.19 Thu Mar 05, 2009, 17:00
     Fix problem with empty values from form. Add Compound field.
 

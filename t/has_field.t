@@ -1,4 +1,4 @@
-use Test::More tests => 18;
+use Test::More tests => 20;
 
 use lib 't/lib';
 
@@ -7,8 +7,10 @@ use_ok( 'HTML::FormHandler' );
 use_ok( 'Form::Two' );
 my $form = Form::Two->new;
 ok( $form, 'get subclassed form' );
-is( $form->field('optname')->temp, 'Txxt', 'new field');
+is( $form->field('optname')->temp, 'Txxt', 'field new attribute');
 ok( $form->field('reqname'), 'get old field' );
+is( $form->field('reqname')->temp, 'Abc', 'new attribute' );
+is( $form->field('reqname')->required, 1, 'old attribute');
 ok( $form->field('fruit'), 'fruit field' );
 
 use_ok( 'Form::Test' );

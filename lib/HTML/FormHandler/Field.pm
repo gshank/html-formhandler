@@ -908,7 +908,6 @@ sub _apply_actions
             $self->value($new_value);
          }
       }
-$DB::single=1;
       if ( defined $error_message )
       {
          my @message = ($error_message);

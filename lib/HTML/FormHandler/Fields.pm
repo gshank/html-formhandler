@@ -87,7 +87,7 @@ sub build_fields
       my @names = split /\./, $field->name;
       my $simple_name = pop @names;
       my $parent_name = pop @names;
-      my $parent = $self->field($parent_name);
+      my $parent = $self->field_exists($parent_name);
       next unless $parent;
       $field->parent($parent);
       $field->name( $simple_name ); 
@@ -159,10 +159,33 @@ sub _build_fields
    return;
 }
 
+# this looks for existing fields by $name or full_name
+# some fields don't have their names adjusted until later
+# (duration.month) in build_fields so some fields might not be found.
+# But parent field might not exist yet, so can't do here.
+# catch 22? 
 sub _set_field
 {
    my ( $self, $name, $type, $required ) = @_;
 
+   if( $name =~ /^\+(.*)/ )
+   {
+      $name = $1;
+      my $existing_field = $self->field_exists($name);
+      if( $existing_field )
+      {
+         foreach my $key ( keys %{$type} )
+         {
+            $existing_field->$key( $type->{$key} )
+               if $existing_field->can($key);
+         }
+      }
+      else
+      {
+         warn "HFH: field $name does not exist. Cannot update.";
+      }
+      return;
+   }
    my $field = $self->make_field( $name, $type );
    return unless $field;
    $field->required($required) unless ( $field->required == 1 );
