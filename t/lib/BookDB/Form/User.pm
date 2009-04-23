@@ -9,6 +9,13 @@ has_field 'fav_cat' => ( label => 'Favorite Book Category' );
 has_field 'fav_book' => ( label => 'Favorite Book' );
 has_field 'occupation';
 has_field 'country' => ( type => 'Select' );
+has_field 'birthdate' => ( 
+    type => 'Compound',
+    apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
+);
+has_field 'birthdate.year' => ( type => 'Text', );
+has_field 'birthdate.month' => ( type => 'Text', );
+has_field 'birthdate.day' => ( type => 'Text', );
 
 
 sub validate_occupation

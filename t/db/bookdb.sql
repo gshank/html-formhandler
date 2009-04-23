@@ -5,13 +5,14 @@ CREATE TABLE user (
    fav_cat VARCHAR(32),
    fav_book VARCHAR(32),
    occupation VARCHAR(32),
-   country_iso char(2)
+   country_iso char(2),
+   birthdate DATETIME
 );
-INSERT INTO "user" VALUES ( 1, 'jdoe', 'Sci-Fi', 'Necronomicon', 'management', 'US' );
-INSERT INTO "user" VALUES ( 2, 'muffet', 'Fantasy', 'Cooking Fungi', 'none', 'GB' );
-INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'programmer', 'US' );
-INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed', 'RU' );
-INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor', 'PL' );
+INSERT INTO "user" VALUES ( 1, 'jdoe', 'Sci-Fi', 'Necronomicon', 'management', 'US', '1970-04-23 21:06:00' );
+INSERT INTO "user" VALUES ( 2, 'muffet', 'Fantasy', 'Cooking Fungi', 'none', 'GB', '1983-10-24 22:22:22' );
+INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'programmer', 'US', '1973-05-24 22:22:22' );
+INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed', 'RU', '1965-03-24 22:22:22' );
+INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor', 'PL', '1977-10-24 22:22:22' );
 
 CREATE TABLE book (
     id INTEGER PRIMARY KEY,
