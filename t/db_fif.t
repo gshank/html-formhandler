@@ -7,10 +7,11 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 3;
+   plan tests => 6;
 }
 
 use BookDB::Form::User;
+use BookDB::Form::User2;
 use BookDB::Schema::DB;
 use BookDB::Form::BookWithOwner;
 
@@ -21,10 +22,16 @@ my $form;
 my $options;
 
 $form = BookDB::Form::User->new( item => $user );
-my $fif = $form->fif;
 is( $form->field( 'birthdate' )->field( 'year' )->fif, 1970, 'Year loaded' );
 is( $form->field( 'birthdate' )->field( 'month' )->fif, 4, 'Month loaded' );
 is( $form->field( 'birthdate' )->field( 'day' )->fif, 23, 'Day loaded' );
 
-print Dumper( $form->fif ); use Data::Dumper;
+my $fif = $form->fif;
+#print Dumper( $form->fif ); use Data::Dumper;
+
+$form = BookDB::Form::User2->new( item => $user );
+is( $form->field( 'birthdate' )->field( 'year' )->fif, 1000, 'Year deflated' );
+is( $form->field( 'birthdate' )->field( 'month' )->fif, 1, 'Month deflated' );
+is( $form->field( 'birthdate' )->field( 'day' )->fif, 5, 'Day deflated' );
+
 

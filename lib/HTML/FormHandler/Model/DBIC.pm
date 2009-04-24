@@ -417,8 +417,7 @@ sub lookup_options
 
 =head2 init_value
 
-This method sets a field's value (for $field->value) with
-either a scalar or an array ref from the object stored in $form->item.
+This method sets a field's value (for $field->value).
 
 This method is not called if a method "init_value_$field_name" is found 
 in the form class - that method is called instead.
@@ -428,78 +427,26 @@ This allows overriding specific fields in your form class.
 
 sub init_value
 {
-   my ( $self, $field, $item ) = @_;
-
-   return unless $item;
-   return if $field->writeonly;
-   my $accessor = $field->accessor;
-   my @values;
-   if( ref($item) eq 'HASH' && exists $item->{$accessor} )
-   {
-      @values = $item->{$accessor};
+   my ( $self, $field, $value ) = @_;
+   if( ref $value eq 'ARRAY' ){
+       $value = [ map { $self->_fix_value( $field, $_ ) } @$value ];
    }
-   elsif( !$item->isa('DBIx::Class') && $item->can($accessor) )
-   {
-      @values = $item->$accessor;
+   else{
+       $value = $self->_fix_value( $field, $value );
    }
-   elsif( $item->isa('DBIx::Class') && $item->can($accessor) )
-   {
-
-      my $source = $item->result_source;
-      if ( $source->has_relationship($accessor) )
-      {
-         if ($field->can('options'))
-         {
-           my $rel_info = $source->relationship_info($accessor);
-           if( $rel_info->{attrs}->{accessor} eq 'multi' ){
-                @values = map{ $_->id } $item->$accessor();
-            }
-            else{
-                @values = ($item->$accessor());
-                if( blessed $values[0] && $values[0]->isa('DBIx::Class::Row')){
-                    $values[0] = $values[0]->id;
-                }
-            }
-         }
-         else # some other relationship (unsupported)
-         {
-            my $rel_info = $source->relationship_info($accessor);
-            if ( $rel_info->{attrs}->{accessor} eq 'single' ||
-                 $rel_info->{attrs}->{accessor} eq 'filter' )
-            {
-               @values = $item->$accessor->get_inflated_columns; 
-            }
-            else # multi relationship (unsupported)
-            {
-               my $rs = $item->$accessor;
-               $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
-               @values = $rs->all;
-            }
-         }
-      }
-      elsif ( $source->has_column($accessor) )
-      {
-         @values = $item->$accessor; 
-      }
-      elsif ( $field->can('multiple' ) && $field->multiple == 1 )
-      {
-         return unless $item->id; 
-         my @rows = $item->$accessor->all;
-         @values = map { $_->id } @rows;
-      }
-      else    # neither a column nor a rel
-      {
-         @values = $item->$accessor;
-      }
-   } 
-   else
-   {
-      return;
-   }
-   my $value = @values > 1 ? \@values : shift @values;
    $field->init_value($value);
    $field->value($value);
 }
+
+sub _fix_value 
+{
+   my ( $self, $field, $value ) = @_;
+   if( blessed $value && $value->isa('DBIx::Class') ){
+       return $value->id;
+   }
+   return $value;
+}
+
 
 sub _get_pk_for_related {
     my ( $object, $relation ) = @_;
