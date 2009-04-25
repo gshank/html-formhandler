@@ -7,11 +7,12 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 6;
+   plan tests => 7;
 }
 
 use BookDB::Form::User;
 use BookDB::Form::User2;
+use BookDB::Form::User3;
 use BookDB::Schema::DB;
 use BookDB::Form::BookWithOwner;
 
@@ -34,4 +35,6 @@ is( $form->field( 'birthdate' )->field( 'year' )->fif, 1000, 'Year deflated' );
 is( $form->field( 'birthdate' )->field( 'month' )->fif, 1, 'Month deflated' );
 is( $form->field( 'birthdate' )->field( 'day' )->fif, 5, 'Day deflated' );
 
+$form = BookDB::Form::User3->new( item => $user );
+is( $form->field( 'birthdate' )->fif, '1970-04-23', 'DateTime deflated to text' );
 

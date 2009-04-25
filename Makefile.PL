@@ -25,6 +25,7 @@ recommends 'Test::WWW::Mechanize::Catalyst' => '0.50';
 # things the tests need
 test_requires 'Test::More'      => '0.77';
 test_requires 'DateTime::Format::MySQL';
+test_requires 'DateTime::Format::W3CDTF' => 0;
 
 tests_recursive();
 
