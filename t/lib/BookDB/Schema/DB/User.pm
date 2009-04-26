@@ -20,6 +20,8 @@ __PACKAGE__->add_columns(
   { data_type => "VARCHAR", is_nullable => 0, size => 32 },
   "country_iso",
   { data_type => "character", default_value => undef, is_nullable => 1, size => 2, },
+  "birthdate",
+  { data_type => "DATETIME", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("user_id");
 #__PACKAGE__->has_many(

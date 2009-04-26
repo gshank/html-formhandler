@@ -707,6 +707,20 @@ has 'apply' => (
    }
 );
 
+has 'deflations' => (
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef',
+   is         => 'rw',
+   auto_deref => 1,
+   default    => sub { [] },
+   provides   => {
+      'push'  => 'push_deflation',
+      'count' => 'num_deflations',
+      'empty' => 'has_deflations',
+      'clear' => 'clear_deflations',
+   }
+);
+
 =head1 METHODS
 
 =head2 new [parameters]
@@ -936,6 +950,17 @@ sub _apply_actions
          $self->add_error(@message);
       }
    }
+}
+
+sub _apply_deflations
+{
+   my ( $self, $value )  = @_;
+
+   for my $deflation ( @{ $self->deflations || [] } )
+   {
+       $value = $deflation->($value);
+   }
+   return $value;
 }
 
 =head2 validate

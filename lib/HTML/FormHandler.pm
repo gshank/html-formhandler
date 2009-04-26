@@ -1134,15 +1134,17 @@ sub init_from_object
    warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
    for my $field ( $node->fields )
    {
+      next if $field->parent && $field->parent != $node;
+      next if ref $item eq 'HASH' && !exists $item->{$field->accessor};
+      my $value = $self->_get_value( $field, $item );
+      $value = $field->_apply_deflations( $value );
       if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
-          my $accessor = $field->accessor;
-          my $new_item = $item->$accessor;
-          $self->init_from_object( $field, $new_item );
+         $self->init_from_object( $field, $value );
       }
       else{
-         my @values;
          if ( $field->_can_init )
          {
+            my @values;
             @values = $field->_init( $field, $item );
             my $value = @values > 1 ? \@values : shift @values;
             $field->init_value($value) if $value;
@@ -1150,19 +1152,13 @@ sub init_from_object
          }
          else
          {
-            $self->init_value( $field, $item );
+            $self->init_value( $field, $value );
          }
-     }
+      }
    }
 }
 
-=head2 init_value
-
-This method populates a form field's value from the item object.
-
-=cut
-
-sub init_value
+sub _get_value
 {
    my ( $self, $field, $item ) = @_;
    my $accessor = $field->accessor;
@@ -1181,6 +1177,12 @@ sub init_value
       return;
    }
    my $value = @values > 1 ? \@values : shift @values;
+   return $value;
+}
+
+sub init_value
+{
+   my ( $self, $field, $value ) = @_;
    $field->init_value($value);
    $field->value($value);
 }
