@@ -36,7 +36,7 @@ my $field = HTML::FormHandler::Field::Text->new( name => 'Testfield' );
 
 $form->add_field($field);
 
-ok( $form->field_exists('Testfield'), 'form now has test field' );
+ok( $form->field('Testfield'), 'form now has test field' );
 
 
 

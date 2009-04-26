@@ -125,7 +125,6 @@ These attributes are usually accessed in a subroutine or in a template.
    sorted_fields   The sorted array of fields
    field( $name )  Returns a field object
    value( $name )  Returns the value for a field object
-   field_exists( $name ) Returns a field object if it exists, otherwise undef
    values          Returns a hashref of values (with accessor keys)
    fif             Returns a hashref for filling in form  
 

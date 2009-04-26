@@ -52,14 +52,14 @@ sub build_fields
    my $self = shift;
 
    my $meta_flist = $self->_build_meta_field_list;
-   $self->_process_field_array( $meta_flist, 0 ) if $meta_flist; 
-   $self->_process_field_list( $self->field_list) 
-       if( $self->can('field_list') && $self->has_field_list );
+   $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
+   $self->_process_field_list( $self->field_list )
+      if ( $self->can('field_list') && $self->has_field_list );
    return unless $self->has_fields;
 
    # get highest order number
    my $order = 0;
-   foreach my $field ( $self->fields)
+   foreach my $field ( $self->fields )
    {
       $order++ if $field->order > $order;
    }
@@ -68,21 +68,21 @@ sub build_fields
    my @expand_fields;
    foreach my $field ( $self->fields )
    {
-      $field->order( $order ) unless $field->order;
+      $field->order($order) unless $field->order;
       $order++;
       # collect child references in parent field
       push @expand_fields, $field if $field->name =~ /\./;
    }
    @expand_fields = sort { $a->name cmp $b->name } @expand_fields;
-   foreach my $field ( @expand_fields )
+   foreach my $field (@expand_fields)
    {
-      my @names = split /\./, $field->name;
+      my @names       = split /\./, $field->name;
       my $simple_name = pop @names;
       my $parent_name = pop @names;
-      my $parent = $self->field_exists($parent_name);
+      my $parent      = $self->field($parent_name);
       next unless $parent;
       $field->parent($parent);
-      $field->name( $simple_name ); 
+      $field->name($simple_name);
       $parent->add_field($field);
    }
 
@@ -97,9 +97,9 @@ sub _process_field_list
    $self->_process_field_array( $self->_hashref_fields( $flist->{'optional'}, 0 ) )
       if $flist->{'optional'};
    $self->_process_field_array( $self->_hashref_fields( $flist->{'fields'} ) )
-      if ($flist->{'fields'} && ref $flist->{'fields'} eq 'HASH');
+      if ( $flist->{'fields'} && ref $flist->{'fields'} eq 'HASH' );
    $self->_process_field_array( $self->_array_fields( $flist->{'fields'} ) )
-      if ($flist->{'fields'} && ref $flist->{'fields'} eq 'ARRAY');
+      if ( $flist->{'fields'} && ref $flist->{'fields'} eq 'ARRAY' );
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_required'}, 1 ) )
       if $flist->{'auto_required'};
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_optional'}, 0 ) )
@@ -113,51 +113,54 @@ sub _build_meta_field_list
    foreach my $sc ( reverse $self->meta->linearized_isa )
    {
       my $meta = $sc->meta;
-      if( $meta->can('calculate_all_roles') )
+      if ( $meta->can('calculate_all_roles') )
       {
          foreach my $role ( $meta->calculate_all_roles )
          {
             if ( $role->can('field_list') && $role->has_field_list )
             {
-               push @field_list, @{$role->field_list};
+               push @field_list, @{ $role->field_list };
             }
          }
       }
       if ( $meta->can('field_list') && $meta->has_field_list )
       {
-         push @field_list, @{$meta->field_list};
+         push @field_list, @{ $meta->field_list };
       }
    }
    return \@field_list if scalar @field_list;
 }
 
+# munges the field_list auto fields into an array of field attributes
 sub _auto_fields
 {
    my ( $self, $fields, $required ) = @_;
 
    my @new_fields;
-   foreach my $name ( @$fields )
+   foreach my $name (@$fields)
    {
-      push @new_fields, { 
-         name => $name,
-         type => $self->guess_field_type($name),
+      push @new_fields,
+         {
+         name     => $name,
+         type     => $self->guess_field_type($name),
          required => $required
-      }
+         };
    }
    return \@new_fields;
 }
 
+# munges the field_list hashref fields into an array of field attributes
 sub _hashref_fields
 {
    my ( $self, $fields, $required ) = @_;
    my @new_fields;
-   while ( my ($key, $value) = each %{$fields} )
+   while ( my ( $key, $value ) = each %{$fields} )
    {
       unless ( ref $value eq 'HASH' )
       {
          $value = { type => $value };
       }
-      if( defined $required )
+      if ( defined $required )
       {
          $value->{required} = $required;
       }
@@ -166,12 +169,13 @@ sub _hashref_fields
    return \@new_fields;
 }
 
+# munges the field_list array into an array of field attributes
 sub _array_fields
 {
    my ( $self, $fields ) = @_;
 
    my @new_fields;
-   while( @$fields )
+   while (@$fields)
    {
       my $name = shift @$fields;
       my $attr = shift @$fields;
@@ -184,56 +188,18 @@ sub _array_fields
    return \@new_fields;
 }
 
-sub _build_fields
-{
-   my ( $self, $fields, $required, $auto ) = @_;
-
-   warn "HFH: build_fields for ", $self->name, ", ", ref($self), "\n" if
-      $self->form && $self->form->verbose;
-   return unless $fields;
-   my $field;
-   my $name;
-   my $type;
-   if ($auto)    # an auto array of fields
-   {
-      foreach $name (@$fields)
-      {
-         $type = $self->guess_field_type($name);
-         croak "Could not guess field type for field '$name'" unless $type;
-         $self->_set_field( $name, $type, $required );
-      }
-   }
-   elsif ( ref($fields) eq 'ARRAY' )    # an array of fields
-   {
-      while (@$fields)
-      {
-         $name = shift @$fields;
-         $type = shift @$fields;
-         $self->_set_field( $name, $type, $required );
-      }
-   }
-   else                                 # a hashref of fields
-   {
-      while ( ( $name, $type ) = each %$fields )
-      {
-         $self->_set_field( $name, $type, $required );
-      }
-   }
-   return;
-}
-
 sub _process_field_array
 {
    my ( $self, $fields ) = @_;
 
-   my $num_fields = scalar @$fields;
-   my $num_dots = 0;
+   my $num_fields   = scalar @$fields;
+   my $num_dots     = 0;
    my $count_fields = 0;
-   while ($count_fields < $num_fields )
+   while ( $count_fields < $num_fields )
    {
-      foreach my $field ( @$fields )
+      foreach my $field (@$fields)
       {
-         my $count = ($field->{name} =~ tr/\.//);
+         my $count = ( $field->{name} =~ tr/\.// );
          next unless $count == $num_dots;
          $self->_set_field($field);
          $count_fields++;
@@ -247,16 +213,16 @@ sub _process_field_array
 # some fields don't have their names adjusted until later
 # (duration.month) in build_fields so some fields might not be found.
 # But parent field might not exist yet, so can't do here.
-# catch 22? 
+# catch 22?
 sub _set_field
 {
    my ( $self, $field_attr ) = @_;
 
-   if( $field_attr->{name} =~ /^\+(.*)/ )
+   if ( $field_attr->{name} =~ /^\+(.*)/ )
    {
-      my $name = $1;
-      my $existing_field = $self->field_exists($name);
-      if( $existing_field )
+      my $name           = $1;
+      my $existing_field = $self->field($name);
+      if ($existing_field)
       {
          delete $field_attr->{name};
          foreach my $key ( keys %{$field_attr} )
@@ -271,13 +237,7 @@ sub _set_field
       }
       return;
    }
-   my $field = $self->_make_field( $field_attr );
-   return unless $field;
-   my $index = $self->field_index($field->full_name);
-   if( defined $index )
-      { $self->set_field_at($index, $field); }
-   else
-      { $self->add_field($field); }
+   $self->_make_field($field_attr);
 }
 
 =head2 _make_field
@@ -308,31 +268,61 @@ sub _make_field
          ? $self->field_name_space . "::" . $type
          : $type
       : 'HTML::FormHandler::Field::' . $type;
-      
-   $class->require 
+
+   $class->require
       or die "Could not load field class '$type' $class for field '$name'"
       if !Class::Inspector->loaded($class);
 
-   # Add field name and reference to form 
    $field_attr->{form} = $self->form if $self->form;
-   $field_attr->{parent} = $self unless ($self->form && $self == $self->form);
+   # parent and name correction
+   if ( $field_attr->{name} =~ /\./ )
+   {
+      my @names       = split /\./, $field_attr->{name};
+      my $simple_name = pop @names;
+      my $parent_name = join '.', @names;
+      my $parent      = $self->field($parent_name);
+      if ($parent)
+      {
+         die "The parent of field " . $field_attr->{name} . " is not a Compound Field"
+            unless $parent->isa('HTML::FormHandler::Field::Compound'); 
+         $field_attr->{parent} = $parent;
+         $field_attr->{name}   = $simple_name;
+      }
+   }
+   elsif ( !($self->form && $self == $self->form ) )
+   {
+      # set parent 
+      $field_attr->{parent} = $self;
+   }
    my $field = $class->new( %{$field_attr} );
-   return $field;
+   $self->update_or_create( $field->parent || $self->form, $field );
+}
+
+sub update_or_create
+{
+   my ( $self, $parent, $field ) = @_; 
+
+   my $index = $parent->field_index( $field->name );
+   if ( defined $index ) 
+   { $parent->set_field_at( $index, $field ); }
+   else                  
+   { $parent->add_field($field); }
 }
 
 =head2 field_index
 
-Convenience function for use with 'set_field_at'.
+Convenience function for use with 'set_field_at'. Pass in 'name' of field
+(not full_name)
 
 =cut 
 
 sub field_index
 {
-   my ( $self, $full_name ) = @_;
+   my ( $self, $name ) = @_;
    my $index = 0;
    for my $field ( $self->fields )
    {
-      return $index if $field->full_name eq $full_name;
+      return $index if $field->name eq $name;
       $index++;
    }
    return;
@@ -344,13 +334,27 @@ sub field_index
 
 sub field
 {
-   my ( $self, $name, $no_die ) = @_;
+   my ( $self, $name, $die ) = @_;
 
-   for my $field ( $self->fields )
+   my $index;
+   if( $name =~ /\./ )
    {
-      return $field if ($field->full_name eq $name || $field->name eq $name);
+      my @names = split /\./, $name;
+      my $f = $self->form;
+      foreach my $fname (@names)
+      {
+         $f = $f->field($fname); 
+      }
+      return $f;
    }
-   return if $no_die;
+   else
+   {
+      for my $field ( $self->fields )
+      {
+         return $field if ( $field->name eq $name );
+      }
+   }
+   return unless $die;
    croak "Field '$name' not found in '$self'";
 }
 
@@ -380,13 +384,13 @@ sub fields_validate
    foreach my $field ( $self->fields )
    {
       next if $field->clear;    # Skip validation
-      # parent fields will call validation for children
+                                # parent fields will call validation for children
       next if $field->parent && $field->parent != $self;
       # Validate each field and "inflate" input -> value.
-      $field->process;  # this calls the field's 'validate' routine
-      next unless $field->has_value && defined $field->value; 
+      $field->process;          # this calls the field's 'validate' routine
+      next unless $field->has_value && defined $field->value;
       # these methods have access to the inflated values
-      $field->_validate($field); # will execute a form-field validation routine
+      $field->_validate($field);    # will execute a form-field validation routine
    }
 }
 

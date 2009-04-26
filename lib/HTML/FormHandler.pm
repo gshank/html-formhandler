@@ -950,17 +950,6 @@ sub value
    return $field->value; 
 }
 
-=head2 field_exists
-
-Returns true (the field) if the field exists
-
-=cut
-
-sub field_exists
-{
-   my ( $self, $name ) = @_;
-   return $self->field( $name, 1 );
-}
 
 
 =head2 munge_params
@@ -1279,7 +1268,7 @@ sub set_dependency
          next unless defined $value;
          # The exception is a boolean can be zero which we count as not set.
          # This is to allow requiring a field when a boolean is true.
-         my $field = $self->field_exists($name);
+         my $field = $self->field($name);
          next if $self->field($name)->type eq 'Boolean' && $value == 0;
          if ( ref $value )
          {

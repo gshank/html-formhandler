@@ -16,8 +16,8 @@ ok( $form->field('fruit'), 'fruit field' );
 use_ok( 'Form::Test' );
 $form = Form::Test->new;
 ok( $form, 'get base form' );
-ok( !$form->field_exists('new_field'), 'no new field');
-ok( $form->field_exists('optname'), 'base field exists');
+ok( !$form->field('new_field'), 'no new field');
+ok( $form->field('optname'), 'base field exists');
 
 # forms with multiple inheritance
 use_ok( 'Form::Multiple' );
@@ -30,5 +30,5 @@ ok( $form->field('telephone'), 'field from other superclass exists' );
 use_ok( 'Form::MultipleRole');
 $form = Form::MultipleRole->new;
 ok( $form, 'get form with roles' );
-ok( $form->field_exists('street'), 'field from Address role' );
-ok( $form->field_exists('email'), 'field from Person role' );
+ok( $form->field('street'), 'field from Address role' );
+ok( $form->field('email'), 'field from Person role' );
