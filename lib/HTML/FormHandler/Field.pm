@@ -288,27 +288,32 @@ A reference to the containing form.
 
 has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
 
-=head2 prename
+=head2 html_name
 
-Field name prefixed by the form name and a dot.
+Field name for use in HTML. If 'html_prefix' in the form has been set
+the name will prefixed by the form name and a dot, otherwise this
+attribute is the equivalient of 'full_name'.
 A field named "street" in a form named "address" would
-have a prename of "address.street". Use with the
-form attribute "html_prefix". Allows multiple forms with
+have a html_name of "address.street". Allows multiple forms with
 the same field names.
 
 =cut
 
-has 'prename' => (
+has 'html_name' => (
    isa     => 'Str',
    is      => 'rw',
    lazy    => 1,
-   builder => 'build_prename'
+   builder => 'build_html_name'
 );
 
-sub build_prename
+# following is to maintain compatibility. remove eventually
+sub prename { shift->html_name }
+
+sub build_html_name
 {
    my $self = shift;
-   my $prefix = $self->form ? $self->form->name . "." : '';
+   my $prefix = ($self->form && $self->form->html_prefix) ? 
+                                 $self->form->name . "." : '';
    return $prefix . $self->full_name;
 }
 
@@ -821,6 +826,7 @@ The field's error list and internal value are reset upon entry.
 sub process
 {
    my $field = shift;
+$DB::single=1;
    $field->clear_errors;
    # See if anything was submitted
    unless ( $field->input_defined )
@@ -839,11 +845,11 @@ sub process
 
    $field->_apply_actions;
 
+   $field->_build_fif if $field->can('_build_fif');
    return if $field->has_errors;
    return unless $field->validate;
    return unless $field->test_ranges;
 
-   $field->_build_fif if $field->can('_build_fif');
    return;
 }
 

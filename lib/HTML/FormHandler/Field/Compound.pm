@@ -100,10 +100,17 @@ sub _build_fif
 {
    my $self = shift;
 
-   my $fif; 
+   my $fif = {}; 
    for my $field ($self->fields)
    {
-      $fif->{$field->full_name} = $field->fif;
+      if( ref $field->fif eq 'HASH' )
+      {
+         $fif = {%{$fif}, %{$field->fif}}; 
+      }
+      else
+      {
+         $fif->{$field->full_name} = $field->fif;
+      }
    }
    $self->fif($fif) if $fif;
 

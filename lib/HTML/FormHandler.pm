@@ -370,7 +370,7 @@ would be just "borrower".
    has '+name' => ( default => 'book' );
    has '+html_prefix' => ( default => 1 );
 
-Also see the Field attribute "prename", a convenience function which
+Also see the Field attribute "html_name", a convenience function which
 will return the form name + "." + field name
 
 If you want to use some other pattern to create the HTML field name,

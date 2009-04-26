@@ -110,9 +110,9 @@ is( $output7,
 my $output8 = $form->render_field( $form->field('start_date') );
 is( $output8, 
    '<fieldset class="start_date">
-<label class="label" for="month">Month:</label><input type="text" name="month" id="renderformmonth" value="7">
-<label class="label" for="day">Day:</label><input type="text" name="day" id="renderformday" value="14">
-<label class="label" for="year">Year:</label><input type="text" name="year" id="renderformyear" value="2006"></fieldset>',
+<label class="label" for="start_date.month">Month:</label><input type="text" name="start_date.month" id="renderformmonth" value="7">
+<label class="label" for="start_date.day">Day:</label><input type="text" name="start_date.day" id="renderformday" value="14">
+<label class="label" for="start_date.year">Year:</label><input type="text" name="start_date.year" id="renderformyear" value="2006"></fieldset>',
    'output from DateTime' );
 
 my $output = $form->render;

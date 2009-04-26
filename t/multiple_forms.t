@@ -50,11 +50,11 @@ my $params = {
    'One.field_one' => 'First field in first form',
    'One.field_two' => 'Second field in first form',
    'One.field_three' => 'Third field in first form',
-   $form2->field('field_one')->prename => 
+   $form2->field('field_one')->html_name => 
              'First field in second form',
-   $form2->field('field_two')->prename => 
+   $form2->field('field_two')->html_name => 
               'Second field in second form',
-   $form2->field('field_three')->prename => 
+   $form2->field('field_three')->html_name => 
               'Third field in second form',
 };
 

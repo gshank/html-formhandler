@@ -276,16 +276,23 @@ database accessors. If you want to prepend the HTML field names with a
 name plus dot, you can set the form 'name' and use the 'html_prefix'
 flag. "$name." will be stripped from the beginning of the HTML fields
 in 'munge_params' before the parameters are set, and will be added in
-'fif'. The field's 'prename' convenience attribute will return this
+'fif'. The field's 'html_name' convenience attribute will return this
 name for use in templates.
 
 If you want the FormHandler field name to be different than the
 database accessor, set 'accessor' on your fields. (It defaults to the field
 name). You could then use any name that you want for your field. 
 
-If you want to do something complicated and specific with the field names,
-you can subclass 'munge_params' and 'fif' and do any kind of field name 
-'normalization' that you want.
+There are a number of name related field attributes. The 'name' is
+the name used to identify this particular field in this fields array.
+The 'full_name' is includes the names of all parents of this field,
+like 'address.street.streetname'. The 'html_name' is the same as the
+'full_name' unless you have set the 'html_prefix' flag, in which case
+it includes the form name: 'myform.address.street.streetname'.
+
+To retrieve a field by name, you can use either the full_name or a
+chain: C<< $form->field('address')->field('street')->field('streetname') >>
+or: C<< $form->field('address.street.streetname') >>.
 
 You can process multiple FormHandler forms at the same time (using
 the same HTML form) with multiple form objects and multiple process/update
@@ -494,6 +501,48 @@ field attribute, but you might have a field that must be converted from a text
 representation to an object (e.g. month, day, year to DateTime). These sorts of
 conversions can also be done by Moose type constraints or apply transformations.
 
+=head2 Compound fields
+
+A compound field is a field that has sub-fields. Compound fields can be
+created in two ways: 1) using a field class, 2) by declaration.
+
+To create a compound field class, you must extend 
+L<HTML::FormHandler::Field::Compound> and use L<HTML::FormHandler::Moose> to
+allow declaring fields:
+
+  package MyApp::Field::Duration;
+
+  use HTML::FormHandler::Moose;
+  extends 'HTML::FormHandler::Field::Compound';
+
+  has_field 'month' => (type => 'Integer');
+  has_field 'day' => ( type => 'Integer' );
+  has_field 'minutes' => ( type => 'Integer' );
+
+Then in the form:
+
+  has_field 'my_duration' => ( type => '+Duration' );
+
+To create a compound field by declaration, declare the containing
+compound field and subfields, prefixing the subfield names
+with the name of the containing compound field plus a dot:
+
+   package MyApp::Form;
+
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   has_field 'duration' => ( type => 'Compound' );
+   has_field 'duration.month' => ( type => 'Integer' );
+   has_field 'duration.day' => ( type => 'Integer' );
+   has_field 'duration.year' => ( type => 'Integer' );
+
+In an HTML form the name of the field must be the complete name
+with dots. The 'html_name' field attribute can be used to get
+this name:
+
+   [% field.html_name %]
+
 =head2 Filters, transformations, and constraints
 
 L<HTML::FormHandler> has a flexible system of of filters and constraints. You can
@@ -588,13 +637,14 @@ the database object. (To set individual field values use "init_value_$fieldname"
 
 =item options_$fieldname 
 
-If you have a 'Select' or 'Multiple' field, there are two ways to provide the 
+If you have a 'Select' or 'Multiple' field, there are three ways to provide the 
 'options', or the list of values and labels for the select list. 1) Get them 
-from a database table (from the relationship that is the field name), or 2) 
-provide them from an options_$fieldname method.
+automatically from a database table (from the relationship that is the field 
+name/accessor), 2) provide them in the field's 'options' attribute, or 2) 
+provide them from an options_$fieldname method in the form.
 
-An 'options_$fieldname' method should return a list of ordered key (option value) 
-and value (label to be displayed in the select list) pairs.
+An 'options_$fieldname' method should return a list of ordered key (option 
+value) and value (label to be displayed in the select list) pairs.
 
    sub options_fruit {
        return (
@@ -619,8 +669,8 @@ You can also write custom methods to retrieve the option info from the database:
 
 =item init_value_$fieldname
 
-Allows you to provide a different initial value for a particular field than that
-in the database.
+Allows you to provide (in the form) a different initial value for a particular 
+field than that in the database.
 
    sub init_value_license {
       my ( $self, $field, $item ) = @_;
@@ -631,7 +681,8 @@ in the database.
 
 =item validate_$fieldname
 
-Do per-field validation customization not handled by the Field class.
+Instead of using field constraints, you can choose to
+do per-field validation customization in a form method:
 
     sub validate_age {
         my ( $self, $field ) = @_;
@@ -650,8 +701,9 @@ A different form method name for this can be specified with the field's
 
 =item cross_validate
 
-Handle cross-field validation, or any validation that needs to be done after the entire
-form is validated.  This method is executed whether or not the form has validated so far.
+Handle cross-field validation, or any validation that needs to be done after
+the entire form is validated.  This method is executed whether or not the form 
+has validated so far.
 
    sub cross_validate {
       my $self = shift;
