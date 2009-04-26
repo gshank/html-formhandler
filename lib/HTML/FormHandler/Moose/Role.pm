@@ -44,7 +44,7 @@ sub has_field
 {
    my ( $class, $name, %options ) = @_;
 
-   $class->meta->add_to_field_list( $name, \%options );
+   $class->meta->add_to_field_list( { name => $name, %options } );
 }
 
 

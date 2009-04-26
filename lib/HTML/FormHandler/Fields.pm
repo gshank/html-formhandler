@@ -42,7 +42,7 @@ has 'fields' => (
 =head2 build_fields
 
 This parses the field lists and creates the individual
-field objects.  It calls the make_field() method for each field.
+field objects.  It calls the _make_field() method for each field.
 This is called by the BUILD method. Users don't need to call this.
 
 =cut
@@ -52,19 +52,11 @@ sub build_fields
    my $self = shift;
 
    my $meta_flist = $self->_build_meta_field_list;
-   $self->_build_fields( $meta_flist, 0 ) if $meta_flist; 
-   if( $self->can('field_list') )
-   {
-      my $flist = $self->field_list;
-      $self->_build_fields( $flist->{'required'}, 1 ) if $flist->{'required'}; 
-      $self->_build_fields( $flist->{'optional'}, 0 ) if $flist->{'optional'};
-      $self->_build_fields( $flist->{'fields'}, 0 )   if $flist->{'fields'};
-      $self->_build_fields( $flist->{'auto_required'}, 1, 'auto' ) 
-                                                 if $flist->{'auto_required'};
-      $self->_build_fields( $flist->{'auto_optional'}, 0, 'auto' ) 
-                                                 if $flist->{'auto_optional'};
-   }
+   $self->_process_field_array( $meta_flist, 0 ) if $meta_flist; 
+   $self->_process_field_list( $self->field_list) 
+       if( $self->can('field_list') && $self->has_field_list );
    return unless $self->has_fields;
+
    # get highest order number
    my $order = 0;
    foreach my $field ( $self->fields)
@@ -96,6 +88,24 @@ sub build_fields
 
 }
 
+sub _process_field_list
+{
+   my ( $self, $flist ) = @_;
+
+   $self->_process_field_array( $self->_hashref_fields( $flist->{'required'}, 1 ) )
+      if $flist->{'required'};
+   $self->_process_field_array( $self->_hashref_fields( $flist->{'optional'}, 0 ) )
+      if $flist->{'optional'};
+   $self->_process_field_array( $self->_hashref_fields( $flist->{'fields'} ) )
+      if ($flist->{'fields'} && ref $flist->{'fields'} eq 'HASH');
+   $self->_process_field_array( $self->_array_fields( $flist->{'fields'} ) )
+      if ($flist->{'fields'} && ref $flist->{'fields'} eq 'ARRAY');
+   $self->_process_field_array( $self->_auto_fields( $flist->{'auto_required'}, 1 ) )
+      if $flist->{'auto_required'};
+   $self->_process_field_array( $self->_auto_fields( $flist->{'auto_optional'}, 0 ) )
+      if $flist->{'auto_optional'};
+}
+
 sub _build_meta_field_list
 {
    my $self = shift;
@@ -119,6 +129,59 @@ sub _build_meta_field_list
       }
    }
    return \@field_list if scalar @field_list;
+}
+
+sub _auto_fields
+{
+   my ( $self, $fields, $required ) = @_;
+
+   my @new_fields;
+   foreach my $name ( @$fields )
+   {
+      push @new_fields, { 
+         name => $name,
+         type => $self->guess_field_type($name),
+         required => $required
+      }
+   }
+   return \@new_fields;
+}
+
+sub _hashref_fields
+{
+   my ( $self, $fields, $required ) = @_;
+   my @new_fields;
+   while ( my ($key, $value) = each %{$fields} )
+   {
+      unless ( ref $value eq 'HASH' )
+      {
+         $value = { type => $value };
+      }
+      if( defined $required )
+      {
+         $value->{required} = $required;
+      }
+      push @new_fields, { name => $key, %$value };
+   }
+   return \@new_fields;
+}
+
+sub _array_fields
+{
+   my ( $self, $fields ) = @_;
+
+   my @new_fields;
+   while( @$fields )
+   {
+      my $name = shift @$fields;
+      my $attr = shift @$fields;
+      unless ( ref $attr eq 'HASH' )
+      {
+         $attr = { type => $attr };
+      }
+      push @new_fields, { name => $name, %$attr };
+   }
+   return \@new_fields;
 }
 
 sub _build_fields
@@ -159,6 +222,27 @@ sub _build_fields
    return;
 }
 
+sub _process_field_array
+{
+   my ( $self, $fields ) = @_;
+
+   my $num_fields = scalar @$fields;
+   my $num_dots = 0;
+   my $count_fields = 0;
+   while ($count_fields < $num_fields )
+   {
+      foreach my $field ( @$fields )
+      {
+         my $count = ($field->{name} =~ tr/\.//);
+         next unless $count == $num_dots;
+         $self->_set_field($field);
+         $count_fields++;
+      }
+      $num_dots++;
+   }
+
+}
+
 # this looks for existing fields by $name or full_name
 # some fields don't have their names adjusted until later
 # (duration.month) in build_fields so some fields might not be found.
@@ -166,17 +250,18 @@ sub _build_fields
 # catch 22? 
 sub _set_field
 {
-   my ( $self, $name, $type, $required ) = @_;
+   my ( $self, $field_attr ) = @_;
 
-   if( $name =~ /^\+(.*)/ )
+   if( $field_attr->{name} =~ /^\+(.*)/ )
    {
-      $name = $1;
+      my $name = $1;
       my $existing_field = $self->field_exists($name);
       if( $existing_field )
       {
-         foreach my $key ( keys %{$type} )
+         delete $field_attr->{name};
+         foreach my $key ( keys %{$field_attr} )
          {
-            $existing_field->$key( $type->{$key} )
+            $existing_field->$key( $field_attr->{$key} )
                if $existing_field->can($key);
          }
       }
@@ -186,9 +271,8 @@ sub _set_field
       }
       return;
    }
-   my $field = $self->make_field( $name, $type );
+   my $field = $self->_make_field( $field_attr );
    return unless $field;
-   $field->required($required) unless ( $field->required == 1 );
    my $index = $self->field_index($field->full_name);
    if( defined $index )
       { $self->set_field_at($index, $field); }
@@ -196,26 +280,26 @@ sub _set_field
       { $self->add_field($field); }
 }
 
-=head2 make_field
+=head2 _make_field
 
-    $field = $form->make_field( $name, $type );
+    $field = $form->_make_field( $field_attr );
 
 Maps the field type to a field class, creates a field object and
 and returns it.
 
-The "$name" parameter is the field's name (e.g. first_name, age).
+The 'field_attr' hashref must have a 'name' key
 
-The second parameter is either a scalar which is the field's type
-string, or a hashref with a 'type' key containing the field's type.
 
 =cut
 
-sub make_field
+sub _make_field
 {
-   my ( $self, $name, $attr ) = @_;
+   my ( $self, $field_attr ) = @_;
 
-   $attr = { type => $attr } unless ref $attr eq 'HASH';
-   my $type = $attr->{type} ||= 'Text';
+   $field_attr->{type} ||= 'Text';
+   my $type = $field_attr->{type};
+   my $name = $field_attr->{name};
+   return unless $name;
 
    # TODO what about fields with fields? namespace from where?
    my $class =
@@ -230,10 +314,9 @@ sub make_field
       if !Class::Inspector->loaded($class);
 
    # Add field name and reference to form 
-   $attr->{name} = $name;
-   $attr->{form} = $self->form if $self->form;
-   $attr->{parent} = $self unless ($self->form && $self == $self->form);
-   my $field = $class->new( %{$attr} );
+   $field_attr->{form} = $self->form if $self->form;
+   $field_attr->{parent} = $self unless ($self->form && $self == $self->form);
+   my $field = $class->new( %{$field_attr} );
    return $field;
 }
 

@@ -195,6 +195,12 @@ this to work.
 =cut
 
 has 'field_list' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
+sub has_field_list
+{
+   my $self = shift;
+   return 1 if( scalar keys %{$self->field_list} );
+   return;
+}
 
 =head2 fields
 
