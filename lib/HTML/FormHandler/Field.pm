@@ -269,15 +269,7 @@ Field's css_class for use in templates.
 
 has 'css_class' => ( isa => 'Str', is => 'rw' );
 
-=head2 sub_form
-
-The field is made up of a sub-form.
-
-A single field can be represented by multiple sub-fields
-contained in a form.  This is a reference to that form.
-
-=cut
-
+# should we remove/deprecate this?
 has 'sub_form' => ( isa => 'HTML::FormHandler', is => 'rw' );
 
 =head2 form
