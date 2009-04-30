@@ -2,6 +2,7 @@ package HTML::FormHandler::Types;
 
 use MooseX::Types
    -declare => [ 
+      'Trim',
       'Email',
       'State',
       'StateOrProvince',

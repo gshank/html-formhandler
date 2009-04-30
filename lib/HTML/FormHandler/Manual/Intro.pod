@@ -578,7 +578,7 @@ which is called by the base Field class from 'process'. Look at
 L<HTML::FormHandler::Field::Email>, for example.
 
 If the field's value will be an object instead of a simple scalar, such
-as a DateTime, then you will also need a 'fif_format' method to reformat
+as a DateTime, then you will also need a transformation method to reformat
 the object into a form suitable for an HTML form field.
 
 Some custom field might only require setting certain attributes to
