@@ -14,7 +14,7 @@ use Scalar::Util qw(blessed);
 
 
 use 5.008;
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 
 =head1 NAME
 

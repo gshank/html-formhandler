@@ -25,6 +25,17 @@ has 'field_list' => (
    }
 );
 
+has 'apply_list' => ( 
+   metaclass => 'Collection::Array',
+   is => 'rw',
+   isa => 'ArrayRef', 
+   default => sub { [] },
+   provides => {
+      'push' => 'add_to_apply_list',
+      'empty' => 'has_apply_list',
+   }
+);
+
 
 =head1 AUTHOR
 

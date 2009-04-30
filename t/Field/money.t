@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-my $tests = 6;
+my $tests = 7;
 plan tests => $tests;
 
 my $class = 'HTML::FormHandler::Field::Money';
@@ -26,8 +26,11 @@ is( $field->value, 123.45, 'Test value == 123.45' );
 $field->input( $field->trim_value('   $12x3.45  ') );
 $field->process;
 ok( $field->has_errors, 'Test for errors "   $12x3.45  "' );
-like( $field->errors->[0], qr/Argument \"12x3.45\" isn't numeric in sprintf/, 'get error' );
+is( $field->errors->[0], 'Value cannot be converted to money', 'get error' );
 
+$field->input( 2345 );
+$field->process;
+is( $field->value, '2345.00', 'transformation worked: 2345 => 2345.00' );
 
 
 

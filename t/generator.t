@@ -6,6 +6,8 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
+   eval "use Template";
+   plan skip_all => 'Template' if $@;
    plan tests => 7;
 }
 

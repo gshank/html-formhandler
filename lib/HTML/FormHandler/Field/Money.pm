@@ -1,18 +1,21 @@
 package HTML::FormHandler::Field::Money;
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.01';
 
-has '+apply' => ( default => sub { [ 
-      { transform => sub{ 
-            my $value = shift; 
-            $value =~ s/^\$//;
-            return $value;
-      } },
-      { transform => sub{ sprintf '<%.2f>', $_[0] } },
-   ] } 
-);
+has_field 'test_meta';
+
+
+apply(  [ { transform => sub { 
+               my $value = shift; 
+               $value =~ s/^\$//;
+               return $value;
+            } },
+            { transform => sub{ sprintf '%.2f', $_[0] },
+              message => 'Value cannot be converted to money' },
+         ] );
+
 
 sub validate {
     my $self = shift;
@@ -52,5 +55,5 @@ the same terms as Perl itself.
 =cut
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+no HTML::FormHandler::Moose;
 1;
