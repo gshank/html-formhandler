@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 20;
+   plan tests => 21;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -65,6 +65,14 @@ ok( !$form->field('author')->has_input, 'no input for field');
 
 
 $form->clear_state;
+is_deeply( $form->fif, {
+   title => undef,
+   isbn => undef,
+   pages => undef,
+   author => undef,
+   publisher => undef, }, 'clear_state clears fif' );
+
+
 my $params = {
    title => 'Testing form',
    isbn => '02340234',
