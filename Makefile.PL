@@ -16,6 +16,7 @@ requires 'DateTime';
 requires 'DBIx::Class';
 requires 'HTML::Entities';
 requires 'MooseX::Getopt' => '0.16';
+requires 'Scalar::Util' => 0;
 
 recommends 'Catalyst';
 recommends 'Catalyst::Component::InstancePerContext';

@@ -5,6 +5,7 @@ use Test::More;
 use lib 't/lib';
 
 use DateTime;
+use Scalar::Util qw(blessed);
 
 BEGIN
 {
@@ -30,7 +31,8 @@ BEGIN
        => via { return $1 if /(\d+)/ };
 
    type 'MyDateTime'
-       => message { 'This is not a correct date' };
+       => message { 'This is not a correct date' }
+       => where { blessed $_[0] && $_[0]->isa( 'DateTime' ) };
    coerce 'MyDateTime'
        => from 'HashRef'
        => via { DateTime->new( $_ ) };

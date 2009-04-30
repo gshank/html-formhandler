@@ -878,7 +878,7 @@ sub _apply_actions
          my $tobj = Moose::Util::TypeConstraints::find_type_constraint($action)
             or die 'Cannot find type constraint';
          my $new_value = $input;
-         if ( $tobj->has_coercion )
+         if ( $tobj->has_coercion && $tobj->validate($new_value) )
          {
             eval { $new_value = $tobj->coerce($new_value) };
             if ($@)
