@@ -66,7 +66,9 @@ ok( !$form->field('author')->has_input, 'no input for field');
 
 $form->clear_state;
 ok( !$form->fif, 'clear_state clears fif' );
-
+warn $form->field('author')->value;
+warn $form->field('author')->input;
+warn Dumper( $form->fif ); use Data::Dumper;
 
 my $params = {
    title => 'Testing form',
@@ -75,7 +77,6 @@ my $params = {
    author => 'J.Doe',
    publisher => '',
 };
-
 $form = BookDB::Form::Book->new(item => $book, schema => $schema, params => $params);
 
 $validated = $form->validate( $params );
