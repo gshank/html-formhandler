@@ -128,6 +128,13 @@ has 'value' => (
    is        => 'rw',
    clearer   => 'clear_value',
    predicate => 'has_value',
+   trigger   => sub {
+      my ( $self, $value ) = @_;
+      $self->fif( $self->fif_value($value) )
+         unless ( ( $self->password && $self->password == 1 )
+         || $self->has_fields );
+      return $value;
+   }
 );
 
 =head2 parent
@@ -164,6 +171,12 @@ has 'input' => (
    is        => 'rw',
    clearer   => 'clear_input',
    predicate => 'has_input',
+   trigger   => sub {
+      my ( $self, $input ) = @_;
+      $self->fif($input)
+         unless ( $self->password && $self->password == 1 );
+      return $input;
+   }
 );
 
 =head2 input_without_param
@@ -189,24 +202,7 @@ input parameters. The normal use would be to access this field from a template:
 
 =cut
 
-has 'fif' => ( 
-    is => 'rw', 
-    clearer => 'clear_fif', 
-    predicate => 'has_fif',
-    lazy_build => 1,
-);
-
-sub _build_fif {
-    my $self = shift;
-    return if( defined $self->password && $self->password == 1 );
-    if( defined $self->input ){
-        return $self->input;
-    }
-    if( defined $self->value ){
-        return $self->value;
-    }
-    return;
-}
+has 'fif' => ( is => 'rw', clearer => 'clear_fif', predicate => 'has_fif' );
 
 =head2 accessor
 
@@ -885,7 +881,7 @@ sub process
 
    $field->_apply_actions;
 
-#   $field->_build_fif if $field->can('_build_fif');
+   $field->_build_fif if $field->can('_build_fif');
    return if $field->has_errors;
    return unless $field->validate;
    return unless $field->test_ranges;

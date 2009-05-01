@@ -437,7 +437,6 @@ sub init_value
    }
    $field->init_value($value);
    $field->value($value);
-   $field->fif($value);
 }
 
 sub _fix_value 
