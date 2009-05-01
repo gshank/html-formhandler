@@ -1,5 +1,9 @@
 Revision history for HTML::FormHandler 
 
+0.21 Thu Apr 30, 2009, 20:00
+    Removed podcoverage, added skip to generator.t test, added
+    'apply' sugar for adding actions, doc for compound field
+
 0.20 Thu Apr 23, 2009, 17:00
     Added apply constraints, transforms, checks. Refactored code for future
     use of nested fields. Improvements to compound fields. Bug fix for

@@ -599,6 +599,7 @@ The name of the method in the form that provides a field's initial value
 has 'set_init' => (
    isa     => 'Str',
    is      => 'rw',
+   lazy    => 1,
    default => sub {
       my $self = shift;
       my $name = $self->full_name;

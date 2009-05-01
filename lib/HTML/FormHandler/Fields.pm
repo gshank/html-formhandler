@@ -394,5 +394,89 @@ sub fields_validate
    }
 }
 
+=head2 clear_errors
+
+Clears field errors
+
+=cut
+
+sub clear_errors
+{
+   my $self = shift;
+   $_->clear_errors for $self->fields;
+}
+
+=head2 clear_fif
+
+Clears fif values
+
+=cut
+
+sub clear_fifs
+{
+   my $self = shift;
+
+   foreach my $field ($self->fields)
+   {
+      $field->clear_fifs if $field->can('clear_fifs');
+      $field->clear_fif;
+   }
+}
+
+=head2 clear_values
+
+Clears fif values
+
+=cut
+
+sub clear_values
+{
+   my $self = shift;
+   foreach my $field ($self->fields)
+   {
+      $field->clear_values if $field->can('clear_values');
+      $field->clear_value;
+   }
+}
+
+=head2 dump
+
+Dumps the the array of fields for debugging. This method is called when
+the verbose flag is turned on.
+
+=cut
+
+sub dump_fields { shift->dump( @_) }
+sub dump
+{
+   my $self = shift;
+
+   warn "HFH: ------- fields for ", $self->name, "-------\n";
+   for my $field ( $self->sorted_fields )
+   {
+      $field->dump;
+   }
+   warn "HFH: ------- end fields -------\n";
+}
+
+=head2 dump_validated
+
+For debugging, dump the validated fields. This method is called when the
+verbose flag is on.
+
+=cut
+
+sub dump_validated
+{
+   my $self = shift;
+   warn "HFH: fields validated:\n";
+   foreach my $field ( $self->fields )
+   {
+      $field->dump_validated if $field->can('dump_validated');
+      warn "HFH: ", $field->name, ": ", 
+      ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";
+   } 
+}
+
 no Moose::Role;
 1;

@@ -791,25 +791,9 @@ sub clear_state
 
 Clears field values
 
-=cut
-
-sub clear_values
-{
-   my $self = shift;
-   $_->clear_value for $self->fields;
-}
-
 =head2 clear_errors
 
 Clears field errors
-
-=cut
-
-sub clear_errors
-{
-   my $self = shift;
-   $_->clear_errors for $self->fields;
-}
 
 =head2 clear_fif
 
@@ -817,45 +801,17 @@ Clears fif values
 
 =cut
 
-sub clear_fif
-{
-   my $self = shift;
-   $_->clear_fif for $self->fields;
-}
+sub clear_fif { shift->clear_fifs }
 
 =head2 dump_fields
 
 Dumps the fields of the form for debugging. This method is called when
 the verbose flag is turned on.
 
-=cut
-
-sub dump_fields
-{
-   my $self = shift;
-
-   warn "HFH: ------- fields for form ", $self->name, "-------\n";
-   for my $field ( $self->sorted_fields )
-   {
-      $field->dump;
-   }
-   warn "HFH: ------- end fields -------\n";
-}
-
 =head2 dump_validated
 
 For debugging, dump the validated fields. This method is called when the
 verbose flag is on.
-
-=cut
-
-sub dump_validated
-{
-   my $self = shift;
-   warn "HFH: fields validated:\n";
-   warn "HFH: ", $_->name, ": ", ( $_->has_errors ? join( ' | ', $_->errors ) : 'validated' ), "\n"
-      for $self->fields;
-}
 
 =head2 fif  (fill in form)
 
@@ -921,7 +877,7 @@ sub values
    return $values;
 }
 
-=head2 field NAME
+=head2 field($name)
 
 This is the method that is usually called in your templates to
 access a field:

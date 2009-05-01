@@ -17,7 +17,6 @@ requires 'DBIx::Class';
 requires 'HTML::Entities';
 requires 'MooseX::Getopt' => '0.16';
 requires 'Scalar::Util' => 0;
-requires 'MooseX::Types::Common';
 
 recommends 'Catalyst';
 recommends 'Catalyst::Component::InstancePerContext';
