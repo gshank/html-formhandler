@@ -4,9 +4,13 @@ author:
   - 'gshank: Gerda Shank <gshank@cpan.org>'
 build_requires:
   DateTime::Format::MySQL: 0
+  DateTime::Format::W3CDTF: 0
+  ExtUtils::MakeMaker: 6.42
   Test::More: 0.77
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.77'
+generated_by: 'Module::Install version 0.86'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -24,14 +28,19 @@ recommends:
 requires:
   Carp: 0
   DBIx::Class: 0
+  DBIx::Class::ResultSet::RecursiveUpdate: 0
   DateTime: 0
   HTML::Entities: 0
   Locale::Maketext: 1.09
-  Moose: 0.59
+  Moose: 0.70
   MooseX::AttributeHelpers: 0.14
   MooseX::Getopt: 0.16
+  MooseX::Types: 0
+  MooseX::Types::Common: 0
+  Scalar::Util: 0
   UNIVERSAL::require: 0
   perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.20
+  repository: http://github.com/gshank/html-formhandler/tree/master
+version: 0.23

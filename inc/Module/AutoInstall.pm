@@ -115,6 +115,13 @@ sub import {
         )[0]
     );
 
+    # We want to know if we're under CPAN early to avoid prompting, but
+    # if we aren't going to try and install anything anyway then skip the
+    # check entirely since we don't want to have to load (and configure)
+    # an old CPAN just for a cosmetic message
+
+    $UnderCPAN = _check_lock(1) unless $SkipInstall;
+
     while ( my ( $feature, $modules ) = splice( @args, 0, 2 ) ) {
         my ( @required, @tests, @skiptests );
         my $default  = 1;
@@ -184,6 +191,7 @@ sub import {
             !$SkipInstall
             and (
                 $CheckOnly
+                or ($mandatory and $UnderCPAN)
                 or _prompt(
                     qq{==> Auto-install the }
                       . ( @required / 2 )
@@ -214,8 +222,6 @@ sub import {
         }
     }
 
-    $UnderCPAN = _check_lock();    # check for $UnderCPAN
-
     if ( @Missing and not( $CheckOnly or $UnderCPAN ) ) {
         require Config;
         print
@@ -234,21 +240,34 @@ sub import {
     *{'main::WriteMakefile'} = \&Write if caller(0) eq 'main';
 }
 
+sub _running_under {
+    my $thing = shift;
+    print <<"END_MESSAGE";
+*** Since we're running under ${thing}, I'll just let it take care
+    of the dependency's installation later.
+END_MESSAGE
+    return 1;
+}
+
 # Check to see if we are currently running under CPAN.pm and/or CPANPLUS;
 # if we are, then we simply let it taking care of our dependencies
 sub _check_lock {
-    return unless @Missing;
+    return unless @Missing or @_;
 
     if ($ENV{PERL5_CPANPLUS_IS_RUNNING}) {
-        print <<'END_MESSAGE';
-
-*** Since we're running under CPANPLUS, I'll just let it take care
-    of the dependency's installation later.
-END_MESSAGE
-        return 1;
+        my $thing = $ENV{PERL5_CPAN_IS_RUNNING} ? 'CPAN' : 'CPANPLUS';
+        return _running_under($thing);
     }
 
-    _load_cpan();
+    require CPAN;
+
+    if ($CPAN::VERSION > '1.89' && $ENV{PERL5_CPAN_IS_RUNNING}) {
+        return _running_under('CPAN');
+    }
+
+    # last ditch attempt, this -will- configure CPAN, very sorry
+
+    _load_cpan(1); # force initialize even though it's already loaded
 
     # Find the CPAN lock-file
     my $lock = MM->catfile( $CPAN::Config->{cpan_home}, ".lock" );
@@ -313,7 +332,7 @@ sub install {
         @modules = @newmod;
     }
 
-    if ( _has_cpanplus() ) {
+    if ( _has_cpanplus() and not $ENV{PERL_AUTOINSTALL_PREFER_CPAN} ) {
         _install_cpanplus( \@modules, \@config );
     } else {
         _install_cpan( \@modules, \@config );
@@ -632,7 +651,7 @@ sub _load {
 
 # Load CPAN.pm and it's configuration
 sub _load_cpan {
-    return if $CPAN::VERSION;
+    return if $CPAN::VERSION and not @_;
     require CPAN;
     if ( $CPAN::HandleConfig::VERSION ) {
         # Newer versions of CPAN have a HandleConfig module
@@ -706,7 +725,7 @@ sub _make_args {
       if $Config;
 
     $PostambleActions = (
-        $missing
+        ($missing and not $UnderCPAN)
         ? "\$(PERL) $0 --config=$config --installdeps=$missing"
         : "\$(NOECHO) \$(NOOP)"
     );
@@ -746,7 +765,7 @@ sub Write {
 sub postamble {
     $PostambleUsed = 1;
 
-    return << ".";
+    return <<"END_MAKE";
 
 config :: installdeps
 \t\$(NOECHO) \$(NOOP)
@@ -757,7 +776,7 @@ checkdeps ::
 installdeps ::
 \t$PostambleActions
 
-.
+END_MAKE
 
 }
 
@@ -765,4 +784,4 @@ installdeps ::
 
 __END__
 
-#line 1003
+#line 1022

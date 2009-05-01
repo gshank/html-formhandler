@@ -795,7 +795,8 @@ Trimming is performed before any other defined actions.
 =cut
 
 has 'trim' => ( isa => 'HashRef', is => 'rw', 
-   default => sub {{ transform => 
+   default => sub {{ 
+      transform => 
       sub {
          my $value = shift;
          return unless defined $value;
@@ -807,7 +808,8 @@ has 'trim' => ( isa => 'HashRef', is => 'rw',
             s/\s+$//;
          }
          return ref $value eq 'ARRAY' ? \@values : $values[0];
-      }
+      },
+      to_fif => 1
    }}
 );
 
@@ -993,7 +995,9 @@ sub _apply_actions
    for my $action ( @{ $self->actions || [] } )
    {
       $error_message = undef;
-      my $input = $self->value;
+      # the first time through value == input
+      my $value = $self->value;
+      my $new_value = $value;
       # Moose constraints 
       if ( !ref $action )
       {
@@ -1003,57 +1007,59 @@ sub _apply_actions
       {
          my $type = $action->{type};
          my $tobj = Moose::Util::TypeConstraints::find_type_constraint($type)
-            or die 'Cannot find type constraint';
-         my $new_value = $input;
-         if ( $tobj->has_coercion && $tobj->validate($new_value) )
+            or die "Cannot find type constraint $type";
+         if ( $tobj->has_coercion && $tobj->validate($value) )
          {
-            eval { $new_value = $tobj->coerce($new_value) };
+            eval { $new_value = $tobj->coerce($value) };
             if ($@)
             {
                if ( $tobj->has_message )
                {
-                  $error_message = $tobj->message->($new_value);
+                  $error_message = $tobj->message->($value);
                }
                else
                {
                   $error_message = $@;
                }
             }
+            else
+            {
+               $self->value($new_value);
+               $self->input($new_value) 
+                    if defined $action->{to_fif}  && $action->{to_fif} == 1;
+            }
+            
          }
          $error_message ||= $tobj->validate($new_value);
-         if ( !$error_message )
-         {
-            $self->value($new_value);
-         }
       }
       # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
       # actions in a hashref
       elsif ( ref $action->{check} eq 'CODE' )
       {
-         if ( !$action->{check}->($input) )
+         if ( !$action->{check}->($value) )
          {
             $error_message = 'Wrong value';
          }
       }
       elsif ( ref $action->{check} eq 'Regexp' )
       {
-         if ( $input !~ $action->{check} )
+         if ( $value !~ $action->{check} )
          {
-            $error_message = "\"$input\" does not match";
+            $error_message = "\"$value\" does not match";
          }
       }
       elsif ( ref $action->{check} eq 'ARRAY' )
       {
-         if ( !grep { $input eq $_ } @{ $action->{check} } )
+         if ( !grep { $value eq $_ } @{ $action->{check} } )
          {
-            $error_message = "\"$input\" not allowed";
+            $error_message = "\"$value\" not allowed";
          }
       }
       elsif ( ref $action->{transform} eq 'CODE' )
       {
-         my $new_value = eval { 
+         $new_value = eval { 
             no warnings 'all';
-            $action->{transform}->($input);
+            $action->{transform}->($value);
          };
          if ($@)
          {
@@ -1061,9 +1067,9 @@ sub _apply_actions
          }
          else
          {
-            # need to put in value so we know to skip
-            # the default creation of value
             $self->value($new_value);
+            $self->input($new_value) 
+                 if defined $action->{to_fif}  && $action->{to_fif} == 1;
          }
       }
       if ( defined $error_message )

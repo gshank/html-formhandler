@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-my $tests = 7;
+my $tests = 8;
 plan tests => $tests;
 
 my $class = 'HTML::FormHandler::Field::Money';
@@ -21,6 +21,7 @@ $field->input( '   $123.45  ' );
 $field->process;
 ok( !$field->has_errors, 'Test for errors "   $123.00  "' );
 is( $field->value, 123.45, 'Test value == 123.45' );
+is( $field->input, '$123.45', 'input has been trimmed' );
 
 
 $field->input( '   $12x3.45  ' );

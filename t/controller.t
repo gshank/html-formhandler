@@ -6,7 +6,7 @@ use lib 't/lib';
 
 BEGIN {
 
-   plan skip_all => 'Set $ENV{HFH_CONTROLLER_TEST} to run this test'
+   plan skip_all => 'Set HFH_CONTROLLER_TEST to run this test'
       unless $ENV{HFH_CONTROLLER_TEST};
    eval "use Catalyst";
    plan skip_all => 'Catalyst required' if $@;

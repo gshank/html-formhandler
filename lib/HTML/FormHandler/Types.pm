@@ -2,7 +2,6 @@ package HTML::FormHandler::Types;
 
 use MooseX::Types
    -declare => [ 
-      'Trim',
       'Email',
       'State',
       'StateOrProvince',
@@ -36,6 +35,12 @@ use MooseX::Types::Common::Numeric (
    'NegativeInt',
    'SingleDigit',
 );
+use MooseX::Types::DateTime (
+   'DateTime',
+   'Duration',
+   'TimeZone',
+   'Locale',
+);
 
 =head1 NAME
 
@@ -45,7 +50,29 @@ HTML::FormHandler::Types
 
 =head1 DESCRIPTION
 
-=head1 TYPES
+
+Types imported from L<MooseX::Types::Common>:
+
+    SimpleStr 
+    NonEmptySimpleStr
+    Password
+    StrongPassword
+    NonEmptyStr
+    PositiveNum
+    PositiveInt
+    NegativeNum
+    NegativeInt
+    SingleDigit
+
+Types imported from L<MooseX::Types::DateTime>
+
+    DateTime
+    Duration
+    TimeZone
+    Locale
+
+   
+=head1 FormHandler TYPES
 
 =head2 Email
 
@@ -159,15 +186,6 @@ subtype IPAddress,
    as Str,
    where { },
    message { "not a valid IP address" };
-
-=head2 DateTime
-
-=cut
-
-subtype DateTime,
-   as Str,
-   where { },
-   message { "not a valid date" };
 
 =head2 Word
 

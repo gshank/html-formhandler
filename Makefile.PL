@@ -6,6 +6,8 @@ name 'HTML-FormHandler';
 all_from 'lib/HTML/FormHandler.pm';
 license 'perl';
 
+repository 'http://github.com/gshank/html-formhandler/tree/master';
+
 # prereqs
 requires 'Carp';
 requires 'Moose'              => '0.70';
