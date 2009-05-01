@@ -14,10 +14,11 @@ requires 'UNIVERSAL::require' => '0';
 requires 'Locale::Maketext'   => '1.09';
 requires 'DateTime';
 requires 'DBIx::Class';
+requires 'DBIx::Class::ResultSet::RecursiveUpdate';
 requires 'HTML::Entities';
 requires 'MooseX::Getopt' => '0.16';
 requires 'MooseX::Types' => 0;
-requires 'MooseX::Types::Common::String' => 0;
+requires 'MooseX::Types::Common' => 0;
 requires 'Scalar::Util' => 0;
 
 recommends 'Catalyst';

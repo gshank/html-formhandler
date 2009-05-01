@@ -7,7 +7,15 @@ use base 'DBIx::Class';
 # following attribute is non useful, since it does
 # nothing that persists, but shows how you could
 # do something more complicated
-has 'comment' => ( isa => 'Str|Undef', is => 'rw' );
+has 'comment' => ( isa => 'Str|Undef', is => 'rw',
+  trigger => \&set_extra );
+
+sub set_extra
+{
+   my ($self, $value) = @_;
+   $self->extra($value);
+}
+
 
 BookDB::Schema::DB::Book->load_components("Core");
 BookDB::Schema::DB::Book->table("book");
@@ -49,6 +57,8 @@ BookDB::Schema::DB::Book->add_columns(
     is_nullable => 0,
     size => undef,
   },
+  "extra",
+  { data_type => "varchar", is_nullable => 0, size => 100 },
 );
 BookDB::Schema::DB::Book->set_primary_key("id");
 BookDB::Schema::DB::Book->belongs_to(

@@ -692,8 +692,7 @@ sub validate_form
       # Trim values and move to "input" slot
       if ( exists $params->{$field->full_name} )
       {
-         # trim_value may be replaced by some kind of filter in the future
-         $field->input( $field->trim_value( $params->{$field->full_name} ) )
+         $field->input( $params->{$field->full_name} )
       }
       elsif ( $field->has_input_without_param )
       {
@@ -718,7 +717,6 @@ sub validate_form
    $self->ran_validation(1);
    $self->validated( !$errors );
    $self->dump_validated if $self->verbose;
-#   $_->clear_input for $self->fields;
 
    return $self->validated;
 }

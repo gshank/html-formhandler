@@ -628,19 +628,54 @@ sub _init
 
 =head2 apply
 
-An ArrayRef of constraints and coercions to be executed on the field at process 
-time.  In general the action can be of three types: a Moose type (which is 
+Use the 'apply' keyword to specify an ArrayRef of constraints and coercions to 
+be executed on the field at process time.  
+
+   has_field 'test' => ( 
+      apply => [ 'MooseType', { check => sub {...}, message => { } } 
+   );
+
+In general the action can be of three types: a Moose type (which is 
 represented by it's name), a transformation (which is a callback called on 
-the value of the field), or a constraint which performes a 'smart match' 
+the value of the field), or a constraint ('check') which performs a 'smart match' 
 on the value of the field.  Currently we implement the smart match
 in our code - but in the future when Perl 5.10 is more widely used we'll switch 
 to the core
 L<http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail>
-smart match operator.  The Moose type action first tries to coerce the value - 
-then it checks the result, so you can use it instead of both constraints and 
-tranformations - TIMTOWTDI.
+smart match operator.  
 
-Examples:
+The Moose type action first tries to coerce the value - 
+then it checks the result, so you can use it instead of both constraints and 
+tranformations - TIMTOWTDI.  For most constraints and transformations it is 
+your choice as to whether you use a Moose type or use a 'check' or 'transform'. 
+
+All three types define a message to be presented to the user in the case of 
+failure. Transformations and coercions are called in an eval 
+to catch the errors. Warnings are also trapped.
+
+All the actions are called in the order that they are defined, so that you can 
+check constraints after transformations and vice versa. You can weave all three 
+types of actions in any order you need. The actions specified with 'apply' will
+be stored in an 'actions' array. 
+
+To declare actions inside a field class use L<HTML::FormHandler::Moose> and
+'apply' sugar:
+
+   package MyApp::Field::Test;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler::Field;
+
+   apply [ 'SomeConstraint', { check => ..., message => .... } ];
+
+   1;
+   
+Actions specified with apply are cumulative. Actions may be specified in
+field classes and additional actions added in the 'has_field' declaration.
+
+=head2 Moose types for constraints and transformations
+
+Moose types can be used to do both constraints and transformations. If a coercion
+exists it will be applied, resulting in a transformation.
 
 A Moose type:
   subtype 'MyStr'
@@ -667,35 +702,47 @@ You can use them in a field like this:
 This will check if the field contains a string starting with 'a' - and then coerce it
 to an integer by extracting the first continues string of digits.
 
-A simple constraint:
+If the error message returned by the Moose type is not suitable for displaying
+in a form, you can define a different error message:
+
+   apply => [ { type => 'MyStr', message => 'Not a valid value' } ];
+
+=head2 Non-Moose checks and transforms
+
+A simple 'check' constraint uses the 'check' keyword pointing to a coderef,
+a regular expression, or an array of valid values, plus a message.
+
+A 'check' coderef will be passed the current value of the field. It should
+return true or false:
+
+  has_field 'this_num' => (
+      apply => [
+         {
+             check => sub { if ( $_[0] =~ /(\d+)/ ) { return $1 > 10 } },
+             message => 'Must contain number greater than 10',
+         }
+  );
+
+A 'check' regular expression:
 
   has_field 'some_text' => (
       apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
   );
 
-This should be self-explanatory.
+A 'check' array of valid values:
 
-And a simple transformation:
+  has_field 'more_text' => (
+      aply => [ { check => ['aaa', 'bbb'], message => 'Must be aaa or bbb' } ]
+  );
+
+A simple transformation uses the 'transform' keyword and a coderef.
+The coderef will be passed the current value of the field and should return
+a transformed value.
 
   has_field 'sprintf_filter' => (
       apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
   );
 
-As you can see above, all three types define a message to be presented to the 
-user in the case of failure. Transformations and coercions are called in an eval 
-to catch the errors.
-
-All the actions are called in the order that they are defined, so that you can 
-check constraints after transformations and vice versa. You can weave all three 
-types of actions in any order you need. The actions specified with 'apply' will
-be stored in an 'actions' array. 
-
-To specify actions to declare inside a field class use 'apply' sugar:
-
-   apply [ 'SomeConstraint', 'AnotherActin' ];
-   
-Actions specified with apply are cumulative. Actions may be specified in
-field classes and additional actions added in the 'has_field' declaration.
 
 =cut
 
@@ -713,6 +760,13 @@ has 'actions' => (
    }
 );
 
+=head2 deflations
+
+Use deflations to convert from an inflated database or internal value to
+a value suitable for displaying in an HTML form.
+
+=cut
+
 has 'deflations' => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef',
@@ -727,6 +781,37 @@ has 'deflations' => (
    }
 );
 
+=head2 trim
+
+A Hashref containing a transfrom to trim the field. By default
+this contains a transform to strip beginning and trailing spaces.
+Set this attribute to null to skip trimming, or supply a different
+transform.
+
+  trim => { transform => sub { } }
+
+Trimming is performed before any other defined actions.
+
+=cut
+
+has 'trim' => ( isa => 'HashRef', is => 'rw', 
+   default => sub {{ transform => 
+      sub {
+         my $value = shift;
+         return unless defined $value;
+         my @values = ref $value eq 'ARRAY' ? @$value : ($value);
+         for (@values)
+         {
+            next if ref $_;
+            s/^\s+//;
+            s/\s+$//;
+         }
+         return ref $value eq 'ARRAY' ? \@values : $values[0];
+      }
+   }}
+);
+
+
 =head1 METHODS
 
 =head2 new [parameters]
@@ -740,6 +825,7 @@ sub BUILD
 {
    my ( $self, $params ) = @_;
 
+   $self->add_action($self->trim) if $self->trim;
    $self->_build_apply_list;
    $self->add_action( @{$params->{apply}} ) if $params->{apply};
 }
@@ -911,7 +997,12 @@ sub _apply_actions
       # Moose constraints 
       if ( !ref $action )
       {
-         my $tobj = Moose::Util::TypeConstraints::find_type_constraint($action)
+         $action = { type => $action };
+      }
+      if ( exists $action->{type} )
+      {
+         my $type = $action->{type};
+         my $tobj = Moose::Util::TypeConstraints::find_type_constraint($type)
             or die 'Cannot find type constraint';
          my $new_value = $input;
          if ( $tobj->has_coercion && $tobj->validate($new_value) )
@@ -978,16 +1069,13 @@ sub _apply_actions
       if ( defined $error_message )
       {
          my @message = ($error_message);
-         if ( ref $action )
+         if ( ref $action->{message} )
          {
-            if ( ref $action->{message} )
-            {
-               @message = @{ $action->{message} };
-            }
-            elsif ( defined $action->{message} )
-            {
-               @message = ( $action->{message} );
-            }
+            @message = @{ $action->{message} };
+         }
+         elsif ( defined $action->{message} )
+         {
+            @message = ( $action->{message} );
          }
          $self->add_error(@message);
       }
@@ -1067,23 +1155,6 @@ sub test_ranges
    return 1;
 }
 
-
-# removed pod because deprecating in favor of filters
-sub trim_value
-{
-   my ( $self, $value ) = @_;
-
-   return unless defined $value;
-
-   my @values = ref $value eq 'ARRAY' ? @$value : ($value);
-   for (@values)
-   {
-      next if ref $_;
-      s/^\s+//;
-      s/\s+$//;
-   }
-   return ref $value eq 'ARRAY' ? \@values : $values[0];
-}
 
 =head2 input_defined
 

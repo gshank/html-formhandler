@@ -22,7 +22,7 @@ sub validate {
 
     return unless $self->SUPER::validate;
     # remove plus sign.
-    my $value = $self->input;
+    my $value = $self->value;
     return unless defined $value;
     if ( $value =~ s/^\$// ) {
         $self->value( $value );

@@ -17,13 +17,13 @@ my $field = $class->new(
 
 ok( defined $field,  'new() called' );
 
-$field->input( $field->trim_value('   $123.45  ') );
+$field->input( '   $123.45  ' );
 $field->process;
 ok( !$field->has_errors, 'Test for errors "   $123.00  "' );
 is( $field->value, 123.45, 'Test value == 123.45' );
 
 
-$field->input( $field->trim_value('   $12x3.45  ') );
+$field->input( '   $12x3.45  ' );
 $field->process;
 ok( $field->has_errors, 'Test for errors "   $12x3.45  "' );
 is( $field->errors->[0], 'Value cannot be converted to money', 'get error' );

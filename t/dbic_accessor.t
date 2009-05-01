@@ -32,6 +32,6 @@ END { $form->item->delete }
 my $book = $form->item;
 ok ($book, 'get book object from form');
 
-is( $book->comment, 'This is a comment', 'get accessor-only data');
+is( $book->extra, 'This is a comment', 'get  data set by accessor');
 
 

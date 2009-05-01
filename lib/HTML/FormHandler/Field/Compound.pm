@@ -73,7 +73,7 @@ augment 'process' => sub {
          # Trim values and move to "input" slot
          if ( exists $input->{$field_name} )
          {
-            $field->input( $field->trim_value( $input->{$field_name} ) )
+            $field->input( $input->{$field_name} )
          }
          elsif ( $field->has_input_without_param )
          {
