@@ -5,7 +5,6 @@ extends 'HTML::FormHandler';
 use Carp;
 use UNIVERSAL::require;
 use DBIx::Class::ResultClass::HashRefInflator;
-use DBIx::Class::ResultSet::RecursiveUpdate;
 use Scalar::Util qw(blessed);
 
 our $VERSION = '0.03';
@@ -138,20 +137,129 @@ in a hashref, followed by "other" fields and relationships.
 
 sub update_model
 {
-    my $self = shift;
-    my $item   = $self->item;
-    my $source = $self->source;
+   my ($self) = @_;
+   my $item   = $self->item;
+   my $source = $self->source;
+   my $updated_or_created;
 
-    warn "HFH: update_model for ", $self->name, "\n" if $self->verbose;
-    #warn "fif: " . Dumper ( $self->fif ); use Data::Dumper;
-    my %update_params = ( 
-        resultset => $self->resultset, 
-        updates => $self->values,
-    );
-    $update_params{ object } = $self->item if $self->item;
-    my $new_item = DBIx::Class::ResultSet::RecursiveUpdate::Functions::recursive_update( %update_params );
-    $self->item($new_item);
-    return $new_item;
+   warn "HFH: update_model for ", $self->name, "\n" if $self->verbose;
+   # get a hash of all fields, skipping fields marked 'noupdate'
+   my %columns;
+   my %multiple_has_many;
+   my %multiple_m2m;
+   my %select;
+   my %other_rel;
+   my %other;
+   my $field;
+   my $value;
+   # Save different flavors of fields into hashes for processing
+   foreach $field ( $self->fields )
+   {
+      next if $field->noupdate;
+      next unless $field->has_value;
+      my $accessor = $field->accessor;
+      # If the field is flagged "clear" then set to NULL.
+      $value = $field->clear ? undef : $field->value;
+      if ( $source->has_relationship($accessor) )
+      {
+         if ($field->can('options'))
+         {
+            $select{$accessor} = $value;
+         } 
+         else
+         {
+            # for now just remove other relationships because
+            # they aren't handled here, and could be handled in a subclass
+            $other_rel{$accessor} = $value;
+         }
+      }
+      elsif ( $source->has_column($accessor) )
+      {
+         $columns{$accessor} = $value;
+      }
+      elsif ( $field->can('multiple' ) && $field->multiple == 1 )
+      {
+         # didn't have a relationship and is multiple, so must be m2m
+         $multiple_m2m{$accessor} = $value;
+      }
+      else    # neither a column nor a rel
+      {
+         $other{$accessor} = $value;
+      }
+   }
+   my $changed;
+   # Handle database columns
+   if ($item)
+   {
+      for my $accessor ( keys %columns )
+      {
+         $value = $columns{$accessor};
+         my $cur = $item->$accessor;
+         next unless $value || $cur;
+         next if ( ( $value && $cur ) && ( $value eq $cur ) );
+         $item->$accessor($value);
+         $changed++;
+      }
+      $updated_or_created = 'updated';
+   }
+   else    # create new item
+   {
+      $item = $self->resultset->create( \%columns );
+      $self->item($item);
+      $updated_or_created = 'created';
+   }
+
+   # Set single select lists with rel different from column
+   for my $accessor ( keys %select )
+   {
+      my $rel_info = $item->relationship_info($accessor);
+      my ($cond)     = values %{ $rel_info->{cond} };
+      my ($self_col) = $cond =~ m/^self\.(\w+)$/;
+      $item->$self_col( $select{$accessor} );
+      $changed++;
+   }
+
+   # set non-column, non-rel attributes
+   for my $accessor ( keys %other )
+   {
+      next unless $item->can($accessor);
+      $item->$accessor( $other{$accessor} );
+      $changed++;
+   }
+   # update db
+   $item->update_or_insert if $changed;
+
+   # process Multiple field 'many_to_many' relationships
+   for my $accessor ( keys %multiple_m2m )
+   {
+      $value = $multiple_m2m{$accessor};
+      my %keep;
+      %keep = map { $_ => 1 } ref $value ? @$value : ($value)
+         if defined $value;
+      my $meth;
+      my $row;
+      if ( $updated_or_created eq 'updated' )
+      {
+         foreach $row ( $item->$accessor->all )
+         {
+            $meth = 'remove_from_' . $accessor;
+            $item->$meth( $row ) 
+               unless delete $keep{ $row->id };
+         }
+      }
+      my $source_name = $item->$accessor->result_source->source_name;
+      foreach my $id ( keys %keep )
+      {
+         $row = $self->schema->resultset($source_name)->find($id);
+         $meth = 'add_to_' . $accessor;
+         $item->$meth( $row );
+      }
+   }
+
+   # Save item in form object
+   $self->item($item);
+   warn "HFH: finished update_model for ", $self->name, "\n" if $self->verbose;
+   return $item;
 }
 
 

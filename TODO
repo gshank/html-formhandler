@@ -1,19 +1,11 @@
 09/04/23
-  default apply actions and/or merging of apply actions
   regularize usage of name/accessor/full_name/prename. which methods
      (field(), field_exists(), field_index()) use which names? 
   add tests for apply actions
   deflation support
-  re-factor field processing. move setting parent to field construction time.
-    will require processing all parent fields first (in order) followed by child fields
   error messages issues for nested forms: prefix with field name? 
   improve field HTML produced in Render::Simple to include error messages or special css
 
-09/04/09 
-  rebuild book.db automatically when running make test
-09/04/05
-  recursive automatic construction of fif?
- 
 09/04/01 gshank
   improve auto field support 
   investigate a Catalyst View to provide better template support (like Reaction)

@@ -1,4 +1,7 @@
 Revision history for HTML::FormHandler 
+0.22 Fri May 1, 2009, 17:00
+    Removed development only test from distribution
+    Expanded apply documentation.
 
 0.21 Thu Apr 30, 2009, 20:00
     Removed podcoverage, added skip to generator.t test, added
