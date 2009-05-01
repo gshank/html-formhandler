@@ -14,6 +14,14 @@ INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'program
 INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed', 'RU', '1965-03-24 22:22:22' );
 INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor', 'PL', '1977-10-24 22:22:22' );
 
+CREATE TABLE address (
+   address_id INTEGER PRIMARY KEY,
+   user_id INTEGER,
+   street VARCHAR(32),
+   city VARCHAR(32),
+   state VARCHAR(12)
+);
+
 CREATE TABLE book (
     id INTEGER PRIMARY KEY,
     isbn varchar(100),

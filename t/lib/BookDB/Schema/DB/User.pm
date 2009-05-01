@@ -24,11 +24,18 @@ __PACKAGE__->add_columns(
   { data_type => "DATETIME", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("user_id");
+
 #__PACKAGE__->has_many(
 #  "books",
 #  "BookDB::Schema::DB::Book",
 #  { "foreign.author_id" => "self.id" },
 #);
+
+__PACKAGE__->might_have(
+   "address",
+   "BookDB::Schema::DB::Address",
+   { 'foreign.user_id' => 'self.user_id' }
+);
 
 __PACKAGE__->belongs_to(
     'country',
