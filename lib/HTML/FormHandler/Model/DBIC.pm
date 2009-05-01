@@ -155,7 +155,6 @@ sub update_model
    # Save different flavors of fields into hashes for processing
    foreach $field ( $self->fields )
    {
-$DB::single=1;
       next if $field->noupdate;
       next unless $field->has_value;
       my $accessor = $field->accessor;

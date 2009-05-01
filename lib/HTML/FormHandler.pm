@@ -718,7 +718,7 @@ sub validate_form
    $self->ran_validation(1);
    $self->validated( !$errors );
    $self->dump_validated if $self->verbose;
-   $_->clear_input for $self->fields;
+#   $_->clear_input for $self->fields;
 
    return $self->validated;
 }

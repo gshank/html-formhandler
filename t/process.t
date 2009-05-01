@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 23;
+   plan tests => 24;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -38,6 +38,8 @@ my $good = {
 };
 
 ok( $form->process( schema => $schema, params => $good ), 'Good data' );
+
+is( $form->field( 'title' )->input, 'How to Test Perl Form Processors', 'Input created from params and not deleted in validate' );
 
 my $book = $form->item;
 END { $book->delete };

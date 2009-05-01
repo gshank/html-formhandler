@@ -65,6 +65,8 @@ my $value_hash = { %{$good},
                    year => undef };
 is_deeply( $form->values, $value_hash, 'get right values from form');
 
+$_->clear_input for $form->fields;
+
 my $bad_1 = {
     notitle => 'not req',
     silly_field   => 4,

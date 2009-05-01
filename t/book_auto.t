@@ -41,6 +41,7 @@ ok ($book, 'get book object from form');
 $book->delete;
 $form->clear_state;
 
+$_->clear_input for $form->fields;
 my $bad_1 = {
     'book.title' => '',
     notitle => 'not req',

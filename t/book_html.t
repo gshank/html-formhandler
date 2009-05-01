@@ -45,6 +45,7 @@ ok ( $book->title eq 'How to Test Perl Form Processors', 'get title');
 # clean up book db & form
 $book->delete;
 $form->clear_state;
+$_->clear_input for $form->fields;
 
 my $bad_1 = {
     'book.notitle' => 'not req',
