@@ -42,9 +42,9 @@ field types are:
    Boolean
 
 These field types alone would be enough for most applications, since
-the equivalent of the others could be defined using field attributes
-and custom validation methods.  There is some benefit to having
-descriptive names, of course, and if you have multiple fields  
+the equivalent of the others could be defined using field attributes,
+custom validation methods, and applied actions.  There is some benefit 
+to having descriptive names, of course, and if you have multiple fields  
 requiring the same validation, you should certainly define a custom
 field class.
 
@@ -77,9 +77,9 @@ Inheritance hierarchy of the distribution's field classes:
       
 See the documentation or source for the individual fields.
 
-Normally you would implement a 'validate' routine in a custom
-field class, but you can also override the base validation process
-by overriding 'process'.
+Many field classes contain only a list of constraints and transformations
+to apply. Some use the 'validate' method, which is called after the actions
+are applied. Some build a custom select list using 'build_options'.
 
 =head1 ATTRIBUTES
 
@@ -650,8 +650,14 @@ tranformations - TIMTOWTDI.  For most constraints and transformations it is
 your choice as to whether you use a Moose type or use a 'check' or 'transform'. 
 
 All three types define a message to be presented to the user in the case of 
-failure. Transformations and coercions are called in an eval 
-to catch the errors. Warnings are also trapped.
+failure. Messages are passed to L<Locale::MakeText>, and can either be simple
+strings or an array suitable for MakeText, such as:
+
+     message => ['Email should be of the format [_1]',
+                 'someuser@example.com' ] 
+
+Transformations and coercions are called in an eval 
+to catch the errors. Warnings are trapped in a sigwarn handler.
 
 All the actions are called in the order that they are defined, so that you can 
 check constraints after transformations and vice versa. You can weave all three 
@@ -672,12 +678,22 @@ To declare actions inside a field class use L<HTML::FormHandler::Moose> and
 Actions specified with apply are cumulative. Actions may be specified in
 field classes and additional actions added in the 'has_field' declaration.
 
+You can see examples of field classes with 'apply' actions in the source for 
+L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>.
+
+Usually transformations are performed on the field's 'value', not the 'input',
+but if you would like to 'normalize' the fields returned to the user you can
+flag a Moose type constraint or a transform with C<< to_fif => 1 >> to cause
+the transformed value to be copied to the 'fif' attribute.
+
 =head2 Moose types for constraints and transformations
 
 Moose types can be used to do both constraints and transformations. If a coercion
-exists it will be applied, resulting in a transformation.
+exists it will be applied, resulting in a transformation. You can use type
+constraints form L<MooseX::Types>> libraries or defined using 
+L<Moose::Util::TypeConstraints>.
 
-A Moose type:
+A Moose type defined with L<Moose::Util::TypeConstraints>:
   subtype 'MyStr'
       => as 'Str'
       => where { /^a/ };
@@ -693,17 +709,19 @@ Another Moose type:
 
 This type contains a coercion.
 
-You can use them in a field like this:
+You can use them in a field like this (types defined with L<MooseX::Types>
+would not be quoted):
 
    has_field 'some_text_to_int' => (
        apply => [ 'MyStr', 'MyInt' ]
    );
 
-This will check if the field contains a string starting with 'a' - and then coerce it
-to an integer by extracting the first continues string of digits.
+This will check if the field contains a string starting with 'a' - and then 
+coerce it to an integer by extracting the first continuous string of digits.
 
 If the error message returned by the Moose type is not suitable for displaying
-in a form, you can define a different error message:
+in a form, you can define a different error message by using the 'type' and 
+'message' keys in a hashref:
 
    apply => [ { type => 'MyStr', message => 'Not a valid value' } ];
 

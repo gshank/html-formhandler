@@ -1,46 +1,19 @@
-package HTML::FormHandler::Types;
+package HTML::FormHandler::Types; 
 
-use MooseX::Types
-   -declare => [ 
-      'Email',
-      'State',
-      'StateOrProvince',
-      'Province', 
-      'Zip',
-      'PostCode',
-      'ZipOrPostCode',
-      'Phone',
-      'AmericanPhone',
-      'CCNumber',
-      'CCExp',
-      'CCType',
-      'IPAddress',
-      'DateTime',
-      'Word',
-   ];
+use strict;
+use warnings;
 
-# import building types
-use MooseX::Types::Moose ':all';
-use MooseX::Types::Common::String (
-   'SimpleStr',
-   'NonEmptySimpleStr',
-   'Password',
-   'StrongPassword',
-   'NonEmptyStr',
-);
-use MooseX::Types::Common::Numeric (
-   'PositiveNum',
-   'PositiveInt',
-   'NegativeNum',
-   'NegativeInt',
-   'SingleDigit',
-);
-use MooseX::Types::DateTime (
-   'DateTime',
-   'Duration',
-   'TimeZone',
-   'Locale',
-);
+our $VERSION = '0.01';
+
+use MooseX::Types -declare => [
+  'PositiveNum', 'PositiveInt', 'NegativeNum', 'NegativeInt', 'SingleDigit',
+  'SimpleStr', 'NonEmptySimpleStr', 'Password', 'StrongPassword', 'NonEmptyStr'
+  'Trim', 'Email', 'State', 'StateOrProvince', 'Province', 'Zip', 'PostCode',
+  'ZipOrPostCode', 'Phone', 'AmericanPhone', 'CCNumber', 'CCExp', 'CCType',
+  'IPAddress', 'DateTime', 'Word',
+];
+
+use MooseX::Types::Moose ('Str', 'Num', 'Int');
 
 =head1 NAME
 
@@ -48,152 +21,86 @@ HTML::FormHandler::Types
 
 =head1 SYNOPSIS
 
+These types are provided by MooseX::Types. These types must not be quoted
+when they are used:
+
+  has 'posint' => ( is => 'rw', isa => PositiveInt);
+
+Types declared using Moose::Util::TypeConstraints, on the other hand,
+must be quoted:
+
+  has_field 'text_both' => ( apply => [ PositiveInt, 'GreaterThan10' ] );
+
+To import these types into your forms, you must either specify (':all')
+or list the types you want to use:
+
+   use HTML::FormHandler::Types (':all');
+
+or:
+
+   use HTML::FormHandler::Types ('Email', 'PositiveInt');
+
 =head1 DESCRIPTION
 
 
-Types imported from L<MooseX::Types::Common>:
+It would be possible to import the MooseX types (Common, etc), but for now
+we'll just re-implement them here in order to be able to change the
+messages and keep control of what types we provide.
 
-    SimpleStr 
-    NonEmptySimpleStr
-    Password
-    StrongPassword
-    NonEmptyStr
-    PositiveNum
-    PositiveInt
-    NegativeNum
-    NegativeInt
-    SingleDigit
-
-Types imported from L<MooseX::Types::DateTime>
-
-    DateTime
-    Duration
-    TimeZone
-    Locale
-
-   
-=head1 FormHandler TYPES
-
-=head2 Email
+=head1 TYPES
 
 =cut
 
-subtype Email,
-   as Str,
-   where { },
-   message { "not a valid email" };
+subtype PositiveNum,
+  as Num,
+  where { $_ >= 0 },
+  message { "Must be a positive number" };
 
-=head2 State
+subtype PositiveInt,
+  as Int,
+  where { $_ >= 0 },
+  message { "Must be a positive integer" };
 
-=cut
+subtype NegativeNum,
+  as Num,
+  where { $_ <= 0 },
+  message { "Must be a negative number" };
 
-subtype State,
-   as Str,
-   where { },
-   message { "not a valid state" };
+subtype NegativeInt,
+  as Int,
+  where { $_ <= 0 },
+  message { "Must be a negative integer" };
 
-=head2 Province
+subtype SingleDigit,
+  as PositiveInt,
+  where { $_ <= 9 },
+  message { "Must be a single digit" };
 
-=cut
-
-subtype Province,
-   as Str,
-   where { },
-   message { "not a valid province" };
-
-=head2 StateOrProvince
-
-=cut
-
-subtype StateOrProvince,
-  as State|Province;
-
-=head2 Zip
-
-=cut
-
-subtype Zip,
-   as Str,
-   where { },
-   message { "not a valid zip" };
-
-=head2 PostCode
-
-=cut
-
-subtype PostCode,
-   as Str,
-   where { },
-   message { "not a valid postcode" };
-
-=head2 ZipOrPostCode
-
-=cut
-
-subtype ZipOrPostCode,
-   as Zip|PostCode;
-
-=head2 Phone
-
-=cut
-
-subtype Phone,
-   as Str,
-   where { },
-   message { "not a valid phone number" };
-
-=head2 AmericanPhone
-
-=cut
-
-subtype AmericanPhone,
-   as Str,
-   where { },
-   message { "not a valid phone number" };
-
-=head2 CCNumber
-
-=cut
-
-subtype CCNumber,
-   as Str,
-   where { },
-   message { "not a valid credit card number" };
-
-=head2 CCExp
-
-=cut
-
-subtype CCExp,
-   as Str,
-   where { },
-   message { "not a valid credit card expiration" };
-
-=head2 CCType
-
-=cut
-
-subtype CCType,
-   as Str,
-   where { },
-   message { "not a valid credit card type" };
-
-=head2 IPAddress
-
-=cut
-
-subtype IPAddress,
-   as Str,
-   where { },
-   message { "not a valid IP address" };
-
-=head2 Word
-
-=cut
-
-subtype Word,
+subtype SimpleStr,
   as Str,
-  where { },
-  message { "only words allowed" };
+  where { (length($_) <= 255) && ($_ !~ m/\n/) },
+  message { "Must be a single line of no more than 255 chars" };
+
+subtype NonEmptySimpleStr,
+  as SimpleStr,
+  where { length($_) > 0 },
+  message { "Must be a non-empty single line of no more than 255 chars" };
+
+subtype Password,
+  as NonEmptySimpleStr,
+  where { length($_) > 3 },
+  message { "Must be between 4 and 255 chars" };
+
+subtype StrongPassword,
+  as Password,
+  where { (length($_) > 7) && (m/[^a-zA-Z]/) },
+  message {"Must be between 8 and 255 chars, and contain a non-alpha char" };
+
+subtype NonEmptyStr,
+  as Str,
+  where { length($_) > 0 },
+  message { "Must not be empty" };
+
 
 1;
+

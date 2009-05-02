@@ -1,14 +1,22 @@
 package HTML::FormHandler::Field::Password;
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 has '+widget' => ( default => 'password' );
 has '+min_length' => ( default => 6 );
 has '+password' => ( default => 1 );
 has '+required_message' => ( default => 'Please enter a password in this field' );
 
+apply ( [
+   {  check => sub { $_[0] !~ /\s/ },
+      message => 'Password can not contain spaces' },
+   {  check => sub { $_[0] !~ /\W/ },
+      message => 'Password must be made up of letters, digits, and underscores' },
+   {  check => sub { $_[0] !~ /^\d+$/ },
+      message => 'Password must be all digits' },
+] );
 __PACKAGE__->meta->make_immutable;
 
 sub validate {
@@ -16,15 +24,7 @@ sub validate {
 
     return unless $self->SUPER::validate;
 
-    my $value = $self->input;
-
-    return $self->add_error( 'Passwords must not contain spaces' )
-        if $value =~ /\s/;
-    return $self->add_error( 'Passwords must be made up from letters, digits, or the underscore' )
-        if $value =~ /\W/;
-    return $self->add_error( 'Passwords must not be all digits' )
-        if $value =~ /^\d+$/;
-
+    my $value = $self->value;
     my $params = $self->form->params;
     for ('login', 'username') {
         next if $self->name eq $_;

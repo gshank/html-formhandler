@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-my $tests = 13;
+my $tests = 14;
 plan tests => $tests;
 
 my $class = 'HTML::FormHandler::Field::WeekdayStr';
@@ -36,6 +36,7 @@ ok( $field->has_errors, '7 is not valid day of the week' );
 $field->input( [ 1, 3, 5 ] );
 $field->process;
 ok( !$field->has_errors, '1 3 5 is valid days of the week' );
+is( $field->value, '135', 'value is ok');
 
 $field->input( [ 1, 3, 7 ] );
 $field->process;

@@ -1,39 +1,42 @@
+#! /usr/bin/perl -w
+
 use strict;
 use warnings;
-
-use Test::More tests => 3;
-
-use_ok( 'HTML::FormHandler::Types' );
+use Test::More tests => 5;
+use Test::Exception;
 
 {
-   package My::TypeForm;
-   use Moose;
-#   use HTML::FormHandler::Moose;
-#   use HTML::FormHandler::Types;
-   use MooseX::Types::Common::String;
-   use MooseX::Types::Common::Numeric ('PositiveInt');
-#   extends 'HTML::FormHandler';
+  package Test::Form;
+  use HTML::FormHandler::Moose;
+  extends 'HTML::FormHandler';
+  use HTML::FormHandler::Types (':all');
+  use Moose::Util::TypeConstraints;
 
-   has 'test' => ( isa => 'PositiveInt', is => 'rw' );
-
-#   has_field 'pos_int' => ( apply => [ 'PositiveInt' ] );
-#   has_field 'my_pw' => ( type => 'Password', apply => [ 'Password' ] );
-#   has_field 'my_nesstr' => ( apply => [ 'NonEmptyStr' ] );
-#   has_field 'my_sstr' => ( apply => [ 'SimpleStr' ] );
+  subtype 'GreaterThan10'
+     => as 'Int'
+     => where { $_ > 10 }
+     => message { "This number ($_) is not greater than 10" };
+  
+  has 'posint' => ( is => 'rw', isa => PositiveInt);
+  has_field 'test' => ( apply => [ PositiveInt ] );
+  has_field 'text_gt' => ( apply=> [ 'GreaterThan10' ] );
+  has_field 'text_both' => ( apply => [ PositiveInt, 'GreaterThan10' ] );
 
 }
 
-my $form = My::TypeForm->new;
-ok( $form, 'get form with imported types' );
+my $form = Test::Form->new;
 
-$form->test(1);
-$form->test(-2);
+ok( $form, 'get form');
+$form->posint(100);
+
 my $params = {
-   pos_int => 4,
-   my_pw => 'abc',
-   my_nesstr => 'some string',
-   my_sstr => '',
+   test => 100,
+   text_gt => 21,
+   text_both => 15,
 };
-$form->validate( $params );
-ok( $form->has_errors, 'errors from validation');
 
+$form->validate($params);
+ok( $form->validated, 'form validated' );
+ok( !$form->field('test')->has_errors, 'no errors on MooseX type');
+ok( !$form->field('text_gt')->has_errors, 'no errors on subtype');
+ok( !$form->field('text_both')->has_errors, 'no errors on both');

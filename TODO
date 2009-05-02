@@ -1,6 +1,9 @@
+2009/05/02
+  allow interpolating field value in messages 
+  check name usage for consistency
+  add Render::TT using Data::Section
+
 09/04/23
-  regularize usage of name/accessor/full_name/prename. which methods
-     (field(), field_exists(), field_index()) use which names? 
   add tests for apply actions
   deflation support
   error messages issues for nested forms: prefix with field name? 

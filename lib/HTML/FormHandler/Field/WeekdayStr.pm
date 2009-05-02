@@ -1,19 +1,16 @@
 package HTML::FormHandler::Field::WeekdayStr;
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Weekday';
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 __PACKAGE__->meta->make_immutable;
 
 # Join the list of values into a single string
 
-sub validate
-{
-   my $field = shift;
-   my $input = $field->input;
-   $field->value( join '', ref $input ? @{$input} : $input );
-}
+apply ([
+   { transform => sub { join '', ref $_[0] ? @{$_[0]} : $_[0] } }
+]);
 
 sub fif_value {
     my ( $field, $value) = @_;
@@ -30,7 +27,8 @@ HTML::FormHandler::Field::WeekdayStr
 =head1 DESCRIPTION
 
 This allow storage of multiple days of the week in a single string field.
-as digits.
+as digits. The value of 'Monday Wednesday Friday' would be '135', for
+example.
 
 =head1 AUTHORS
 
@@ -43,5 +41,5 @@ the same terms as Perl itself.
 
 =cut
 
-no Moose;
+no HTML::FormHandler::Moose;
 1;
