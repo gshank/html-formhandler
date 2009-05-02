@@ -1,181 +1,67 @@
-package HTML::FormHandler::Types;
+package HTML::FormHandler::Types; 
 
-use MooseX::Types
-   -declare => [ 
-      'Trim',
-      'Email',
-      'State',
-      'StateOrProvince',
-      'Province', 
-      'Zip',
-      'PostCode',
-      'ZipOrPostCode',
-      'Phone',
-      'AmericanPhone',
-      'CCNumber',
-      'CCExp',
-      'CCType',
-      'IPAddress',
-      'DateTime',
-      'Word',
-   ];
+use strict;
+use warnings;
 
-# import building types
-use MooseX::Types::Moose ':all';
-use MooseX::Types::Common::String (
-   'SimpleStr',
-   'NonEmptySimpleStr',
-   'Password',
-   'StrongPassword',
-   'NonEmptyStr',
-);
-use MooseX::Types::Common::Numeric (
-   'PositiveNum',
-   'PositiveInt',
-   'NegativeNum',
-   'NegativeInt',
-   'SingleDigit',
-);
+our $VERSION = '0.001000';
 
-=head1 NAME
+use MooseX::Types -declare => [
+  'PositiveNum', 'PositiveInt', 'NegativeNum', 'NegativeInt', 'SingleDigit',
+  'SimpleStr', 'NonEmptySimpleStr', 'Password', 'StrongPassword', 'NonEmptyStr'
+];
 
-HTML::FormHandler::Types
+use MooseX::Types::Moose ('Str', 'Num', 'Int');
 
-=head1 SYNOPSIS
+subtype PositiveNum,
+  as Num,
+  where { $_ >= 0 },
+  message { "Must be a positive number" };
 
-=head1 DESCRIPTION
+subtype PositiveInt,
+  as Int,
+  where { $_ >= 0 },
+  message { "Must be a positive integer" };
 
-=head1 TYPES
+subtype NegativeNum,
+  as Num,
+  where { $_ <= 0 },
+  message { "Must be a negative number" };
 
-=head2 Email
+subtype NegativeInt,
+  as Int,
+  where { $_ <= 0 },
+  message { "Must be a negative integer" };
 
-=cut
+subtype SingleDigit,
+  as PositiveInt,
+  where { $_ <= 9 },
+  message { "Must be a single digit" };
 
-subtype Email,
-   as Str,
-   where { },
-   message { "not a valid email" };
-
-=head2 State
-
-=cut
-
-subtype State,
-   as Str,
-   where { },
-   message { "not a valid state" };
-
-=head2 Province
-
-=cut
-
-subtype Province,
-   as Str,
-   where { },
-   message { "not a valid province" };
-
-=head2 StateOrProvince
-
-=cut
-
-subtype StateOrProvince,
-  as State|Province;
-
-=head2 Zip
-
-=cut
-
-subtype Zip,
-   as Str,
-   where { },
-   message { "not a valid zip" };
-
-=head2 PostCode
-
-=cut
-
-subtype PostCode,
-   as Str,
-   where { },
-   message { "not a valid postcode" };
-
-=head2 ZipOrPostCode
-
-=cut
-
-subtype ZipOrPostCode,
-   as Zip|PostCode;
-
-=head2 Phone
-
-=cut
-
-subtype Phone,
-   as Str,
-   where { },
-   message { "not a valid phone number" };
-
-=head2 AmericanPhone
-
-=cut
-
-subtype AmericanPhone,
-   as Str,
-   where { },
-   message { "not a valid phone number" };
-
-=head2 CCNumber
-
-=cut
-
-subtype CCNumber,
-   as Str,
-   where { },
-   message { "not a valid credit card number" };
-
-=head2 CCExp
-
-=cut
-
-subtype CCExp,
-   as Str,
-   where { },
-   message { "not a valid credit card expiration" };
-
-=head2 CCType
-
-=cut
-
-subtype CCType,
-   as Str,
-   where { },
-   message { "not a valid credit card type" };
-
-=head2 IPAddress
-
-=cut
-
-subtype IPAddress,
-   as Str,
-   where { },
-   message { "not a valid IP address" };
-
-=head2 DateTime
-
-=cut
-
-subtype DateTime,
-   as Str,
-   where { },
-   message { "not a valid date" };
-
-=head2 Word
-
-=cut
-
-subtype Word,
+subtype SimpleStr,
   as Str,
-  where { },
-  message { "only words allowed" };
+  where { (length($_) <= 255) && ($_ !~ m/\n/) },
+  message { "Must be a single line of no more than 255 chars" };
+
+subtype NonEmptySimpleStr,
+  as SimpleStr,
+  where { length($_) > 0 },
+  message { "Must be a non-empty single line of no more than 255 chars" };
+
+subtype Password,
+  as NonEmptySimpleStr,
+  where { length($_) > 3 },
+  message { "Must be between 4 and 255 chars" };
+
+subtype StrongPassword,
+  as Password,
+  where { (length($_) > 7) && (m/[^a-zA-Z]/) },
+  message {"Must be between 8 and 255 chars, and contain a non-alpha char" };
+
+subtype NonEmptyStr,
+  as Str,
+  where { length($_) > 0 },
+  message { "Must not be empty" };
+
 
 1;
+
