@@ -152,253 +152,9 @@ The typical application for FormHandler would be in a Catalyst, DBIx::Class,
 Template Toolkit web application, but use is not limited to that.
 
 
-=head1 ATTRIBUTES
+=head1 ATTRIBUTES and METHODS
 
-=head2 has_field
-
-See L<HTML::FormHandler::Manual::Intro> for a description of the 'has_field'
-field declaration syntax.
-
-   has_field 'title' => ( type => 'Text', required => 1 );
-
-
-=head2 name
-
-The form's name.  Useful for multiple forms.
-It used to construct the default 'id' for fields, and is used
-for the HTML field name when 'html_prefix' is set. 
-The default is "form" + a one to three digit random number.
-
-=head2 init_object
-
-If an 'init_object' is supplied on form creation, it will be used instead 
-of the 'item' to pre-populate the values in the form. This can be useful 
-when populating a form from default values stored in a similar but different 
-object than the one the form is creating. The 'init_object' should be either
-a hash or the same type of object that the model uses (a DBIx::Class row for
-the DBIC model).
-
-=head2 Validation flags
-
-=head3 ran_validation
-
-Flag to indicate that validation has been run. This flag will be
-false when the form is initially loaded and displayed, since
-validation is not run until FormHandler has params to validate.
-It normally shouldn't be necessary for users to check this flag.
-
-=head3 validated
-
-Flag that indicates if form has been validated. If you're using the
-'update', 'process', or 'validate' methods, you many not 
-need to use this flag, since the return value of those methods 
-is this flag. You might want to use this flag if you've
-written a method to replace 'update' or 'process', or you're
-doing something in between update/validate, such as set a stash key.
-
-   $form->update( ... );
-   $c->stash->{...} = ...;
-   return unless $form->validated;
-
-=head3 verbose
-
-Flag to print out additional diagnostic information. See 'dump_fields' and
-'dump_validated'.
-
-=head2 user_data
-
-Place to store user data 
-
-=head2 ctx
-
-Place to store application context
-
-=head2 language_handle, build_language_handle
-
-Holds a Local::Maketext language handle
-
-The builder for this attribute gets the Locale::Maketext language 
-handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates 
-a default language handler using L<HTML::FormHandler::I18N>
-
-=head2 field_counter
-
-Used for numbering fields. Used by set_order method in Field.pm. 
-Useful in templates.
-
-=head2 html_prefix
-
-Flag to indicate that the form name is used as a prefix for fields
-in an HTML form. Useful for multiple forms
-on the same HTML page. The prefix is stripped off of the fields
-before creating the internal field name, and added back in when
-returning a parameter hash from the 'fif' method. For example,
-the field name in the HTML form could be "book.borrower", and
-the field name in the FormHandler form (and the database column)
-would be just "borrower".
-
-   has '+name' => ( default => 'book' );
-   has '+html_prefix' => ( default => 1 );
-
-Also see the Field attribute "html_name", a convenience function which
-will return the form name + "." + field name
-
-=head2 active_column
-
-The column in tables used for select list that marks an option 'active'.
-You might use this if all of your tables have the same 'active' column
-name, instead of setting this for each field.
-
-=head2 http_method
-
-For storing 'post' or 'get'
-
-=head2  action
-
-Store the form 'action' on submission. No default value.
-
-=head2 submit
-
-Store form submit field info. No default value.
-
-=head2 params
-
-Stores HTTP parameters. 
-Also: set_param, get_param, clear_params, delete_param, 
-has_params from Moose 'Collection::Hash' metaclass. 
-
-The 'set_param' method could be used to add additional field
-input that doesn't come from the HTML form, similar to a hidden field:
-
-   my $form = MyApp::Form->new( $item, $params );
-   $form->set_param('comment', 'updated by edit form');
-   return unless $form->update;
-
-(Note: 'process' clears params, so you have to use 'update' ); 
-
-=head2 dependency
-
-Arrayref of arrayrefs of fields. If one of a group of fields has a
-value, then all of the group are set to 'required'.
-
-  has '+dependency' => ( default => sub { [
-     ['street', 'city', 'state', 'zip' ],] }
-  );
-
-=head2 field_list
-
-A hashref of field definitions.
-
-The possible keys in the field_list hashref are:
-
-   required
-   optional
-   fields
-   auto_required
-   auto_optional
-
-Example of a field_list hashref:
-
-    my $field_list => {
-        fields => [
-            field_one => {
-               type => 'Text',
-               required => 1
-            },
-            field_two => 'Text,
-         ],
-     }; 
-
-For the "auto" field_list keys, provide a list of field names.  
-The field types will be determined by calling 'guess_field_type' 
-in the model. For the DBIC model, the schema must be available for
-this to work.  
-
-    auto_required => ['name', 'age', 'sex', 'birthdate'],
-    auto_optional => ['hobbies', 'address', 'city', 'state'],
-
-
-=cut
-
-has 'name' => (
-   isa     => 'Str',
-   is      => 'rw',
-   default => sub { return 'form' . int( rand 1000 ) }
-);
-has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1,
-   lazy => 1, default => sub { shift });
-has 'parent' => ( is => 'rw' );
-has 'init_object' => ( isa => 'HashRef', is => 'rw' );
-has [ 'ran_validation', 'validated', 'verbose' ] => ( isa => 'Bool', is => 'rw' );
-has 'num_errors' => ( isa => 'Int', is => 'rw', default => 0 );
-has 'user_data' => ( isa => 'HashRef', is => 'rw' );
-has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
-has 'language_handle' => (
-   is      => 'rw',
-   builder => 'build_language_handle'
-);
-sub build_language_handle
-{
-   my $lh = $ENV{LANGUAGE_HANDLE}
-      || HTML::FormHandler::I18N->get_handle
-      || die "Failed call to Locale::Maketext->get_handle";
-   return $lh;
-}
-has 'field_counter' => (
-   isa     => 'Int',
-   is      => 'rw',
-   default => 1
-);
-has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
-has 'active_column' => ( isa => 'Str', is => 'rw' );
-has 'http_method' => ( isa => 'Str', is => 'rw', default => 'post' );
-has 'action' => ( is => 'rw' );
-has 'submit' => ( is => 'rw' );
-
-has 'params' => (
-   metaclass  => 'Collection::Hash',
-   isa        => 'HashRef',
-   is         => 'rw',
-   default    => sub { {} },
-   auto_deref => 1,
-   trigger    => sub { shift->_munge_params(@_) },
-   provides   => {
-      set    => 'set_param',
-      get    => 'get_param',
-      clear  => 'clear_params',
-      delete => 'delete_param',
-      empty  => 'has_params',
-   },
-);
-has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
-has '_required' => (
-   metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef[HTML::FormHandler::Field]',
-   is         => 'rw',
-   default    => sub { [] },
-   auto_deref => 1,
-   provides   => {
-      clear => 'clear_required',
-      push  => 'add_required'
-   }
-);
-has 'field_list' => ( isa => 'HashRef', is => 'rw', default => sub { {} } );
-sub has_field_list
-{
-   my $self = shift;
-   return 1 if( scalar keys %{$self->field_list} );
-   return;
-}
-has 'field_name_space' => (
-   isa     => 'Str|Undef',
-   is      => 'rw',
-   default => '',
-);
-
-
-=head1 METHODS
-
-=head2 new 
+=head2 Creating a form with 'new' 
 
 New creates a new form object.  The constructor takes name/value pairs:
 
@@ -450,7 +206,16 @@ FormHandler forms are handled in two steps: 1) create with 'new',
 care whether most parameters are set on new or process or update,
 but a 'field_list' argument should be passed in on 'new'.
 
-=head2 process
+=head2 Processing the form
+
+There are three different methods to call to process the form,
+depending on whether it is persistent or not, and whether or
+not it is a database form.
+
+'process' should always work. 'update' or 'validate' may avoid
+certain amounts of unnecessary processing.
+
+=head3 process
 
 A convenience method for persistent FormHandler instances. This method
 calls 'clear' and 'update' to processes a form:
@@ -475,7 +240,7 @@ This method can also be used for non-database forms:
 
 This method returns the 'validated' flag. (C<< $form->validated >>)
 
-=head2 update
+=head3 update
 
 This is the method to call to update the form if your form is not persistent.
 Pass in item or item_id/schema and parameters. 
@@ -487,7 +252,7 @@ It set attributes from the parameters passed in, initializes values,
 loads select options, calls validate if there are parameters, and calls
 update_model if the form validated.  It returns the 'validated' flag.
 
-=head2 validate
+=head3 validate
 
 This is the non-database form processing method.
 
@@ -500,13 +265,15 @@ or
 It will call the validate_form method to perform validation
 on the fields.
 
-=head2 Clear form state
+=head3 Clear form state
 
    clear - clears state, params, model, ctx
    clear_state - clears flags, errors, and params
    clear_values, clear_errors, clear_fif - on all fields
 
-=head2 fif  (fill in form)
+=head2 Getting data out
+
+=head3 fif  (fill in form)
 
 Returns a hash of values suitable for use with HTML::FillInForm
 or for filling in a form with C<< $form->fif->{fieldname} >>.
@@ -514,7 +281,7 @@ The fif value for a 'title' field in a TT form:
 
    [% form.fif.title %] 
 
-=head2 values
+=head3 values
 
 Returns a hashref of all field values. Useful for non-database forms.
 The 'fif' and 'values' hashrefs will be the same unless there's a
@@ -524,7 +291,30 @@ a hash with the field names for the keys and the field's 'fif' for the
 values; 'values' returns a hash with the field accessors for the keys, and the
 field's 'value' for the the values. 
 
-=head2 field_name_space
+=head2 Accessing and setting up fields
+
+=head3 has_field
+
+The most common way of declaring fields is the 'has_field' syntax.
+See L<HTML::FormHandler::Manual::Intro>
+
+=head3 field_list
+
+A hashref of field definitions which can be used as an
+alternative to 'has_field' in small, dynamic forms.
+
+    field_list => {
+        fields => [
+            field_one => {
+               type => 'Text',
+               required => 1
+            },
+            field_two => 'Text,
+         ],
+     } 
+
+
+=head3 field_name_space
 
 Use to set the name space used to locate fields that 
 start with a "+", as: "+MetaText". Fields without a "+" are loaded
@@ -532,7 +322,7 @@ from the "HTML::FormHandler::Field" name space. If 'field_name_space'
 is not set, then field types with a "+" must be the complete package
 name.
 
-=head2 field($name)
+=head3 field($name)
 
 This is the method that is usually called in your templates to
 access a field:
@@ -548,19 +338,10 @@ Pass a second true value to not die on errors.
  
     my $field = $form->field('something', 1 );
 
-=head2 value
+=head3 value($name)
 
 Convenience function to return the value of the field. Returns
 undef if field not found.
-
-
-=head2 cross_validate
-
-This method is useful for cross checking values after they have been saved 
-as their final validated value, and for performing more complex dependency
-validation.
-
-This method is called even if some fields did not validate.
 
 
 =head2 Accessing errors 
@@ -570,21 +351,199 @@ This method is called even if some fields did not validate.
   errors - returns array of error messages for the entire form
   num_errors - number of errors in form
 
-=head2 Attributes for HTML
 
-=head3 uuid
+=head2 name
 
-Generates a hidden html field with a unique ID using Data::UUID which
-the can be used to check for duplicate form postings.
-Creates following html:
+The form's name.  Useful for multiple forms.
+It used to construct the default 'id' for fields, and is used
+for the HTML field name when 'html_prefix' is set. 
+The default is "form" + a one to three digit random number.
 
-  <input type="hidden" name="form_uuid" value="..some_uuid..">
+=head2 init_object
 
-Call with:
+If an 'init_object' is supplied on form creation, it will be used instead 
+of the 'item' to pre-populate the values in the form. This can be useful 
+when populating a form from default values stored in a similar but different 
+object than the one the form is creating. The 'init_object' should be either
+a hash or the same type of object that the model uses (a DBIx::Class row for
+the DBIC model).
 
-  [% form.uuid %]
+=head2 Validation flags
+
+=head3 ran_validation
+
+Flag to indicate that validation has been run. This flag will be
+false when the form is initially loaded and displayed, since
+validation is not run until FormHandler has params to validate.
+It normally shouldn't be necessary for users to check this flag.
+
+=head3 validated
+
+Flag that indicates if form has been validated. If you're using the
+'update', 'process', or 'validate' methods, you many not 
+need to use this flag, since the return value of those methods 
+is this flag. You might want to use this flag if you've
+written a method to replace 'update' or 'process', or you're
+doing something in between update/validate, such as set a stash key.
+
+   $form->update( ... );
+   $c->stash->{...} = ...;
+   return unless $form->validated;
+
+=head3 verbose
+
+Flag to print out additional diagnostic information. See 'dump_fields' and
+'dump_validated'.
+
+=head2 ctx
+
+Place to store application context
+
+=head2 language_handle, build_language_handle
+
+Holds a Local::Maketext language handle
+
+The builder for this attribute gets the Locale::Maketext language 
+handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates 
+a default language handler using L<HTML::FormHandler::I18N>
+
+=head2 html_prefix
+
+Flag to indicate that the form name is used as a prefix for fields
+in an HTML form. Useful for multiple forms
+on the same HTML page. The prefix is stripped off of the fields
+before creating the internal field name, and added back in when
+returning a parameter hash from the 'fif' method. For example,
+the field name in the HTML form could be "book.borrower", and
+the field name in the FormHandler form (and the database column)
+would be just "borrower".
+
+   has '+name' => ( default => 'book' );
+   has '+html_prefix' => ( default => 1 );
+
+Also see the Field attribute "html_name", a convenience function which
+will return the form name + "." + field name
+
+=head2 active_column
+
+The column in tables used for select list that marks an option 'active'.
+You might use this if all of your tables have the same 'active' column
+name, instead of setting this for each field.
+
+=head2 For use in HTML
+ 
+   http_method - For storing 'post' or 'get'
+   action - Store the form 'action' on submission. No default value.
+   submit - Store form submit field info. No default value.
+   uuid - generates a string containing an HTML field with UUID
+
+=head2 params
+
+Stores HTTP parameters. 
+Also: set_param, get_param, clear_params, delete_param, 
+has_params from Moose 'Collection::Hash' metaclass. 
+
+The 'set_param' method could be used to add additional field
+input that doesn't come from the HTML form, similar to a hidden field:
+
+   my $form = MyApp::Form->new( $item, $params );
+   $form->set_param('comment', 'updated by edit form');
+   return unless $form->update;
+
+(Note: 'process' clears params, so you have to use 'update' ); 
+
+=head2 dependency
+
+Arrayref of arrayrefs of fields. If one of a group of fields has a
+value, then all of the group are set to 'required'.
+
+  has '+dependency' => ( default => sub { [
+     ['street', 'city', 'state', 'zip' ],] }
+  );
+
+=head2 cross_validate
+
+This method is useful for cross checking values after they have been saved 
+as their final validated value, and for performing more complex dependency
+validation.
+
+This method is called even if some fields did not validate.
 
 =cut
+
+has 'name' => (
+   isa     => 'Str',
+   is      => 'rw',
+   default => sub { return 'form' . int( rand 1000 ) }
+);
+# for consistency in api with field nodes
+has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1,
+   lazy => 1, default => sub { shift });
+has 'parent' => ( is => 'rw' );
+# object with which to initialize
+has 'init_object' => ( is => 'rw' );
+# flags
+has [ 'ran_validation', 'validated', 'verbose' ] => ( isa => 'Bool', is => 'rw' );
+has 'user_data' => ( isa => 'HashRef', is => 'rw' );
+has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
+# for Locale::MakeText
+has 'language_handle' => (
+   is      => 'rw',
+   builder => 'build_language_handle'
+);
+has 'num_errors' => ( isa => 'Int', is => 'rw', default => 0 );
+has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
+has 'active_column' => ( isa => 'Str', is => 'rw' );
+has 'http_method' => ( isa => 'Str', is => 'rw', default => 'post' );
+has 'action' => ( is => 'rw' );
+has 'submit' => ( is => 'rw' );
+has 'params' => (
+   metaclass  => 'Collection::Hash',
+   isa        => 'HashRef',
+   is         => 'rw',
+   default    => sub { {} },
+   auto_deref => 1,
+   trigger    => sub { shift->_munge_params(@_) },
+   provides   => {
+      set    => 'set_param',
+      get    => 'get_param',
+      clear  => 'clear_params',
+      delete => 'delete_param',
+      empty  => 'has_params',
+   },
+);
+has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
+has '_required' => (
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef[HTML::FormHandler::Field]',
+   is         => 'rw',
+   default    => sub { [] },
+   auto_deref => 1,
+   provides   => {
+      clear => 'clear_required',
+      push  => 'add_required'
+   }
+);
+has 'field_list' => ( is => 'rw', default => sub { {} } );
+sub has_field_list
+{
+   my $self = shift;
+   if( ref $self->field_list eq 'HASH' )
+   {
+      return 1 if( scalar keys %{$self->field_list} );
+   }
+   elsif( ref $self->field_list eq 'ARRAY' )
+   {
+      return 1 if( scalar @{$self->field_list} );
+   }
+   return;
+}
+has 'field_name_space' => (
+   isa     => 'Str|Undef',
+   is      => 'rw',
+   default => '',
+);
+
 
 sub BUILDARGS
 {
@@ -603,12 +562,20 @@ sub BUILD
 {
    my $self = shift;
 
-   $self->build_fields;    # create the form fields
+   $self->_build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    $self->_init_from_object;    # load values from object, if item exists;
    $self->_load_options;        # load options -- need to do after loading item
    $self->dump_fields if $self->verbose;
    return;
+}
+
+sub build_language_handle
+{
+   my $lh = $ENV{LANGUAGE_HANDLE}
+      || HTML::FormHandler::I18N->get_handle
+      || die "Failed call to Locale::Maketext->get_handle";
+   return $lh;
 }
 
 sub process
@@ -787,7 +754,7 @@ sub validate_form
       }
    }
 
-   $self->fields_validate;
+   $self->_fields_validate;
       
    $self->cross_validate($params);
    # model specific validation 

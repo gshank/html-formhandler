@@ -57,7 +57,7 @@ has '+widget' => ( default => 'compound' );
 sub BUILD
 {
    my $self = shift;
-   $self->build_fields;
+   $self->_build_fields;
 }
 
 augment 'process' => sub {
@@ -83,7 +83,7 @@ augment 'process' => sub {
    }
    $self->clear_fif;
    return unless $self->has_fields;
-   $self->fields_validate;
+   $self->_fields_validate;
    my %value_hash;
    for my $field ( $self->fields )
    { 

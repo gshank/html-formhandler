@@ -11,8 +11,8 @@ HTML::FormHandler::Fields - role to build field array
 
 =head1 SYNOPSIS
 
-These are internal methods to build the field array. Probably
-not useful to users. 
+These are the methods that are necessary to build and access the
+fields arrays in a form and a compound field.
 
 =head2 fields
 
@@ -21,7 +21,31 @@ declarations. This is a MooseX::AttributeHelpers::Collection::Array,
 and provides clear_fields, add_field, remove_last_field, num_fields,
 has_fields, and set_field_at methods.
 
+=head2 field( $full_name )
+
+=head2 field_index
+
+Convenience function for use with 'set_field_at'. Pass in 'name' of field
+(not full_name)
+
+=head2 sorted_fields
+
+Calls fields and returns them in sorted order by their "order"
+value. Non-sorted fields are retrieved with 'fields'. 
+
+=head2 clear methods
+
+  clear_errors
+  clear_fifs
+  clear_values
+
+=head2 Dump information 
+
+   dump - turn verbose flag on to get this output
+   dump_validated - shorter version
+
 =cut
+
 
 has 'fields' => (
    metaclass  => 'Collection::Array',
@@ -39,15 +63,11 @@ has 'fields' => (
    }
 );
 
-=head2 build_fields
 
-This parses the field lists and creates the individual
-field objects.  It calls the _make_field() method for each field.
-This is called by the BUILD method. Users don't need to call this.
-
-=cut
-
-sub build_fields
+# This parses the field lists and creates the individual
+# field objects.  It calls the _make_field() method for each field.
+# This is called by the BUILD method. Users don't need to call this.
+sub _build_fields
 {
    my $self = shift;
 
@@ -240,18 +260,10 @@ sub _set_field
    $self->_make_field($field_attr);
 }
 
-=head2 _make_field
 
-    $field = $form->_make_field( $field_attr );
-
-Maps the field type to a field class, creates a field object and
-and returns it.
-
-The 'field_attr' hashref must have a 'name' key
-
-
-=cut
-
+# Maps the field type to a field class, creates a field object and
+# and returns it.
+# The 'field_attr' hashref must have a 'name' key
 sub _make_field
 {
    my ( $self, $field_attr ) = @_;
@@ -295,10 +307,10 @@ sub _make_field
       $field_attr->{parent} = $self;
    }
    my $field = $class->new( %{$field_attr} );
-   $self->update_or_create( $field->parent || $self->form, $field );
+   $self->_update_or_create( $field->parent || $self->form, $field );
 }
 
-sub update_or_create
+sub _update_or_create
 {
    my ( $self, $parent, $field ) = @_; 
 
@@ -308,13 +320,6 @@ sub update_or_create
    else                  
    { $parent->add_field($field); }
 }
-
-=head2 field_index
-
-Convenience function for use with 'set_field_at'. Pass in 'name' of field
-(not full_name)
-
-=cut 
 
 sub field_index
 {
@@ -327,10 +332,6 @@ sub field_index
    }
    return;
 }
-
-=head2 field
-
-=cut
 
 sub field
 {
@@ -358,13 +359,6 @@ sub field
    croak "Field '$name' not found in '$self'";
 }
 
-=head2 sorted_fields
-
-Calls fields and returns them in sorted order by their "order"
-value. Non-sorted fields are retrieved with 'fields'. 
-
-=cut
-
 sub sorted_fields
 {
    my $self = shift;
@@ -373,11 +367,7 @@ sub sorted_fields
    return wantarray ? @fields : \@fields;
 }
 
-=head2 fields_validate
-
-=cut
-
-sub fields_validate
+sub _fields_validate
 {
    my $self = shift;
    # validate all fields
@@ -394,23 +384,11 @@ sub fields_validate
    }
 }
 
-=head2 clear_errors
-
-Clears field errors
-
-=cut
-
 sub clear_errors
 {
    my $self = shift;
    $_->clear_errors for $self->fields;
 }
-
-=head2 clear_fif
-
-Clears fif values
-
-=cut
 
 sub clear_fifs
 {
@@ -423,12 +401,6 @@ sub clear_fifs
    }
 }
 
-=head2 clear_values
-
-Clears fif values
-
-=cut
-
 sub clear_values
 {
    my $self = shift;
@@ -438,13 +410,6 @@ sub clear_values
       $field->clear_value;
    }
 }
-
-=head2 dump
-
-Dumps the the array of fields for debugging. This method is called when
-the verbose flag is turned on.
-
-=cut
 
 sub dump_fields { shift->dump( @_) }
 sub dump
@@ -458,13 +423,6 @@ sub dump
    }
    warn "HFH: ------- end fields -------\n";
 }
-
-=head2 dump_validated
-
-For debugging, dump the validated fields. This method is called when the
-verbose flag is on.
-
-=cut
 
 sub dump_validated
 {

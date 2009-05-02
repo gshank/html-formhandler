@@ -2,6 +2,7 @@
   allow interpolating field value in messages 
   check name usage for consistency
   add Render::TT using Data::Section
+  change 'field_list' to allow an array of fields, un-document old syntax
 
 09/04/23
   add tests for apply actions

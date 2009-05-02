@@ -88,9 +88,6 @@ are applied. Some build a custom select list using 'build_options'.
 Field name. If this is a database form, this name is usually a database 
 column/accessor name or relationship.
 
-=cut
-
-has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 
 =head2 type
 
@@ -98,19 +95,11 @@ Field type (e.g. 'Text', 'Select' ... ) from a HTML::FormHandler::Field
 subclass, either one provided in the distribution or one that you
 create yourself, proceded by a "+":  type => '+MetaText'
 
-=cut
-
-has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
-
 =head2 init_value
 
 Initial value populated by init_from_object. You can tell if a field
 has changed by comparing 'init_value' and 'value'.
 Not to be confused with the form method init_value(). Not set by user.
-
-=cut
-
-has 'init_value' => ( is => 'rw' );
 
 =head2 value
 
@@ -122,38 +111,13 @@ The "validate" field method usually sets this value if the field validates.
 
 The user does not need to set this field except in validation methods.
 
-=cut
-
-has 'value' => (
-   is        => 'rw',
-   clearer   => 'clear_value',
-   predicate => 'has_value',
-   trigger   => sub {
-      my ( $self, $value ) = @_;
-      $self->fif( $self->fif_value($value) )
-         unless ( ( $self->password && $self->password == 1 )
-         || $self->has_fields );
-      return $value;
-   }
-);
-
 =head2 parent
 
 A reference to the parent of this field.
 
-=cut
-
-has 'parent' => ( is => 'rw', predicate => 'has_parent' );
-
 =head2 errors_on_parent
 
 Flag indicating that errors should not be set on this field class
-
-=cut
-
-has 'errors_on_parent' => ( isa => 'Bool', is => 'rw' );
-
-sub has_fields { }
 
 =head2 input
 
@@ -165,31 +129,12 @@ the 'value' attribute. The setter may be used in field tests and
 if a field class is used standalone. A change in this attribute triggers 
 setting 'fif'. 
 
-=cut
-
-has 'input' => (
-   is        => 'rw',
-   clearer   => 'clear_input',
-   predicate => 'has_input',
-   trigger   => sub {
-      my ( $self, $input ) = @_;
-      $self->fif($input)
-         unless ( $self->password && $self->password == 1 );
-      return $input;
-   }
-);
 
 =head2 input_without_param
 
 Input for this field if there is no param. Needed for checkbox,
 since an unchecked checkbox does not return a parameter.
 
-=cut
-
-has 'input_without_param' => (
-   is        => 'rw',
-   predicate => 'has_input_without_param'
-);
 
 =head2 fif
 
@@ -200,85 +145,32 @@ input parameters. The normal use would be to access this field from a template:
    [% f = form.field('title') %]
    [% f.fif %]
 
-=cut
-
-has 'fif' => ( is => 'rw', clearer => 'clear_fif', predicate => 'has_fif' );
 
 =head2 accessor
 
 If the name of your field is different than your database accessor, use
 this attribute to provide the name of accessor.
 
-=cut
-
-has 'accessor' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub {
-      my $self     = shift;
-      my $accessor = $self->name;
-      $accessor =~ s/^(.*)\.//g if ( $accessor =~ /\./ );
-      return $accessor;
-   }
-);
-
-=head2 temp
-
-Temporary attribute. Not used by HTML::FormHandler.
-
-=cut
-
-has 'temp' => ( is => 'rw' );
-
 =head2 label
 
 Text label for this field. Useful in templates. Defaults to ucfirst field name.
 
-=cut
-
-has 'label' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub { ucfirst( shift->name ) },
-);
-
 =head2 title
 
 Place to put title for field, for mouseovers. Not used by F::P.
-
-=cut
-
-has 'title' => ( isa => 'Str', is => 'rw' );
 
 =head2 style
 
 Field's generic style to use for css formatting in templates.
 Not actually used by F::P. 
 
-=cut
-
-has 'style' => ( isa => 'Str', is => 'rw' );
-
 =head2 css_class
 
 Field's css_class for use in templates.
 
-=cut
-
-has 'css_class' => ( isa => 'Str', is => 'rw' );
-
-# should we remove/deprecate this?
-has 'sub_form' => ( isa => 'HTML::FormHandler', is => 'rw' );
-
 =head2 form
 
 A reference to the containing form.
-
-=cut
-
-has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
 
 =head2 html_name
 
@@ -288,26 +180,6 @@ attribute is the equivalient of 'full_name'.
 A field named "street" in a form named "address" would
 have a html_name of "address.street". Allows multiple forms with
 the same field names.
-
-=cut
-
-has 'html_name' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   builder => 'build_html_name'
-);
-
-# following is to maintain compatibility. remove eventually
-sub prename { shift->html_name }
-
-sub build_html_name
-{
-   my $self = shift;
-   my $prefix = ($self->form && $self->form->html_prefix) ? 
-                                 $self->form->name . "." : '';
-   return $prefix . $self->full_name;
-}
 
 =head2 widget
 
@@ -337,32 +209,15 @@ roles.
 
 The default widget is 'text'.
 
-=cut
-
-has 'widget' => ( isa => 'Str', is => 'rw', default => 'text' );
-
 =head2 order
 
 This is the field's order used for sorting errors and field lists.
-See the "set_order" method and F::P method "sorted_fields".
-The order field is set for the fields when the form is built, but
-if the fields are defined with a hashref the order will not be defined.
-The "auto" and "fields" field_list attributes will take an arrayref which
-will preserve the order. If you explicitly set "order" on the fields
-in a field_list, you should set it on all the fields, otherwise results
-will be unpredictable.
-
-=cut
-
-has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
+It will be automatically created when the form is built, but may
+also be set in a field.
 
 =head2 required
 
 Flag indicating whether this field must have a value
-
-=cut
-
-has 'required' => ( isa => 'Bool', is => 'rw', default => '0' );
 
 =head2 required_message
 
@@ -370,30 +225,13 @@ Error message text added to errors if required field is not present
 
 The default is "Field <field label> is required".
 
-=cut
-
-has 'required_message' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub { shift->label . ' field is required' }
-);
-
 =head2 unique
 
 Flag to initiate checks in the database model for uniqueness.
 
-=cut
-
-has 'unique' => ( isa => 'Bool', is => 'rw' );
-
 =head2 unique_message
 
 Error message text added to errors if field is not unique
-
-=cut
-
-has 'unique_message' => ( isa => 'Str', is => 'rw' );
 
 =head2 range_start
 
@@ -424,21 +262,6 @@ Or just set one:
 Range checks are done after validation so
 must only be used on appropriate fields
 
-=cut
-
-has 'range_start' => ( isa => 'Int|Undef', is => 'rw', default => undef );
-has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
-
-sub value_sprintf
-{
-   die "The 'value_sprintf' attribute has been removed. Please use a transformation instead.";
-}
-
-sub input_to_value
-{
-   die "The 'input_to_value' method has been removed. Use a transformation or move to the 'validate' method.";
-}
-
 =head2 id, build_id
 
 Provides an 'id' for the field. Useful for javascript.
@@ -448,33 +271,14 @@ The default id is:
 
 Override with "build_id".
 
-=cut
-
-has 'id' => ( isa => 'Str', is => 'rw', lazy => 1, builder => 'build_id' );
-
-sub build_id
-{
-   my $field = shift;
-   my $form_name = $field->form ? $field->form->name : 'fld-';
-   return $form_name . $field->name;
-}
-
 =head2 javascript
 
 Store javascript for the field
-
-=cut
-
-has 'javascript' => ( isa => 'Str', is => 'rw' );
 
 =head2 password
 
 This is a boolean flag to prevent the field from being returned in
 the C<$form->fif> and C<$field->fif> methods. 
-
-=cut
-
-has 'password' => ( isa => 'Bool', is => 'rw' );
 
 =head2 writeonly
 
@@ -484,18 +288,10 @@ The value is not read from the database.
 However, the value entered into the form WILL be returned. This might
 be used for columns that should only be written to the database on updates.
 
-=cut
-
-has 'writeonly' => ( isa => 'Bool', is => 'rw' );
-
 =head2 clear
 
 This is a flag that says you want to set the database column to null for this
 field.  Validation is also not run on this field.
-
-=cut
-
-has 'clear' => ( isa => 'Bool', is => 'rw' );
 
 =head2 disabled
 
@@ -508,9 +304,6 @@ in constructing HTML.
 
 =cut
 
-has 'disabled' => ( isa => 'Bool', is => 'rw' );
-has 'readonly' => ( isa => 'Bool', is => 'rw' );
-
 =head2 noupdate
 
 This boolean flag indicates a field that should not be updated.  Fields
@@ -519,32 +312,12 @@ flagged as noupdate are skipped when processed by the model.
 This is useful when a form contains extra fields that are not directly
 written to the data store.
 
-=cut
-
-has 'noupdate' => ( isa => 'Bool', is => 'rw' );
-
 =head2 errors
 
 Returns the error list for the field. Also provides 'num_errors',
 'has_errors', 'push_errors' and 'clear_errors' from Collection::Array 
 metaclass. Use 'add_error' to add an error to the array if you
 want to use a MakeText language handle. Default is an empty list. 
-
-=cut
-
-has 'errors' => (
-   metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef[Str]',
-   is         => 'rw',
-   auto_deref => 1,
-   default    => sub { [] },
-   provides   => {
-      'push'  => 'push_errors',
-      'count' => 'num_errors',
-      'empty' => 'has_errors',
-      'clear' => 'clear_errors',
-   }
-);
 
 =head2 set_validate
 
@@ -558,73 +331,9 @@ method name.
    has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
    has_field 'subtitle' => ( isa => 'Str', set_validate => 'check_title' );
 
-=cut
-
-has 'set_validate' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub {
-      my $self = shift;
-      my $name = $self->full_name;
-      $name =~ s/\./_/g;
-      return 'validate_' . $name;
-   }
-);
-
-sub _can_validate
-{
-   my $self = shift;
-   return
-      unless $self->form
-         && $self->set_validate
-         && $self->form->can( $self->set_validate );
-   return 1;
-}
-
-sub _validate
-{
-   my $self = shift;
-   return unless $self->_can_validate;
-   my $meth = $self->set_validate;
-   $self->form->$meth($self);
-}
-
 =head2 set_init
 
 The name of the method in the form that provides a field's initial value
-
-=cut
-
-has 'set_init' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub {
-      my $self = shift;
-      my $name = $self->full_name;
-      $name =~ s/\./_/g;
-      return 'init_value_' . $name;
-   }
-);
-
-sub _can_init
-{
-   my $self = shift;
-   return
-      unless $self->form
-         && $self->set_init
-         && $self->form->can( $self->set_init );
-   return 1;
-}
-
-sub _init
-{
-   my $self = shift;
-   return unless $self->_can_init;
-   my $meth = $self->set_init;
-   $self->form->$meth($self);
-}
 
 =head2 apply
 
@@ -761,9 +470,244 @@ a transformed value.
       apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
   );
 
+=head2 trim
+
+A Hashref containing a transfrom to trim the field. By default
+this contains a transform to strip beginning and trailing spaces.
+Set this attribute to null to skip trimming, or supply a different
+transform.
+
+  trim => { transform => sub { } }
+
+Trimming is performed before any other defined actions.
+
+=head2 full_name
+
+This returns the name of the field, but if the field
+is a child field will prepend the field with the parent's field
+name.  For example, if a field is "month" and the parent's field name
+is "birthday" then this will return "birthday.month".
+
+=head2 add_error
+
+Add an error to the list of errors.  If $field->form
+is defined then process error message as Maketext input.
+See $form->language_handle for details. Returns undef.  
+
+    return $field->add_error( 'bad data' ) if $bad;
+
+=head2 process
+
+This method does standard validation, which currently tests:
+
+    required        -- if field is required and value exists
+
+Then if a value exists, calls the 'augment' validate_field method in subclasses.
+
+If these tests pass, the field's validate method is called
+
+    $field->validate;
+
+If C<< $field->validate >> returns true then the input value
+is copied from the input attribute to the field's value attribute.
+
+The field's error list and internal value are reset upon entry.
+
+=head2 validate
+
+This method validates the input data for the field and returns true if
+the data validates.  An error message must be added to the field with
+C<< $field->add_error( ... ) >> if the value does not validate. The default 
+method is to return true.
+
+    sub validate {
+        my $field = shift;
+        my $input = $field->input;
+        return $field->add_error( ... ) if ( ... );
+        return 1;
+    }
+
+=head2 required_text
+
+Returns "required" or "optional" based on the field's setting.
 
 =cut
 
+has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
+has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
+has 'init_value' => ( is => 'rw' );
+has 'value' => (
+   is        => 'rw',
+   clearer   => 'clear_value',
+   predicate => 'has_value',
+   trigger   => sub {
+      my ( $self, $value ) = @_;
+      $self->fif( $self->fif_value($value) )
+         unless ( ( $self->password && $self->password == 1 )
+         || $self->has_fields );
+      return $value;
+   }
+);
+has 'parent' => ( is => 'rw', predicate => 'has_parent' );
+has 'errors_on_parent' => ( isa => 'Bool', is => 'rw' );
+sub has_fields { }
+has 'input' => (
+   is        => 'rw',
+   clearer   => 'clear_input',
+   predicate => 'has_input',
+   trigger   => sub {
+      my ( $self, $input ) = @_;
+      $self->fif($input)
+         unless ( $self->password && $self->password == 1 );
+      return $input;
+   }
+);
+has 'input_without_param' => (
+   is        => 'rw',
+   predicate => 'has_input_without_param'
+);
+has 'fif' => ( is => 'rw', clearer => 'clear_fif', predicate => 'has_fif' );
+has 'accessor' => (
+   isa     => 'Str',
+   is      => 'rw',
+   lazy    => 1,
+   default => sub {
+      my $self     = shift;
+      my $accessor = $self->name;
+      $accessor =~ s/^(.*)\.//g if ( $accessor =~ /\./ );
+      return $accessor;
+   }
+);
+has 'temp' => ( is => 'rw' );
+has 'label' => (
+   isa     => 'Str',
+   is      => 'rw',
+   lazy    => 1,
+   default => sub { ucfirst( shift->name ) },
+);
+has 'title' => ( isa => 'Str', is => 'rw' );
+has 'style' => ( isa => 'Str', is => 'rw' );
+has 'css_class' => ( isa => 'Str', is => 'rw' );
+# should we remove/deprecate this?
+has 'sub_form' => ( isa => 'HTML::FormHandler', is => 'rw' );
+has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
+has 'html_name' => (
+   isa     => 'Str',
+   is      => 'rw',
+   lazy    => 1,
+   builder => 'build_html_name'
+);
+# following is to maintain compatibility. remove eventually
+sub prename { shift->html_name }
+sub build_html_name
+{
+   my $self = shift;
+   my $prefix = ($self->form && $self->form->html_prefix) ? 
+                                 $self->form->name . "." : '';
+   return $prefix . $self->full_name;
+}
+has 'widget' => ( isa => 'Str', is => 'rw', default => 'text' );
+has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
+has 'required' => ( isa => 'Bool', is => 'rw', default => '0' );
+has 'required_message' => (
+   isa     => 'Str',
+   is      => 'rw',
+   lazy    => 1,
+   default => sub { shift->label . ' field is required' }
+);
+has 'unique' => ( isa => 'Bool', is => 'rw' );
+has 'unique_message' => ( isa => 'Str', is => 'rw' );
+has 'range_start' => ( isa => 'Int|Undef', is => 'rw', default => undef );
+has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
+sub value_sprintf
+{
+   die "The 'value_sprintf' attribute has been removed. Please use a transformation instead.";
+}
+sub input_to_value
+{
+   die "The 'input_to_value' method has been removed. Use a transformation or move to the 'validate' method.";
+}
+has 'id' => ( isa => 'Str', is => 'rw', lazy => 1, builder => 'build_id' );
+sub build_id
+{
+   my $field = shift;
+   my $form_name = $field->form ? $field->form->name : 'fld-';
+   return $form_name . $field->name;
+}
+has 'javascript' => ( isa => 'Str', is => 'rw' );
+has 'password' => ( isa => 'Bool', is => 'rw' );
+has 'writeonly' => ( isa => 'Bool', is => 'rw' );
+has 'clear' => ( isa => 'Bool', is => 'rw' );
+has 'disabled' => ( isa => 'Bool', is => 'rw' );
+has 'readonly' => ( isa => 'Bool', is => 'rw' );
+has 'noupdate' => ( isa => 'Bool', is => 'rw' );
+has 'errors' => (
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef[Str]',
+   is         => 'rw',
+   auto_deref => 1,
+   default    => sub { [] },
+   provides   => {
+      'push'  => 'push_errors',
+      'count' => 'num_errors',
+      'empty' => 'has_errors',
+      'clear' => 'clear_errors',
+   }
+);
+has 'set_validate' => (
+   isa     => 'Str',
+   is      => 'rw',
+   lazy    => 1,
+   default => sub {
+      my $self = shift;
+      my $name = $self->full_name;
+      $name =~ s/\./_/g;
+      return 'validate_' . $name;
+   }
+);
+sub _can_validate
+{
+   my $self = shift;
+   return
+      unless $self->form
+         && $self->set_validate
+         && $self->form->can( $self->set_validate );
+   return 1;
+}
+sub _validate
+{
+   my $self = shift;
+   return unless $self->_can_validate;
+   my $meth = $self->set_validate;
+   $self->form->$meth($self);
+}
+has 'set_init' => (
+   isa     => 'Str',
+   is      => 'rw',
+   lazy    => 1,
+   default => sub {
+      my $self = shift;
+      my $name = $self->full_name;
+      $name =~ s/\./_/g;
+      return 'init_value_' . $name;
+   }
+);
+sub _can_init
+{
+   my $self = shift;
+   return
+      unless $self->form
+         && $self->set_init
+         && $self->form->can( $self->set_init );
+   return 1;
+}
+sub _init
+{
+   my $self = shift;
+   return unless $self->_can_init;
+   my $meth = $self->set_init;
+   $self->form->$meth($self);
+}
 has 'actions' => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef',
@@ -777,14 +721,6 @@ has 'actions' => (
       'clear' => 'clear_actions',
    }
 );
-
-=head2 deflations
-
-Use deflations to convert from an inflated database or internal value to
-a value suitable for displaying in an HTML form.
-
-=cut
-
 has 'deflations' => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef',
@@ -798,20 +734,6 @@ has 'deflations' => (
       'clear' => 'clear_deflations',
    }
 );
-
-=head2 trim
-
-A Hashref containing a transfrom to trim the field. By default
-this contains a transform to strip beginning and trailing spaces.
-Set this attribute to null to skip trimming, or supply a different
-transform.
-
-  trim => { transform => sub { } }
-
-Trimming is performed before any other defined actions.
-
-=cut
-
 has 'trim' => ( isa => 'HashRef', is => 'rw', 
    default => sub {{ 
       transform => 
@@ -831,15 +753,6 @@ has 'trim' => ( isa => 'HashRef', is => 'rw',
    }}
 );
 
-
-=head1 METHODS
-
-=head2 new [parameters]
-
-Create a new instance of a field.  Initial values are passed 
-as a list of parameters.
-
-=cut
 
 sub BUILD
 {
@@ -875,15 +788,6 @@ sub _build_apply_list
    $self->add_action( @apply_list );
 }
 
-=head2 full_name
-
-This returns the name of the field, but if the field
-is a child field will prepend the field with the parent's field
-name.  For example, if a field is "month" and the parent's field name
-is "birthday" then this will return "birthday.month".
-
-=cut
-
 sub full_name
 {
    my $field = shift;
@@ -892,33 +796,6 @@ sub full_name
    my $parent = $field->parent || return $name;
    return $parent->full_name . '.' . $name;
 }
-
-=head2 set_order
-
-This sets the field's order to the form's field_counter
-and increments the counter. This may be used in a template
-when displaying the field.
-
-=cut
-
-sub set_order
-{
-   my $field = shift;
-   my $form  = $field->form;
-   my $order = $form->field_counter || 1;
-   $field->order($order);
-   $form->field_counter( $order + 1 );
-}
-
-=head2 add_error
-
-Add an error to the list of errors.  If $field->form
-is defined then process error message as Maketext input.
-See $form->language_handle for details. Returns undef.  
-
-    return $field->add_error( 'bad data' ) if $bad;
-
-=cut
 
 sub add_error
 {
@@ -945,25 +822,6 @@ sub add_error
    $self->parent->push_errors( $message ) if $self->parent;
    return;
 }
-
-=head2 process
-
-This method does standard validation, which currently tests:
-
-    required        -- if field is required and value exists
-
-Then if a value exists, calls the 'augment' validate_field method in subclasses.
-
-If these tests pass, the field's validate method is called
-
-    $field->validate;
-
-If C<< $field->validate >> returns true then the input value
-is copied from the input attribute to the field's value attribute.
-
-The field's error list and internal value are reset upon entry.
-
-=cut
 
 sub process
 {
@@ -1117,31 +975,7 @@ sub _apply_deflations
    return $value;
 }
 
-=head2 validate
-
-This method validates the input data for the field and returns true if
-the data validates.  An error message must be added to the field with
-C<< $field->add_error( ... ) >> if the value does not validate. The default 
-method is to return true.
-
-    sub validate {
-        my $field = shift;
-        my $input = $field->input;
-        return $field->add_error( ... ) if ( ... );
-        return 1;
-    }
-
-=cut
-
 sub validate { 1 }
-
-=head2 test_ranges
-
-If range_start and/or range_end is set AND the field
-does not have options will test that the value is within
-range.  This is called after all other validation.
-
-=cut
 
 sub test_ranges
 {
@@ -1180,12 +1014,6 @@ sub test_ranges
 }
 
 
-=head2 input_defined
-
-Returns true if $self->input contains any non-blank input.
-
-=cut
-
 sub input_defined
 {
    my ($self) = @_;
@@ -1206,15 +1034,6 @@ sub fif_value
    return $value;
 }
 
-=head2 value_changed
-
-Returns true if the value in the item has changed from what is currently in the
-field's value.
-
-This only does a string compare (arrays are sorted and joined).
-
-=cut
-
 sub value_changed
 {
    my ($self) = @_;
@@ -1231,19 +1050,7 @@ sub value_changed
    return $cmp[0] ne $cmp[1];
 }
 
-=head2 required_text
-
-Returns "required" or "optional" based on the field's setting.
-
-=cut
-
 sub required_text { shift->required ? 'required' : 'optional' }
-
-=head2 dump_field
-
-A little debugging.
-
-=cut
 
 sub dump
 {

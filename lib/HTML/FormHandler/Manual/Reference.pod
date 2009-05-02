@@ -65,7 +65,6 @@ These attributes are usually accessed in a subroutine or in a template.
 
 =head2 Miscellaneous field subroutines
  
-   set_order      Sets the field's order to the value of the form's field_counter
    has_input      Checks 'input' attribute
    fif_value      Convert the field's value to a format suitable for param hash 
    value_changed  Has the field's value changed from the init_value?
@@ -102,7 +101,6 @@ These attributes are usually accessed in a subroutine or in a template.
    updated_or_created  'updated' or 'created' in database
    user_data      Place to store user data
    language handle  For MakeText 
-   field_counter  For setting field order
    params         HTTP parameters 
    fields         Field array
    required       Array of required fields
