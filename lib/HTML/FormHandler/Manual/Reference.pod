@@ -38,7 +38,6 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    label_column  Select lists: column to use for labels (default: name)
    active_column Select lists: which values to list
    sort_column   Select lists: column to use for sorting (default: label_column)
-   sub_form      The field is made up of a sub-form (only dates at this point)
    size          Text & select fields. Validated for text.
    minlength     Text fields. Used in validation
    range_start   Range start for number fields 
@@ -46,6 +45,8 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    unique        Field should be unique in the database 
    unique_message If field is not unique, error message.
    apply         Array of constraint/coercion/transformation actions
+   value_changed Has the field's value changed from the init_value?
+   dump          For debugging
 
 =head2 Field attributes not set in a user form
 
@@ -56,20 +57,6 @@ These attributes are usually accessed in a subroutine or in a template.
    input         Input value from parameter or initial value from database
    fif           Retrieve (do not set) values for filling in a form 
    options       Select lists. Sorted array of hashes, keys: "value", "label"
-
-=head2 Field subroutines to subclass in a Field class
-
-   validate          Main part of Field subclasses. Generic validation that
-                       applies to all fields of this type.
-   Add your own field attributes in your custom Field classes.
-
-=head2 Miscellaneous field subroutines
- 
-   has_input      Checks 'input' attribute
-   fif_value      Convert the field's value to a format suitable for param hash 
-   value_changed  Has the field's value changed from the init_value?
-   required_text  Returns 'required' or 'optional' according to required flag
-   dump           For debugging
 
 =head1 Forms
 
@@ -83,14 +70,6 @@ These attributes are usually accessed in a subroutine or in a template.
    dependency    Array of arrays of field names. If one name has a value, all
                        fields in the list are set to 'required'
    
-=head2 Form field_list attributes 
-
-   fields        Array (or hashref) of field definitions
-   required      Hashref of 'required' fields
-   optional      Hashref of non-required fields
-   auto_required Array of required field names (types from 'guess_field_type')
-   auto_optional Array of optional field names
-
 =head2 Other Form attributes
 
    name           Form name
@@ -98,19 +77,11 @@ These attributes are usually accessed in a subroutine or in a template.
    ran_validation Flag that validation has already been run
    field_name_space  Where to look for your fields
    num_errors     Number of errors
-   updated_or_created  'updated' or 'created' in database
-   user_data      Place to store user data
    language handle  For MakeText 
    params         HTTP parameters 
    fields         Field array
-   required       Array of required fields
    parent         For compound/related fields: parent field reference 
-   active_column  The 'active' column for all select lists in the form
    html_prefix    Flag to prefix html field names with the form name
-   submit
-   http_method
-   action
-   user_data
    ctx
     
     
@@ -126,7 +97,6 @@ These attributes are usually accessed in a subroutine or in a template.
    values          Returns a hashref of values (with accessor keys)
    fif             Returns a hashref for filling in form  
 
-   has_error       Ran_validation & !validated
    has_errors      True if any field has errors 
    num_errors      The number of fields with errors
    error_fields    Returns an array of fields with errors
@@ -139,7 +109,6 @@ These attributes are usually accessed in a subroutine or in a template.
    update          Sets up form, validates form, updates model
    validate        For non-db forms: sets up, clears, validates
    validate_form   Validates form
-  
    
 =head2  Subroutines for your form
 
@@ -147,7 +116,6 @@ These attributes are usually accessed in a subroutine or in a template.
    validate_$fieldname      Validation routine for field 
    init_value_$fieldname    Overrides initial value for the field
    cross_validate           For validation after individual fields are validated 
-   Plus any subroutine you care to write...
    
 =head2 Methods to subclass from HTML::FormHandler::Model::DBIC
 

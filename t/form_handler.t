@@ -17,14 +17,12 @@ use_ok( 'HTML::FormHandler' );
    has_field 'somename';
    has_field 'my_selected' => ( type => 'Checkbox' );
    sub field_list {
-       return {
-           fields    => {
-               fruit       => 'Select',
-               optname     => {
-                  temp => 'Second'
-               }
-           },
-       };
+       return  [
+            fruit       => 'Select',
+            optname     => {
+               temp => 'Second'
+            }
+       ];
    }
    sub options_fruit {
        return (

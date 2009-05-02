@@ -10,21 +10,19 @@ use_ok( 'HTML::FormHandler' );
    extends 'HTML::FormHandler';
    has '+name' => ( default => 'testform_' );
    sub field_list {
-       return {
-           fields    => {
-               reqname     => {
-                  type => 'Text',
-                  required => 1,
-                  required_message => 'You must supply a reqname',
-               },
-               fruit       => 'Select',
-               optname     => 'Text',
-               silly_name  => {
-                  type =>'Text',
-                  set_validate => 'valid_silly'
-               }
+       return [
+           reqname     => {
+              type => 'Text',
+              required => 1,
+              required_message => 'You must supply a reqname',
            },
-       };
+           fruit       => 'Select',
+           optname     => 'Text',
+           silly_name  => {
+              type =>'Text',
+              set_validate => 'valid_silly'
+           }
+       ];
    }
    sub options_fruit {
        return (
@@ -65,8 +63,9 @@ my @fields = $form->error_fields;
 ok( @fields, 'error fields' );
 
 my @errors = $form->errors;
-is_deeply( \@errors, ['\'4\' is not a valid value',
+is_deeply( \@errors, [
                      'You must supply a reqname',
+                     '\'4\' is not a valid value',
                      'Not a valid silly_name' ],
      'errors from form' );
 
@@ -74,7 +73,7 @@ is( $form->num_errors, 3, 'number of errors' );
 
 my @field_names = $form->error_field_names;
 is_deeply( \@field_names, 
-           [ 'fruit', 'reqname', 'silly_name' ],
+           [ 'reqname', 'fruit', 'silly_name' ],
            'error field names' );
 
 is( $form->field('fruit')->id, "testform_fruit", 'field has id' ); 

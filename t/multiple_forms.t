@@ -13,13 +13,11 @@ use_ok( 'HTML::FormHandler' );
    has '+html_prefix' => ( default => 1 );
 
    sub field_list {
-       return {
-           fields    => {
-               field_one => 'Text',
-               field_two => 'Text',
-               field_three => 'Text',
-           },
-       };
+      return [
+         field_one => 'Text',
+         field_two => 'Text',
+         field_three => 'Text',
+      ];
    }
 }
 my $form1 = My::Form::One->new;

@@ -12,7 +12,9 @@ HTML::FormHandler::Fields - role to build field array
 =head1 SYNOPSIS
 
 These are the methods that are necessary to build and access the
-fields arrays in a form and a compound field.
+fields arrays in a form and a compound field. This is a role which
+is composed into L<HTML::FormHandler> and 
+L<HTML::FormHandler::Field::Compound>
 
 =head2 fields
 
@@ -22,6 +24,9 @@ and provides clear_fields, add_field, remove_last_field, num_fields,
 has_fields, and set_field_at methods.
 
 =head2 field( $full_name )
+
+Return the field objct with the full_name passed. Will return undef
+if the field is not found, or will die if passed a second parameter.
 
 =head2 field_index
 
@@ -85,41 +90,35 @@ sub _build_fields
    }
    $order++;
    # number all unordered fields
-   my @expand_fields;
    foreach my $field ( $self->fields )
    {
       $field->order($order) unless $field->order;
       $order++;
-      # collect child references in parent field
-      push @expand_fields, $field if $field->name =~ /\./;
    }
-   @expand_fields = sort { $a->name cmp $b->name } @expand_fields;
-   foreach my $field (@expand_fields)
-   {
-      my @names       = split /\./, $field->name;
-      my $simple_name = pop @names;
-      my $parent_name = pop @names;
-      my $parent      = $self->field($parent_name);
-      next unless $parent;
-      $field->parent($parent);
-      $field->name($simple_name);
-      $parent->add_field($field);
-   }
-
 }
 
 sub _process_field_list
 {
    my ( $self, $flist ) = @_;
 
+   # process all the stupidly many different formats for field_list
+   # remove undocumented syntaxes after a while
+   if ( ref $flist eq 'ARRAY' )
+   {
+      $self->_process_field_array( $self->_array_fields( $flist ) );
+      return;
+   };
+   # these should go away. not really necessary
    $self->_process_field_array( $self->_hashref_fields( $flist->{'required'}, 1 ) )
       if $flist->{'required'};
    $self->_process_field_array( $self->_hashref_fields( $flist->{'optional'}, 0 ) )
       if $flist->{'optional'};
+   # these next two are deprecated. use array instead
    $self->_process_field_array( $self->_hashref_fields( $flist->{'fields'} ) )
       if ( $flist->{'fields'} && ref $flist->{'fields'} eq 'HASH' );
    $self->_process_field_array( $self->_array_fields( $flist->{'fields'} ) )
       if ( $flist->{'fields'} && ref $flist->{'fields'} eq 'ARRAY' );
+   # don't encourage use of these two. functionality too limited. 
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_required'}, 1 ) )
       if $flist->{'auto_required'};
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_optional'}, 0 ) )
@@ -273,7 +272,6 @@ sub _make_field
    my $name = $field_attr->{name};
    return unless $name;
 
-   # TODO what about fields with fields? namespace from where?
    my $class =
         $type =~ s/^\+//
       ? $self->field_name_space

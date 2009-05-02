@@ -320,15 +320,13 @@ To declare fields use the syntax:
 instead of:
 
    sub field_list {
-      return {
-         fields => {
-            title => {
-               type => 'Text',
-               required => 1,
-            },
-            authors => 'Select',
-         }
-      }            
+      return [
+         title => {
+            type => 'Text',
+            required => 1,
+         },
+         authors => 'Select',
+      ]            
    }
          
 Fields specified in a field_list will overwrite fields specified with 'has_field'.
@@ -374,84 +372,34 @@ will modify existing attributes or be added to an existing field definition:
 
 =head1 The form field_list
 
-Returns a hashref of field definitions.
-
-The possible keys in the field_list hashref are:
-
-   required
-   optional
-   fields
-   auto_required
-   auto_optional
+An array of name, specification pairs to define fields.
 
 The field_list is one way to define the fields in your form (though
 you can also add fields individually). 
 
-You can categorize your fields as required and optional with two separate 
-hashrefs:
-
-    my $field_list => {
-        required => {
-            field_one => 'Text', 
-        },
-        optional => {
-            field_two => 'Text', 
-        },
-    };
-
-Or you can use one hashref and indicate 'required' as yet another field
-attribute:
-
-    my $field_list => {
-        fields => [
+   has '+field_list' => ( default => sub { 
+         [
             field_one => {
                type => 'Text',
                required => 1
             },
             field_two => 'Text,
-         ],
-     }; 
-
-(Making the value of the "fields" key an array allows FormHandler to
-create the "order" of the fields in the order in which you define them.)
-The only required key is "type", which determines the field class.  
-All other keys are attributes of L<HTML::FormHandler::Field> or its subclasses.
+         ] 
+      }
+   ); 
 
 An example of a select field:
 
-    my $field_list = {
-        fields => {
+    sub field_list {
+       return [
             favorite_color => {
                 type            => 'Select',
                 label_column    => 'color_name',
                 active_column   => 'is_active',
             },
-        },
-    };
+        ];
+    }
 
-The definition above is the equivalent of the following code:
-
-    my $field = HTML::FormHandler::Field::Select->new(
-       name => 'favorite_color', 
-       required => 1,
-       label_column => 'color_name',
-       active_column => 'is_active' );
-    $form->add_field( $field );
-
-
-For the "auto" field_list keys, provide a list of field names.  
-The field types will be determined by calling 'guess_field_type' 
-in the model.  
-
-    auto_required => ['name', 'age', 'sex', 'birthdate'],
-    auto_optional => ['hobbies', 'address', 'city', 'state'],
-
-The 'guess_field_type' method could be customized to provide more
-sophisticated determination of types. For the DBIC model, the schema
-class must be available when the auto fields are constructed.
-
-Note that field_lists do not have the same flexibility in subclassing
-that 'has_field' fields do.
 
 =head1 Fields
 

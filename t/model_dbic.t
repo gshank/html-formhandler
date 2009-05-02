@@ -22,17 +22,16 @@ ok($schema, 'get schema');
 
    has '+item_class' => ( default => 'Book' );
    has '+field_list' => ( default => sub {
-         {
-           fields    => [
-               book_title   => {
-                  type => 'Text',
-                  required => 1,
-                  accessor => 'title',
-               },
-               author    => 'Text',
-               extra     => 'Text',
-           ]}
-       }
+         [
+            book_title   => {
+               type => 'Text',
+               required => 1,
+               accessor => 'title',
+            },
+            author    => 'Text',
+            extra     => 'Text',
+         ]
+      }
    );
 }
 
@@ -54,16 +53,14 @@ ok( $author_field->order == 2, 'order for author');
    extends 'HTML::FormHandler::Model::DBIC';
 
    has '+field_list' => ( default => sub {
-         {
-           fields    => [
-               title     => {
-                  type => 'Text',
-#                  required => 1,
-               },
-               author    => 'Text',
-               extra     => 'Text',
-           ]}
-       }
+         [
+            title     => {
+               type => 'Text',
+            },
+            author    => 'Text',
+            extra     => 'Text',
+         ]
+      }
    );
 }
 

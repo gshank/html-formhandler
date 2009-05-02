@@ -10,13 +10,11 @@ use HTML::FormHandler::Field;
 
    has '+name' => ( default => 'testform' );
    sub field_list {
-       {
-           fields    => {
-               meat        => 'Text',
-               starch      => { required => 1 },
-               fruit       => 'Select',
-           },
-       }
+       [
+           meat        => 'Text',
+           starch      => { required => 1 },
+           fruit       => 'Select',
+       ]
    }
 
    sub options_fruit {

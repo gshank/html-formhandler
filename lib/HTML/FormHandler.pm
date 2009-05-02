@@ -104,12 +104,10 @@ attribute to set fields:
 
     my $form = HTML::FormHandler->new(
         item => $user,
-        field_list => {
-            fields => {
+        field_list => [
                first_name => 'Text',
                last_name => 'Text' 
-            },
-        },
+        ],
     );
 
 
@@ -156,7 +154,7 @@ Template Toolkit web application, but use is not limited to that.
 
 =head2 Creating a form with 'new' 
 
-New creates a new form object.  The constructor takes name/value pairs:
+The new constructor takes name/value pairs:
 
     MyForm->new(
         item    => $item,
@@ -170,15 +168,16 @@ may be supplied:
     MyForm->new( $item );
 
 If you will be processing a persistent form with 'process', no arguments
-are necessary. Do not pass in item or item_id if you use 'process',
-because they will be cleared.
-
-The common attributes to be passed in to the constructor are:
+are necessary. The common attributes to be passed in to the constructor are:
 
    item_id
    item
    schema
-   item_class (often set in the form class)
+
+The following are occasionally passed in, but are more often set
+in the form class:
+
+   item_class
    dependency
    field_list
    init_object
@@ -189,12 +188,10 @@ Creating a form object:
         item_id         => $id,
         item_class    => 'User', 
         schema          => $schema,
-        field_list         => {
-            required => {
+        field_list         => [
                 name    => 'Text',
                 active  => 'Boolean',
-            },
-        },
+        ],
     );
 
 The 'item', 'item_id', and 'item_class' attributes are defined
@@ -298,20 +295,20 @@ field's 'value' for the the values.
 The most common way of declaring fields is the 'has_field' syntax.
 See L<HTML::FormHandler::Manual::Intro>
 
+   has_field 'field_name' => ( type => 'FieldClass', .... );
+
 =head3 field_list
 
-A hashref of field definitions which can be used as an
+A 'field_list' is an array of field definitions which can be used as an
 alternative to 'has_field' in small, dynamic forms.
 
-    field_list => {
-        fields => [
-            field_one => {
-               type => 'Text',
-               required => 1
-            },
-            field_two => 'Text,
-         ],
-     } 
+    field_list => [
+       field_one => {
+          type => 'Text',
+          required => 1
+       },
+       field_two => 'Text,
+    ]
 
 
 =head3 field_name_space
@@ -322,6 +319,11 @@ from the "HTML::FormHandler::Field" name space. If 'field_name_space'
 is not set, then field types with a "+" must be the complete package
 name.
 
+=head3 fields
+
+The array of fields. A compound field will itself have an array of fields,
+so this is a tree structure.
+
 =head3 field($name)
 
 This is the method that is usually called in your templates to
@@ -329,19 +331,12 @@ access a field:
 
     [% f = form.field('title') %]
 
-Searches for and returns a field named "NAME".
-Dies on not found.
-
-    my $field = $form->field('first_name');
-
-Pass a second true value to not die on errors.
+Pass a second true value to die on errors.
  
-    my $field = $form->field('something', 1 );
-
 =head3 value($name)
 
 Convenience function to return the value of the field. Returns
-undef if field not found.
+undef if field not found. The equivalent of C<< $form->field('name')->value >>
 
 
 =head2 Accessing errors 
@@ -352,14 +347,16 @@ undef if field not found.
   num_errors - number of errors in form
 
 
-=head2 name
+=head2 Miscellaneous attributes
+
+=head3 name
 
 The form's name.  Useful for multiple forms.
 It used to construct the default 'id' for fields, and is used
 for the HTML field name when 'html_prefix' is set. 
 The default is "form" + a one to three digit random number.
 
-=head2 init_object
+=head3 init_object
 
 If an 'init_object' is supplied on form creation, it will be used instead 
 of the 'item' to pre-populate the values in the form. This can be useful 
@@ -368,7 +365,28 @@ object than the one the form is creating. The 'init_object' should be either
 a hash or the same type of object that the model uses (a DBIx::Class row for
 the DBIC model).
 
-=head2 Validation flags
+=head3 ctx
+
+Place to store application context
+
+=head3 language_handle, build_language_handle
+
+Holds a Local::Maketext language handle
+
+The builder for this attribute gets the Locale::Maketext language 
+handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates 
+a default language handler using L<HTML::FormHandler::I18N>
+
+=head3 dependency
+
+Arrayref of arrayrefs of fields. If one of a group of fields has a
+value, then all of the group are set to 'required'.
+
+  has '+dependency' => ( default => sub { [
+     ['street', 'city', 'state', 'zip' ],] }
+  );
+
+=head2 Flags
 
 =head3 ran_validation
 
@@ -392,22 +410,11 @@ doing something in between update/validate, such as set a stash key.
 
 =head3 verbose
 
-Flag to print out additional diagnostic information. See 'dump_fields' and
+Flag to dump diagnostic information. See 'dump_fields' and
 'dump_validated'.
 
-=head2 ctx
 
-Place to store application context
-
-=head2 language_handle, build_language_handle
-
-Holds a Local::Maketext language handle
-
-The builder for this attribute gets the Locale::Maketext language 
-handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates 
-a default language handler using L<HTML::FormHandler::I18N>
-
-=head2 html_prefix
+=head3 html_prefix
 
 Flag to indicate that the form name is used as a prefix for fields
 in an HTML form. Useful for multiple forms
@@ -423,12 +430,6 @@ would be just "borrower".
 
 Also see the Field attribute "html_name", a convenience function which
 will return the form name + "." + field name
-
-=head2 active_column
-
-The column in tables used for select list that marks an option 'active'.
-You might use this if all of your tables have the same 'active' column
-name, instead of setting this for each field.
 
 =head2 For use in HTML
  
@@ -452,15 +453,6 @@ input that doesn't come from the HTML form, similar to a hidden field:
 
 (Note: 'process' clears params, so you have to use 'update' ); 
 
-=head2 dependency
-
-Arrayref of arrayrefs of fields. If one of a group of fields has a
-value, then all of the group are set to 'required'.
-
-  has '+dependency' => ( default => sub { [
-     ['street', 'city', 'state', 'zip' ],] }
-  );
-
 =head2 cross_validate
 
 This method is useful for cross checking values after they have been saved 
@@ -471,6 +463,7 @@ This method is called even if some fields did not validate.
 
 =cut
 
+# Moose attributes
 has 'name' => (
    isa     => 'Str',
    is      => 'rw',
@@ -524,7 +517,7 @@ has '_required' => (
       push  => 'add_required'
    }
 );
-has 'field_list' => ( is => 'rw', default => sub { {} } );
+has 'field_list' => ( isa => 'HashRef|ArrayRef', is => 'rw', default => sub { {} } );
 sub has_field_list
 {
    my $self = shift;

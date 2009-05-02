@@ -116,6 +116,13 @@ sub _build_fif
 
 }
 
+sub field_name_space
+{
+   my $self = shift;
+   return $self->form->field_name_space
+        if $self->form && $self->form->field_name_space;
+   return '';
+}
 
 __PACKAGE__->meta->make_immutable;
 no Moose;
