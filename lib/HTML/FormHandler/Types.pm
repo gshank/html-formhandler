@@ -7,7 +7,7 @@ our $VERSION = '0.01';
 
 use MooseX::Types -declare => [
   'PositiveNum', 'PositiveInt', 'NegativeNum', 'NegativeInt', 'SingleDigit',
-  'SimpleStr', 'NonEmptySimpleStr', 'Password', 'StrongPassword', 'NonEmptyStr'
+  'SimpleStr', 'NonEmptySimpleStr', 'Password', 'StrongPassword', 'NonEmptyStr',
   'Trim', 'Email', 'State', 'StateOrProvince', 'Province', 'Zip', 'PostCode',
   'ZipOrPostCode', 'Phone', 'AmericanPhone', 'CCNumber', 'CCExp', 'CCType',
   'IPAddress', 'DateTime', 'Word',
