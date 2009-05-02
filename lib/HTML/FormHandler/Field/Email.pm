@@ -1,22 +1,18 @@
 package HTML::FormHandler::Field::Email;
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field';
 use Email::Valid;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
-__PACKAGE__->meta->make_immutable;
 
-sub validate {
-    my $self = shift;
-
-    return unless $self->SUPER::validate;
-    $self->input( lc $self->{input} );
-    return $self->add_error('Email should be of the format [_1]', 'someuser@example.com')
-        unless Email::Valid->address( $self->input );
-    return 1;
-}
-
+apply ([
+   { transform => sub { lc( $_[0] ) } },
+   { check => sub { Email::Valid->address( $_[0] ) },
+     message => ['Email should be of the format [_1]',
+                 'someuser@example.com' ] 
+   }
+]);
 
 =head1 NAME
 
@@ -42,5 +38,6 @@ the same terms as Perl itself.
 
 =cut
 
-no Moose;
+__PACKAGE__->meta->make_immutable;
+no HTML::FormHandler::Moose;
 1;

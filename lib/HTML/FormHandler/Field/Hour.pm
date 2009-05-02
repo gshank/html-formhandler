@@ -19,7 +19,7 @@ Enter an integer from 0 to 23 hours.
 
 =head1 AUTHORS
 
-Gerd Shank
+Gerda Shank
 
 =head1 COPYRIGHT
 

@@ -3,7 +3,7 @@ use warnings;
 use lib './t';
 use MyTest
     tests   => 7,
-    recommended => [qw/ Email::Valid /];
+    recommended => ['Email::Valid'];
 
 
 
@@ -31,7 +31,7 @@ my $name = $1 if $class =~ /::([^:]+)$/;
 
     $field->input( 'someuser@example.com' );
     $field->process;
-    ok( !$field->has_errors, 'Test for errors 2 although probably should fail' );
+    ok( !$field->has_errors, 'Test for errors 2' );
 
 
 

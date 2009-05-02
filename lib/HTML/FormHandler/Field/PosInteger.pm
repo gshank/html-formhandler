@@ -1,26 +1,17 @@
 package HTML::FormHandler::Field::PosInteger;
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Integer';
-our $VERSION = '0.01';
+our $VERSION = '0.02';
+
+apply( [ 
+   { check => sub { $_[0] >= 0 }, 
+     message => 'Value must be a positive integer'
+   } ]
+);
+
 
 __PACKAGE__->meta->make_immutable;
-
-sub validate {
-    my $self = shift;
-
-    return unless $self->SUPER::validate;
-
-    # remove plus sign.
-    my $value = $self->input;
-    if ( $value =~ s/^\+// ) {
-        $self->value( $value );
-    }
-    return $self->add_error('Value must be a positive integer')
-        unless $self->value >= 0;
-    return 1;
-}
-
 
 =head1 NAME
 

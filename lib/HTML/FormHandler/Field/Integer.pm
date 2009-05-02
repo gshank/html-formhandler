@@ -1,30 +1,23 @@
 package HTML::FormHandler::Field::Integer;
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 has '+size' => ( default => 8 );
 
+apply( [
+   { transform => sub {
+      my $value = shift;
+      $value =~ s/^\+//;
+      return $value;
+   }},
+   { check => sub { $_[0] =~ /^-?\d+$/ }, 
+     message => 'Value must be an integer'
+   } ]
+);
+
 __PACKAGE__->meta->make_immutable;
-
-sub validate {
-    my $self = shift;
-
-    return unless $self->SUPER::validate;
-
-    # remove plus sign.
-    my $value = $self->input;
-    if ( $value =~ s/^\+// ) {
-        $self->value( $value );
-    }
-
-    return $self->add_error('Value must be an integer')
-        unless $self->value =~ /^-?\d+$/;
-
-    return 1;
-
-}
 
 
 =head1 NAME

@@ -17,7 +17,7 @@ use Test::Exception;
      => where { $_ > 10 }
      => message { "This number ($_) is not greater than 10" };
   
-  has posint => ( is => 'rw', isa => PositiveInt);
+  has 'posint' => ( is => 'rw', isa => PositiveInt);
   has_field 'test' => ( apply => [ PositiveInt ] );
   has_field 'text_gt' => ( apply=> [ 'GreaterThan10' ] );
   has_field 'text_both' => ( apply => [ PositiveInt, 'GreaterThan10' ] );
