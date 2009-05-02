@@ -16,7 +16,7 @@ requires 'UNIVERSAL::require' => '0';
 requires 'Locale::Maketext'   => '1.09';
 requires 'DateTime';
 requires 'DBIx::Class';
-#requires 'DBIx::Class::ResultSet::RecursiveUpdate';
+requires 'DBIx::Class::ResultSet::RecursiveUpdate';
 requires 'HTML::Entities';
 requires 'MooseX::Getopt' => '0.16';
 requires 'MooseX::Types' => 0;
