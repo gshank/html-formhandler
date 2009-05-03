@@ -26,7 +26,7 @@ my $params = {
    field_three => 'one three four',
 };
 
-$form->validate( $params );
+$form->process( $params );
 
 ok( !$form->validated, 'form validated' );
 

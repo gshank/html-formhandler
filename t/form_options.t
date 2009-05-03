@@ -64,7 +64,7 @@ my $params = {
    vegetables => [2,4],
 };
 
-$form->validate( $params );
+$form->process( $params );
 ok( $form->validated, 'form validated' );
 is( $form->field('fruit')->value, 2, 'fruit value is correct');
 is_deeply( $form->field('vegetables')->value, [2,4], 'vegetables value is correct');

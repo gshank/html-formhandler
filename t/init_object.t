@@ -48,7 +48,7 @@ my $params = {
     'author' => 'B.B. Better',
 };
 
-ok( $form->validate( $params ), 'validate data' );
+ok( $form->process( $params ), 'validate data' );
 
 ok( $form->update_model, 'update validated data');
 
@@ -73,7 +73,7 @@ $form = My::Form->new( init_object => {reqname => 'Starting Perl',
                                        optname => 'Over Again' } );
 ok( $form, 'non-db form created OK');
 is( $form->field('optname')->value, 'Over Again', 'get right value from form');
-$form->validate({});
+$form->process({});
 ok( !$form->validated, 'form validated' );
 is( $form->field('reqname')->fif, 'Starting Perl', 
                       'get right fif with init_object');

@@ -21,7 +21,7 @@ use_ok( 'BookDB::Form::BookHTML' );
 
 my $form = BookDB::Form::BookHTML->new(item_id => undef, schema => $schema);
 
-ok( !$form->validate, 'Empty data' );
+ok( !$form->process, 'Empty data' );
 
 $form->clear_state;
 
@@ -33,7 +33,7 @@ my $good = {
     'book.publisher' => 'EreWhon Publishing',
 };
 
-ok( $form->validate( $good ), 'Good data' );
+ok( $form->process( $good ), 'Good data' );
 
 ok( $form->update_model, 'Update validated data');
 
@@ -52,7 +52,7 @@ my $bad_1 = {
     'book.silly_field'   => 4,
 };
 
-ok( !$form->validate( $bad_1 ), 'bad 1' );
+ok( !$form->process( $bad_1 ), 'bad 1' );
 $form->clear_state;
 
 my $bad_2 = {
@@ -63,7 +63,7 @@ my $bad_2 = {
     'book.format' => '22',
 };
 
-ok( !$form->validate( $bad_2 ), 'bad 2');
+ok( !$form->process( $bad_2 ), 'bad 2');
 
 ok( $form->field('pages')->has_errors, 'pages has error' );
 

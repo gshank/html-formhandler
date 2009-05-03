@@ -266,21 +266,15 @@ be performed on more than one field, but it is easy to perform
 custom validation on a per-field basis.
 
 This form doesn't really require any customized validation, 
-so we'll add a silly validation routine.  Per-field validation routines 
-are named "validate_" . $field_name, so add the following to
-MyApp::Form::Book:
+so we'll add a silly field constraint.  Add the following to the form:
 
-   sub validate_title {
-      my ( $self, $field ) = @_;
-      # Don't allow books with 'Rainbows' in the name 
-      if ( $field->value =~ /Rainbows/ )
-      {
-          $field->add_error('The word \'Rainbows\' is not allowed in titles');
-      }
-   }
+  apply [ { check => sub { shift !~ /Rainbows/ },
+            message => "The word \'Rainbows\' is not allowed in titles' }
+        ];
 
-You can also have a 'cross_validation' routine to check interdependencies.
-The 'validate_model' routine is the place to perform database specific validation.
+You can also apply Moose constraints and transforms. Validation can also
+be performed in a form 'validate_<field_name' method, in a 'validate_model'
+routine, and in a custom field class. 
 You can validate that the field is unique, or use a dependency list to make
 more fields required if one is updated.
 

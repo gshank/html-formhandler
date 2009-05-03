@@ -97,7 +97,7 @@ my $params = {
       'date_coercion_error.month' => 20,
       'date_coercion_error.day' => 16,
 };
-$form->validate($params);
+$form->process($params);
 
 is( $form->field('sprintf_filter')->value, '<1e+02>', 'sprintf filter' );
 ok( $form->field('date_time_error')->has_errors,      'DateTime error catched' );

@@ -24,7 +24,7 @@ my $params = {
     'comment'   => 'This is a comment',
 };
 
-ok( $form->validate( $params ), 'non-column, non-rel accessor validates' );
+ok( $form->process( $params ), 'non-column, non-rel accessor validates' );
 
 ok( $form->update_model, 'Update validated data');
 END { $form->item->delete }

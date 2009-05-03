@@ -75,7 +75,7 @@ my $params = {
    two_errors => 'aaa',
 };
 
-$form->validate( $params );
+$form->process( $params );
 
 
 my $output1 = $form->render_field( $form->field('test_field') );

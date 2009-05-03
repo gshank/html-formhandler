@@ -34,7 +34,7 @@ my $good = {
     'publisher' => 'EreWhon Publishing',
 };
 
-ok( $form->update( schema => $schema, params => $good ), 'Good data' );
+ok( $form->process( schema => $schema, params => $good ), 'Good data' );
 my $book = $form->item;
 END {
   $book->delete;

@@ -36,7 +36,7 @@ my $params = {
    state => 'NY',
 };
 
-my $validated = $form->validate( $params );
+my $validated = $form->process( $params );
 ok( !$validated, 'not validated' );
 
 my @error_fields = $form->error_fields;

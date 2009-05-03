@@ -47,7 +47,7 @@ my $bad_1 = {
     silly_name => 'what??',
 };
 
-ok( !$form->validate( $bad_1 ), 'bad 1' );
+ok( !$form->process( $bad_1 ), 'bad 1' );
 
 ok( $form->has_error, 'form has error' );
 

@@ -144,6 +144,7 @@ sub update_model
     );
     $update_params{ object } = $self->item if $self->item;
     my $new_item = DBIx::Class::ResultSet::RecursiveUpdate::Functions::recursive_update( %update_params );
+    $new_item->discard_changes;
     $self->item($new_item);
     return $new_item;
 }

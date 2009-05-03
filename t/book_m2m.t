@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 10;
+   plan tests => 9;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -21,7 +21,7 @@ ok($schema, 'get db schema');
 
 my $form = BookDB::Form::BookM2M->new(item_id => undef, schema => $schema);
 
-ok( !$form->validate, 'Empty data' );
+ok( !$form->process, 'Empty data' );
 
 $form->clear_state;
 
@@ -34,9 +34,7 @@ my $good = {
     'publisher' => 'EreWhon Publishing',
 };
 
-ok( $form->validate( $good ), 'Good data' );
-
-ok( $form->update_model, 'Update validated data');
+ok( $form->process( $good ), 'Good data' );
 
 my $book = $form->item;
 ok ($book, 'get book object from form');

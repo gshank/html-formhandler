@@ -20,7 +20,7 @@ ok($schema, 'get db schema');
 
 my $form = BookDB::Form::Book->new(schema => $schema);
 
-ok( !$form->validate, 'Empty data' );
+ok( !$form->process, 'Empty data' );
 
 # This is munging up the equivalent of param data from a form
 my $good = {
@@ -70,7 +70,7 @@ my $bad_1 = {
     silly_field   => 4,
 };
 
-ok( !$form->validate( $bad_1 ), 'bad 1' );
+ok( !$form->process( $bad_1 ), 'bad 1' );
 
 $form = BookDB::Form::Book->new(item => $book, schema => $schema);
 ok( $form, 'create form from db object');
@@ -86,7 +86,7 @@ my $bad_2 = {
     'format' => '22',
 };
 
-ok( !$form->validate( $bad_2 ), 'bad 2');
+ok( !$form->process( $bad_2 ), 'bad 2');
 ok( $form->field('year')->has_errors, 'year has error' );
 ok( $form->field('pages')->has_errors, 'pages has error' );
 ok( !$form->field('author')->has_errors, 'author has no error' );

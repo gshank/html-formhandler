@@ -105,10 +105,7 @@ These attributes are usually accessed in a subroutine or in a template.
 
    uuid            Creates an HTML element 'form_uuid'
 
-   process         Does 'clear' and 'update' for persistent forms
-   update          Sets up form, validates form, updates model
-   validate        For non-db forms: sets up, clears, validates
-   validate_form   Validates form
+   process         Sets up form, validated, updates model 
    
 =head2  Subroutines for your form
 

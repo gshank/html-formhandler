@@ -94,7 +94,7 @@ my $params = {
       less_than_ten_error => 10,
       less_than_ten_pass  => 9,
 };
-$form->validate($params);
+$form->process($params);
 # ok( $form->field('empty_field')->has_errors, 'empty does not pass required constraint' );
 ok( $form->field('regex_error')->has_errors,    'regexp constraint - error' );
 ok( !$form->field('regex_correct')->has_errors, 'regexp constraint - pass' );

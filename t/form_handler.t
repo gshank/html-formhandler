@@ -37,7 +37,7 @@ my $form = My::Form->new;
 
 is( $form->field('optname')->temp, 'Second', 'got second optname field' );
 
-ok( !$form->validate, 'Empty data' );
+ok( !$form->process, 'Empty data' );
 
 my $good = {
     reqname => 'hello',
@@ -45,15 +45,15 @@ my $good = {
     fruit   => 2,
 };
 
-ok( $form->validate( $good ), 'Good data' );
+ok( $form->process( $good ), 'Good data' );
 is( $form->field('somename')->value, undef, 'no value for somename');
 ok( !$form->field('somename')->has_value, 'predicate no value');
 $good->{somename} = 'testing';
-$form->validate( $good );
+$form->process( $good );
 is( $form->field('somename')->value, 'testing', 'use input for extra data');
 is( $form->field('my_selected')->value, 0, 'correct value for unselected checkbox');
 
-ok( !$form->validate( {} ), 'form doesn\'t validate with empty params' );
+ok( !$form->process( {} ), 'form doesn\'t validate with empty params' );
 is( $form->num_errors, 0, 'form doesn\'t have errors with empty params' );
 
 my $bad_1 = {
@@ -63,7 +63,7 @@ my $bad_1 = {
 };
 
 
-ok( !$form->validate( $bad_1 ), 'bad 1' );
+ok( !$form->process( $bad_1 ), 'bad 1' );
 ok( $form->field('fruit')->has_errors, 'fruit has error' );
 ok( $form->field('reqname')->has_errors, 'reqname has error' );
 ok( !$form->field('optname')->has_errors, 'optname has no error' );
@@ -71,7 +71,7 @@ is( $form->field('fruit')->id, "testform_fruit", 'field has id' );
 is( $form->field('fruit')->label, 'Fruit', 'field label');
 
 
-ok( !$form->validate( {} ), 'no leftover params' );
+ok( !$form->process( {} ), 'no leftover params' );
 is( $form->num_errors, 0, 'no leftover errors' );
 ok( !$form->field('reqname')->has_errors, 'no leftover error in field');
 ok( !$form->field('optname')->fif, 'no lefover fif values');
@@ -80,11 +80,11 @@ my $init_object = { reqname => 'Starting Perl',
                     optname => 'Over Again' };
 $form = My::Form->new( init_object => $init_object );
 is( $form->field('optname')->value, 'Over Again', 'get right value from form');
-$form->validate({});
+$form->process({});
 ok( !$form->validated, 'form validated' );
 is_deeply( $form->fif, $init_object, 'get right fif with init_object');
 is_deeply( $form->values, $init_object, 'get right values from form'); 
 
-ok( $form->validate( $init_object ), 'form validates with params' );
+ok( $form->process( $init_object ), 'form validates with params' );
 
 

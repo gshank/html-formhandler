@@ -35,7 +35,7 @@ my $params = {
    text_both => 15,
 };
 
-$form->validate($params);
+$form->process($params);
 ok( $form->validated, 'form validated' );
 ok( !$form->field('test')->has_errors, 'no errors on MooseX type');
 ok( !$form->field('text_gt')->has_errors, 'no errors on subtype');

@@ -18,7 +18,7 @@ ok($schema, 'get db schema');
 
 my $form = BookDB::Form::BookAuto->new(item_id => undef, schema => $schema);
 
-ok( !$form->validate, 'Empty data' );
+ok( !$form->process, 'Empty data' );
 
 $form->clear_state;
 
@@ -30,7 +30,7 @@ my $good = {
     'publisher' => 'EreWhon Publishing',
 };
 
-ok( $form->validate( $good ), 'Good data' );
+ok( $form->process( $good ), 'Good data' );
 
 ok( $form->update_model, 'Update validated data');
 
@@ -48,7 +48,7 @@ my $bad_1 = {
     silly_field   => 4,
 };
 
-ok( !$form->validate( $bad_1 ), 'bad 1' );
+ok( !$form->process( $bad_1 ), 'bad 1' );
 $form->clear_state;
 
 my $bad_2 = {
@@ -59,7 +59,7 @@ my $bad_2 = {
     'format' => '22',
 };
 
-ok( !$form->validate( $bad_2 ), 'bad 2');
+ok( !$form->process( $bad_2 ), 'bad 2');
 
 ok( $form->field('year')->has_errors, 'year has error' );
 

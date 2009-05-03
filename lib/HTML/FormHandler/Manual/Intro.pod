@@ -160,12 +160,9 @@ You can also create a new form on each request with new:
    my $form = BookDB::Form::Book->new( item => $book );
    return unless $form->update( params => $c->req->parameters );
 
-Here you use 'update', because 'process' is a convenience function
-that calls 'clear' and 'update', and you don't want to clear. There is 
-often no need to check the 'validated' flag, since that is the 
-return value from the 'process', 'update', and 'validate' methods, 
-although it can be useful if you are doing anything between the 
-update/process/validate call and displaying the form, such as setting
+There is often no need to check the 'validated' flag, since that is the 
+return value from the 'process' method, although it can be useful if you are 
+doing anything between the process call and displaying the form, such as setting
 the fillinform stash key.
 
 Form processing is a two-pass operation. The first time through
@@ -180,7 +177,7 @@ using the 'fif' values or from L<HTML::FillInForm>) to allow user input.
 When the form is submitted, the action in the HTML form's 'action'
 value will be called (the same one that just displayed the form
 usually), and the second pass of calling the FormHandler 
-update/process/validate method will occur.
+process method will occur.
 
 This time there WILL be values in the parameters, and FormHandler
 will call the validation routines. If the validation succeeds, FormHandler
@@ -234,14 +231,13 @@ FillInForm:
 The base class for a  non-database form is HTML::FormHandler instead
 of a model class.
 You do not initialize a non-database form with an item or item_id,
-although you can use an init_object for the initial values. You 
-use the 'validate' method instead of 'update' or 'process'.  
+although you can use an init_object for the initial values. 
 
 After validation, you can get a hashref of values back from 
 the 'values' method. 
 
    my $form = MyApp::Form::Book->new( init_object => { ... } );
-   $form->validate( $params );
+   $form->process( $params );
    return unless $form->validated;
    my $result = $form->values;
 
@@ -266,7 +262,7 @@ The model will use the item_class (DBIC source name) to fetch the row from the
 database. If you pass in a row object (item), the schema, source_class, and 
 item_id will be set from the row. 
 
-The C<< $form->process >> or C<< $form->update >> methods will validate 
+The C<< $form->process >> will validate 
 the parameters and then update or create the database row object.  
 
 =head1 Field names
@@ -438,16 +434,16 @@ Each field has a "value" method, which is the field's internal value.  This is
 the value your database object would have (e.g. scalar, boolean 0 or 1,
 DateTime object).  
 
-When data is passed in to validate the form, it is trimmed of leading and trailing
-whitespace by the base field class and placed in the field's "input" attribute.  
-Each field has a validate method that validates the input data and then moves 
-it to the internal representation in the "value" attribute.  Depending on the model, 
-it's this internal value that is stored or used by your application.
+When data is passed in to validate the form, the input in copied into the
+'value' attribute of the field, and the actions specified by 'apply'
+will be performed on the value. This includes the 'trim' transform which
+will strip leading and trailing spaces. After the actions are applied,
+the field 'validate' method is called.
 
-By default, the validation is simply to copy the data from the "input" to the "value"
-field attribute, but you might have a field that must be converted from a text
-representation to an object (e.g. month, day, year to DateTime). These sorts of
-conversions can also be done by Moose type constraints or apply transformations.
+A transformation action with the 'to_fif' flag set will cause the value
+produced by this transformation to be copied to the fill-in-form slot, so
+that a 'canonical' form of the input can be presented to the user.
+
 
 =head2 Compound fields
 
@@ -741,7 +737,7 @@ has lots of examples. Here is an example of a test script for a DBIC form:
        notitle => 'not req',
        silly_field   => 4,
    };
-   ok( !$form->validate( $bad_1 ), 'bad 1' );
+   ok( !$form->process( $bad_1 ), 'bad 1' );
 
    my $bad_2 = {
        'title' => "Another Silly Test Book",
@@ -750,7 +746,7 @@ has lots of examples. Here is an example of a test script for a DBIC form:
        'pages' => 'too few',
        'format' => '22',
    };
-   ok( !$form->validate( $bad_2 ), 'bad 2');
+   ok( !$form->process( $bad_2 ), 'bad 2');
    ok( $form->field('year')->has_errors, 'year has error' );
    ok( $form->field('pages')->has_errors, 'pages has error' );
    ok( !$form->field('author')->has_errors, 'author has no error' );
@@ -759,7 +755,7 @@ has lots of examples. Here is an example of a test script for a DBIC form:
    $form->set_param( year => 1999 );
    $form->set_param( pages => 101 );
    $form->set_param( format => 2 );
-   ok( $form->validate, 'now form validates' );
+   ok( $form->process, 'now form validates' );
    
 
 
