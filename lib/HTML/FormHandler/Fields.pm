@@ -69,9 +69,9 @@ has 'fields' => (
 );
 
 
-# This parses the field lists and creates the individual
-# field objects.  It calls the _make_field() method for each field.
-# This is called by the BUILD method. Users don't need to call this.
+# calls routines to process various field lists
+# orders the fields after processing in order to skip
+# fields which have had the 'order' attribute set 
 sub _build_fields
 {
    my $self = shift;
@@ -81,6 +81,13 @@ sub _build_fields
    $self->_process_field_list( $self->field_list )
       if ( $self->can('field_list') && $self->has_field_list );
    return unless $self->has_fields;
+
+   # order the fields
+   # There's a hole in this... if child fields are defined at
+   # a level above the containing parent, then they won't
+   # exist when this routine is called and won't be ordered.
+   # This probably needs to be moved out of here into
+   # a separate recursive step that's called after build_fields.
 
    # get highest order number
    my $order = 0;
@@ -97,12 +104,13 @@ sub _build_fields
    }
 }
 
+
+# process all the stupidly many different formats for field_list
+# remove undocumented syntaxes after a while
 sub _process_field_list
 {
    my ( $self, $flist ) = @_;
 
-   # process all the stupidly many different formats for field_list
-   # remove undocumented syntaxes after a while
    if ( ref $flist eq 'ARRAY' )
    {
       $self->_process_field_array( $self->_array_fields( $flist ) );
@@ -125,6 +133,8 @@ sub _process_field_list
       if $flist->{'auto_optional'};
 }
 
+# loops through all inherited classes and composed roles
+# to find fields specified with 'has_field'
 sub _build_meta_field_list
 {
    my $self = shift;
@@ -207,10 +217,14 @@ sub _array_fields
    return \@new_fields;
 }
 
+# loop through array of field hashrefs
 sub _process_field_array
 {
    my ( $self, $fields ) = @_;
 
+   # the point here is to process fields in the order parents
+   # before children, so we process all fields with no dots
+   # first, then one dot, then two dots...
    my $num_fields   = scalar @$fields;
    my $num_dots     = 0;
    my $count_fields = 0;
@@ -220,7 +234,7 @@ sub _process_field_array
       {
          my $count = ( $field->{name} =~ tr/\.// );
          next unless $count == $num_dots;
-         $self->_set_field($field);
+         $self->_make_field($field);
          $count_fields++;
       }
       $num_dots++;
@@ -228,40 +242,8 @@ sub _process_field_array
 
 }
 
-# this looks for existing fields by $name or full_name
-# some fields don't have their names adjusted until later
-# (duration.month) in build_fields so some fields might not be found.
-# But parent field might not exist yet, so can't do here.
-# catch 22?
-sub _set_field
-{
-   my ( $self, $field_attr ) = @_;
-
-   if ( $field_attr->{name} =~ /^\+(.*)/ )
-   {
-      my $name           = $1;
-      my $existing_field = $self->field($name);
-      if ($existing_field)
-      {
-         delete $field_attr->{name};
-         foreach my $key ( keys %{$field_attr} )
-         {
-            $existing_field->$key( $field_attr->{$key} )
-               if $existing_field->can($key);
-         }
-      }
-      else
-      {
-         warn "HFH: field $name does not exist. Cannot update.";
-      }
-      return;
-   }
-   $self->_make_field($field_attr);
-}
-
-
-# Maps the field type to a field class, creates a field object and
-# and returns it.
+# Maps the field type to a field class, finds the parent,
+# sets the 'form' attribute, calls update_or_create
 # The 'field_attr' hashref must have a 'name' key
 sub _make_field
 {
@@ -271,6 +253,13 @@ sub _make_field
    my $type = $field_attr->{type};
    my $name = $field_attr->{name};
    return unless $name;
+
+   my $do_update;
+   if( $name =~ /^\+(.*)/ )
+   {
+      $field_attr->{name} = $name = $1;
+      $do_update = 1;
+   }
 
    my $class =
         $type =~ s/^\+//
@@ -304,19 +293,41 @@ sub _make_field
       # set parent 
       $field_attr->{parent} = $self;
    }
-   my $field = $class->new( %{$field_attr} );
-   $self->_update_or_create( $field->parent || $self->form, $field );
+   $self->_update_or_create( $field_attr->{parent} || $self->form, 
+                          $field_attr, $class, $do_update );
 }
 
+
+# update, replace, or create field
 sub _update_or_create
 {
-   my ( $self, $parent, $field ) = @_; 
+   my ( $self, $parent, $field_attr, $class, $do_update ) = @_; 
 
-   my $index = $parent->field_index( $field->name );
+   my $index = $parent->field_index( $field_attr->{name} );
+   my $field;
    if ( defined $index ) 
-   { $parent->set_field_at( $index, $field ); }
-   else                  
-   { $parent->add_field($field); }
+   { 
+      if( $do_update ) # this field started with '+'. Update.
+      {
+         $field = $parent->field($field_attr->{name}); 
+         delete $field_attr->{name};
+         foreach my $key ( keys %{$field_attr} )
+         {
+            $field->$key( $field_attr->{$key} )
+               if $field->can($key);
+         }
+      }
+      else # replace existing field
+      {
+         $field = $class->new( %{$field_attr} );
+         $parent->set_field_at( $index, $field ); 
+      }
+   }
+   else # new field
+   {  
+      my $field = $class->new( %{$field_attr} );
+      $parent->add_field($field); 
+   }
 }
 
 sub field_index
