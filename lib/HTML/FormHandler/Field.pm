@@ -13,7 +13,8 @@ HTML::FormHandler::Field - Base class for HTML::FormHandler Fields
 =head1 SYNOPSIS
 
 Instances of Field subclasses are generally built by L<HTML::FormHandler>
-from the field_list, but they can also be constructed using new.
+from 'has_field' declarations or the field_list, but they can also be constructed 
+using new (usually for test purposed).
 
     use HTML::FormHandler::Field::Text;
     my $field = HTML::FormHandler::Field::Text->new( name => $name, ... );
@@ -24,14 +25,17 @@ In your custom field class:
     extends 'HTML::FormHandler::Field::Text';
 
     has 'my_attribute' => ( isa => 'Str', is => 'rw' );
-    sub validate { ... }
+
+    apply [ { transform => sub {...}, message => '...' },
+            { check => ['fighter', 'bard', 'mage' ], message => '....' }
+          ];
     1;
 
 =head1 DESCRIPTION
 
 This is the base class for form fields. The 'type' of a field class
 is used in the FormHandler field_list or has_field to identify which field class to
-load.  
+load. If the type is not specified, it defaults to Text. 
 
 A number of field classes are provided by the distribution. The basic
 field types are:
@@ -45,8 +49,8 @@ These field types alone would be enough for most applications, since
 the equivalent of the others could be defined using field attributes,
 custom validation methods, and applied actions.  There is some benefit 
 to having descriptive names, of course, and if you have multiple fields  
-requiring the same validation, you should certainly define a custom
-field class.
+requiring the same validation, defining a custom field class may be a
+good idea.
 
 Inheritance hierarchy of the distribution's field classes:
 
@@ -83,103 +87,121 @@ are applied. Some build a custom select list using 'build_options'.
 
 =head1 ATTRIBUTES
 
-=head2 name
+=head2 Names, types, accessor 
 
-Field name. If this is a database form, this name is usually a database 
-column/accessor name or relationship.
+=over
 
+=item name
 
-=head2 type
+The name of the field. Used in the HTML form. Often a db accessor.
+The only required attribute. 
 
-Field type (e.g. 'Text', 'Select' ... ) from a HTML::FormHandler::Field
-subclass, either one provided in the distribution or one that you
-create yourself, proceded by a "+":  type => '+MetaText'
+=item type 
 
-=head2 init_value
+The class or type of the field. The 'type' of L<HTML::FormHandler::Field::Money>
+is 'Money'. Classes that you define yourself are prefixed with '+'.
 
-Initial value populated by init_from_object. You can tell if a field
-has changed by comparing 'init_value' and 'value'.
-Not to be confused with the form method init_value(). Not set by user.
-
-=head2 value
-
-The initial value of the field from the database (or init_object), and 
-the changed value after form validation. A change in this attribute 
-triggers setting the 'fif' attribute.
-
-The "validate" field method usually sets this value if the field validates.
-
-The user does not need to set this field except in validation methods.
-
-=head2 parent
-
-A reference to the parent of this field.
-
-=head2 errors_on_parent
-
-Flag indicating that errors should not be set on this field class
-
-=head2 input
-
-Input value for the field, moved from the parameter hash.
-In L<HTML::FormHandler>, the setter for this attribute is for internal 
-use. If you want to set an input value, use the 'set_param' method. 
-A field validation routine may copy the value of this attribute to 
-the 'value' attribute. The setter may be used in field tests and
-if a field class is used standalone. A change in this attribute triggers 
-setting 'fif'. 
-
-
-=head2 input_without_param
-
-Input for this field if there is no param. Needed for checkbox,
-since an unchecked checkbox does not return a parameter.
-
-
-=head2 fif
-
-For filling in forms. Input or value. The user does not need to set this field.
-It is set by FormHandler from the values in your database object or the
-input parameters. The normal use would be to access this field from a template:
-
-   [% f = form.field('title') %]
-   [% f.fif %]
-
-
-=head2 accessor
+=item accessor
 
 If the name of your field is different than your database accessor, use
 this attribute to provide the name of accessor.
 
-=head2 label
+=item full_name
 
-Text label for this field. Useful in templates. Defaults to ucfirst field name.
+The name of the field with all parents:
 
-=head2 title
+   'event.start_date.month'
 
-Place to put title for field, for mouseovers. Not used by F::P.
+=item html_name
 
-=head2 style
+The full_name plus the form name if 'html_prefix' is set.
 
-Field's generic style to use for css formatting in templates.
-Not actually used by F::P. 
+=back
 
-=head2 css_class
+=head2 Field data
 
-Field's css_class for use in templates.
+=over
 
-=head2 form
+=item input
+
+The input string from the parameters passed in.
+
+=item value
+
+The value as it would come from or go into the database, after being
+acted on by transforms. Used to construct the C<< $form->values >>
+hash. Validation and constraints act on 'value'.
+
+=item fif
+
+Values used to fill in the form. Read only.
+
+   [% form.field('title').fif %]
+
+=item init_value
+
+Initial value populated by init_from_object. You can tell if a field
+has changed by comparing 'init_value' and 'value'. Read only.
+
+=item input_without_param
+
+Input for this field if there is no param. Needed for checkbox,
+since an unchecked checkbox does not return a parameter.
+
+=back
+
+=head2 Form, parent
+
+=over
+
+=item form
 
 A reference to the containing form.
 
-=head2 html_name
+=item parent
 
-Field name for use in HTML. If 'html_prefix' in the form has been set
-the name will prefixed by the form name and a dot, otherwise this
-attribute is the equivalient of 'full_name'.
-A field named "street" in a form named "address" would
-have a html_name of "address.street". Allows multiple forms with
-the same field names.
+A reference to the parent of this field. Compound fields are the
+parents for the fields they contain.
+
+=back
+
+=head2 Errors
+
+=over
+
+=item errors
+
+Returns the error list for the field. Also provides 'num_errors',
+'has_errors', 'push_errors' and 'clear_errors' from Collection::Array 
+metaclass. Use 'add_error' to add an error to the array if you
+want to use a MakeText language handle. Default is an empty list. 
+
+=item add_error
+
+Add an error to the list of errors.  If $field->form
+is defined then process error message as Maketext input.
+See $form->language_handle for details. Returns undef.  
+
+    return $field->add_error( 'bad data' ) if $bad;
+
+=item errors_on_parent
+
+Flag indicating that errors should only be set on the parent of this field class.
+
+=back
+
+=head2 Attributes for creating HTML
+
+   label - Text label for this field. Defaults to ucfirst field name.
+   title - Place to put title for field. 
+   style - Place to put field style string
+   css_class - For a css class name
+   id    - Useful for javascript (default is form_name + field_name)
+   disabled - for the HTML flag
+   readonly - for the HTML flag
+   javascript - for a Javascript string
+   order - Used for sorting errors and fields. Built automatically,
+           but may also be explicity set
 
 =head2 widget
 
@@ -203,39 +225,62 @@ Widget types for the provided field classes:
     compound    : DateTime
     password    : Password
 
-The 'Select' field class has a 'select_widget' method that chooses
-which widget to use, which could be called by templates or rendering
-roles.
-
 The default widget is 'text'.
 
-=head2 order
+=head2 Flags
 
-This is the field's order used for sorting errors and field lists.
-It will be automatically created when the form is built, but may
-also be set in a field.
+   password  - prevents the entered value from being displayed in the form
+   writeonly - The initial value is not taken from the database
+   clear     - Always set the database column to null.
+   noupdate  - Do not update this field in the database
 
-=head2 required
+=head2 Form methods for fields
+
+These are for indicating methods in a form which will act on a
+particular field.
+
+=over
+
+=item set_validate
+
+Specify a form method to be used to validate this field.
+The default is C<< 'validate_' . $field->name >>. (Periods in
+
+   has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
+   has_field 'subtitle' => ( isa => 'Str', set_validate => 'check_title' );
+
+=item set_init
+
+The name of the method in the form that provides a field's initial value
+ 
+=back
+
+=head1 Constraints and Validations
+
+=head2 Constraints set in attributes
+
+=over
+
+=item required
 
 Flag indicating whether this field must have a value
 
-=head2 required_message
+=item required_message
 
 Error message text added to errors if required field is not present
-
 The default is "Field <field label> is required".
 
-=head2 unique
+=item unique
 
 Flag to initiate checks in the database model for uniqueness.
 
-=head2 unique_message
+=item unique_message
 
 Error message text added to errors if field is not unique
 
-=head2 range_start
+=item range_start
 
-=head2 range_end
+=item range_end
 
 Field values are validated against the specified range if one
 or both of range_start and range_end are set and the field
@@ -252,88 +297,7 @@ In a FormHandler field_list
         range_end       => 120,
     }
 
-Or just set one:
-
-    age => {
-        type            => 'Integer',
-        range_start     => 18,
-    }
-
-Range checks are done after validation so
-must only be used on appropriate fields
-
-=head2 id, build_id
-
-Provides an 'id' for the field. Useful for javascript.
-The default id is:
-
-    $field->form->name . $field->id
-
-Override with "build_id".
-
-=head2 javascript
-
-Store javascript for the field
-
-=head2 password
-
-This is a boolean flag to prevent the field from being returned in
-the C<$form->fif> and C<$field->fif> methods. 
-
-=head2 writeonly
-
-Fields flagged 'writeonly' are not returned in the 'fif' methods from the
-field's initial value, even if a value for the field exists in the item.
-The value is not read from the database.
-However, the value entered into the form WILL be returned. This might
-be used for columns that should only be written to the database on updates.
-
-=head2 clear
-
-This is a flag that says you want to set the database column to null for this
-field.  Validation is also not run on this field.
-
-=head2 disabled
-
-=head2 readonly
-
-These allow you to enter hints about how the html element is generated.  
-
-HTML::FormHandler does not use these attributes; they are for your convenience
-in constructing HTML. 
-
-=cut
-
-=head2 noupdate
-
-This boolean flag indicates a field that should not be updated.  Fields
-flagged as noupdate are skipped when processed by the model.
-
-This is useful when a form contains extra fields that are not directly
-written to the data store.
-
-=head2 errors
-
-Returns the error list for the field. Also provides 'num_errors',
-'has_errors', 'push_errors' and 'clear_errors' from Collection::Array 
-metaclass. Use 'add_error' to add an error to the array if you
-want to use a MakeText language handle. Default is an empty list. 
-
-=head2 set_validate
-
-Specify the form method to be used to validate this field.
-The default is C<< 'validate_' . $field->name >>. (Periods in
-field names will be changed to underscores.) If you have
-a number of fields that require the same validation and don't
-want to write a field class, you could set them all to the same 
-method name.
-
-   has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
-   has_field 'subtitle' => ( isa => 'Str', set_validate => 'check_title' );
-
-=head2 set_init
-
-The name of the method in the form that provides a field's initial value
+=back
 
 =head2 apply
 
@@ -481,22 +445,9 @@ transform.
 
 Trimming is performed before any other defined actions.
 
-=head2 full_name
+=head1 Processing and validating the field
 
-This returns the name of the field, but if the field
-is a child field will prepend the field with the parent's field
-name.  For example, if a field is "month" and the parent's field name
-is "birthday" then this will return "birthday.month".
-
-=head2 add_error
-
-Add an error to the list of errors.  If $field->form
-is defined then process error message as Maketext input.
-See $form->language_handle for details. Returns undef.  
-
-    return $field->add_error( 'bad data' ) if $bad;
-
-=head2 process
+=head2 Process
 
 This method does standard validation, which currently tests:
 
@@ -526,10 +477,6 @@ method is to return true.
         return $field->add_error( ... ) if ( ... );
         return 1;
     }
-
-=head2 required_text
-
-Returns "required" or "optional" based on the field's setting.
 
 =cut
 
