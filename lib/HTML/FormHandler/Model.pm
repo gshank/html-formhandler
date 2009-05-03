@@ -42,6 +42,7 @@ has 'item' => (
    is      => 'rw',
    lazy    => 1,
    builder => 'build_item',
+   clearer => 'clear_item',
    trigger => sub { shift->set_item(@_) }
 );
 sub build_item  { return }
@@ -59,7 +60,16 @@ fetch the object from the item_class for this id.
 
 =cut
 
-has 'item_id' => ( is => 'rw' );
+has 'item_id' => ( is => 'rw', trigger => sub { shift->set_item_id(@_)} );
+
+sub set_item_id
+{
+   my ( $self, $item_id ) = @_;
+   unless( defined $item_id )
+   {
+      $self->clear_item;
+   }
+}
 
 =head2 item_class
 

@@ -32,6 +32,6 @@ $form->set_param( pages => 101 );
 my $validated = $form->validate_form;
 ok( $validated, 'now form validates' );
 
-$form->update;
+$form->update_model;
 is( $book->year, 1999, 'book has been updated with correct data' );
 

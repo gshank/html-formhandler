@@ -59,10 +59,8 @@ is( $form->field('author')->value, undef, 'author value right in form');
 is( $form->field('publisher')->value, 'EreWhon Publishing', 'right publisher');
 
 my $value_hash = { %{$good}, 
-                   author => undef,
-                   comment => undef,
-                   pages => undef,
-                   year => undef };
+                   author => undef
+                 };
 is_deeply( $form->values, $value_hash, 'get right values from form');
 
 $_->clear_input for $form->fields;

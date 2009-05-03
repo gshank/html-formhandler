@@ -48,8 +48,8 @@ my $good = {
 ok( $form->validate( $good ), 'Good data' );
 is( $form->field('somename')->value, undef, 'no value for somename');
 ok( !$form->field('somename')->has_value, 'predicate no value');
-$form->field('somename')->input('testing');
-$form->validate;
+$good->{somename} = 'testing';
+$form->validate( $good );
 is( $form->field('somename')->value, 'testing', 'use input for extra data');
 is( $form->field('my_selected')->value, 0, 'correct value for unselected checkbox');
 

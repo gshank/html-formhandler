@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 24;
+   plan tests => 25;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -25,7 +25,7 @@ ok( $form, 'no param new' );
 $form->process( item_id => 1, schema => $schema, params => {} );
 is( $form->item->id, 1, 'get item from item_id and schema');
 
-ok( !$form->process( schema => $schema ), 'Empty data' );
+ok( !$form->process( item_id => undef, schema => $schema ), 'Empty data' );
 
 # This is munging up the equivalent of param data from a form
 my $good = {
@@ -43,6 +43,7 @@ is( $form->field( 'title' )->input, 'How to Test Perl Form Processors', 'Input c
 
 my $book = $form->item;
 END { $book->delete };
+ok( $book->id != 1, 'this is not the same book');
 
 ok ($book, 'get book object from form');
 

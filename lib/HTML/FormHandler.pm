@@ -92,12 +92,12 @@ with the Moose <C has 'edit_form' > declaration.
 If you prefer, it also works fine to create the form on each request:
     
     my $form = MyApp::Form->new;
-    my $validated = $form->update( item => $book, params => $params );
+    $form->process( item => $book, params => $params );
 
 or, for a non-database form:
 
     my $form = MyApp::Form->new;
-    my $validated = $form->validate( $params );
+    $form->process( $params );
    
 A dynamic form may be created in a controller using the field_list
 attribute to set fields:
@@ -205,68 +205,20 @@ but a 'field_list' argument should be passed in on 'new'.
 
 =head2 Processing the form
 
-There are three different methods to call to process the form,
-depending on whether it is persistent or not, and whether or
-not it is a database form.
 
-'process' should always work. 'update' or 'validate' may avoid
-certain amounts of unnecessary processing.
+Call the 'process' method on your form to perform validation and 
+update. A database form must have either an item (row object) or
+a schema and item_id (row primary key).
 
-=head3 process
-
-A convenience method for persistent FormHandler instances. This method
-calls 'clear' and 'update' to processes a form:
-
-   my $validated = $form->process( item => $book, 
-       params => $c->req->parameters );
+   $form->process( item => $book, params => $c->req->parameters );
 
 or:
 
-   my $validated = $form->process( item_id => $item_id,
+   $form->process( item_id => $item_id,
        schema => $schema, params => $c->req->parameters );
-
-If you set attributes that are not cleared and you have a persistent form,
-you must either set that attribute on each request or clear it.
-
-If your form is not persistent, you should call 'update' instead, because 
-this method clears the item and item_id.
-
-This method can also be used for non-database forms:
-
-    $form->process( params => $params );
 
 This method returns the 'validated' flag. (C<< $form->validated >>)
 
-=head3 update
-
-This is the method to call to update the form if your form is not persistent.
-Pass in item or item_id/schema and parameters. 
-
-    my $form = MyApp::Form::Book->new;
-    $form->update( item => $item, schema => $schema );
-
-It set attributes from the parameters passed in, initializes values,
-loads select options, calls validate if there are parameters, and calls
-update_model if the form validated.  It returns the 'validated' flag.
-
-=head3 validate
-
-This is the non-database form processing method.
-
-  $self->validate( $params );
-
-or
-
- $self->validate( key => 'something', params => $params );
-
-It will call the validate_form method to perform validation
-on the fields.
-
-=head3 Clear form state
-
-   clear - clears state, params, model, ctx
-   clear_state - clears flags, errors, and params
-   clear_values, clear_errors, clear_fif - on all fields
 
 =head2 Getting data out
 
@@ -346,6 +298,14 @@ undef if field not found. The equivalent of C<< $form->field('name')->value >>
   errors - returns array of error messages for the entire form
   num_errors - number of errors in form
 
+=head3 Clear form state
+
+Various clear methods are used in internal processing, and might be
+useful in some situations.
+
+   clear - clears state, params, model, ctx
+   clear_state - clears flags, errors, and params
+   clear_values, clear_errors, clear_fif - on all fields
 
 =head2 Miscellaneous attributes
 
@@ -476,7 +436,8 @@ has 'parent' => ( is => 'rw' );
 # object with which to initialize
 has 'init_object' => ( is => 'rw' );
 # flags
-has [ 'ran_validation', 'validated', 'verbose' ] => ( isa => 'Bool', is => 'rw' );
+has [ 'ran_validation', 'validated', 'verbose', 'processed' ] => 
+    ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
 # for Locale::MakeText
@@ -571,35 +532,28 @@ sub build_language_handle
    return $lh;
 }
 
+sub update
+{
+   shift->process(@_);
+}
+
 sub process
 {
    my ( $self, @args ) = @_;
-   $self->clear;
-   return $self->update(@args);
-}
 
-sub update
-{
-   my ( $self, @args ) = @_;
-
-   warn "HFH: update ", $self->name, "\n" if $self->verbose;
+   warn "HFH: process ", $self->name, "\n" if $self->verbose;
+   $self->clear if $self->processed;
    $self->_setup_form(@args);
    $self->validate_form if $self->has_params;
    $self->update_model if $self->validated;
    $self->dump_fields if $self->verbose;
+   $self->processed(1);
    return $self->validated;
 }
 
 sub validate
 {
-   my ( $self, @args ) = @_;
-
-   warn "HFH: validate ", $self->name, "\n" if $self->verbose;
-   $self->clear_state;
-   $self->clear_values;
-   $self->_setup_form( @args );
-   return unless $self->has_params;
-   return $self->validate_form;
+   shift->process(@_);
 }
 
 sub db_validate
@@ -618,7 +572,7 @@ sub clear
    warn "HFH: clear ", $self->name, "\n" if $self->verbose;
    $self->clear_state;
    $self->clear_params;
-   $self->clear_model;
+#   $self->clear_model;
    $self->clear_ctx;
 }
 
@@ -734,18 +688,23 @@ sub validate_form
    my $self = shift;
    my $params = $self->params; 
    $self->_set_dependency;    # set required dependencies
+   my $fields_in_params;
    foreach my $field ( $self->fields )
    {
       # Trim values and move to "input" slot
       if ( exists $params->{$field->full_name} )
       {
-         $field->input( $params->{$field->full_name} )
+         $field->input( $params->{$field->full_name} );
+         $fields_in_params++;
       }
       elsif ( $field->has_input_without_param )
       {
          $field->input( $field->input_without_param );
+         $fields_in_params++;
       }
    }
+   return unless $fields_in_params;
+
 
    $self->_fields_validate;
       
@@ -784,7 +743,14 @@ sub _setup_form
       } 
    }
    $self->clear_fif;
-   $self->_init_from_object;
+   if( $self->has_params )
+   {
+      $self->clear_values;
+   }
+   else
+   {
+      $self->_init_from_object;
+   }
    $self->_load_options;
 }
 
