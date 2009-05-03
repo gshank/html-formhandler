@@ -4,7 +4,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 10;
+   plan tests => 9;
 }
 
 use_ok('HTML::FormHandler::Model::DBIC');
@@ -44,9 +44,7 @@ my $params = {
     'publisher' => 'EreWhon Publishing',
 };
 
-ok( $form->validate( $params ), 'validate data' );
-
-ok( $form->update_model, 'update validated data');
+ok( $form->process( $params ), 'validate data' );
 
 my $book = $form->item;
 END { $book->delete }

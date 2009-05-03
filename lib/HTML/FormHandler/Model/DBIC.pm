@@ -106,12 +106,6 @@ sub validate_model
    return 1;
 }
 
-=head2 clear_model
-
-Clear state for persistent forms
-
-=cut
-
 sub clear_model
 {
    my $self = shift;
@@ -313,7 +307,6 @@ This method sets a field's value (for $field->value).
 
 This method is not called if a method "init_value_$field_name" is found 
 in the form class - that method is called instead.
-This allows overriding specific fields in your form class.
 
 =cut
 
@@ -426,13 +419,6 @@ sub build_item
    return $item;
 }
 
-=head2 set_item
-
-Trigger that executes when 'item' is set. Sets 'item_id', 'item_class',
-and 'schema' from the 'item'. 
-
-=cut
-
 sub set_item
 {
    my ( $self, $item ) = @_;
@@ -440,6 +426,20 @@ sub set_item
    $self->item_id( $item->id ) if $item->id;
    $self->item_class( $item->result_source->source_name );
    $self->schema( $item->result_source->schema );
+}
+
+sub set_item_id
+{
+   my ( $self, $item_id ) = @_;
+   if( defined $self->item )
+   {
+      $self->clear_item
+         if( !defined $item_id || 
+             (ref $item_id eq 'ARRAY' &&
+              join('', @{$item_id}) ne join('', $self->item->id)) ||
+             (ref \$item_id eq 'SCALAR' && 
+              $item_id != $self->item->id));
+   }
 }
 
 

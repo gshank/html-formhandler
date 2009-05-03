@@ -62,14 +62,7 @@ fetch the object from the item_class for this id.
 
 has 'item_id' => ( is => 'rw', trigger => sub { shift->set_item_id(@_)} );
 
-sub set_item_id
-{
-   my ( $self, $item_id ) = @_;
-   unless( defined $item_id )
-   {
-      $self->clear_item;
-   }
-}
+sub set_item_id { }
 
 =head2 item_class
 
