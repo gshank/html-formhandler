@@ -199,16 +199,17 @@ in L<HTML::FormHandler::Model>, and 'schema' is defined in
 L<HTML::FormHandler::Model::DBIC>.
 
 FormHandler forms are handled in two steps: 1) create with 'new',
-2) handle with 'process' or 'update'. FormHandler doesn't
+2) handle with 'process'. FormHandler doesn't
 care whether most parameters are set on new or process or update,
 but a 'field_list' argument should be passed in on 'new'.
 
 =head2 Processing the form
 
+=head3 process
 
 Call the 'process' method on your form to perform validation and 
 update. A database form must have either an item (row object) or
-a schema and item_id (row primary key).
+a schema, item_id (row primary key), and item_class (usually set in the form).
 
    $form->process( item => $book, params => $c->req->parameters );
 
@@ -218,6 +219,22 @@ or:
        schema => $schema, params => $c->req->parameters );
 
 This method returns the 'validated' flag. (C<< $form->validated >>)
+
+=head3 params
+
+The HTTP parameters must be passed in to 'process'. This is how
+HFH gets data to validate and store in the database. 
+
+There is a 'params' attribute which stores the parameters. 
+Also: set_param, get_param, clear_params, delete_param, 
+has_params from Moose 'Collection::Hash' metaclass. 
+
+The 'set_param' method could be used to add additional field
+input that doesn't come from the HTML form, similar to a hidden field:
+
+   my $form = MyApp::Form->new( $item, $params );
+   $form->set_param('comment', 'updated by edit form');
+   return unless $form->process;
 
 
 =head2 Getting data out
@@ -229,6 +246,10 @@ or for filling in a form with C<< $form->fif->{fieldname} >>.
 The fif value for a 'title' field in a TT form:
 
    [% form.fif.title %] 
+
+Or you can use the 'fif' method on individual fields:
+
+   [% form.field('title').fif %]
 
 =head3 values
 
@@ -273,7 +294,8 @@ name.
 
 =head3 fields
 
-The array of fields. A compound field will itself have an array of fields,
+The array of fields, objects of L<HTML::FormHandler::Field> or its subclasses.
+A compound field will itself have an array of fields,
 so this is a tree structure.
 
 =head3 field($name)
@@ -290,6 +312,46 @@ Pass a second true value to die on errors.
 Convenience function to return the value of the field. Returns
 undef if field not found. The equivalent of C<< $form->field('name')->value >>
 
+=head2 Constraints and validation
+
+Most validation in performed on a per-field basis, and there are a number
+of different places in which validation can be performed. 
+
+=head3 Apply actions
+
+The 'actions' array contains a sequence of transformations and constraints
+which will be applied in order. See the L<HTML::FormHandler::Field/apply>
+documentation.
+
+   has_field 'test' => ( apply => [ 'MyConstraint', 
+                         { check => sub {... },
+                           message => '....' },
+                         { transform => sub { ... },
+                           message => '....' }
+                         ] );
+
+=head3 Field class validate method
+
+The 'validate' method can be used in field classes to perform additional validation.
+This method is called after the actions are performed.
+
+=head3 Form class validation for individual fields
+
+You can define a method in your form class to perform validation on a field. This
+method is called after all the field class 'validate' method. The name of this method
+can be set with 'set_validate' on the field. The default is 'validate_' plus the
+field name:
+
+   sub validate_testfield { ... }
+
+
+=head3 cross_validate
+
+This is a form method that is useful for cross checking values after they have
+been saved as their final validated value, and for performing more complex 
+dependency validation. It is called after all other field validation is done, 
+and whether or not validation has succeeded.
+
 
 =head2 Accessing errors 
 
@@ -298,7 +360,7 @@ undef if field not found. The equivalent of C<< $form->field('name')->value >>
   errors - returns array of error messages for the entire form
   num_errors - number of errors in form
 
-=head3 Clear form state
+=head2 Clear form state
 
 Various clear methods are used in internal processing, and might be
 useful in some situations.
@@ -357,14 +419,11 @@ It normally shouldn't be necessary for users to check this flag.
 
 =head3 validated
 
-Flag that indicates if form has been validated. If you're using the
-'update', 'process', or 'validate' methods, you many not 
-need to use this flag, since the return value of those methods 
-is this flag. You might want to use this flag if you've
-written a method to replace 'update' or 'process', or you're
-doing something in between update/validate, such as set a stash key.
+Flag that indicates if form has been validated. You might want to use 
+this flag if you're doing something in between process and returning, 
+such as setting a stash key.
 
-   $form->update( ... );
+   $form->process( ... );
    $c->stash->{...} = ...;
    return unless $form->validated;
 
@@ -372,7 +431,6 @@ doing something in between update/validate, such as set a stash key.
 
 Flag to dump diagnostic information. See 'dump_fields' and
 'dump_validated'.
-
 
 =head3 html_prefix
 
@@ -398,28 +456,6 @@ will return the form name + "." + field name
    submit - Store form submit field info. No default value.
    uuid - generates a string containing an HTML field with UUID
 
-=head2 params
-
-Stores HTTP parameters. 
-Also: set_param, get_param, clear_params, delete_param, 
-has_params from Moose 'Collection::Hash' metaclass. 
-
-The 'set_param' method could be used to add additional field
-input that doesn't come from the HTML form, similar to a hidden field:
-
-   my $form = MyApp::Form->new( $item, $params );
-   $form->set_param('comment', 'updated by edit form');
-   return unless $form->update;
-
-(Note: 'process' clears params, so you have to use 'update' ); 
-
-=head2 cross_validate
-
-This method is useful for cross checking values after they have been saved 
-as their final validated value, and for performing more complex dependency
-validation.
-
-This method is called even if some fields did not validate.
 
 =cut
 

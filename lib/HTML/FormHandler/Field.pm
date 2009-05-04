@@ -14,7 +14,7 @@ HTML::FormHandler::Field - Base class for HTML::FormHandler Fields
 
 Instances of Field subclasses are generally built by L<HTML::FormHandler>
 from 'has_field' declarations or the field_list, but they can also be constructed 
-using new (usually for test purposed).
+using new (usually for test purposes).
 
     use HTML::FormHandler::Field::Text;
     my $field = HTML::FormHandler::Field::Text->new( name => $name, ... );
@@ -207,11 +207,14 @@ Flag indicating that errors should only be set on the parent of this field class
 
 The 'widget' is attribute is not used by base FormHandler code.
 It is intended for use in generating HTML, in templates and the 
-rendering roles. Fields of different type can use the same 
-widget.
+rendering roles, and is used in L<HTML::FormHandler::Render::Simple. 
+Fields of different type can use the same widget.
 
 This attribute is set in the field classes, or in the fields
-defined in the form.
+defined in the form. If you want a new widget type, use a new
+name and provide a C<< 'widget_<name>' >> method in Render::Simple
+or a widget template if you are using a template based rendering
+system. (see L<HTML::FormHandler::Manual::Templates>) 
 
 Widget types for the provided field classes:
 
@@ -466,14 +469,15 @@ The field's error list and internal value are reset upon entry.
 
 =head2 validate
 
-This method validates the input data for the field and returns true if
+This field method can be used in addition to or instead of 'apply' actins.
+It validates the field data and returns true if
 the data validates.  An error message must be added to the field with
 C<< $field->add_error( ... ) >> if the value does not validate. The default 
 method is to return true.
 
     sub validate {
         my $field = shift;
-        my $input = $field->input;
+        my $value = $field->value;
         return $field->add_error( ... ) if ( ... );
         return 1;
     }

@@ -310,6 +310,8 @@ sub _update_or_create
       if( $do_update ) # this field started with '+'. Update.
       {
          $field = $parent->field($field_attr->{name}); 
+         die "Field to update for " . $field_attr->{name} . " not found"
+            unless $field;
          delete $field_attr->{name};
          foreach my $key ( keys %{$field_attr} )
          {
@@ -325,7 +327,7 @@ sub _update_or_create
    }
    else # new field
    {  
-      my $field = $class->new( %{$field_attr} );
+      $field = $class->new( %{$field_attr} );
       $parent->add_field($field); 
    }
 }
@@ -347,6 +349,7 @@ sub field
    my ( $self, $name, $die ) = @_;
 
    my $index;
+   # if this is a full_name for a compound field
    if( $name =~ /\./ )
    {
       my @names = split /\./, $name;
@@ -357,7 +360,7 @@ sub field
       }
       return $f;
    }
-   else
+   else # not a compound name
    {
       for my $field ( $self->fields )
       {
@@ -368,6 +371,7 @@ sub field
    croak "Field '$name' not found in '$self'";
 }
 
+# this may be an array of fields flattened from the tree
 sub sorted_fields
 {
    my $self = shift;
@@ -376,6 +380,8 @@ sub sorted_fields
    return wantarray ? @fields : \@fields;
 }
 
+#  the routine for looping through and processing each field
+#  Called by FormHandler and Field::Compound
 sub _fields_validate
 {
    my $self = shift;

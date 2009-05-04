@@ -162,9 +162,9 @@ This subroutine is only called for "auto" fields, defined like:
 Pass in a column and it will guess the field type and return it.
 
 Currently returns:
-    DateTimeDMYHM   - for a has_a relationship that isa DateTime
-    Select          - for a has_a relationship
-    Multiple        - for a has_many
+    DateTime     - for a has_a relationship that isa DateTime
+    Select       - for a has_a relationship
+    Multiple     - for a has_many
 
 otherwise:
     DateTimeDMYHM   - if the field ends in _time
@@ -193,7 +193,7 @@ sub guess_field_type
       my $f_class = $source->related_class($column);
       @return =
          $f_class->isa('DateTime')
-         ? ('DateTimeDMYHM')
+         ? ('DateTime')
          : ('Select');
    }
    # Else is it has_many?
@@ -204,7 +204,7 @@ sub guess_field_type
    }
    elsif ( $column =~ /_time$/ )    # ends in time, must be time value
    {
-      @return = ('DateTimeDMYHM');
+      @return = ('DateTime');
    }
    else                             # default: Text
    {
@@ -424,6 +424,8 @@ sub set_item
 {
    my ( $self, $item ) = @_;
    return unless $item;
+   # when the item (DBIC row) is set, set the item_id, item_class
+   # and schema from the item
    if( $item->id )
    { $self->item_id($item->id); }
    else
@@ -435,6 +437,8 @@ sub set_item
 sub set_item_id
 {
    my ( $self, $item_id ) = @_;
+   # if a new item_id has been set
+   # clear an existing item
    if( defined $self->item )
    {
       $self->clear_item
@@ -492,8 +496,7 @@ sub compute_model_stuff {
 
 =head1 SUPPORT
 
-The author can be contacted through the L<Catalyst> or L<DBIx::Class> mailing 
-lists or IRC channels (gshank).
+See L<HTML::FormHandler>
 
 =head1 AUTHOR
 
