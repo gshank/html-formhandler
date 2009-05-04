@@ -424,7 +424,10 @@ sub set_item
 {
    my ( $self, $item ) = @_;
    return unless $item;
-   $self->item_id( $item->id ) if $item->id;
+   if( $item->id )
+   { $self->item_id($item->id); }
+   else
+   { $self->clear_item_id; }
    $self->item_class( $item->result_source->source_name );
    $self->schema( $item->result_source->schema );
 }

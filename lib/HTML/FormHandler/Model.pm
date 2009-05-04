@@ -60,7 +60,8 @@ fetch the object from the item_class for this id.
 
 =cut
 
-has 'item_id' => ( is => 'rw', trigger => sub { shift->set_item_id(@_)} );
+has 'item_id' => ( is => 'rw', clearer => 'clear_item_id',
+   trigger => sub { shift->set_item_id(@_)} );
 
 sub set_item_id { }
 
