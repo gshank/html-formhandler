@@ -628,6 +628,8 @@ sub clear_state
    $self->num_errors(0);
    $self->clear_errors;
    $self->clear_fif;
+   $self->clear_values;
+   $self->clear_inputs;
 }
 
 sub clear_fif { shift->clear_fifs }
@@ -643,20 +645,27 @@ sub fif
    {
       next if $field->password;
       next unless $field->fif;
-      my $fif = $field->fif;
-      if ( ref $fif eq 'HASH' )
-      {
-          foreach my $key ( keys %{$fif} )
-          {
-             $params->{ $prefix . $key } = $fif->{$key};
-          }
-      }
-      else
-      {
-         $params->{ $prefix . $field->full_name } = $field->fif;
-      }
+      $params->{$field->name} = $field->fif;
    }
-   return $params;
+   my %new_hash = $self->_flatten_hash( $prefix, $params );
+   return if !%new_hash;
+   return \%new_hash;
+}
+
+sub _flatten_hash
+{
+   my ( $self, $prefix, $hash ) = @_;
+   my %new_hash;
+   for my $key ( keys %$hash ){
+       my $value = $hash->{$key};
+       if( ref $value eq 'HASH' ){
+           %new_hash = ( %new_hash, $self->_flatten_hash( $prefix . $key . '.', $value ) );
+       }
+       else{ 
+           $new_hash{ $prefix . $key } = $hash->{$key};
+       }
+   }
+   return %new_hash
 }
 
 sub values

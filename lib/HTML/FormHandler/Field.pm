@@ -491,13 +491,6 @@ has 'value' => (
    is        => 'rw',
    clearer   => 'clear_value',
    predicate => 'has_value',
-   trigger   => sub {
-      my ( $self, $value ) = @_;
-      $self->fif( $self->fif_value($value) )
-         unless ( ( $self->password && $self->password == 1 )
-         || $self->has_fields );
-      return $value;
-   }
 );
 has 'parent' => ( is => 'rw', predicate => 'has_parent' );
 has 'errors_on_parent' => ( isa => 'Bool', is => 'rw' );
@@ -506,18 +499,29 @@ has 'input' => (
    is        => 'rw',
    clearer   => 'clear_input',
    predicate => 'has_input',
-   trigger   => sub {
-      my ( $self, $input ) = @_;
-      $self->fif($input)
-         unless ( $self->password && $self->password == 1 );
-      return $input;
-   }
 );
 has 'input_without_param' => (
    is        => 'rw',
    predicate => 'has_input_without_param'
 );
-has 'fif' => ( is => 'rw', clearer => 'clear_fif', predicate => 'has_fif' );
+has 'fif' => ( 
+    is => 'rw', 
+    clearer => 'clear_fif', 
+    predicate => 'has_fif',
+    lazy_build => 1,
+);
+sub _build_fif {
+    my $self = shift;
+    return if( defined $self->password && $self->password == 1 );
+    if( defined $self->input ){
+        return $self->input;
+    }
+    if( defined $self->value ){
+        return $self->value;
+    }
+    return;
+}
+
 has 'accessor' => (
    isa     => 'Str',
    is      => 'rw',

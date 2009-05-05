@@ -93,29 +93,6 @@ augment 'process' => sub {
 };
 
 
-
-# this is a kludge. We need to factor this stuff better...
-# create the 'fif' for compound fields
-sub _build_fif 
-{
-   my $self = shift;
-
-   my $fif = {}; 
-   for my $field ($self->fields)
-   {
-      if( ref $field->fif eq 'HASH' )
-      {
-         $fif = {%{$fif}, %{$field->fif}}; 
-      }
-      else
-      {
-         $fif->{$field->full_name} = $field->fif;
-      }
-   }
-   $self->fif($fif) if $fif;
-
-}
-
 sub field_name_space
 {
    my $self = shift;

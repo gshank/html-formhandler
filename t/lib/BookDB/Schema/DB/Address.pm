@@ -17,6 +17,7 @@ __PACKAGE__->add_columns(
   "city",
   { data_type => "VARCHAR", is_nullable => 0, size => 32 },
   "state",
+  { data_type => "VARCHAR", is_nullable => 0, size => 32 },
 );
 __PACKAGE__->set_primary_key("address_id");
 

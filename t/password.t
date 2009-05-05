@@ -32,8 +32,10 @@ is( $field->value, 'abcdef', 'set and get value' );
 
 is( $field->fif, 'abcdef', 'get fif');
 
+$field->clear_fif;
 $field->value(undef);
 is( $field->fif, undef, 'get undef fif' );
 
+$field->clear_fif;
 $field->input('xyz');
 is( $field->fif, 'xyz', 'get fif from input');

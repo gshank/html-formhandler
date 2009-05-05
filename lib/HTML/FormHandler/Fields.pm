@@ -429,6 +429,16 @@ sub clear_values
    }
 }
 
+sub clear_inputs
+{
+   my $self = shift;
+   foreach my $field ($self->fields)
+   {
+      $field->clear_inputs if $field->can('clear_inputs');
+      $field->clear_input;
+   }
+}
+
 sub dump_fields { shift->dump( @_) }
 sub dump
 {

@@ -109,7 +109,5 @@ is( ref $form->field('date_coercion_pass')->value, 'DateTime',   'values coerced
 ok( $form->field('date_coercion_error')->has_errors,     'DateTime coercion error' );
 my ( $message ) = $form->field('date_coercion_error')->errors;
 is( $message, 'This is not a correct date', 'Error message for coercion' );
-$params->{coerce_pass} = '10';
-$params->{sprintf_filter} = '<1e+02>';
 is_deeply( $form->fif, $params, 'fif is correct' );
 

@@ -116,5 +116,6 @@ $params = {
 $form->process($params);
 ok($form->validated, 'form validated');
 is_deeply($form->fif, $params, 'fif is correct');
-$form->clear_fif;
+$form->clear_state;
 ok( !$form->fif, 'fif is cleared');
+
