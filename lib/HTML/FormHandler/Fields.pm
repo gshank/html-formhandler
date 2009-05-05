@@ -397,7 +397,10 @@ sub _fields_validate
       # these methods have access to the inflated values
       $field->_validate($field);    # will execute a form-field validation routine
    }
+   $self->cross_validate;
 }
+
+sub cross_validate { }
 
 sub clear_errors
 {

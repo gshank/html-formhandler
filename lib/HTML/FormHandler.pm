@@ -320,8 +320,11 @@ of different places in which validation can be performed.
 =head3 Apply actions
 
 The 'actions' array contains a sequence of transformations and constraints
-which will be applied in order. See the L<HTML::FormHandler::Field/apply>
-documentation.
+which will be applied in order. The current value of the field is passed in to
+the subroutines, but it has no access to other field information. This is
+probably the best place to put constraints and transforms if all that is
+needed is the current value.
+See the L<HTML::FormHandler::Field/apply> for more documentation.
 
    has_field 'test' => ( apply => [ 'MyConstraint', 
                          { check => sub {... },
@@ -333,16 +336,21 @@ documentation.
 =head3 Field class validate method
 
 The 'validate' method can be used in field classes to perform additional validation.
-This method is called after the actions are performed.
+It has access to the field ($self).  This method is called after the actions are performed.
 
 =head3 Form class validation for individual fields
 
-You can define a method in your form class to perform validation on a field. This
-method is called after all the field class 'validate' method. The name of this method
-can be set with 'set_validate' on the field. The default is 'validate_' plus the
-field name:
+You can define a method in your form class to perform validation on a field. 
+This method is the equivalent of the field class validate method except it is
+in the form class, so you might use this validation method if you don't
+want to create a field subclass. 
 
-   sub validate_testfield { ... }
+It has access to the form ($self) and the field.
+This method is called after the field class 'validate' method. The name of 
+this method can be set with 'set_validate' on the field. The default is 
+'validate_' plus the field name:
+
+   sub validate_testfield { my ( $self, $field ) = @_; ... }
 
 
 =head3 cross_validate
@@ -350,8 +358,8 @@ field name:
 This is a form method that is useful for cross checking values after they have
 been saved as their final validated value, and for performing more complex 
 dependency validation. It is called after all other field validation is done, 
-and whether or not validation has succeeded.
-
+and whether or not validation has succeeded, so it has access to the 
+post-validation values of all the fields.
 
 =head2 Accessing errors 
 
