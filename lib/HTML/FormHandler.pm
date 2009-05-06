@@ -646,36 +646,27 @@ sub clear_fif { shift->clear_fifs }
 
 sub fif
 {
-   my $self = shift;
+   my ( $self, $prefix, $node ) = @_;
 
-   my $prefix = '';
-   $prefix = $self->name . "." if $self->html_prefix;
-   my $params;
-   foreach my $field ( $self->fields )
+   if( ! defined $node ){
+       $node = $self;
+       $prefix = '';
+       $prefix = $self->name . "." if $self->html_prefix;
+   }
+   my %params;
+   foreach my $field ( $node->fields )
    {
       next if $field->password;
       next unless $field->fif;
-      $params->{$field->name} = $field->fif;
-   }
-   my %new_hash = $self->_flatten_hash( $prefix, $params );
-   return if !%new_hash;
-   return \%new_hash;
-}
-
-sub _flatten_hash
-{
-   my ( $self, $prefix, $hash ) = @_;
-   my %new_hash;
-   for my $key ( keys %$hash ){
-       my $value = $hash->{$key};
-       if( ref $value eq 'HASH' ){
-           %new_hash = ( %new_hash, $self->_flatten_hash( $prefix . $key . '.', $value ) );
+      if( $field->DOES( 'HTML::FormHandler::Fields' ) ){
+           %params = ( %params, %{ $self->fif( $prefix . $field->name. '.', $field ) } );
        }
-       else{ 
-           $new_hash{ $prefix . $key } = $hash->{$key};
+       else{
+           $params{ $prefix . $field->name } = $field->fif;
        }
    }
-   return %new_hash
+   return if !%params;
+   return \%params;
 }
 
 sub values
