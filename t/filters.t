@@ -80,10 +80,11 @@ BEGIN
       type => 'Compound',
       apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
       deflations => [ sub { { year => 1000, month => 1, day => 1 } } ],
+      fif_from_value => 1,
    );
-   has_field 'date_time_fif.year';
+   has_field 'date_time_fif.year' => ( fif_from_value => 1 );
    has_field 'date_time_fif.month';
-   has_field 'date_time_fif.day';
+   has_field 'date_time_fif.day' => ( fif_from_value => 1 );
 }
 
 
@@ -120,7 +121,10 @@ is( ref $form->field('date_coercion_pass')->value, 'DateTime',   'values coerced
 ok( $form->field('date_coercion_error')->has_errors,     'DateTime coercion error' );
 my ( $message ) = $form->field('date_coercion_error')->errors;
 is( $message, 'This is not a correct date', 'Error message for coercion' );
-is_deeply( $form->fif, $params, 'fif is correct' );
 
 is( $form->field( 'date_time_fif.year' )->fif, 1000, 'fif from deflation - year' );
+$params->{'date_time_fif.year'} = 1000;
+$params->{'date_time_fif.day'} = 1;
+is_deeply( $form->fif, $params, 'fif is correct' );
+
 

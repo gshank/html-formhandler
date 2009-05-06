@@ -510,14 +510,27 @@ has 'fif' => (
     predicate => 'has_fif',
     lazy_build => 1,
 );
+has 'fif_from_value' => ( isa => 'Str', is => 'rw' );
 sub _build_fif {
     my $self = shift;
     return if( defined $self->password && $self->password == 1 );
-    if( defined $self->input ){
+    if( defined $self->input && !$self->fif_from_value ){
         return $self->input;
     }
+    my $parent = $self->parent;
+    if( defined $parent 
+        && $parent->isa( 'HTML::FormHandler::Field' )
+        && $parent->has_deflations
+        && ref $parent->fif eq 'HASH'
+        && exists $parent->fif->{$self->name}
+    ){
+        return $self->_apply_deflations( $parent->fif->{$self->name} );
+    }
     if( defined $self->value ){
-        return $self->value;
+        return $self->_apply_deflations( $self->value );
+    }
+    if( $self->fif_from_value ){
+        return $self->input;
     }
     return;
 }
@@ -800,7 +813,7 @@ sub process
 
    $field->_apply_actions;
 
-   $field->_build_fif if $field->can('_build_fif');
+#   $field->_build_fif if $field->can('_build_fif');
    return if $field->has_errors;
    return unless $field->validate;
    return unless $field->test_ranges;

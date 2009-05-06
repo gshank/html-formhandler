@@ -810,9 +810,10 @@ sub _init_from_object
       next if $field->parent && $field->parent != $node;
       next if ref $item eq 'HASH' && !exists $item->{$field->accessor};
       my $value = $self->_get_value( $field, $item );
-      $value = $field->_apply_deflations( $value );
+#      $value = $field->_apply_deflations( $value );
       if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
          $self->_init_from_object( $field, $value );
+         $field->value( $value );
       }
       else{
          if ( $field->_can_init )
