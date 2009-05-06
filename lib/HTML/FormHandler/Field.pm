@@ -801,7 +801,7 @@ sub process
    return unless $field->validate;
    return unless $field->test_ranges;
 
-   return;
+   return !$field->has_errors;
 }
 
 sub validate_field
@@ -826,27 +826,22 @@ sub _apply_actions
       my $value = $self->value;
       my $new_value = $value;
       # Moose constraints 
-      if ( !ref $action )
+      if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' )
       {
          $action = { type => $action };
       }
-      if ( ref $action eq 'MooseX::Types::TypeDecorator' )
-      {
-         my $tobj = $action->__type_constraint;
-         $action = { tobj => $tobj };
-      }
-      if ( exists $action->{type} || $action->{tobj} )
+      if ( exists $action->{type} )
       {
          my $tobj;
-         if( $action->{type} )
+         if( ref $action->{type} eq 'MooseX::Types::TypeDecorator' )
+         {
+            $tobj = $action->{type};
+         }
+         else
          {
             my $type = $action->{type};
             $tobj = Moose::Util::TypeConstraints::find_type_constraint($type)
                or die "Cannot find type constraint $type";
-         }
-         elsif( $action->{tobj} )
-         {
-            $tobj = $action->{tobj};
          }
          if ( $tobj->has_coercion && $tobj->validate($value) )
          {

@@ -25,6 +25,7 @@ These types are provided by MooseX::Types. These types must not be quoted
 when they are used:
 
   has 'posint' => ( is => 'rw', isa => PositiveInt);
+  has_field 'email' => ( apply => [ Email ] );
 
 Types declared using Moose::Util::TypeConstraints, on the other hand,
 must be quoted:
@@ -48,6 +49,16 @@ we'll just re-implement them here in order to be able to change the
 messages and keep control of what types we provide.
 
 =head1 TYPES
+
+=item Email
+
+Uses Email::Valid
+
+=item State
+
+Checks that the state is in a list of two uppercase letters.
+
+=item Zip
 
 =cut
 
@@ -104,15 +115,31 @@ subtype NonEmptyStr,
 subtype State,
   as Str,
   where {
-    my $val = $_;
+    my $value = $_;
     my $state = <<EOF;
 AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD
 MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA PR RI
 SC SD TN TX UT VT VA WA WV WI WY DC AP FP FPO APO GU VI
 EOF
-    return ($state =~ /\b($val)\b/i);
+    return ($state =~ /\b($value)\b/i);
   },
   message {"Not a valid state"};
+
+subtype Email,
+  as Str,
+  where {
+    my $value = shift;
+    require Email::Valid;
+    my $valid;
+    return ($valid = Email::Valid->address($value)) &&
+        ($valid eq $value); 
+  },
+  message {"Email is not valid"};
+
+subtype Zip,
+  as Str,
+  where { $_ =~ /^(\s*\d{5}(?:[-]\d{4})?\s*)$/ },
+  message {"Zip is not valid"};
 
 
 1;

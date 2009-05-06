@@ -8,8 +8,7 @@ use_ok( 'HTML::FormHandler' );
 
 {
    package My::Form;
-#   use HTML::FormHandler::Moose;
-   use Moose;
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
    has '+name' => ( default => 'testform_' );
