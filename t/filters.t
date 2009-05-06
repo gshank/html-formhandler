@@ -9,7 +9,7 @@ use Scalar::Util qw(blessed);
 
 BEGIN
 {
-   plan tests => 11;
+   plan tests => 12;
 }
 
 {
@@ -76,6 +76,14 @@ BEGIN
    has_field 'date_coercion_error.month' => ( type => 'Text', );
    has_field 'date_coercion_error.day' => ( type => 'Text', );
 
+   has_field 'date_time_fif' => ( 
+      type => 'Compound',
+      apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
+      deflations => [ sub { { year => 1000, month => 1, day => 1 } } ],
+   );
+   has_field 'date_time_fif.year';
+   has_field 'date_time_fif.month';
+   has_field 'date_time_fif.day';
 }
 
 
@@ -96,6 +104,9 @@ my $params = {
       'date_coercion_error.year' => 2009,
       'date_coercion_error.month' => 20,
       'date_coercion_error.day' => 16,
+      'date_time_fif.year' => 2009,
+      'date_time_fif.month' => 4,
+      'date_time_fif.day' => 16,
 };
 $form->process($params);
 
@@ -110,4 +121,6 @@ ok( $form->field('date_coercion_error')->has_errors,     'DateTime coercion erro
 my ( $message ) = $form->field('date_coercion_error')->errors;
 is( $message, 'This is not a correct date', 'Error message for coercion' );
 is_deeply( $form->fif, $params, 'fif is correct' );
+
+is( $form->field( 'date_time_fif.year' )->fif, 1000, 'fif from deflation - year' );
 
