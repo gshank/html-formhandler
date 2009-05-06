@@ -161,30 +161,30 @@ The new constructor takes name/value pairs:
         init_object => { name => 'Your name here', username => 'choose' }
     );
 
-Or a single item (model row object) or item_id (row primary key)
-may be supplied:
+No attributes are required on new for a non-database form.
+The common attributes to be passed in to the constructor for a database form 
+are either item_id and schema or item:
 
-    MyForm->new( $id );
-    MyForm->new( $item );
-
-If you will be processing a persistent form with 'process', no arguments
-are necessary. The common attributes to be passed in to the constructor are:
-
-   item_id
-   item
-   schema
+   item_id  - database row primary key
+   item     - database row object
+   schema   - (for DBIC) the DBIx::Class schema
 
 The following are occasionally passed in, but are more often set
 in the form class:
 
-   item_class
-   dependency
-   field_list
-   init_object
+   item_class  - source name of row
+   dependency  - (see dependency)
+   field_list  - and array of field definitions
+   init_object - a hashref or object to provide initial values
 
-Creating a form object:
+Examples of creating a form object with new:
 
-    my $form =  = HTML::FormHandler::Model::DBIC->new(
+    # non-database form
+    my $form = MyApp::Form::User->new;
+    # database form using a row object
+    my $form = MyApp::Form::Member->new( item => $row );
+    # a dynamic form (no form class has been defined) 
+    my $form = HTML::FormHandler::Model::DBIC->new(
         item_id         => $id,
         item_class    => 'User', 
         schema          => $schema,
@@ -201,7 +201,7 @@ L<HTML::FormHandler::Model::DBIC>.
 FormHandler forms are handled in two steps: 1) create with 'new',
 2) handle with 'process'. FormHandler doesn't
 care whether most parameters are set on new or process or update,
-but a 'field_list' argument should be passed in on 'new'.
+but a 'field_list' argument must be passed in on 'new'.
 
 =head2 Processing the form
 
@@ -219,13 +219,18 @@ or:
        schema => $schema, params => $c->req->parameters );
 
 This method returns the 'validated' flag. (C<< $form->validated >>)
+If it is a database form and the form validates, the database row
+will be updated.
+
+If it is not a database form, you can get HTTP parameter type values
+from C<< $form->fif >> or a hash of inflated values from C<< $form->values >>.
 
 =head3 params
 
-The HTTP parameters must be passed in to 'process'. This is how
-HFH gets data to validate and store in the database. 
+The HTTP parameters must be passed in or set before you call 'process'. 
+HFH gets data to validate and store in the database from the params hash. 
 
-There is a 'params' attribute which stores the parameters. 
+The parameters are stored in a 'params' attribute.
 Also: set_param, get_param, clear_params, delete_param, 
 has_params from Moose 'Collection::Hash' metaclass. 
 
@@ -263,11 +268,18 @@ field's 'value' for the the values.
 
 =head2 Accessing and setting up fields
 
+Fields are declared with a number of attributes which are defined in
+L<HTML::FormHandler::Field>. If you want additional attributes you can
+define your own field classes. The field 'type' is the short class name
+of the field class.
+
 =head3 has_field
 
 The most common way of declaring fields is the 'has_field' syntax.
+Using the 'has_field' syntax sugar requires C< use HTML::FormHandler::Moose; >.
 See L<HTML::FormHandler::Manual::Intro>
 
+   use HTML::FormHandler::Moose;
    has_field 'field_name' => ( type => 'FieldClass', .... );
 
 =head3 field_list
@@ -300,9 +312,9 @@ so this is a tree structure.
 
 =head3 field($name)
 
-This is the method that is usually called in your templates to
-access a field:
+This is the method that is usually called to access a field:
 
+    my $title = $form->field('title')->value;
     [% f = form.field('title') %]
 
 Pass a second true value to die on errors.
@@ -319,11 +331,11 @@ of different places in which validation can be performed.
 
 =head3 Apply actions
 
-The 'actions' array contains a sequence of transformations and constraints
-which will be applied in order. The current value of the field is passed in to
-the subroutines, but it has no access to other field information. This is
-probably the best place to put constraints and transforms if all that is
-needed is the current value.
+The 'actions' array contains a sequence of transformations, constraints
+(including Moose type constraints) which will be applied in order. The 
+current value of the field is passed in to the subroutines, but it has 
+no access to other field information. This is probably the best place to 
+put constraints and transforms if all that is needed is the current value.
 See the L<HTML::FormHandler::Field/apply> for more documentation.
 
    has_field 'test' => ( apply => [ 'MyConstraint', 
@@ -373,8 +385,8 @@ post-validation values of all the fields.
 Various clear methods are used in internal processing, and might be
 useful in some situations.
 
-   clear - clears state, params, model, ctx
-   clear_state - clears flags, errors, and params
+   clear - clears state, params, ctx
+   clear_state - clears flags, errors, fif, values, input 
    clear_values, clear_errors, clear_fif - on all fields
 
 =head2 Miscellaneous attributes
@@ -405,7 +417,9 @@ Holds a Local::Maketext language handle
 
 The builder for this attribute gets the Locale::Maketext language 
 handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates 
-a default language handler using L<HTML::FormHandler::I18N>
+a default language handler using L<HTML::FormHandler::I18N>. The
+language handle is used in the field's add_error method to allow
+localizing.
 
 =head3 dependency
 
@@ -418,13 +432,6 @@ value, then all of the group are set to 'required'.
 
 =head2 Flags
 
-=head3 ran_validation
-
-Flag to indicate that validation has been run. This flag will be
-false when the form is initially loaded and displayed, since
-validation is not run until FormHandler has params to validate.
-It normally shouldn't be necessary for users to check this flag.
-
 =head3 validated
 
 Flag that indicates if form has been validated. You might want to use 
@@ -434,6 +441,12 @@ such as setting a stash key.
    $form->process( ... );
    $c->stash->{...} = ...;
    return unless $form->validated;
+
+=head3 ran_validation
+
+Flag to indicate that validation has been run. This flag will be
+false when the form is initially loaded and displayed, since
+validation is not run until FormHandler has params to validate.
 
 =head3 verbose
 
@@ -455,7 +468,7 @@ would be just "borrower".
    has '+html_prefix' => ( default => 1 );
 
 Also see the Field attribute "html_name", a convenience function which
-will return the form name + "." + field name
+will return the form name + "." + field full_name
 
 =head2 For use in HTML
  
@@ -603,11 +616,9 @@ sub validate
 sub db_validate
 {
    my $self = shift;
-   foreach my $field ($self->fields)
-   {
-      $self->set_param( $field->full_name, $field->fif );
-   }
-   return $self->validate;
+   my $fif = $self->fif;
+   $self->process( $fif );
+   return $self->validated;
 }
 
 sub clear
@@ -616,7 +627,6 @@ sub clear
    warn "HFH: clear ", $self->name, "\n" if $self->verbose;
    $self->clear_state;
    $self->clear_params;
-#   $self->clear_model;
    $self->clear_ctx;
 }
 
@@ -1003,11 +1013,12 @@ L<HTML::FormHandler::Model::DBIC>
 L<HTML::FormHandler::Moose>
 
 
-=head1 AUTHOR
+=head1 CONTRIBUTORS
 
 gshank: Gerda Shank <gshank@cpan.org>
+zby:    Zbigniew Lukasiak <zby@cpan.org>
 
-Based on the original source code of L<Form::Processor> by Bill Moseley
+Based on the source code of L<Form::Processor> by Bill Moseley
 
 =head1 COPYRIGHT
 

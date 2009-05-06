@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More  tests => 9;
+use Test::More  tests => 7;
 use lib 't/lib';
 
 use_ok( 'HTML::FormHandler::Field::Text' );
@@ -32,10 +32,3 @@ is( $field->value, 'abcdef', 'set and get value' );
 
 is( $field->fif, 'abcdef', 'get fif');
 
-$field->clear_fif;
-$field->value(undef);
-is( $field->fif, undef, 'get undef fif' );
-
-$field->clear_fif;
-$field->input('xyz');
-is( $field->fif, 'xyz', 'get fif from input');
