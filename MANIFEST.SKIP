@@ -12,4 +12,5 @@
 ^.perltidyrc$
 ^lib/DBIx*
 ^*.old$
+^*.new$
 ^t/db_acc.t$
