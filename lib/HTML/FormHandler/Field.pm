@@ -184,10 +184,6 @@ See $form->language_handle for details. Returns undef.
 
     return $field->add_error( 'bad data' ) if $bad;
 
-=item errors_on_parent
-
-Flag indicating that errors should only be set on the parent of this field class.
-
 =back
 
 =head2 Attributes for creating HTML
@@ -205,7 +201,7 @@ Flag indicating that errors should only be set on the parent of this field class
 
 =head2 widget
 
-The 'widget' is attribute is not used by base FormHandler code.
+The 'widget' attribute is not used by base FormHandler code.
 It is intended for use in generating HTML, in templates and the 
 rendering roles, and is used in L<HTML::FormHandler::Render::Simple. 
 Fields of different type can use the same widget.
@@ -239,8 +235,8 @@ The default widget is 'text'.
 
 =head2 Form methods for fields
 
-These are for indicating methods in a form which will act on a
-particular field.
+These provide the name of a method in a form (not the field ) which will act 
+on a particular field.
 
 =over
 
@@ -469,11 +465,11 @@ The field's error list and internal value are reset upon entry.
 
 =head2 validate
 
-This field method can be used in addition to or instead of 'apply' actins.
-It validates the field data and returns true if
+This field method can be used in addition to or instead of 'apply' actions
+in custom field classes. It is not called if the field already has errors.
+It should validate the field data and returns true if
 the data validates.  An error message must be added to the field with
-C<< $field->add_error( ... ) >> if the value does not validate. The default 
-method is to return true.
+C<< $field->add_error( ... ) >> if the value does not validate. 
 
     sub validate {
         my $field = shift;

@@ -4,11 +4,12 @@ HTML::FormHandler::Manual::Intro - basic usage of FormHandler
 
 =head1 SUMMARY
 
-HTML::FormHandler is a form handling class primarily useful for getting HMTL form
-data into the database. It provides attributes on fields that can be used
-for creating a set of widgets and highly automatic templates, but does
-not actually create the HTML code themselves, although there is an example of a
-rendering role.
+HTML::FormHandler is a form handling class that validates HTML form data
+and, for database forms, saves it to the database on validation. 
+It has field classes that can be used for creating a set of widgets 
+and highly automatic templates. There is a simple rendering role,
+L<HTML::FormHandler::Render::Simple>, and FormHandler is designed to
+make it easy to produce alternative rendering modules.
 
 The DBIC & CDBI  models will save form fields automatically to the database, will
 retrieve selection lists from the database (with type => 'Select' and a 
@@ -18,16 +19,15 @@ many_to_many relationship), and will save the selected values (one value for
 
 The 'form' is a Perl subclass of L<HTML::FormHandler> for non-database forms,
 or a subclass of a model class for database forms, and in it you define
-your fields (with many possible attributes), and initialization
-and validation routines. Because it's a Perl class, you have a lot of 
-flexibility.
+your fields and validation routines. Because it's a Perl class, you have a 
+lot of flexibility.
 
-You can use transformations. Moose type constraints, and coercions, listed 
+You can use transformations, Moose type constraints, and coercions, listed 
 in the field's 'apply' attribute, to validate or inflate the fields 
 (see L<HTML::FormHandler::Field/apply>).  You can define your own 
 L<HTML::FormHandler::Field> classes to create your own field types, and 
-perform specialized validation. And you can subclass the methods in 
-L<HTML::FormHandler::Model::DBIC> and L<HTML::FormHandler>.
+perform specialized validation. You can create L<MooseX::Types> libraries
+and use them to perform field validation.
 
 The L<HTML::FormHandler> package includes a working 
 example using a SQLite database and a number of forms in the test directory.
@@ -151,19 +151,16 @@ passed in, or from the primary key ('item_id') and schema.
 
 The example above uses persistent forms in a Moose attribute. The
 'process' method will clear out non-persistent form values and
-update the information from the database row (if given). If you
-modify form attributes that are not automatically cleared, you must
-set those attributes on every request or clear them yourself.
-
+update the information from the database row (if given). 
 You can also create a new form on each request with new:
 
    my $form = BookDB::Form::Book->new( item => $book );
-   return unless $form->update( params => $c->req->parameters );
+   return unless $form->process( params => $c->req->parameters );
 
-There is often no need to check the 'validated' flag, since that is the 
-return value from the 'process' method, although it can be useful if you are 
-doing anything between the process call and displaying the form, such as setting
-the fillinform stash key.
+There is also a 'validated' flag that:
+
+   $form->process( params => $c->req->parameters );
+   return unless $form->validated;
 
 Form processing is a two-pass operation. The first time through
 the parameters will be an empty hashref, since the form has not been
@@ -271,9 +268,8 @@ The standard way to use FormHandler is with field names that match your
 database accessors. If you want to prepend the HTML field names with a
 name plus dot, you can set the form 'name' and use the 'html_prefix'
 flag. "$name." will be stripped from the beginning of the HTML fields
-in 'munge_params' before the parameters are set, and will be added in
-'fif'. The field's 'html_name' convenience attribute will return this
-name for use in templates.
+before the parameters are set, and will be added in 'fif'. The field's 
+'html_name' convenience attribute will return this name for use in templates.
 
 If you want the FormHandler field name to be different than the
 database accessor, set 'accessor' on your fields. (It defaults to the field
@@ -315,15 +311,16 @@ To declare fields use the syntax:
 
 instead of:
 
-   sub field_list {
-      return [
-         title => {
-            type => 'Text',
-            required => 1,
-         },
-         authors => 'Select',
-      ]            
-   }
+   has 'field_list' => ( default => sub { 
+         [
+            title => {
+               type => 'Text',
+               required => 1,
+            },
+            authors => 'Select',
+         ]            
+      }
+   );
          
 Fields specified in a field_list will overwrite fields specified with 'has_field'.
 After processing, fields live in the 'fields' array, and can be accessed with the
@@ -724,7 +721,7 @@ has lots of examples. Here is an example of a test script for a DBIC form:
        'isbn'   => '123-02345-0502-2' ,
        'publisher' => 'EreWhon Publishing',
    };
-   ok( $form->update( params => $good ), 'Good data' );
+   ok( $form->process( params => $good ), 'Good data' );
 
    my $book = $form->item;
    END { $book->delete };
