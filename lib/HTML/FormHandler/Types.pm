@@ -101,6 +101,19 @@ subtype NonEmptyStr,
   where { length($_) > 0 },
   message { "Must not be empty" };
 
+subtype State,
+  as Str,
+  where {
+    my $val = $_;
+    my $state = <<EOF;
+AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD
+MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA PR RI
+SC SD TN TX UT VT VA WA WV WI WY DC AP FP FPO APO GU VI
+EOF
+    return ($state =~ /\b($val)\b/i);
+  },
+  message {"Not a valid state"};
+
 
 1;
 

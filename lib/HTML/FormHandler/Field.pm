@@ -830,11 +830,24 @@ sub _apply_actions
       {
          $action = { type => $action };
       }
-      if ( exists $action->{type} )
+      if ( ref $action eq 'MooseX::Types::TypeDecorator' )
       {
-         my $type = $action->{type};
-         my $tobj = Moose::Util::TypeConstraints::find_type_constraint($type)
-            or die "Cannot find type constraint $type";
+         my $tobj = $action->__type_constraint;
+         $action = { tobj => $tobj };
+      }
+      if ( exists $action->{type} || $action->{tobj} )
+      {
+         my $tobj;
+         if( $action->{type} )
+         {
+            my $type = $action->{type};
+            $tobj = Moose::Util::TypeConstraints::find_type_constraint($type)
+               or die "Cannot find type constraint $type";
+         }
+         elsif( $action->{tobj} )
+         {
+            $tobj = $action->{tobj};
+         }
          if ( $tobj->has_coercion && $tobj->validate($value) )
          {
             eval { $new_value = $tobj->coerce($value) };
