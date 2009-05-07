@@ -237,10 +237,17 @@ has_params from Moose 'Collection::Hash' metaclass.
 The 'set_param' method could be used to add additional field
 input that doesn't come from the HTML form, similar to a hidden field:
 
-   my $form = MyApp::Form->new( $item, $params );
+   my $form = MyApp::Form->new( item => $item, params => $params );
    $form->set_param('comment', 'updated by edit form');
    return unless $form->process;
 
+Params are cleared at the beginning of 'process' if the form has been 
+processed before. For that case you can clear the form yourself: 
+   
+   $self->form->clear;
+   $self->form->params($params);
+   $self->form->set_param('comment', 'updated by edit form');
+   return unless $self->form->process($item => $item); 
 
 =head2 Getting data out
 
@@ -632,6 +639,7 @@ sub clear
    $self->clear_state;
    $self->clear_params;
    $self->clear_ctx;
+   $self->processed(0);
 }
 
 sub clear_state
