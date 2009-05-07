@@ -516,14 +516,14 @@ sub _build_fif {
     my $parent = $self->parent;
     if( defined $parent 
         && $parent->isa( 'HTML::FormHandler::Field' )
-        && $parent->has_deflations
+        && $parent->has_deflation
         && ref $parent->fif eq 'HASH'
         && exists $parent->fif->{$self->name}
     ){
-        return $self->_apply_deflations( $parent->fif->{$self->name} );
+        return $self->_apply_deflation( $parent->fif->{$self->name} );
     }
     if( defined $self->value ){
-        return $self->_apply_deflations( $self->value );
+        return $self->_apply_deflation( $self->value );
     }
     if( $self->fif_from_value ){
         return $self->input;
@@ -685,18 +685,9 @@ has 'actions' => (
       'clear' => 'clear_actions',
    }
 );
-has 'deflations' => (
-   metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef',
+has 'deflation' => (
    is         => 'rw',
-   auto_deref => 1,
-   default    => sub { [] },
-   provides   => {
-      'push'  => 'add_deflation',
-      'count' => 'num_deflations',
-      'empty' => 'has_deflations',
-      'clear' => 'clear_deflations',
-   }
+   predicate  => 'has_deflation',
 );
 has 'trim' => ( isa => 'HashRef', is => 'rw', 
    default => sub {{ 
@@ -936,13 +927,13 @@ sub _apply_actions
    }
 }
 
-sub _apply_deflations
+sub _apply_deflation
 {
    my ( $self, $value )  = @_;
 
-   for my $deflation ( @{ $self->deflations || [] } )
+   if( $self->has_deflation )
    {
-       $value = $deflation->($value);
+      $value = $self->deflation->($value);
    }
    return $value;
 }
