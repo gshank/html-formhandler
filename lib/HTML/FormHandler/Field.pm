@@ -509,8 +509,9 @@ has 'fif' => (
 has 'fif_from_value' => ( isa => 'Str', is => 'rw' );
 sub _build_fif {
     my $self = shift;
+
     return if( defined $self->password && $self->password == 1 );
-    if( defined $self->input && !$self->fif_from_value ){
+    if( $self->has_input && !$self->fif_from_value ){
         return $self->input;
     }
     my $parent = $self->parent;
@@ -670,7 +671,7 @@ sub _init
    my $self = shift;
    return unless $self->_can_init;
    my $meth = $self->set_init;
-   $self->form->$meth($self);
+   $self->form->$meth($self, $self->form->item);
 }
 has 'actions' => (
    metaclass  => 'Collection::Array',

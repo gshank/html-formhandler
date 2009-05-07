@@ -7,7 +7,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 7;
+   plan tests => 10;
 }
 
 use BookDB::Form::User;
@@ -27,7 +27,25 @@ is( $form->field( 'birthdate' )->field( 'year' )->fif, 1970, 'Year loaded' );
 is( $form->field( 'birthdate' )->field( 'month' )->fif, 4, 'Month loaded' );
 is( $form->field( 'birthdate' )->field( 'day' )->fif, 23, 'Day loaded' );
 
+my $birthdate = $user->birthdate; 
+
+my $db_values = {
+   user_name => 'jdoe',
+   fav_cat  => 'Sci-Fi',
+   fav_book => 'Necronomicon',
+   occupation => 'management',
+   country => 'US',
+   license => 3,
+   opt_in => 0,
+   'birthdate.year' => $birthdate->year,
+   'birthdate.month' => $birthdate->month,
+   'birthdate.day' => $birthdate->day,
+};
 my $fif = $form->fif;
+is_deeply( $db_values, $fif, 'get right fif from db');
+is( $form->field('opt_in')->fif, 0, 'right value for field with 0');
+is( $form->field('license')->fif, 3, 'right value for license field');
+
 #print Dumper( $form->fif ); use Data::Dumper;
 
 $form = BookDB::Form::User2->new( item => $user );

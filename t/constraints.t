@@ -108,5 +108,4 @@ my ( $message ) = $form->field('less_than_ten_error')->errors;
 is( $message, "This number (10) is not less than ten!", 'type constraint - error message' );
 ok( !$form->field('less_than_ten_pass')->has_errors,     'type constraint - pass' );
 #warn Dumper( $form ); use Data::Dumper;
-delete $params->{empty_field};
 is_deeply( $form->fif, $params, 'fif is correct');
