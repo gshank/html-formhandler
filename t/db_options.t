@@ -7,7 +7,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 12;
+   plan tests => 13;
 }
 
 use_ok( 'BookDB::Form::User');
@@ -27,10 +27,17 @@ ok( $form, 'User form created' );
 $options = $form->field( 'country' )->options;
 is( @$options, 12, 'Options loaded from the model' );
 
+my $fif = $form->fif;
+$fif->{country} = 'PL';
+# update user with new country
+$form->process($fif);
+is( $form->item->country, 'PL', 'country updated correctly');
+
 $form = BookDB::Form::User->new( schema => $schema, source_name => 'User' );
 ok( $form, 'User form created' );
 $options = $form->field( 'country' )->options;
 is( @$options, 12, 'Options loaded from the model - simple' );
+
 #warn Dumper( $options ); use Data::Dumper;
 
 $form = BookDB::Form::BookWithOwner->new( schema => $schema, source_name => 'Book' );
