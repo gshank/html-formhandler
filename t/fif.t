@@ -86,11 +86,7 @@ is( $form->field('pages')->fif, 699, 'get field fif after validation' );
 
 is( $form->field('author')->fif, 'J.Doe', 'get field author after validation' );
 
-is_deeply( $form->fif, {
-   title => 'Testing form',
-   isbn => '02340234',
-   pages => '699',
-   author => 'J.Doe' }, 'get form fif after validation' );
+is_deeply( $form->fif, $params, 'get form fif after validation' );
 
 {
    package My::Form;

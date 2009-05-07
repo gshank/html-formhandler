@@ -669,12 +669,13 @@ sub fif
    foreach my $field ( $node->fields )
    {
       next if $field->password;
-      next unless $field->fif;
+      my $fif = $field->fif; # need to force lazy build
+      next unless $field->has_fif && defined $fif;
       if( $field->DOES( 'HTML::FormHandler::Fields' ) ){
            %params = ( %params, %{ $self->fif( $prefix . $field->name. '.', $field ) } );
        }
        else{
-           $params{ $prefix . $field->name } = $field->fif;
+           $params{ $prefix . $field->name } = $fif;
        }
    }
    return if !%params;
@@ -830,21 +831,23 @@ sub _init_from_object
    for my $field ( $node->fields )
    {
       next if $field->parent && $field->parent != $node;
-      next if ref $item eq 'HASH' && !exists $item->{$field->accessor};
+      next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
-#      $value = $field->_apply_deflations( $value );
-      if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
+      #      $value = $field->_apply_deflations( $value );
+      if ( $field->isa('HTML::FormHandler::Field::Compound') )
+      {
          $self->_init_from_object( $field, $value );
-         $field->value( $value );
+         $field->value($value);
       }
-      else{
+      else
+      {
          if ( $field->_can_init )
          {
             my @values;
             @values = $field->_init( $field, $item );
             my $value = @values > 1 ? \@values : shift @values;
             $field->init_value($value) if $value;
-            $field->value($value) if $value;
+            $field->value($value)      if $value;
          }
          else
          {

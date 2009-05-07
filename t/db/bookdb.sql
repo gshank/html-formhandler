@@ -6,13 +6,28 @@ CREATE TABLE user (
    fav_book VARCHAR(32),
    occupation VARCHAR(32),
    country_iso char(2),
-   birthdate DATETIME
+   birthdate DATETIME,
+   opt_in INTEGER,
+   license_id INTEGER
 );
-INSERT INTO "user" VALUES ( 1, 'jdoe', 'Sci-Fi', 'Necronomicon', 'management', 'US', '1970-04-23 21:06:00' );
-INSERT INTO "user" VALUES ( 2, 'muffet', 'Fantasy', 'Cooking Fungi', 'none', 'GB', '1983-10-24 22:22:22' );
-INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'programmer', 'US', '1973-05-24 22:22:22' );
-INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed', 'RU', '1965-03-24 22:22:22' );
-INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor', 'PL', '1977-10-24 22:22:22' );
+INSERT INTO "user" VALUES ( 1, 'jdoe', 'Sci-Fi', 'Necronomicon', 'management', 'US', '1970-04-23 21:06:00', 0, 3 );
+INSERT INTO "user" VALUES ( 2, 'muffet', 'Fantasy', 'Cooking Fungi', 'none', 'GB', '1983-10-24 22:22:22', 0, 2 );
+INSERT INTO "user" VALUES ( 3, 'sam', 'Technical', 'Higher Order Perl', 'programmer', 'US', '1973-05-24 22:22:22', 1, 3 );
+INSERT INTO "user" VALUES ( 4, 'jsw', 'Historical', 'History of the World', 'unemployed', 'RU', '1965-03-24 22:22:22', 0, 4 );
+INSERT INTO "user" VALUES ( 5, 'plax', 'Sci-Fi', 'Fungibility', 'editor', 'PL', '1977-10-24 22:22:22', 1, 1 );
+
+CREATE table licenses (
+   license_id INTEGER,
+   name VARCHAR(32),
+   label VARCHAR(32),
+   active INTEGER 
+);
+INSERT INTO "licenses" VALUES (1, "Perl Artistic", "Perl Artistic License", 1  );
+INSERT INTO "licenses" VALUES (2, "GPL", "GNU General Public License", 1 );
+INSERT INTO "licenses" VALUES (3, "LGPL", "GNU Lesser Public License", 1 );
+INSERT INTO "licenses" VALUES (4, "Creative Commons", "Creative Commons Attribution license", 1 );
+
+
 
 CREATE TABLE address (
    address_id INTEGER PRIMARY KEY,

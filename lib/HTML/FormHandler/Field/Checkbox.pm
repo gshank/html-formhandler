@@ -1,6 +1,6 @@
 package HTML::FormHandler::Field::Checkbox;
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field';
 our $VERSION = '0.01';
 
@@ -24,6 +24,11 @@ checkbox
 
 has '+widget' => ( default => 'checkbox' );
 has 'checkbox_value' => ( is => 'rw', default => 1 );
+
+=pod
+apply( [ { transform => sub { defined $_ ? $_ : 0 } }
+       ]
+);
 
 =head2 input_without_param
 

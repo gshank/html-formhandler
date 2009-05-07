@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 25;
+my $tests = 27;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
@@ -80,11 +80,15 @@ my $init_object = { reqname => 'Starting Perl',
                     optname => 'Over Again' };
 $form = My::Form->new( init_object => $init_object );
 is( $form->field('optname')->value, 'Over Again', 'get right value from form');
-$form->process({});
+$form->process(params => {});
 ok( !$form->validated, 'form validated' );
-is_deeply( $form->fif, $init_object, 'get right fif with init_object');
 is_deeply( $form->values, $init_object, 'get right values from form'); 
+$init_object->{my_selected} = 0;  # checkboxes must be forced to 0
+is_deeply( $form->fif, $init_object, 'get right fif with init_object');
 
+# make sure that checkbox is 0 in values
 ok( $form->process( $init_object ), 'form validates with params' );
+is_deeply( $form->values, $init_object, 'get right values from form'); 
+is_deeply( $form->fif, $init_object, 'get right fif with init_object');
 
 
