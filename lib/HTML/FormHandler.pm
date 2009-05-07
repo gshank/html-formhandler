@@ -334,8 +334,12 @@ of different places in which validation can be performed.
 The 'actions' array contains a sequence of transformations, constraints
 (including Moose type constraints) which will be applied in order. The 
 current value of the field is passed in to the subroutines, but it has 
-no access to other field information. This is probably the best place to 
+no access to other field information. 
+This is probably the best place to 
 put constraints and transforms if all that is needed is the current value.
+The L<HTML::FormHandler::Field::Compound> fields receive as value 
+a hash containing values of their child fields - this maybe used for
+easy creation of objects (like DateTime).
 See the L<HTML::FormHandler::Field/apply> for more documentation.
 
    has_field 'test' => ( apply => [ 'MyConstraint', 
