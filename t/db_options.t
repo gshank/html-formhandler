@@ -31,7 +31,7 @@ my $fif = $form->fif;
 $fif->{country} = 'PL';
 # update user with new country
 $form->process($fif);
-is( $form->item->country, 'PL', 'country updated correctly');
+is( $form->item->country_iso, 'PL', 'country updated correctly');
 
 $form = BookDB::Form::User->new( schema => $schema, source_name => 'User' );
 ok( $form, 'User form created' );
