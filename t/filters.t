@@ -79,7 +79,7 @@ BEGIN
    has_field 'date_time_fif' => ( 
       type => 'Compound',
       apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
-      deflations => [ sub { { year => 1000, month => 1, day => 1 } } ],
+      deflation => sub { { year => 1000, month => 1, day => 1 } },
       fif_from_value => 1,
    );
    has_field 'date_time_fif.year' => ( fif_from_value => 1 );
