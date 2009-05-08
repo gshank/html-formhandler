@@ -924,11 +924,11 @@ sub _apply_actions
       if ( defined $error_message )
       {
          my @message = ($error_message);
-         if ( ref $action->{message} )
+         if ( ref $action->{message} eq 'ARRAY' )
          {
             @message = @{ $action->{message} };
          }
-         elsif ( defined $action->{message} )
+         elsif ( ref \$action->{message} )
          {
             @message = ( $action->{message} );
          }

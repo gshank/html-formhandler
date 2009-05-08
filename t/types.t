@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 18;
+use Test::More tests => 21;
 use Test::Exception;
 
 use HTML::FormHandler::Types (':all');
@@ -60,13 +60,15 @@ ok( !$form->field('text_gt')->has_errors, 'no errors on subtype');
 ok( !$form->field('text_both')->has_errors, 'no errors on both');
 ok( !$form->field('state')->has_errors, 'no errors on state' );
    
+# State
 my $field = HTML::FormHandler::Field->new( name => 'Test1', apply => [ State ] );
 ok( $field, 'created field with type' );
 $field->input('GG');
 ok( !$field->process, 'field did not validate');
-is( $field->errors->[0], 'Not a valid state', 'correct error message for state' );
+is( $field->errors->[0], 'Not a valid state', 'correct error message for State' );
 $field->input('NY');
 ok( $field->process, 'state field validated');
+# Email
 SKIP: {
    eval { require Email::Valid };
    skip "Email::Valid not installed", 3 if $@;
@@ -76,8 +78,16 @@ SKIP: {
    ok( !$field->has_errors, 'email field is valid');
    $field->input('not_an_email');
    $field->process;
-   is( $field->errors->[0], 'Email is not valid', 'error from email' );
+   is( $field->errors->[0], 'Email is not valid', 'error from Email' );
 }
+# IPAddress
+$field = HTML::FormHandler::Field->new( name => 'Test', apply => [ IPAddress ] );
+$field->input('198.168.0.101');
+ok( $field->process, 'IPAddress validated' );
+ok( !$field->has_errors, 'email field is valid');
+$field->input('198.300.0.101');
+$field->process;
+is( $field->errors->[0], 'Not a valid IP address', 'error from IPAddress' );
 
 
 

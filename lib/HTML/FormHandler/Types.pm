@@ -50,6 +50,8 @@ messages and keep control of what types we provide.
 
 =head1 TYPES
 
+=over
+
 =item Email
 
 Uses Email::Valid
@@ -59,6 +61,10 @@ Uses Email::Valid
 Checks that the state is in a list of two uppercase letters.
 
 =item Zip
+
+=item IPAddress
+
+=back
 
 =cut
 
@@ -141,6 +147,16 @@ subtype Zip,
   where { $_ =~ /^(\s*\d{5}(?:[-]\d{4})?\s*)$/ },
   message {"Zip is not valid"};
 
+subtype IPAddress,
+  as Str,
+  where {
+     $_ =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/ &&
+     $1 >= 0 && $1 <= 255 &&
+     $2 >= 0 && $2 <= 255 &&
+     $3 >= 0 && $3 <= 255 &&
+     $4 >= 0 && $4 <= 255 
+  },
+  message {"Not a valid IP address"};
 
 1;
 
