@@ -139,6 +139,7 @@ sub _build_meta_field_list
 {
    my $self = shift;
    my @field_list;
+
    foreach my $sc ( reverse $self->meta->linearized_isa )
    {
       my $meta = $sc->meta;
@@ -148,13 +149,21 @@ sub _build_meta_field_list
          {
             if ( $role->can('field_list') && $role->has_field_list )
             {
-               push @field_list, @{ $role->field_list };
+               foreach my $fld_def ( @{ $role->field_list} )
+               {
+                  my %new_fld = %{$fld_def}; # copy hashref
+                  push @field_list, \%new_fld; 
+               }
             }
          }
       }
       if ( $meta->can('field_list') && $meta->has_field_list )
       {
-         push @field_list, @{ $meta->field_list };
+         foreach my $fld_def ( @{$meta->field_list} )
+         {
+            my %new_fld = %{$fld_def}; # copy hashref
+            push @field_list, \%new_fld; 
+         }
       }
    }
    return \@field_list if scalar @field_list;
@@ -353,10 +362,11 @@ sub field
    if( $name =~ /\./ )
    {
       my @names = split /\./, $name;
-      my $f = $self->form;
+      my $f = $self->form || $self;
       foreach my $fname (@names)
       {
          $f = $f->field($fname); 
+         return unless $f;
       }
       return $f;
    }
@@ -401,6 +411,18 @@ sub _fields_validate
 }
 
 sub cross_validate { }
+
+sub clear_data
+{
+   my $self = shift;
+   $_->clear_data for $self->fields;
+   $self->clear_input;
+   $self->clear_value;
+   $self->clear_fif;
+   $self->clear_errors;
+   $self->clear_init_value;
+   $self->clear_fif_from_value;
+}
 
 sub clear_errors
 {
