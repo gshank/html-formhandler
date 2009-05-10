@@ -34,12 +34,44 @@ has 'instances' => (
    }
 );
 
+has 'declared_fields' => (
+   metaclass => 'Collection::Array',
+   isa       => 'ArrayRef',
+   is        => 'rw',
+   default   => sub { [] },
+   auto_deref => 1,
+   provides   => {
+     clear => 'clear_declared_fields',
+   }
+);
 
-sub clear_data
+
+sub clear_other
 {
    my $self = shift;
    $self->clear_instances;
+   $self->fields([$self->declared_fields]);
 }
+
+
+sub build_node 
+{
+   my $self = shift;
+
+   my $input = $self->input;
+   if ( ref $input eq 'HASH' )
+   {
+     # build appropriate instance array
+      my $index = 0;
+      foreach my $row ( keys %{$self->input} )
+      {
+         my $instance = $self->create_instance( $index );
+         $index++;
+      } 
+      $self->declared_fields([$self->fields]);
+      $self->fields([$self->instances]);
+  }
+};
 
 sub _init_from_object
 {
@@ -49,16 +81,27 @@ sub _init_from_object
    my $index = 0;
    foreach my $row ( @{$values} )
    {
-      my $instance = Instance->new( name => "$index", parent => $self ); 
-      # copy the fields from this field into the instance
-      $instance->add_field( $self->clone_fields );
-      $instance->add_field( 
-         HTML::FormHandler::Field->new(type => 'Hidden', name => 'id', input => $index));
-      $self->add_instance($instance);
-      $_->parent($instance) for $instance->fields;
+      my $instance = $self->create_instance( $index );
       $self->form->_init_from_object($instance, $row);
+      $instance->value($row);
       $index++;
    } 
+   $self->declared_fields([$self->fields]);
+   $self->fields([$self->instances]);
+   $self->value($values);
+}
+
+sub create_instance
+{
+   my ( $self , $index ) = @_;
+   my $instance = Instance->new( name => "$index", parent => $self ); 
+   # copy the fields from this field into the instance
+   $instance->add_field( $self->clone_fields );
+   $instance->add_field( 
+      HTML::FormHandler::Field->new(type => 'Hidden', name => 'id', input => $index));
+   $self->add_instance($instance);
+   $_->parent($instance) for $instance->fields;
+   return $instance;
 }
 
 sub clone_fields

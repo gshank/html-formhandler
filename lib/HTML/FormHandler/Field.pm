@@ -805,8 +805,8 @@ sub process
 
    $field->value( $field->input );
 
-   # allow augment 'process' calls here
-   inner();
+   # do building of node 
+   $field->build_node;
 
    $field->_apply_actions;
 
@@ -817,6 +817,7 @@ sub process
 
    return !$field->has_errors;
 }
+sub build_node { }
 
 sub validate_field
 {
@@ -1022,7 +1023,9 @@ sub clear_data
    $self->clear_errors;
    $self->clear_init_value;
    $self->clear_fif_from_value;
+   $self->clear_other;
 }
+sub clear_other { }
 
 # removed pod to discourage use of fif_value
 # This method will probably be replaced by deflate or something

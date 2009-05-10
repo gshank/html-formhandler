@@ -560,12 +560,6 @@ sub has_field_list
    }
    return;
 }
-has 'field_name_space' => (
-   isa     => 'Str|Undef',
-   is      => 'rw',
-   default => '',
-);
-
 
 sub BUILDARGS
 {

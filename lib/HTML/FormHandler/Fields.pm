@@ -68,6 +68,14 @@ has 'fields' => (
    }
 );
 
+has 'field_name_space' => (
+   isa     => 'Str|Undef',
+   is      => 'rw',
+   lazy    => 1,
+   default => '',
+);
+
+
 
 # calls routines to process various field lists
 # orders the fields after processing in order to skip
@@ -412,22 +420,14 @@ sub _fields_validate
 
 sub cross_validate { }
 
-sub clear_data
+sub clear_other
 {
-   my $self = shift;
-   $_->clear_data for $self->fields;
-   $self->clear_input;
-   $self->clear_value;
-   $self->clear_fif;
-   $self->clear_errors;
-   $self->clear_init_value;
-   $self->clear_fif_from_value;
+   $_->clear_data for shift->fields;
 }
 
 sub clear_errors
 {
-   my $self = shift;
-   $_->clear_errors for $self->fields;
+   $_->clear_errors for shift->fields;
 }
 
 sub clear_fifs
