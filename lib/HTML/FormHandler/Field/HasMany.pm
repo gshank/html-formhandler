@@ -66,6 +66,7 @@ sub build_node
       foreach my $row ( keys %{$self->input} )
       {
          my $instance = $self->create_instance( $index );
+         $instance->input($row);
          $index++;
       } 
       $self->declared_fields([$self->fields]);

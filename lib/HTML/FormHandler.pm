@@ -657,23 +657,27 @@ sub fif
 {
    my ( $self, $prefix, $node ) = @_;
 
-   if( ! defined $node ){
-       $node = $self;
-       $prefix = '';
-       $prefix = $self->name . "." if $self->html_prefix;
+   if ( !defined $node )
+   {
+      $node   = $self;
+      $prefix = '';
+      $prefix = $self->name . "." if $self->html_prefix;
    }
    my %params;
    foreach my $field ( $node->fields )
    {
       next if $field->password;
-      my $fif = $field->fif; # need to force lazy build
+      my $fif = $field->fif;    # need to force lazy build
       next unless $field->has_fif && defined $fif;
-      if( $field->DOES( 'HTML::FormHandler::Fields' ) ){
-           %params = ( %params, %{ $self->fif( $prefix . $field->name. '.', $field ) } );
-       }
-       else{
-           $params{ $prefix . $field->name } = $fif;
-       }
+      if ( $field->DOES('HTML::FormHandler::Fields') )
+      {
+  $DB::single=1;
+         %params = ( %params, %{ $self->fif( $prefix . $field->name . '.', $field ) } );
+      }
+      else
+      {
+         $params{ $prefix . $field->name } = $fif;
+      }
    }
    return if !%params;
    return \%params;

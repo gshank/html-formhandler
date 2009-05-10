@@ -509,28 +509,31 @@ has 'fif' => (
 has 'fif_from_value' => ( isa => 'Str', is => 'rw',
     clearer => 'clear_fif_from_value');
 sub _build_fif {
-    my $self = shift;
+   my $self = shift;
 
-    return if( defined $self->password && $self->password == 1 );
-    if( $self->has_input && !$self->fif_from_value ){
-        return $self->input;
-    }
-    my $parent = $self->parent;
-    if( defined $parent 
-        && $parent->isa( 'HTML::FormHandler::Field' )
-        && $parent->has_deflation
-        && ref $parent->fif eq 'HASH'
-        && exists $parent->fif->{$self->name}
-    ){
-        return $self->_apply_deflation( $parent->fif->{$self->name} );
-    }
-    if( defined $self->value ){
-        return $self->_apply_deflation( $self->value );
-    }
-    if( $self->fif_from_value ){
-        return $self->input;
-    }
-    return;
+   return if( defined $self->password && $self->password == 1 );
+   if ( $self->has_input && !$self->fif_from_value )
+   {
+      return $self->input;
+   }
+   my $parent = $self->parent;
+   if ( defined $parent &&
+      $parent->isa('HTML::FormHandler::Field') &&
+      $parent->has_deflation &&
+      ref $parent->fif eq 'HASH' &&
+      exists $parent->fif->{ $self->name } )
+   {
+      return $self->_apply_deflation( $parent->fif->{ $self->name } );
+   }
+   if ( defined $self->value )
+   {
+      return $self->_apply_deflation( $self->value );
+   }
+   if ( $self->fif_from_value )
+   {
+      return $self->input;
+   }
+   return;
 }
 
 has 'accessor' => (
@@ -805,6 +808,7 @@ sub process
 
    $field->value( $field->input );
 
+   inner();
    # do building of node 
    $field->build_node;
 

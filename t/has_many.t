@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 12;
 
 use_ok( 'HTML::FormHandler::Field::HasMany' );
 use_ok( 'HTML::FormHandler::Field::HasMany::Instance' );
@@ -31,16 +31,19 @@ my $init_object = {
          street => 'First Street',
          city => 'Prime City',
          country => 'Utopia',
+         id => 0,
       },
       {
          street => 'Second Street',
          city => 'Secondary City',
          country => 'Graustark',
+         id => 1,
       },
       {
          street => 'Third Street',
          city => 'Tertiary City',
-         country => 'Atlantis'
+         country => 'Atlantis',
+         id => 2,
       }
    ]
 };
@@ -74,5 +77,13 @@ my $fif = {
 };
 
 is_deeply( $form->fif, $fif, 'get fill in form');
+$fif->{'addresses.0.city'} = 'Primary City';
+$fif->{'addresses.2.country'} = 'Grand Fenwick';
 
+$form->clear;
+$form->process($fif);
+is_deeply( $form->fif, $fif, 'still get right fif');
+$init_object->{addresses}->[0]->{city} = 'Primary City';
+$init_object->{addresses}->[2]->{country} = 'Grand Fenwick';
+is_deeply( $form->values, $init_object, 'still get right values');
 
