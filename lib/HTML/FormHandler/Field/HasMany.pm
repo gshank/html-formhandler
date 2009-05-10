@@ -42,7 +42,8 @@ has 'declared_fields' => (
    auto_deref => 1,
    provides   => {
      clear => 'clear_declared_fields',
-   }
+     empty => 'has_declared_fields',
+   },
 );
 
 
@@ -50,7 +51,7 @@ sub clear_other
 {
    my $self = shift;
    $self->clear_instances;
-   $self->fields([$self->declared_fields]);
+   $self->fields([$self->declared_fields]) if $self->has_declared_fields;
 }
 
 
@@ -59,11 +60,11 @@ sub build_node
    my $self = shift;
 
    my $input = $self->input;
-   if ( ref $input eq 'HASH' )
+   if ( ref $input eq 'ARRAY' )
    {
      # build appropriate instance array
       my $index = 0;
-      foreach my $row ( keys %{$self->input} )
+      foreach my $row ( @{$input} )
       {
          my $instance = $self->create_instance( $index );
          $instance->input($row);
@@ -71,7 +72,15 @@ sub build_node
       } 
       $self->declared_fields([$self->fields]);
       $self->fields([$self->instances]);
-  }
+   }
+   return unless $self->has_fields;
+   $self->_fields_validate;
+   my @value_array;
+   for my $field ( $self->fields )
+   { 
+      push @value_array, $field->value;
+   }
+   $self->value( \@value_array );
 };
 
 sub _init_from_object

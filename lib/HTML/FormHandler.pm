@@ -671,7 +671,6 @@ sub fif
       next unless $field->has_fif && defined $fif;
       if ( $field->DOES('HTML::FormHandler::Fields') )
       {
-  $DB::single=1;
          %params = ( %params, %{ $self->fif( $prefix . $field->name . '.', $field ) } );
       }
       else
