@@ -203,7 +203,7 @@ See $form->language_handle for details. Returns undef.
 
 The 'widget' attribute is not used by base FormHandler code.
 It is intended for use in generating HTML, in templates and the 
-rendering roles, and is used in L<HTML::FormHandler::Render::Simple. 
+rendering roles, and is used in L<HTML::FormHandler::Render::Simple>. 
 Fields of different type can use the same widget.
 
 This attribute is set in the field classes, or in the fields
