@@ -21,6 +21,7 @@ has 'field_list' => (
    default => sub { [] },
    provides => {
       'push' => 'add_to_field_list',
+      'clear' => 'clear_field_list',
       'empty' => 'has_field_list',
    }
 );
@@ -33,6 +34,7 @@ has 'apply_list' => (
    provides => {
       'push' => 'add_to_apply_list',
       'empty' => 'has_apply_list',
+      'clear' => 'clear_apply_list',
    }
 );
 

@@ -36,7 +36,13 @@ __PACKAGE__->set_primary_key("user_id");
 #);
 
 __PACKAGE__->might_have(
-   "address",
+   "employer",
+   "BookDB::Schema::DB::Employer",
+   { 'foreign.user_id' => 'self.user_id' }
+);
+
+__PACKAGE__->has_many(
+   "addresses",
    "BookDB::Schema::DB::Address",
    { 'foreign.user_id' => 'self.user_id' }
 );

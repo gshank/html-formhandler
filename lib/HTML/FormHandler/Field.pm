@@ -482,7 +482,7 @@ C<< $field->add_error( ... ) >> if the value does not validate.
 
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
-has 'init_value' => ( is => 'rw' );
+has 'init_value' => ( is => 'rw', clearer  => 'clear_init_value');
 has 'value' => (
    is        => 'rw',
    clearer   => 'clear_value',
@@ -506,30 +506,34 @@ has 'fif' => (
     predicate => 'has_fif',
     lazy_build => 1,
 );
-has 'fif_from_value' => ( isa => 'Str', is => 'rw' );
+has 'fif_from_value' => ( isa => 'Str', is => 'rw',
+    clearer => 'clear_fif_from_value');
 sub _build_fif {
-    my $self = shift;
+   my $self = shift;
 
-    return if( defined $self->password && $self->password == 1 );
-    if( $self->has_input && !$self->fif_from_value ){
-        return $self->input;
-    }
-    my $parent = $self->parent;
-    if( defined $parent 
-        && $parent->isa( 'HTML::FormHandler::Field' )
-        && $parent->has_deflation
-        && ref $parent->fif eq 'HASH'
-        && exists $parent->fif->{$self->name}
-    ){
-        return $self->_apply_deflation( $parent->fif->{$self->name} );
-    }
-    if( defined $self->value ){
-        return $self->_apply_deflation( $self->value );
-    }
-    if( $self->fif_from_value ){
-        return $self->input;
-    }
-    return;
+   return if( defined $self->password && $self->password == 1 );
+   if ( $self->has_input && !$self->fif_from_value )
+   {
+      return $self->input;
+   }
+   my $parent = $self->parent;
+   if ( defined $parent &&
+      $parent->isa('HTML::FormHandler::Field') &&
+      $parent->has_deflation &&
+      ref $parent->fif eq 'HASH' &&
+      exists $parent->fif->{ $self->name } )
+   {
+      return $self->_apply_deflation( $parent->fif->{ $self->name } );
+   }
+   if ( defined $self->value )
+   {
+      return $self->_apply_deflation( $self->value );
+   }
+   if ( $self->fif_from_value )
+   {
+      return $self->input;
+   }
+   return;
 }
 
 has 'accessor' => (
@@ -732,13 +736,21 @@ sub _build_apply_list
          {
             if ( $role->can('apply_list') && $role->has_apply_list )
             {
-               push @apply_list, @{ $role->apply_list };
+               foreach my $apply_def ( @{ $role->apply_list} )
+               {
+                  my %new_apply = %{$apply_def}; # copy hashref
+                  push @apply_list, \%new_apply; 
+               }
             }
          }
       }
       if ( $meta->can('apply_list') && $meta->has_apply_list )
       {
-         push @apply_list, @{ $meta->apply_list };
+         foreach my $apply_def ( @{ $meta->apply_list} )
+         {
+            my %new_apply = %{$apply_def}; # copy hashref
+            push @apply_list, \%new_apply; 
+         }
       }
    }
    $self->add_action( @apply_list );
@@ -796,8 +808,9 @@ sub process
 
    $field->value( $field->input );
 
-   # allow augment 'process' calls here
    inner();
+   # do building of node 
+   $field->build_node;
 
    $field->_apply_actions;
 
@@ -808,6 +821,7 @@ sub process
 
    return !$field->has_errors;
 }
+sub build_node { }
 
 sub validate_field
 {
@@ -915,13 +929,21 @@ sub _apply_actions
       if ( defined $error_message )
       {
          my @message = ($error_message);
-         if ( ref $action->{message} )
+         if ( defined $action->{message} )
          {
-            @message = @{ $action->{message} };
-         }
-         elsif ( defined $action->{message} )
-         {
-            @message = ( $action->{message} );
+            my $act_msg = $action->{message};
+            if ( ref $act_msg eq 'CODEREF' )
+            {
+               $act_msg = $act_msg->($value); 
+            }
+            if ( ref $act_msg eq 'ARRAY' )
+            {
+               @message = @{ $act_msg };
+            }
+            elsif ( ref \$act_msg eq 'SCALAR' )
+            {
+               @message = ( $act_msg );
+            }
          }
          $self->add_error(@message);
       }
@@ -988,6 +1010,26 @@ sub input_defined
       if ref $value eq 'ARRAY';
    return defined $value && $value =~ /\S/;
 }
+
+# use Class::MOP to clone 
+sub clone
+{
+   my ( $self, %params ) = @_;
+   $self->meta->clone_object($self, %params);
+}
+
+sub clear_data
+{
+   my $self = shift;
+   $self->clear_input;
+   $self->clear_value;
+   $self->clear_fif;
+   $self->clear_errors;
+   $self->clear_init_value;
+   $self->clear_fif_from_value;
+   $self->clear_other;
+}
+sub clear_other { }
 
 # removed pod to discourage use of fif_value
 # This method will probably be replaced by deflate or something

@@ -502,7 +502,7 @@ has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1,
    lazy => 1, default => sub { shift });
 has 'parent' => ( is => 'rw' );
 # object with which to initialize
-has 'init_object' => ( is => 'rw' );
+has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 # flags
 has [ 'ran_validation', 'validated', 'verbose', 'processed' ] => 
     ( isa => 'Bool', is => 'rw' );
@@ -560,12 +560,6 @@ sub has_field_list
    }
    return;
 }
-has 'field_name_space' => (
-   isa     => 'Str|Undef',
-   is      => 'rw',
-   default => '',
-);
-
 
 sub BUILDARGS
 {
@@ -586,7 +580,8 @@ sub BUILD
 
    $self->_build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
-   $self->_init_from_object;    # load values from object, if item exists;
+   # load values from object (if any)
+   $self->_init_from_object( $self, $self->init_object || $self->item );
    $self->_load_options;        # load options -- need to do after loading item
    $self->dump_fields if $self->verbose;
    return;
@@ -648,10 +643,12 @@ sub clear_state
    $self->validated(0);
    $self->ran_validation(0);
    $self->num_errors(0);
-   $self->clear_errors;
-   $self->clear_fif;
-   $self->clear_values;
-   $self->clear_inputs;
+   $self->clear_data;
+}
+
+sub clear_data
+{
+   $_->clear_data for shift->fields;
 }
 
 sub clear_fif { shift->clear_fifs }
@@ -660,23 +657,26 @@ sub fif
 {
    my ( $self, $prefix, $node ) = @_;
 
-   if( ! defined $node ){
-       $node = $self;
-       $prefix = '';
-       $prefix = $self->name . "." if $self->html_prefix;
+   if ( !defined $node )
+   {
+      $node   = $self;
+      $prefix = '';
+      $prefix = $self->name . "." if $self->html_prefix;
    }
    my %params;
    foreach my $field ( $node->fields )
    {
       next if $field->password;
-      my $fif = $field->fif; # need to force lazy build
+      my $fif = $field->fif;    # need to force lazy build
       next unless $field->has_fif && defined $fif;
-      if( $field->DOES( 'HTML::FormHandler::Fields' ) ){
-           %params = ( %params, %{ $self->fif( $prefix . $field->name. '.', $field ) } );
-       }
-       else{
-           $params{ $prefix . $field->name } = $fif;
-       }
+      if ( $field->DOES('HTML::FormHandler::Fields') )
+      {
+         %params = ( %params, %{ $self->fif( $prefix . $field->name . '.', $field ) } );
+      }
+      else
+      {
+         $params{ $prefix . $field->name } = $fif;
+      }
    }
    return if !%params;
    return \%params;
@@ -809,14 +809,13 @@ sub _setup_form
          $self->$key($value) if $self->can($key);
       } 
    }
-   $self->clear_fif;
-   if( $self->has_params )
+   if( $self->item_id && !$self->item )
    {
-      $self->clear_values;
+      $self->item( $self->build_item);
    }
-   else
+   unless ( $self->has_params )
    {
-      $self->_init_from_object;
+      $self->_init_from_object( $self, $self->init_object || $self->item );
    }
    $self->_load_options;
 }
@@ -824,9 +823,9 @@ sub _setup_form
 sub _init_from_object
 {
    my ( $self, $node, $item ) = @_;
+
    $node ||= $self;
-   $self->item( $self->build_item ) if $self->item_id && !$self->item;
-   $item ||= $self->init_object || $self->item || return;
+   return unless $item; 
    warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
    for my $field ( $node->fields )
    {
@@ -834,7 +833,11 @@ sub _init_from_object
       next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
       #      $value = $field->_apply_deflations( $value );
-      if ( $field->isa('HTML::FormHandler::Field::Compound') )
+      if ( $field->isa('HTML::FormHandler::Field::HasMany') )
+      {
+         $field->_init_from_object( $value );
+      }
+      elsif ( $field->isa('HTML::FormHandler::Field::Compound') )
       {
          $self->_init_from_object( $field, $value );
          $field->value($value);

@@ -22,10 +22,10 @@ has_field 'birthdate.year' => ( type => 'Text', );
 has_field 'birthdate.month' => ( type => 'Text', );
 has_field 'birthdate.day' => ( type => 'Text', );
 
-has_field 'address' => ( type => 'Compound' );
-has_field 'address.street';
-has_field 'address.city';
-has_field 'address.state';
+has_field 'employer' => ( type => 'Compound' );
+has_field 'employer.name';
+has_field 'employer.category';
+has_field 'employer.country';
 
 sub options_opt_in
 {

@@ -54,17 +54,28 @@ Widget type is 'compound'
 
 has '+widget' => ( default => 'compound' );
 
+has '+field_name_space' => ( default => sub {
+      my $self = shift;
+      return $self->form->field_name_space
+           if $self->form && $self->form->field_name_space;
+      return '';
+   },
+);
 sub BUILD
 {
    my $self = shift;
    $self->_build_fields;
 }
 
-augment 'process' => sub {
+sub build_node
+{
    my $self = shift;
 
    my $input = $self->input;
-   # this isn't right
+
+   # call augment process in HasMany
+   inner();
+   # is there a better way to do this? 
    if( ref $input eq 'HASH' )
    {
       foreach my $field ( $self->fields )
@@ -90,16 +101,8 @@ augment 'process' => sub {
       $value_hash{ $field->accessor } = $field->value;
    }
    $self->value( \%value_hash );
-};
+} 
 
-
-sub field_name_space
-{
-   my $self = shift;
-   return $self->form->field_name_space
-        if $self->form && $self->form->field_name_space;
-   return '';
-}
 
 __PACKAGE__->meta->make_immutable;
 no Moose;

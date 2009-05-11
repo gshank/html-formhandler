@@ -22,6 +22,7 @@ requires 'MooseX::Getopt' => '0.16';
 requires 'MooseX::Types' => 0;
 requires 'MooseX::Types::Common' => 0;
 requires 'Scalar::Util' => 0;
+requires 'aliased';
 
 recommends 'Catalyst';
 recommends 'Catalyst::Component::InstancePerContext';
