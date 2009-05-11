@@ -89,16 +89,31 @@ sub _init_from_object
 
    # Create field instances and fill with values
    my $index = 0;
+   my @new_values;
    foreach my $row ( @{$values} )
    {
       my $instance = $self->create_instance( $index );
       $self->form->_init_from_object($instance, $row);
-      $instance->value($row);
+      my $inst_value = $self->make_values([$instance->fields]);
+      $instance->value($inst_value);
+      push @new_values, $inst_value;
       $index++;
    } 
    $self->declared_fields([$self->fields]);
    $self->fields([$self->instances]);
-   $self->value($values);
+   $self->value(\@new_values);
+}
+
+sub make_values
+{
+   my ( $self, $fields ) = @_;
+
+   my $values;
+   foreach my $field ( @{$fields} )
+   {
+      $values->{$field->accessor} = $field->value;
+   }
+   return $values;
 }
 
 sub create_instance
@@ -108,7 +123,7 @@ sub create_instance
    # copy the fields from this field into the instance
    $instance->add_field( $self->clone_fields );
    $instance->add_field( 
-      HTML::FormHandler::Field->new(type => 'Hidden', name => 'id', input => $index));
+      HTML::FormHandler::Field->new(type => 'Hidden', name => 'id' ));
    $self->add_instance($instance);
    $_->parent($instance) for $instance->fields;
    return $instance;

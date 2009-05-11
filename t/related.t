@@ -23,9 +23,9 @@ my $params = {
    'birthdate.year' => '1974',
    'birthdate.month' => 4,
    'birthdate.day' => 21,
-   'address.street' => "101 Main Street",
-   'address.city' => "Podunk",
-   'address.state' => "New York"
+   'employer.name' => "Acme Software",
+   'employer.category' => "Computers",
+   'employer.country' => "United Kingdom"
 };
 $form->process($params);
 END { $form->item->delete }
@@ -35,15 +35,15 @@ ok( $form->validated, 'second pass validated');
 
 my $user = $form->item;
 is( $user->user_name, 'Joe Smith', 'created item');
-is( $schema->resultset('Address')->search({ user_id => $user->id  })->count, 1,
-    'the right number of addresses' );
+is( $schema->resultset('Employer')->search({ user_id => $user->id  })->count, 1,
+    'the right number of employers' );
 
-ok( $form->item->address, 'address has been created' );
+ok( $form->item->employer, 'employer has been created' );
 
-is_deeply( $form->field('address')->value,
-   { street => "101 Main Street",
-     city => "Podunk",
-     state => "New York" }, 'value is correct' );
+is_deeply( $form->field('employer')->value,
+   { name => "Acme Software",
+     category => "Computers",
+     country => "United Kingdom" }, 'value is correct' );
 is_deeply( $form->fif, $params, 'fif is correct' );
 
 

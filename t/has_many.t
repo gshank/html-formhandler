@@ -51,8 +51,6 @@ my $init_object = {
 $form = HasMany::Form->new( init_object => $init_object ); 
 ok( $form, 'created form from initial object' );
 
-# values are in right place, but need new methods for getting
-# out fif and values
 is_deeply( $form->values, $init_object, 'get values back out' ); 
 is_deeply( $form->field('addresses')->value, $init_object->{addresses}, 'hasmany field value');
 is_deeply( $form->field('addresses')->field('0')->value, $init_object->{addresses}->[0],

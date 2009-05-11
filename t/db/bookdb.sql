@@ -27,15 +27,27 @@ INSERT INTO "licenses" VALUES (2, "GPL", "GNU General Public License", 1 );
 INSERT INTO "licenses" VALUES (3, "LGPL", "GNU Lesser Public License", 1 );
 INSERT INTO "licenses" VALUES (4, "Creative Commons", "Creative Commons Attribution license", 1 );
 
-
+CREATE TABLE employer (
+   employer_id INTEGER PRIMARY KEY,
+   user_id INTEGER,
+   name VARCHAR(32),
+   category VARCHAR(32),
+   country VARCHAR(24)
+);
 
 CREATE TABLE address (
    address_id INTEGER PRIMARY KEY,
    user_id INTEGER,
    street VARCHAR(32),
    city VARCHAR(32),
-   state VARCHAR(12)
+   country VARCHAR(24)
 );
+INSERT INTO "address" VALUES (1, 1, "101 Main St", "Middle City", "Graustark");
+INSERT INTO "address" VALUES (2, 1, "99 Elm St", "DownTown", "Utopia");
+INSERT INTO "address" VALUES (3, 1, "1023 Side Ave", "Santa Lola", "Grand Fenwick");
+INSERT INTO "address" VALUES (4, 2, "142 Main St", "Middle City", "Graustark");
+INSERT INTO "address" VALUES (5, 2, "399 Cherry Park", "Jimsville", "Ubonia");
+INSERT INTO "address" VALUES (6, 3, "991 Star St", "Nowhere City", "Brigadon");
 
 CREATE TABLE book (
     id INTEGER PRIMARY KEY,
