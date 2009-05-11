@@ -862,7 +862,7 @@ sub _get_value
    my ( $self, $field, $item ) = @_;
    my $accessor = $field->accessor;
    my @values;
-   if (blessed $item && $item->can($accessor))
+   if ( blessed($item) && $item->can($accessor))
    {
       @values = $item->$accessor;
    }

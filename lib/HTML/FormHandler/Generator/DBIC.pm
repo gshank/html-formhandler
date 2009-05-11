@@ -86,13 +86,16 @@ my $form_template = <<'END';
 {
     package [% config.class %]Form;
     use HTML::FormHandler::Moose;
-    extends 'HTML::FormHandler';
+    extends 'HTML::FormHandler::Model::DBIC';
     with 'HTML::FormHandler::Render::Simple';
-    
+
+    has '+item_class' => ( default => '[% rs_name %]' );
+
     [% FOR field = config.fields -%]
     [%- SET field_name = field.name; field.delete( 'name' ); -%]
-has_field '[% field_name %]' => ( [% FOREACH attr IN field.pairs %] [% attr.key %] => '[% attr.value %]', [% END %] );
+[% IF single and field.compound; field.delete( 'compound' ) %]#[% END %]has_field '[% field_name %]' => ( [% FOREACH attr IN field.pairs %] [% attr.key %] => '[% attr.value %]', [% END %] );
     [% END %]
+    has_field submit => ( widget => 'submit' )
 }
 [% FOR cf = config.sub_forms %]
 {
@@ -116,6 +119,7 @@ sub generate_form {
     # warn Dumper( $config ); use Data::Dumper;
     my $tmpl_params = {
         config => $config,
+        rs_name => $self->rs_name,
     };
     $tmpl_params->{single} = 1 if defined $self->style && $self->style eq 'single';
     $self->tt->process( \$form_template, $tmpl_params, \$output )
@@ -191,6 +195,7 @@ sub get_elements {
             push @fields, {
                 type => "+${target_class}Field",
                 name => $rel,
+                compound => 1,
             };
         }
     }
@@ -216,7 +221,7 @@ sub get_elements {
     for my $many( $self->m2m_for_class($class) ){
         unshift @fields, { 
             name => $many->[0], 
-            type => 'select', 
+            type => 'Select', 
             multiple => 1 
         };
     }

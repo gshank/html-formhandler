@@ -132,13 +132,9 @@ Output an HTML string for a hidden input widget
 sub render_hidden
 {
    my ( $self, $field ) = @_;
-   # label
-   my $fif = $field->fif || '';
-   my $output .= "\n<label class=\"label\" for=\"";
-   $output    .= $field->html_name . "\">";
-   $output    .= $field->label . ":</label>";
    # input
-   $output .= "<input type=\"hidden\" name=\"";
+   my $fif = $field->fif || '';
+   my $output = "<input type=\"hidden\" name=\"";
    $output .= $field->html_name . "\"";
    $output .= " id=\"" . $field->id . "\"";
    $output .= " value=\"" . $fif . "\">";
@@ -170,7 +166,14 @@ sub render_select
       {
          if ( $field->multiple == 1 )
          {
-            foreach my $optval ( @{ $field->fif } )
+            my @fif;
+            if( ref  $field->fif ){
+                @fif = @{ $field->fif };
+            }
+            else{
+                @fif = ( $field->fif );
+            }
+            foreach my $optval ( @fif )
             {
                $output .= " selected=\"selected\""
                   if $optval == $option->{value};
@@ -279,6 +282,23 @@ sub render_compound
       $output .= $self->render_field($subfield);
    }
    $output .= "</fieldset>";
+}
+
+=head2 render_submit
+
+Renders field with 'submit' widget
+
+=cut
+
+sub render_submit
+{
+   my ( $self, $field ) = @_;
+   my $fif = $field->fif || '';
+   my $output = '<input type="submit" name="';
+   $output .= $field->html_name . '"';
+   $output .= ' id="' . $field->id . '"';
+   $output .= ' value="' . $fif . '">';
+   return $output;
 }
 
 =head1 AUTHORS
