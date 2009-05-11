@@ -7,7 +7,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 8;
+   plan tests => 9;
 }
 
 use BookDB::Schema::DB;
@@ -24,6 +24,7 @@ my $user = $schema->resultset('User')->find(1);
    has_field 'occupation';
 
    has_field 'addresses' => ( type => 'HasMany' );
+   has_field 'addresses.address_id' => ( type => 'PrimaryKey' );
    has_field 'addresses.street';
    has_field 'addresses.city';
    has_field 'addresses.country';
@@ -38,15 +39,15 @@ $form->process( item => $user, params => {} );
 my $fif = {
    'addresses.0.city' => 'Middle City',
    'addresses.0.country' => 'Graustark',
-   'addresses.0.id' => 1,
+   'addresses.0.address_id' => 1,
    'addresses.0.street' => '101 Main St',
    'addresses.1.city' => 'DownTown',
    'addresses.1.country' => 'Utopia',
-   'addresses.1.id' => 2,
+   'addresses.1.address_id' => 2,
    'addresses.1.street' => '99 Elm St',
    'addresses.2.city' => 'Santa Lola',
    'addresses.2.country' => 'Grand Fenwick',
-   'addresses.2.id' => 3,
+   'addresses.2.address_id' => 3,
    'addresses.2.street' => '1023 Side Ave',
    'occupation' => 'management',
    'user_name' => 'jdoe',
@@ -56,19 +57,19 @@ my $values = {
       {
          city => 'Middle City',
          country => 'Graustark',
-         id => 1,
+         address_id => 1,
          street => '101 Main St',
       },
       {
          city => 'DownTown',
          country => 'Utopia',
-         id => 2,
+         address_id => 2,
          street => '99 Elm St',
       },
       {
          city => 'Santa Lola',
          country => 'Grand Fenwick',
-         id => 3,
+         address_id => 3,
          street => '1023 Side Ave',
       },
    ],
@@ -82,18 +83,18 @@ is_deeply( $form->values,  $values, 'values are correct' );
 my $params = {
    user_name => "Joe Smith",
    occupation => "Programmer",
-   'address.0.street' => "999 Main Street",
-   'address.0.city' => "Podunk",
-   'address.0.country' => "Utopia",
-   'address.0.id' => "1",
-   'address.1.street' => "333 Valencia Street",
-   'address.1.city' => "San Franciso",
-   'address.1.country' => "Utopia",
-   'address.1.id' => "2",
-   'address.2.street' => "1101 Maple Street",
-   'address.2.city' => "Smallville",
-   'address.2.country' => "Atlantis",
-   'address.2.id' => "3"
+   'addresses.0.street' => "999 Main Street",
+   'addresses.0.city' => "Podunk",
+   'addresses.0.country' => "Utopia",
+   'addresses.0.address_id' => "1",
+   'addresses.1.street' => "333 Valencia Street",
+   'addresses.1.city' => "San Franciso",
+   'addresses.1.country' => "Utopia",
+   'addresses.1.address_id' => "2",
+   'addresses.2.street' => "1101 Maple Street",
+   'addresses.2.city' => "Smallville",
+   'addresses.2.country' => "Atlantis",
+   'addresses.2.address_id' => "3"
 };
 $form->process($params);
 
@@ -109,4 +110,5 @@ is( $schema->resultset('Address')->search({ user_id => $user->id  })->count, 3,
 is_deeply( $form->fif, $params, 'fif is correct' );
 
 $form->process($fif);
+is( $form->item->search_related( 'addresses', {city => 'Middle City'} )->first->country, 'Graustark', 'updated addresses');
 

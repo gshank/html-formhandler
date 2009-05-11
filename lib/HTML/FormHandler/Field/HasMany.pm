@@ -122,8 +122,11 @@ sub create_instance
    my $instance = Instance->new( name => "$index", parent => $self ); 
    # copy the fields from this field into the instance
    $instance->add_field( $self->clone_fields );
-   $instance->add_field( 
-      HTML::FormHandler::Field->new(type => 'Hidden', name => 'id' ));
+   unless( grep $_->can('is_primary_key') && $_->is_primary_key, @{$instance->fields})
+   {
+      $instance->add_field( 
+         HTML::FormHandler::Field->new(type => 'Hidden', name => 'id' ));
+   }
    $self->add_instance($instance);
    $_->parent($instance) for $instance->fields;
    return $instance;
