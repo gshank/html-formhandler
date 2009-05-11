@@ -118,8 +118,7 @@ is( $output5,
 my $output6 = $form->render_field( $form->field('hidden') );
 is( $output6,
    '
-<div>
-<label class="label" for="hidden">Hidden:</label><input type="hidden" name="hidden" id="renderformhidden" value="1234"></div>
+<div><input type="hidden" name="hidden" id="renderformhidden" value="1234"></div>
 ', 
    'output from hidden field' );
 
