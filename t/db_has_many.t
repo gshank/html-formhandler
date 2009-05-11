@@ -7,7 +7,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 7;
+   plan tests => 8;
 }
 
 use BookDB::Schema::DB;

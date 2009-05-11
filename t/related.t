@@ -44,6 +44,7 @@ is_deeply( $form->field('employer')->value,
    { name => "Acme Software",
      category => "Computers",
      country => "United Kingdom" }, 'value is correct' );
+$params->{opt_in} = 0;
 is_deeply( $form->fif, $params, 'fif is correct' );
 
 

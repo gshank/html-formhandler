@@ -6,7 +6,7 @@ use warnings;
 use base 'DBIx::Class';
 
 __PACKAGE__->load_components("Core");
-__PACKAGE__->table("address");
+__PACKAGE__->table("employer");
 __PACKAGE__->add_columns(
   "employer_id",
   { data_type => "INTEGER", is_nullable => 0, size => 8 },
