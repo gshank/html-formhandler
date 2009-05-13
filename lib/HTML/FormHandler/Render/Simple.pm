@@ -55,6 +55,8 @@ To render all the fields in a form in sorted order (using
 
 =cut
 
+has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', default => 1 );
+
 sub render
 {
    my $self = shift;
@@ -63,11 +65,13 @@ sub render
    $output .= '" id="' . $self->name if $self->name;
    $output .= '" method="' . $self->http_method if $self->http_method;
    $output .= '">' . "\n";
+   $output .= '<fieldset class="main_fieldset">' if $self->auto_fieldset;
 
    foreach my $field ( $self->sorted_fields )
    {
       $output .= $self->render_field($field);
    }
+   $output .= '</fieldset>' if $self->auto_fieldset;
    $output .= "</form>\n";
    return $output;
 }
@@ -113,7 +117,7 @@ sub render_text
    my $fif = $field->fif || '';
    my $output .= "\n<label class=\"label\" for=\"";
    $output    .= $field->html_name . "\">";
-   $output    .= $field->label . ":</label>";
+   $output    .= $field->label . ": </label>";
    # input
    $output .= "<input type=\"text\" name=\"";
    $output .= $field->html_name . "\"";
@@ -154,7 +158,7 @@ sub render_select
 
    my $fif = $field->fif || '';
    my $output = "<label class=\"label\" for=\"";
-   $output .= $field->html_name . "\">" . $field->label . "</label>";
+   $output .= $field->html_name . "\">" . $field->label . ": </label>";
    $output .= "<select name=\"" . $field->html_name . "\"";
    $output .= " multiple=\"multiple\" size=\"5\"" if $field->multiple == 1;
    $output .= "\">";
@@ -206,7 +210,7 @@ sub render_checkbox
 
    my $fif = $field->fif || '';
    my $output = "<label class=\"label\" for=\"";
-   $output .= $field->html_name . "\">" . $field->label . "</label>";
+   $output .= $field->html_name . "\">" . $field->label . ": </label>";
    $output .= "<input type=\"checkbox\" name=\"";
    $output .= $field->html_name . '" value="' . $field->checkbox_value . '"';
    $output .= " checked=\"checked\"" if $fif eq $field->checkbox_value;
@@ -232,7 +236,7 @@ sub render_radio_group
    foreach my $option ( $field->options )
    {
       $output = "<label class=\"label\" for=\"";
-      $output .= $field->html_name . "\">" . $option->{label} . "</label>";
+      $output .= $field->html_name . "\">" . $option->{label} . ": </label>";
       $output .= "<input type=\"radio\" value=\"" . $option->{value} . "\"";
       $output .= " name=\"" . $field->html_name;
       $output .= " selected=\"selected\"" if $option->{value} eq $fif;
@@ -311,4 +315,7 @@ This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
+
+1;
+
 
