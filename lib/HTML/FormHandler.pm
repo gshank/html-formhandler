@@ -513,6 +513,7 @@ has 'language_handle' => (
    is      => 'rw',
    builder => 'build_language_handle'
 );
+has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', default => 1 );
 has 'num_errors' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
 has 'active_column' => ( isa => 'Str', is => 'rw' );
