@@ -64,29 +64,10 @@ sub render
    $output .= '" method="' . $self->http_method if $self->http_method;
    $output .= '">' . "\n";
 
-   my $in_fieldset = 0;
    foreach my $field ( $self->sorted_fields )
    {
-      my $is_compound = $field->DOES( 'HTML::FormHandler::Field::Compound' );
-      if( $in_fieldset && $is_compound ){
-         $output .= "</fieldset>\n";
-         $in_fieldset = 0;
-      }
-      if( !$in_fieldset 
-          && ( $self->auto_fieldset || $is_compound )  )
-      {
-         my $css_class = "main";
-         $css_class = $field->html_name if $is_compound;
-         $output .= '<fieldset class="' . $css_class . '">';
-         $in_fieldset = 1;
-      }
       $output .= $self->render_field($field);
-      if( $is_compound ){
-         $output .= "</fieldset>\n";
-         $in_fieldset = 0;
-      }
    }
-   $output .= "</fieldset>\n" if $in_fieldset;
    $output .= "</form>\n";
    return $output;
 }
@@ -132,7 +113,7 @@ sub render_text
    my $fif = $field->fif || '';
    my $output .= "\n<label class=\"label\" for=\"";
    $output    .= $field->html_name . "\">";
-   $output    .= $field->label . ": </label>";
+   $output    .= $field->label . ":</label>";
    # input
    $output .= "<input type=\"text\" name=\"";
    $output .= $field->html_name . "\"";
@@ -173,7 +154,7 @@ sub render_select
 
    my $fif = $field->fif || '';
    my $output = "<label class=\"label\" for=\"";
-   $output .= $field->html_name . "\">" . $field->label . ": </label>";
+   $output .= $field->html_name . "\">" . $field->label . "</label>";
    $output .= "<select name=\"" . $field->html_name . "\"";
    $output .= " multiple=\"multiple\" size=\"5\"" if $field->multiple == 1;
    $output .= "\">";
@@ -225,7 +206,7 @@ sub render_checkbox
 
    my $fif = $field->fif || '';
    my $output = "<label class=\"label\" for=\"";
-   $output .= $field->html_name . "\">" . $field->label . ": </label>";
+   $output .= $field->html_name . "\">" . $field->label . "</label>";
    $output .= "<input type=\"checkbox\" name=\"";
    $output .= $field->html_name . '" value="' . $field->checkbox_value . '"';
    $output .= " checked=\"checked\"" if $fif eq $field->checkbox_value;
@@ -251,7 +232,7 @@ sub render_radio_group
    foreach my $option ( $field->options )
    {
       $output = "<label class=\"label\" for=\"";
-      $output .= $field->html_name . "\">" . $option->{label} . ": </label>";
+      $output .= $field->html_name . "\">" . $option->{label} . "</label>";
       $output .= "<input type=\"radio\" value=\"" . $option->{value} . "\"";
       $output .= " name=\"" . $field->html_name;
       $output .= " selected=\"selected\"" if $option->{value} eq $fif;
@@ -295,12 +276,12 @@ sub render_compound
 {
    my ( $self, $field ) = @_;
 
-   my $output = '';
+   my $output = '<fieldset class="' . $field->html_name . '">';
    foreach my $subfield ($field->sorted_fields)
    {
       $output .= $self->render_field($subfield);
    }
-   return $output;
+   $output .= "</fieldset>";
 }
 
 =head2 render_submit
