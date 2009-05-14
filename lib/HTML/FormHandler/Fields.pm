@@ -153,7 +153,7 @@ sub _build_meta_field_list
       my $meta = $sc->meta;
       if ( $meta->can('calculate_all_roles') )
       {
-         foreach my $role ( $meta->calculate_all_roles )
+         foreach my $role ( reverse $meta->calculate_all_roles )
          {
             if ( $role->can('field_list') && $role->has_field_list )
             {
