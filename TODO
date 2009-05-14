@@ -1,10 +1,15 @@
+2009/05/14
+  Handle simple arrays (Neither 'Select' nor 'Repeatable' do simple arrays)
+  Rendering for Repeatable fields
+  Create more usable 'add_field' routine that will handle ordering, parent,
+      and form attributes. Use in create_instance.
+
 2009/05/02
   allow interpolating field value in messages 
   check name usage for consistency
   add Rendering modules: TT using Data::Section? using HTML::Dom or Treebuilder?
 
 09/04/23
-  add tests for apply actions
   deflation support
   error messages issues for nested forms: prefix with field name? 
   improve field HTML produced in Render::Simple to include error messages or special css
@@ -19,8 +24,4 @@
   look for other missing tests
   View::TT FillInForm role (check with jhannah)
 
-bigger stuff
-  support related rows, multiple rows
-    first step? handle related records with custom code. Gradually move to generic.
-   
 

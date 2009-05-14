@@ -444,6 +444,21 @@ transform.
 
 Trimming is performed before any other defined actions.
 
+=head2 deflation
+
+A coderef that will convert from an inflated value back to a flat
+data representation suitable for displaying in an HTML field 
+
+   has_field 'my_date_time' => ( 
+      type => 'Compound',
+      apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
+      deflation => sub { { year => $_->year, month => $_->month, day => $_->day } },
+      fif_from_value => 1,
+   );
+   has_field 'date_time_fif.year' => ( fif_from_value => 1 );
+   has_field 'date_time_fif.month';
+   has_field 'date_time_fif.day' => ( fif_from_value => 1 );
+
 =head1 Processing and validating the field
 
 =head2 Process

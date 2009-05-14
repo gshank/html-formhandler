@@ -17,6 +17,40 @@ HTML::FormHandler::Field::Repeatable - Multiple row field
 
 =head1 DESCRIPTION
 
+This field class represent arrays of hashrefs. It allows you to connect
+to 'has_many' relationships in the database. 
+
+It will build intermediate container fields 
+(HTML::FormHandler::Repeatable::Instance) to hold each instance of
+the array. The name of these instance fields will be an array index,
+starting with 0. Therefore the first array element can be accessed with:
+
+   $form->field('addresses')->field('0')->field('street')
+
+or using the shortcut form:
+
+   $form->field('addresses.0.street')
+
+The fields as defined in the form (which are used to clone array
+elements) are stored in 'declared_fields'.
+
+=head1 ATTRIBUTES
+
+=over
+
+=item  index
+
+This attribute contains the next index number available to create an
+additional an additional array element.
+
+=item  num_when_empty
+
+This attribute (default 1) indicates how many empty fields to present
+in an empty form which hasn't been filled from parameters or database
+rows. 
+
+=back
+
 =cut
 
 has 'instances' => (

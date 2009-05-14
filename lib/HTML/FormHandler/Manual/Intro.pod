@@ -484,6 +484,25 @@ this name:
 
    [% field.html_name %]
 
+A compound field can be used for a database relation that will have only
+one row (belongs_to or has_one).
+
+=head2 Repeatable fields
+
+Repeatable fields are used for arrays of compound fields.
+
+   
+   has_field 'addresses' => ( type => 'Repeatable' );
+   has_field 'addresses.address_id' => ( type => 'PrimaryKey' );
+   has_field 'addresses.street';
+   has_field 'addresses.city';
+   has_field 'addresses.country' => ( type => 'Select' );
+
+The arrays will be built from arrays passed in the params, or from
+related ('has_many') rows in the database.
+
+See L<HTML::FormHandler::Field::Repeatable> for more information.
+
 =head2 Filters, transformations, and constraints
 
 L<HTML::FormHandler> has a flexible system of of filters and constraints. You can

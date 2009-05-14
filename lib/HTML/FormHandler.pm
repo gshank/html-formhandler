@@ -227,8 +227,47 @@ from C<< $form->fif >> or a hash of inflated values from C<< $form->values >>.
 
 =head3 params
 
-The HTTP parameters must be passed in or set before you call 'process'. 
+Parameters must be passed in or set before you call 'process'. 
 HFH gets data to validate and store in the database from the params hash. 
+
+Params can either be in the form of CGI/HTTP style params:
+
+   {
+      user_name => "Joe Smith",
+      occupation => "Programmer",
+      'addresses.0.street' => "999 Main Street",
+      'addresses.0.city' => "Podunk",
+      'addresses.0.country' => "UT",
+      'addresses.0.address_id' => "1",
+      'addresses.1.street' => "333 Valencia Street",
+      'addresses.1.city' => "San Franciso",
+      'addresses.1.country' => "UT",
+      'addresses.1.address_id' => "2",
+   }
+
+or as structured data in the form of hashes and lists:
+
+   {
+      addresses => [
+         {
+            city => 'Middle City',
+            country => 'GK',
+            address_id => 1,
+            street => '101 Main St',
+         },
+         {
+            city => 'DownTown',
+            country => 'UT',
+            address_id => 2,
+            street => '99 Elm St',
+         },
+      ],
+      'occupation' => 'management',
+      'user_name' => 'jdoe',
+   }
+
+CGI style parameters will be converted to hashes and lists for HFH to
+operate on.
 
 The parameters are stored in a 'params' attribute.
 Also: set_param, get_param, clear_params, delete_param, 
@@ -563,7 +602,7 @@ sub BUILDARGS
 sub BUILD
 {
    my $self = shift;
-$DB::single=1;
+
    $self->_build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)

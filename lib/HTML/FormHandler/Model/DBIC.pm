@@ -389,7 +389,7 @@ sub validate_unique
       next
          if $count == 1
             && $self->item_id 
-            && $self->item_id == $rs->search( { $accessor => $value } )->first->id;
+            && $self->item_id eq $rs->search( { $accessor => $value } )->first->id;
       my $field_error = $field->unique_message || 'Duplicate value for ' . $field->label;
       $field->add_error( $field_error );
       $found_error++;
@@ -451,7 +451,7 @@ sub set_item_id
              (ref $item_id eq 'ARRAY' &&
               join('', @{$item_id}) ne join('', $self->item->id)) ||
              (ref \$item_id eq 'SCALAR' && 
-              $item_id != $self->item->id));
+              $item_id ne $self->item->id));
    }
 }
 
