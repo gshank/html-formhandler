@@ -661,7 +661,7 @@ has 'set_init' => (
       return 'init_value_' . $name;
    }
 );
-sub _can_init
+sub _can_init_value
 {
    my $self = shift;
    return
@@ -670,10 +670,10 @@ sub _can_init
          && $self->form->can( $self->set_init );
    return 1;
 }
-sub _init
+sub _init_value
 {
    my $self = shift;
-   return unless $self->_can_init;
+   return unless $self->_can_init_value;
    my $meth = $self->set_init;
    $self->form->$meth($self, $self->form->item);
 }
@@ -755,6 +755,8 @@ sub _build_apply_list
    }
    $self->add_action( @apply_list );
 }
+
+sub _init { }
 
 sub full_name
 {

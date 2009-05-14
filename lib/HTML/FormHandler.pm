@@ -567,8 +567,14 @@ sub BUILD
    $self->_build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)
-   $self->_init_from_object( $self, $self->init_object || $self->item );
-   $self->_load_options;        # load options -- need to do after loading item
+   if( $self->init_object || $self->item )
+   {
+      $self->_init_from_object( $self, $self->init_object || $self->item );
+   }
+   else
+   {
+      $self->_init;
+   }
    $self->dump_fields if $self->verbose;
    return;
 }
@@ -799,11 +805,22 @@ sub _setup_form
    {
       $self->item( $self->build_item);
    }
+   # initialization of Repeatable fields and Select options
+   # will be done in init_object when there's an initial object
+   # in validation routines when there are params
+   # and by _init for empty forms
+$DB::single=1;
    unless ( $self->has_params )
    {
-      $self->_init_from_object( $self, $self->init_object || $self->item );
+      if( $self->init_object || $self->item )
+      {
+         $self->_init_from_object( $self, $self->init_object || $self->item );
+      }
+      else  # no initial object. empty form form must be initialized
+      {
+         $self->_init;
+      }
    }
-   $self->_load_options;
 }
 
 sub _init_from_object
@@ -830,10 +847,10 @@ sub _init_from_object
       }
       else
       {
-         if ( $field->_can_init )
+         if ( $field->_can_init_value )
          {
             my @values;
-            @values = $field->_init( $field, $item );
+            @values = $field->_init_value( $field, $item );
             my $value = @values > 1 ? \@values : shift @values;
             $field->init_value($value) if $value;
             $field->value($value)      if $value;
@@ -842,6 +859,7 @@ sub _init_from_object
          {
             $self->init_value( $field, $value );
          }
+         $field->_load_options if $field->can('_load_options');
       }
    }
 }
@@ -872,47 +890,6 @@ sub init_value
    my ( $self, $field, $value ) = @_;
    $field->init_value($value);
    $field->value($value);
-}
-
-sub _load_options
-{
-   my ( $self, $node, $model_stuff ) = @_;
-
-   $node ||= $self;
-   warn "HFH: load_options ", $node->name, "\n" if $self->verbose;
-   for my $field ( $node->fields ){
-       if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
-           my $new_model_stuff = $self->compute_model_stuff( $field, $model_stuff );
-           $self->_load_options( $field, $new_model_stuff );
-       }
-       else {
-           $self->_load_field_options($field, $model_stuff);
-       }
-   }
-}
-
-sub _load_field_options
-{
-   my ( $self, $field, $model_stuff, @options ) = @_;
-
-   return unless $field->can('options');
-
-   my $method = 'options_' . $field->name;
-   @options =
-        $self->can($method)
-      ? $self->$method($field)
-      : $self->lookup_options($field, $model_stuff)
-      unless @options;
-   return unless @options;
-
-   @options = @{ $options[0] } if ref $options[0];
-   croak "Options array must contain an even number of elements for field " . $field->name
-      if @options % 2;
-
-   my @opts;
-   push @opts, { value => shift @options, label => shift @options } while @options;
-
-   $field->options( \@opts ) if @opts;
 }
 
 sub _set_dependency

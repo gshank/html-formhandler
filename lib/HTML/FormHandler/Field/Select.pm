@@ -45,7 +45,7 @@ has 'set_options' => ( isa => 'Str', is => 'rw',
        my $self = shift;
        my $name = $self->full_name;
        $name =~ s/\./_/g;
-       return 'options' . $name;
+       return 'options_' . $name;
     }
 );
 sub _can_options
@@ -61,7 +61,7 @@ sub _options
    my $self = shift;
    return unless $self->_can_options;
    my $meth = $self->set_options;
-   $self->form->$meth( $self );
+   return $self->form->$meth( $self );
 }
 
 =head2 multiple
@@ -201,11 +201,10 @@ augment 'process' => sub
 {
    my ($self) = @_;
 
-   # create a lookup hash
-   my %options = map { $_->{value} => 1 } $self->options;
+   # load options because this is params validation 
+   $self->_load_options;
 
    my $input = $self->input;
-
    return 1 unless defined $input;    # nothing to check
 
    if ( ref $input eq 'ARRAY'
@@ -215,6 +214,8 @@ augment 'process' => sub
       return;
    }
 
+   # create a lookup hash
+   my %options = map { $_->{value} => 1 } $self->options;
    for my $value ( ref $input eq 'ARRAY' ? @$input : ($input) )
    {
       unless ( $options{$value} )
@@ -226,6 +227,13 @@ augment 'process' => sub
    inner();
    return 1;
 };
+
+sub _init
+{
+   my $self = shift;
+   # load options when no input and no value (empty form )
+   $self->_load_options;
+}
 
 sub _load_options_old
 {
@@ -255,8 +263,9 @@ sub _load_options
    }
    elsif( $self->form )
    {
-      my $full_accessor = $self->full_accessor;
-      @options = $self->form->new_lookup_options($self, $full_accessor);
+      my $full_accessor; 
+      $full_accessor = $self->parent->full_accessor if $self->parent;
+      @options = $self->form->lookup_options($self, $full_accessor);
    }
    return unless @options; # so if there isn't an options method and no options
                            # from a table, already set options attributes stays put

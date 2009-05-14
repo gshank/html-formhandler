@@ -133,8 +133,7 @@ The default for label_column is "name".
 
 =cut
 
-sub lookup_options { return }
-
+sub lookup_options { }
 
 =head2 validate_model
 

@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 13;
 
 use_ok( 'HTML::FormHandler::Field::Repeatable' );
 use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
@@ -24,6 +24,10 @@ ok( $form, 'created hasmany form');
 
 $form = Repeatable::Form->new;
 ok( $form->field('addresses')->has_fields, 'created form again with fields');
+
+# empty form, creating new record 
+$form->process( params => {} );
+ok( $form->field('addresses')->field('0')->field('city'), 'empty field exists' );
 
 my $init_object = {
    addresses => [
