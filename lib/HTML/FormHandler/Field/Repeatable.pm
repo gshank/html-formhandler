@@ -1,16 +1,16 @@
-package HTML::FormHandler::Field::HasMany;
+package HTML::FormHandler::Field::Repeatable;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
-use aliased 'HTML::FormHandler::Field::HasMany::Instance';
+use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
 
 =head1 NAME
 
-HTML::FormHandler::Field::HasMany - Multiple row field
+HTML::FormHandler::Field::Repeatable - Multiple row field
 
 =head1 SYNOPSIS
 
-  has_field 'addresses' => ( type => 'HasMany' );
+  has_field 'addresses' => ( type => 'Repeatable' );
   has_field 'addresses.street';
   has_field 'addresses.city';
   has_field 'addresses.state';

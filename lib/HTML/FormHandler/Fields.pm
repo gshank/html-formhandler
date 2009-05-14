@@ -75,6 +75,21 @@ has 'field_name_space' => (
    default => '',
 );
 
+has 'field_list' => ( isa => 'HashRef|ArrayRef', is => 'rw', default => sub { {} } );
+sub has_field_list
+{
+   my ( $self, $field_list ) = @_;
+   $field_list ||= $self->field_list;
+   if( ref $field_list eq 'HASH' )
+   {
+      return 1 if( scalar keys %{$field_list} );
+   }
+   elsif( ref $field_list eq 'ARRAY' )
+   {
+      return 1 if( scalar @{$field_list} );
+   }
+   return;
+}
 
 
 # calls routines to process various field lists
@@ -86,8 +101,8 @@ sub _build_fields
 
    my $meta_flist = $self->_build_meta_field_list;
    $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
-   $self->_process_field_list( $self->field_list )
-      if ( $self->can('field_list') && $self->has_field_list );
+   my $flist = $self->field_list;
+   $self->_process_field_list( $flist ) if $self->has_field_list( $flist );
    return unless $self->has_fields;
 
    # order the fields

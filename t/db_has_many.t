@@ -16,14 +16,14 @@ my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
 my $user = $schema->resultset('User')->find(1);
 
 {
-   package HasMany::Form::User;
+   package Repeatable::Form::User;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler::Model::DBIC';
 
    has_field 'user_name';
    has_field 'occupation';
 
-   has_field 'addresses' => ( type => 'HasMany' );
+   has_field 'addresses' => ( type => 'Repeatable' );
    has_field 'addresses.address_id' => ( type => 'PrimaryKey' );
    has_field 'addresses.street';
    has_field 'addresses.city';
@@ -31,7 +31,7 @@ my $user = $schema->resultset('User')->find(1);
 
 }
 
-my $form = HasMany::Form::User->new;
+my $form = Repeatable::Form::User->new;
 ok( $form, 'get db has many form');
 
 $form->process( item => $user, params => {} );

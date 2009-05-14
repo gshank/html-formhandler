@@ -2,7 +2,8 @@ package HTML::FormHandler::Field::Select;
 
 use Moose;
 extends 'HTML::FormHandler::Field';
-our $VERSION = '0.01';
+use Carp;
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -225,6 +226,52 @@ augment 'process' => sub
    inner();
    return 1;
 };
+
+sub _load_options_old
+{
+   my ( $self, $node, $model_stuff ) = @_;
+
+   $node ||= $self;
+   warn "HFH: load_options ", $node->name, "\n" if $self->verbose;
+   for my $field ( $node->fields ){
+       if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
+           my $new_model_stuff = $self->compute_model_stuff( $field, $model_stuff );
+           $self->_load_options( $field, $new_model_stuff );
+       }
+       else {
+           $self->_load_field_options($field, $model_stuff);
+       }
+   }
+}
+
+sub _load_options
+{
+   my $self = shift;
+
+   my @options;
+   if( $self->_can_options )
+   {
+      @options = $self->_options;
+   }
+   elsif( $self->form )
+   {
+      my $full_accessor = $self->full_accessor;
+      @options = $self->form->new_lookup_options($self, $full_accessor);
+   }
+   return unless @options; # so if there isn't an options method and no options
+                           # from a table, already set options attributes stays put
+
+   # what's the point of this?
+   @options = @{ $options[0] } if ref $options[0];
+   croak "Options array must contain an even number of elements for field " . $self->name
+      if @options % 2;
+
+   my @opts;
+   push @opts, { value => shift @options, label => shift @options } while @options;
+
+   $self->options( \@opts ) if @opts;
+}
+
 
 
 =head1 AUTHORS

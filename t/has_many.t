@@ -2,27 +2,27 @@ use strict;
 use warnings;
 use Test::More tests => 12;
 
-use_ok( 'HTML::FormHandler::Field::HasMany' );
-use_ok( 'HTML::FormHandler::Field::HasMany::Instance' );
+use_ok( 'HTML::FormHandler::Field::Repeatable' );
+use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
 
 {
-   package HasMany::Form;
+   package Repeatable::Form;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
    has_field 'my_test';
-   has_field 'addresses' => ( type => 'HasMany' );
+   has_field 'addresses' => ( type => 'Repeatable' );
    has_field 'addresses.street';
    has_field 'addresses.city';
    has_field 'addresses.country';
 
 }
 
-my $form = HasMany::Form->new;
+my $form = Repeatable::Form->new;
 
 ok( $form, 'created hasmany form');
 
-$form = HasMany::Form->new;
+$form = Repeatable::Form->new;
 ok( $form->field('addresses')->has_fields, 'created form again with fields');
 
 my $init_object = {
@@ -48,7 +48,7 @@ my $init_object = {
    ]
 };
 
-$form = HasMany::Form->new( init_object => $init_object ); 
+$form = Repeatable::Form->new( init_object => $init_object ); 
 ok( $form, 'created form from initial object' );
 
 is_deeply( $form->values, $init_object, 'get values back out' ); 

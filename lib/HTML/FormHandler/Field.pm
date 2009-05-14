@@ -765,6 +765,15 @@ sub full_name
    return $parent->full_name . '.' . $name;
 }
 
+sub full_accessor
+{
+   my $field = shift;
+
+   my $accessor = $field->accessor;
+   my $parent = $field->parent || return $accessor;
+   return $parent->full_accessor . '.' . $accessor;
+}
+
 sub add_error
 {
    my ($self, @message) = @_;

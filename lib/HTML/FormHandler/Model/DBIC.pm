@@ -492,6 +492,26 @@ sub compute_model_stuff {
     }
     return _get_related_source( $source, $field->accessor );
 }
+
+sub new_lookup_options
+{
+   my ( $self, $field, $accessor_path ) = @_;
+   my $source = get_source( $accessor_path );
+   $self->lookup_options( $field, $source );
+}
+
+sub get_source
+{
+   my ( $self, $accessor_path ) = @_;
+   return unless $self->schema;
+   my $source = $self->source;
+   for my $accessor ( split /\./, $accessor_path)
+   {
+       $source = _get_related_source( $source, $accessor );
+       die "unable to get source for $accessor" unless source;
+   }
+   return $source;
+}
  
 
 =head1 SUPPORT

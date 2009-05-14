@@ -546,20 +546,6 @@ has '_required' => (
       push  => 'add_required'
    }
 );
-has 'field_list' => ( isa => 'HashRef|ArrayRef', is => 'rw', default => sub { {} } );
-sub has_field_list
-{
-   my $self = shift;
-   if( ref $self->field_list eq 'HASH' )
-   {
-      return 1 if( scalar keys %{$self->field_list} );
-   }
-   elsif( ref $self->field_list eq 'ARRAY' )
-   {
-      return 1 if( scalar @{$self->field_list} );
-   }
-   return;
-}
 
 sub BUILDARGS
 {
@@ -833,7 +819,7 @@ sub _init_from_object
       next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
       #      $value = $field->_apply_deflations( $value );
-      if ( $field->isa('HTML::FormHandler::Field::HasMany') )
+      if ( $field->isa('HTML::FormHandler::Field::Repeatable') )
       {
          $field->_init_from_object( $value );
       }
