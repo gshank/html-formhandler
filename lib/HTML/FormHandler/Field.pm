@@ -203,7 +203,7 @@ See $form->language_handle for details. Returns undef.
 
 The 'widget' attribute is not used by base FormHandler code.
 It is intended for use in generating HTML, in templates and the 
-rendering roles, and is used in L<HTML::FormHandler::Render::Simple. 
+rendering roles, and is used in L<HTML::FormHandler::Render::Simple>. 
 Fields of different type can use the same widget.
 
 This attribute is set in the field classes, or in the fields
@@ -661,7 +661,7 @@ has 'set_init' => (
       return 'init_value_' . $name;
    }
 );
-sub _can_init
+sub _can_init_value
 {
    my $self = shift;
    return
@@ -670,10 +670,10 @@ sub _can_init
          && $self->form->can( $self->set_init );
    return 1;
 }
-sub _init
+sub _init_value
 {
    my $self = shift;
-   return unless $self->_can_init;
+   return unless $self->_can_init_value;
    my $meth = $self->set_init;
    $self->form->$meth($self, $self->form->item);
 }
@@ -756,6 +756,8 @@ sub _build_apply_list
    $self->add_action( @apply_list );
 }
 
+sub _init { }
+
 sub full_name
 {
    my $field = shift;
@@ -763,6 +765,15 @@ sub full_name
    my $name = $field->name;
    my $parent = $field->parent || return $name;
    return $parent->full_name . '.' . $name;
+}
+
+sub full_accessor
+{
+   my $field = shift;
+
+   my $accessor = $field->accessor;
+   my $parent = $field->parent || return $accessor;
+   return $parent->full_accessor . '.' . $accessor;
 }
 
 sub add_error

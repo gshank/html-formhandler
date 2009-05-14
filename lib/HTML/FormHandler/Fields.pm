@@ -75,7 +75,28 @@ has 'field_name_space' => (
    default => '',
 );
 
+has 'field_list' => ( isa => 'HashRef|ArrayRef', is => 'rw', default => sub { {} } );
+sub has_field_list
+{
+   my ( $self, $field_list ) = @_;
+   $field_list ||= $self->field_list;
+   if( ref $field_list eq 'HASH' )
+   {
+      return $field_list if( scalar keys %{$field_list} );
+   }
+   elsif( ref $field_list eq 'ARRAY' )
+   {
+      return $field_list if( scalar @{$field_list} );
+   }
+   return;
+}
 
+# _init is for building select lists and empty repeatables when
+# there is no initial object and no params
+sub _init
+{
+   $_->_init for shift->fields;
+}
 
 # calls routines to process various field lists
 # orders the fields after processing in order to skip
@@ -86,8 +107,8 @@ sub _build_fields
 
    my $meta_flist = $self->_build_meta_field_list;
    $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
-   $self->_process_field_list( $self->field_list )
-      if ( $self->can('field_list') && $self->has_field_list );
+   my $flist = $self->has_field_list;
+   $self->_process_field_list( $flist ) if $flist;
    return unless $self->has_fields;
 
    # order the fields
@@ -290,7 +311,7 @@ sub _make_field
       if !Class::Inspector->loaded($class);
 
    $field_attr->{form} = $self->form if $self->form;
-   # parent and name correction
+   # parent and name correction for names with dots
    if ( $field_attr->{name} =~ /\./ )
    {
       my @names       = split /\./, $field_attr->{name};
@@ -367,6 +388,7 @@ sub field
 
    my $index;
    # if this is a full_name for a compound field
+   # walk through the fields to get to it
    if( $name =~ /\./ )
    {
       my @names = split /\./, $name;
@@ -407,7 +429,9 @@ sub _fields_validate
    foreach my $field ( $self->fields )
    {
       next if $field->clear;    # Skip validation
-                                # parent fields will call validation for children
+      # parent fields will call validation for children
+      # there shouldn't be fields like this now. child fields should only
+      # exist beneath their parents
       next if $field->parent && $field->parent != $self;
       # Validate each field and "inflate" input -> value.
       $field->process;          # this calls the field's 'validate' routine

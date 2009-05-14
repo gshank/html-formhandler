@@ -245,10 +245,11 @@ The currently selected values in a Multiple list are grouped at the top
 
 sub lookup_options
 {
-   my ( $self, $field, $self_source ) = @_;
+   my ( $self, $field, $accessor_path ) = @_;
 
    return unless $self->schema;
-   $self_source ||= $self->source;
+   my $self_source = $self->get_source( $accessor_path );
+
    my $accessor = $field->accessor;
 
    # if this field doesn't refer to a foreign key, return
@@ -333,17 +334,21 @@ sub _fix_value
    return $value;
 }
 
+=pod
 
 sub _get_pk_for_related {
-    my ( $object, $relation ) = @_;
+    my ( $self, $object, $relation ) = @_;
 
     my $source = $object->result_source;
-    my $result_source = _get_related_source( $source, $relation );
+    my $result_source = $self->_get_related_source( $source, $relation );
     return $result_source->primary_columns;
 }
 
+=cut
+
 sub _get_related_source {
-    my ( $source, $name ) = @_;
+    my ( $self, $source, $name ) = @_;
+
     if( $source->has_relationship( $name ) ){
         return $source->related_source( $name );
     }
@@ -484,13 +489,41 @@ sub resultset
    return $self->schema->resultset( $self->source_name || $self->item_class );
 }
 
+=pod
+
 sub compute_model_stuff {
     my ( $self, $field, $source ) = @_;
     if( ! $source ){
         return if !$self->schema;
         $source = $self->source;
     }
-    return _get_related_source( $source, $field->accessor );
+    return $self->_get_related_source( $source, $field->accessor );
+}
+
+=cut
+
+
+sub new_lookup_options
+{
+   my ( $self, $field, $accessor_path ) = @_;
+
+   my $source = $self->get_source( $accessor_path );
+   $self->lookup_options( $field, $source );
+}
+
+sub get_source
+{
+   my ( $self, $accessor_path ) = @_;
+   return unless $self->schema;
+   my $source = $self->source;
+   return $source unless $accessor_path;
+   my @accessors = split /\./, $accessor_path;
+   for my $accessor ( @accessors ) 
+   {
+       $source = $self->_get_related_source( $source, $accessor );
+       die "unable to get source for $accessor" unless $source;
+   }
+   return $source;
 }
  
 

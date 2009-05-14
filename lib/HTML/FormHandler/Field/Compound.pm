@@ -73,7 +73,7 @@ sub build_node
 
    my $input = $self->input;
 
-   # call augment process in HasMany
+   # call augment process in Repeatable
    inner();
    # is there a better way to do this? 
    if( ref $input eq 'HASH' )

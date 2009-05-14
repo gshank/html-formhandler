@@ -2,7 +2,8 @@ package HTML::FormHandler::Field::Select;
 
 use Moose;
 extends 'HTML::FormHandler::Field';
-our $VERSION = '0.01';
+use Carp;
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -44,7 +45,7 @@ has 'set_options' => ( isa => 'Str', is => 'rw',
        my $self = shift;
        my $name = $self->full_name;
        $name =~ s/\./_/g;
-       return 'options' . $name;
+       return 'options_' . $name;
     }
 );
 sub _can_options
@@ -60,7 +61,7 @@ sub _options
    my $self = shift;
    return unless $self->_can_options;
    my $meth = $self->set_options;
-   $self->form->$meth( $self );
+   return $self->form->$meth( $self );
 }
 
 =head2 multiple
@@ -200,11 +201,10 @@ augment 'process' => sub
 {
    my ($self) = @_;
 
-   # create a lookup hash
-   my %options = map { $_->{value} => 1 } $self->options;
+   # load options because this is params validation 
+   $self->_load_options;
 
    my $input = $self->input;
-
    return 1 unless defined $input;    # nothing to check
 
    if ( ref $input eq 'ARRAY'
@@ -214,6 +214,8 @@ augment 'process' => sub
       return;
    }
 
+   # create a lookup hash
+   my %options = map { $_->{value} => 1 } $self->options;
    for my $value ( ref $input eq 'ARRAY' ? @$input : ($input) )
    {
       unless ( $options{$value} )
@@ -225,6 +227,60 @@ augment 'process' => sub
    inner();
    return 1;
 };
+
+sub _init
+{
+   my $self = shift;
+   # load options when no input and no value (empty form )
+   $self->_load_options;
+}
+
+sub _load_options_old
+{
+   my ( $self, $node, $model_stuff ) = @_;
+
+   $node ||= $self;
+   warn "HFH: load_options ", $node->name, "\n" if $self->verbose;
+   for my $field ( $node->fields ){
+       if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
+           my $new_model_stuff = $self->compute_model_stuff( $field, $model_stuff );
+           $self->_load_options( $field, $new_model_stuff );
+       }
+       else {
+           $self->_load_field_options($field, $model_stuff);
+       }
+   }
+}
+
+sub _load_options
+{
+   my $self = shift;
+
+   my @options;
+   if( $self->_can_options )
+   {
+      @options = $self->_options;
+   }
+   elsif( $self->form )
+   {
+      my $full_accessor; 
+      $full_accessor = $self->parent->full_accessor if $self->parent;
+      @options = $self->form->lookup_options($self, $full_accessor);
+   }
+   return unless @options; # so if there isn't an options method and no options
+                           # from a table, already set options attributes stays put
+
+   # what's the point of this?
+   @options = @{ $options[0] } if ref $options[0];
+   croak "Options array must contain an even number of elements for field " . $self->name
+      if @options % 2;
+
+   my @opts;
+   push @opts, { value => shift @options, label => shift @options } while @options;
+
+   $self->options( \@opts ) if @opts;
+}
+
 
 
 =head1 AUTHORS
