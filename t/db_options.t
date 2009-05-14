@@ -25,7 +25,7 @@ my $options;
 $form = BookDB::Form::User->new( item => $user );
 ok( $form, 'User form created' );
 $options = $form->field( 'country' )->options;
-is( @$options, 12, 'Options loaded from the model' );
+is( @$options, 16, 'Options loaded from the model' );
 
 my $fif = $form->fif;
 $fif->{country} = 'PL';
@@ -36,14 +36,14 @@ is( $form->item->country_iso, 'PL', 'country updated correctly');
 $form = BookDB::Form::User->new( schema => $schema, source_name => 'User' );
 ok( $form, 'User form created' );
 $options = $form->field( 'country' )->options;
-is( @$options, 12, 'Options loaded from the model - simple' );
+is( @$options, 16, 'Options loaded from the model - simple' );
 
 #warn Dumper( $options ); use Data::Dumper;
 
 $form = BookDB::Form::BookWithOwner->new( schema => $schema, source_name => 'Book' );
 ok( $form, 'Book with Owner form created' );
 $options = $form->field( 'owner' )->field(  'country' )->options;
-is( @$options, 12, 'Options loaded from the model - recursive' );
+is( @$options, 16, 'Options loaded from the model - recursive' );
 
 my $book = $schema->resultset('Book')->find(1);
 $form = BookDB::Form::BookWithOwner->new( item => $book );

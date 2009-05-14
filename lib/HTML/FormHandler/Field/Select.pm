@@ -29,6 +29,7 @@ has 'options' => ( isa => 'ArrayRef[HashRef]', is => 'rw',
                    auto_deref => 1,
                    provides => {
                       clear => 'reset_options',
+                      empty => 'has_options',
                    },
                    lazy => 1, 
                    builder => 'build_options' );

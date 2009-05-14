@@ -563,7 +563,7 @@ sub BUILDARGS
 sub BUILD
 {
    my $self = shift;
-
+$DB::single=1;
    $self->_build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)
@@ -809,7 +809,6 @@ sub _setup_form
    # will be done in init_object when there's an initial object
    # in validation routines when there are params
    # and by _init for empty forms
-$DB::single=1;
    unless ( $self->has_params )
    {
       if( $self->init_object || $self->item )

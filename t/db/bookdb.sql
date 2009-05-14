@@ -40,14 +40,14 @@ CREATE TABLE address (
    user_id INTEGER,
    street VARCHAR(32),
    city VARCHAR(32),
-   country VARCHAR(24)
+   country_iso char(2)
 );
-INSERT INTO "address" VALUES (1, 1, "101 Main St", "Middle City", "Graustark");
-INSERT INTO "address" VALUES (2, 1, "99 Elm St", "DownTown", "Utopia");
-INSERT INTO "address" VALUES (3, 1, "1023 Side Ave", "Santa Lola", "Grand Fenwick");
-INSERT INTO "address" VALUES (4, 2, "142 Main St", "Middle City", "Graustark");
-INSERT INTO "address" VALUES (5, 2, "399 Cherry Park", "Jimsville", "Ubonia");
-INSERT INTO "address" VALUES (6, 3, "991 Star St", "Nowhere City", "Brigadon");
+INSERT INTO "address" VALUES (1, 1, "101 Main St", "Middle City", "GK");
+INSERT INTO "address" VALUES (2, 1, "99 Elm St", "DownTown", "UT");
+INSERT INTO "address" VALUES (3, 1, "1023 Side Ave", "Santa Lola", "GF");
+INSERT INTO "address" VALUES (4, 2, "142 Main St", "Middle City", "GK");
+INSERT INTO "address" VALUES (5, 2, "399 Cherry Park", "Jimsville", "UT");
+INSERT INTO "address" VALUES (6, 3, "991 Star St", "Nowhere City", "GK");
 
 CREATE TABLE book (
     id INTEGER PRIMARY KEY,
@@ -151,6 +151,10 @@ CREATE TABLE IF NOT EXISTS country (
 
 DELETE from country;
 
+INSERT INTO country VALUES ('GK','GRAUSTARK','Graustark','GRA','901');
+INSERT INTO country VALUES ('UT','UTOPIA','Utopia','UTO','902');
+INSERT INTO country VALUES ('GF','GRAND FENWICK','Grand Fenwick','GFK','903');
+INSERT INTO country VALUES ('AT','ATLANTIS','Atlantis','ATL','904');
 INSERT INTO country VALUES ('AU','AUSTRALIA','Australia','AUS','036');
 INSERT INTO country VALUES ('CZ','CZECH REPUBLIC','Czech Republic','CZE','203');
 INSERT INTO country VALUES ('DK','DENMARK','Denmark','DNK','208');
