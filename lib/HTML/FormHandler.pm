@@ -543,7 +543,7 @@ has 'parent' => ( is => 'rw' );
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 # flags
-has [ 'ran_validation', 'validated', 'verbose', 'processed' ] => 
+has [ 'ran_validation', 'validated', 'verbose', 'processed', 'did_init_obj' ] => 
     ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
@@ -666,6 +666,7 @@ sub clear
    $self->clear_params;
    $self->clear_ctx;
    $self->processed(0);
+   $self->did_init_obj(0);
 }
 
 sub clear_state
@@ -848,16 +849,14 @@ sub _setup_form
    # will be done in init_object when there's an initial object
    # in validation routines when there are params
    # and by _init for empty forms
-   unless ( $self->has_params )
+   if( ($self->init_object || $self->item) && !$self->did_init_obj )
    {
-      if( $self->init_object || $self->item )
-      {
-         $self->_init_from_object( $self, $self->init_object || $self->item );
-      }
-      else  # no initial object. empty form form must be initialized
-      {
-         $self->_init;
-      }
+      $self->_init_from_object( $self, $self->init_object || $self->item );
+   }
+   if ( !$self->has_params && !$self->did_init_obj )
+   {
+      # no initial object. empty form form must be initialized
+      $self->_init;
    }
 }
 
@@ -900,6 +899,7 @@ sub _init_from_object
          $field->_load_options if $field->can('_load_options');
       }
    }
+   $self->did_init_obj(1);
 }
 
 sub _get_value
