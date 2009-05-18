@@ -23,7 +23,9 @@ sub validate {
 
     # Check for min length
     if ( my $size = $field->min_length  ) {
-        return $field->add_error( 'Input must be at least [quant,_1,character]. You submitted [_2]', $size, length $value )
+        return $field->add_error( 
+           'Input must be at least [quant,_1,character]. You submitted [_2]', 
+           $size, length $value )
             if length $value < $size;
     }
     return 1;

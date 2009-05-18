@@ -823,16 +823,31 @@ sub process
 
    $field->clear_errors;
    # See if anything was submitted
-   unless ( $field->input_defined )
+   if( !$field->has_input || !$field->input_defined )
    {
-      $field->add_error( $field->required_message ) if ( $field->required );
-      $field->value(undef)                          if ( $field->has_input );
-      return;
+      if( $field->required )
+      {
+         $field->add_error( $field->required_message ) if ( $field->required );
+         $field->value(undef)                          if ( $field->has_input );
+         $field->on_empty if $field->can('on_empty');
+         return;
+      }
+      elsif ( !$field->has_input )
+      {
+         return;
+      }
+      elsif( !$field->input_defined )
+      {
+         $field->value(undef);
+         $field->on_empty if $field->can('on_empty');
+         return;
+      }
    }
-
-   $field->clear_value;
-
-   $field->value( $field->input );
+   else
+   {
+      $field->clear_value;
+      $field->value( $field->input );
+   }
 
    inner();
    # do building of node 
@@ -841,8 +856,8 @@ sub process
    $field->_apply_actions;
 
 #   $field->_build_fif if $field->can('_build_fif');
-   return if $field->has_errors;
    return unless $field->validate;
+   return if $field->has_errors;
    return unless $field->test_ranges;
 
    return !$field->has_errors;
