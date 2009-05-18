@@ -829,7 +829,6 @@ sub process
       {
          $field->add_error( $field->required_message ) if ( $field->required );
          $field->value(undef)                          if ( $field->has_input );
-         $field->on_empty if $field->can('on_empty');
          return;
       }
       elsif ( !$field->has_input )
@@ -839,7 +838,6 @@ sub process
       elsif( !$field->input_defined )
       {
          $field->value(undef);
-         $field->on_empty if $field->can('on_empty');
          return;
       }
    }

@@ -1,30 +1,42 @@
 use strict;
 use warnings;
 
-use Test::More;
-my $tests = 11;
-plan tests => $tests;
-
-my $class = 'HTML::FormHandler::Field::Password';
-
-my $name = $1 if $class =~ /::([^:]+)$/;
-
-use_ok( $class );
+use Test::More tests => 13;
 
 
-# TODO why not just grab $field = $form->field('password') ?
+use HTML::FormHandler;
+use_ok( 'HTML::FormHandler::Field::Password' );
 
-my $form = my_form->new;
+{
+   package My::Form;
 
-my $field = $class->new(
-    name    => 'test_field',
-    type    => $name,
-    form    => $form, 
-);
+   use Moose;
+   extends 'HTML::FormHandler';
+
+   sub field_list {
+       return [ 
+               login       => 'Text',
+               username    => 'Text',
+               password    => { type => 'Password',
+                                ne_username => 'username' },
+          ];
+   }
+
+}
 
 
+my $form = My::Form->new;
 
-ok( defined $field,  'new() called' );
+my $field = $form->field('password');
+
+my $params = {
+   username => 'my4username',
+   password => 'something'
+};
+
+$form->process( $params );
+
+ok( $field,  'got password field' );
 
 $field->input( '2192ab201def' );
 $field->process;
@@ -46,10 +58,6 @@ $field->input( 'ab1' );
 $field->process;
 ok( $field->has_errors, 'too short' );
 
-$field->input( 'my4login55' );
-$field->process;
-ok( $field->has_errors, 'matches login' );
-
 $field->input( 'my4username' );
 $field->process;
 ok( $field->has_errors, 'matches username' );
@@ -61,26 +69,28 @@ ok( !$field->has_errors, 'just right' );
 is ( $field->value, $pass, 'Input and value match' );
 
 
-package my_form;
-use strict;
-use warnings;
-use base 'HTML::FormHandler';
+{
+   package Password::Form;
 
-sub field_list {
-    return {
-        optional => {
-            login       => 'Text',
-            username    => 'Text',
-            password    => 'Password',
-        },
-    };
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   has '+field_name_space' => ( default => 'Field' );
+   has_field 'password' => ( type => 'Password', noupdate_if_empty => 1 );
+
 }
 
+$form = Password::Form->new;
+ok( $form, 'form created' );
 
-sub params {
-    {
-        login       => 'my4login55',
-        username    => 'my4username',
-    };
-}
+$params = {
+   password => ''
+};
+
+$form->process( params => $params );
+ok( $form->validated, 'form validated' );
+
+is( $form->field('password')->noupdate, 1, 'noupdate has been set on password field' );
+
+
 
