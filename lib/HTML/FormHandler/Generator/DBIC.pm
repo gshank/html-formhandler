@@ -1,9 +1,10 @@
 package HTML::FormHandler::Generator::DBIC;
 use Moose;
+use MooseX::AttributeHelpers;
 
 use DBIx::Class;
 use Template;
-use version; our $VERSION = qv('0.0.1');
+use version; our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -82,30 +83,65 @@ has 'm2m' => (
     is => 'ro',
 );
 
+has 'packages' => (
+   metaclass  => 'Collection::Hash',
+   isa        => 'HashRef[Str]',
+   is         => 'rw',
+   default    => sub { {} },
+   auto_deref => 1,
+   provides   => {
+       keys      => 'used_packages',
+   },
+   curries  => {
+       set => { 
+           add_package => sub {
+               my ($self, $body, $package) = @_;
+               $body->($self, $package, 1);
+           } 
+       }
+   }
+);
+
+has 'field_classes' => (
+   metaclass  => 'Collection::Hash',
+   isa        => 'HashRef[HashRef]',
+   is         => 'rw',
+   default    => sub { {} },
+   auto_deref => 1,
+   provides   => {
+       keys      => 'list_field_classes',
+       get       => 'get_field_class_data',
+       exists    => 'exists_field_class',
+       set       => 'set_field_class_data',
+   },
+);
+
 my $form_template = <<'END';
 {
     package [% config.class %]Form;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Model::DBIC';
     with 'HTML::FormHandler::Render::Simple';
+[% FOR package = self.used_packages %]
+    use [% package %];
+[% END %]
 
     has '+item_class' => ( default => '[% rs_name %]' );
 
     [% FOR field = config.fields -%]
-    [%- SET field_name = field.name; field.delete( 'name' ); -%]
-[% IF single and field.compound; field.delete( 'compound' ) %]#[% END %]has_field '[% field_name %]' => ( [% FOREACH attr IN field.pairs %] [% attr.key %] => '[% attr.value %]', [% END %] );
+    [% field %]
     [% END %]
     has_field submit => ( widget => 'submit' )
 }
-[% FOR cf = config.sub_forms %]
+[% FOR field_class = self.list_field_classes %]
+[% SET cf = self.get_field_class_data( field_class ) %]
 {
     package [% cf.class %]Field;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Field::Compound';
     
     [% FOR field = cf.fields -%]
-    [%- SET field_name = field.name; field.delete( 'name' ); -%]
-has_field '[% field_name %]' => ( [% FOREACH attr IN field.pairs %] [% attr.key %] => '[% attr.value %]', [% END %] );
+    [% field %]
     [% END %]
 }
 [% END %]
@@ -118,6 +154,7 @@ sub generate_form {
     my $output;
     # warn Dumper( $config ); use Data::Dumper;
     my $tmpl_params = {
+        self => $self,
         config => $config,
         rs_name => $self->rs_name,
     };
@@ -147,15 +184,7 @@ sub get_config {
     return $config;
 }
 
-my %types = (
-    text      => 'TextArea',
-    int       => 'Integer',
-    integer   => 'Integer',
-    num       => 'Number',
-    number    => 'Number',
-    numeric   => 'Number',
-);
-    
+   
    
 sub m2m_for_class {
     my( $self, $class ) = @_;
@@ -164,12 +193,49 @@ sub m2m_for_class {
     return @{$self->m2m->{$class}};
 }
 
+my %types = (
+    text      => 'TextArea',
+    int       => 'Integer',
+    integer   => 'Integer',
+    num       => 'Number',
+    number    => 'Number',
+    numeric   => 'Number',
+);
+ 
+sub field_def {
+    my( $self, $name, $info ) = @_;
+    my $output = '';
+    $output .= "has_field '$name' => ( ";
+    warn $info->{data_type};
+    if( lc $info->{data_type} eq 'date' or lc $info->{data_type} eq 'datetime' ){
+        $self->add_package( 'DateTime' );
+        $output .= <<'END';
+
+            type => 'Compound',
+            apply => [ 
+                {
+                    transform => sub{ DateTime->new( $_[0] ) },
+                    message => "Not a valid DateTime",
+                }
+            ],
+        );
+END
+        $output .= "        has_field '$name.$_';\n" for qw( year month day );
+        return $output;
+    }
+    my $type = $types{ $info->{data_type} } || 'Text'; 
+    $type = 'TextArea' if defined($info->{size}) && $info->{size} > 60;
+    $output .= "type => '$type', ";
+    $output .= "size => $info->{size}, " if $type eq 'Text' && $info->{size};
+    $output .= 'required => 1, ' if not $info->{is_nullable};
+    return $output . ');';
+}
+
 sub get_elements {
     my( $self, $class, $level, @exclude ) = @_;
     my $source = $self->schema->source( $class );
     my %primary_columns = map {$_ => 1} $source->primary_columns;
     my @fields;
-    my @sub_forms;
     my @fieldsets;
     for my $rel( $source->relationships ) {
         next if grep { $_ eq $rel } @exclude;
@@ -179,10 +245,7 @@ sub get_elements {
         my $rel_class = _strip_class( $info->{class} );
         my $elem_conf;
         if ( ! ( $info->{attrs}{accessor} eq 'multi' ) ) {
-            push @fields, {
-                type => 'Select',
-                name => $rel,
-            };
+            push @fields, "has_field '$rel' => ( type => 'Select', );\n"
         }
         elsif( $level < 1 ) {
             my @new_exclude = get_foreign_cols ( $info->{cond} );
@@ -191,12 +254,13 @@ sub get_elements {
             $target_class = $self->class_prefix . '::' . $rel_class if $self->class_prefix;
             $config->{class} = $target_class;
             $config->{name} = $rel;
-            push @sub_forms, $config;
-            push @fields, {
-                type => "+${target_class}Field",
-                name => $rel,
-                compound => 1,
-            };
+            $self->set_field_class_data( $target_class => $config ) if !$self->exists_field_class( $target_class );
+            my $field_def = '';
+            if( defined $self->style && $self->style eq 'single' ){
+                $field_def .= '# ';
+            }
+            $field_def .= "has_field '$rel' => ( type => '+${target_class}Field', );\n";
+            push @fields, $field_def;
         }
     }
     for my $col ( $source->columns ) {
@@ -206,26 +270,17 @@ sub get_elements {
             # - generated schemas have not is_auto_increment set so
             # so the below needs to be commented out
             # and $info->{is_auto_increment} ){  
-            $new_element->{type} = 'Hidden';
+            unshift @fields, "has_field '$col' => ( type => 'Hidden' );\n";
         }   
         else{
             next if grep { $_ eq $col } @exclude;
-            my $type = $types{ $info->{data_type} } || 'Text'; 
-            $type = 'TextArea' if defined($info->{size}) && $info->{size} > 60;
-            $new_element->{type}  = $type;
-            $new_element->{size}  = $info->{size} if $type eq 'Text' && $info->{size};
-            $new_element->{required} = 1 if not $info->{is_nullable};
-        }
-        unshift @fields, $new_element;
+            unshift @fields, $self->field_def( $col, $info );
+       }
     }
     for my $many( $self->m2m_for_class($class) ){
-        unshift @fields, { 
-            name => $many->[0], 
-            type => 'Select', 
-            multiple => 1 
-        };
+        unshift @fields, "has_field '$many->[0]' => ( type => 'Select', multiple => 1 );\n"
     }
-    return { fields => \@fields, sub_forms => \@sub_forms };
+    return { fields => \@fields };
 }
 
 sub get_foreign_cols{
