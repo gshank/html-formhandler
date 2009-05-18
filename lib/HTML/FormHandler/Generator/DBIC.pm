@@ -206,7 +206,6 @@ sub field_def {
     my( $self, $name, $info ) = @_;
     my $output = '';
     $output .= "has_field '$name' => ( ";
-    warn $info->{data_type};
     if( lc $info->{data_type} eq 'date' or lc $info->{data_type} eq 'datetime' ){
         $self->add_package( 'DateTime' );
         $output .= <<'END';
