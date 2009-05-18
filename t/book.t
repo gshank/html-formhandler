@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 26;
+   plan tests => 27;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -50,16 +50,20 @@ is( $form->value('format'), 2, 'get value for format' );
 my $id = $book->id;
 
 $good->{author} = '';
-$form->update($good);
+$form->process($good);
 
 ok( $form->validated, 'form validated with null author');
 
+ok( $form->field('author')->value_changed, 'init value and value of author are different');
 is( $book->author, undef, 'updated author with null value');
 is( $form->field('author')->value, undef, 'author value right in form');
 is( $form->field('publisher')->value, 'EreWhon Publishing', 'right publisher');
 
 my $value_hash = { %{$good}, 
-                   author => undef
+                   author => undef,
+                   comment => undef,
+                   year => undef,
+                   pages => undef
                  };
 is_deeply( $form->values, $value_hash, 'get right values from form');
 

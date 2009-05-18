@@ -4,7 +4,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 11;
+   plan tests => 12;
 }
 
 use_ok('HTML::FormHandler::Model::DBIC');
@@ -49,6 +49,7 @@ my $params = {
 };
 
 ok( $form->process( $params ), 'validate data' );
+ok( $form->field('title')->value_changed, 'init_value ne value');
 
 ok( $form->update_model, 'update validated data');
 
