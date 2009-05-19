@@ -353,11 +353,6 @@ field classes and additional actions added in the 'has_field' declaration.
 You can see examples of field classes with 'apply' actions in the source for 
 L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>.
 
-Usually transformations are performed on the field's 'value', not the 'input',
-but if you would like to 'normalize' the fields returned to the user you can
-flag a Moose type constraint or a transform with C<< to_fif => 1 >> to cause
-the transformed value to be copied to the 'fif' attribute.
-
 =head2 Moose types for constraints and transformations
 
 Moose types can be used to do both constraints and transformations. If a coercion
@@ -724,7 +719,6 @@ has 'trim' => ( isa => 'HashRef', is => 'rw',
          }
          return ref $value eq 'ARRAY' ? \@values : $values[0];
       },
-      to_fif => 1
    }}
 );
 
@@ -918,8 +912,6 @@ sub _apply_actions
             else
             {
                $self->value($new_value);
-               $self->input($new_value) 
-                    if defined $action->{to_fif}  && $action->{to_fif} == 1;
             }
             
          }
@@ -961,8 +953,6 @@ sub _apply_actions
          else
          {
             $self->value($new_value);
-            $self->input($new_value) 
-                 if defined $action->{to_fif}  && $action->{to_fif} == 1;
          }
       }
       if ( defined $error_message )

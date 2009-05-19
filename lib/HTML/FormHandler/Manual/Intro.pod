@@ -437,11 +437,6 @@ will be performed on the value. This includes the 'trim' transform which
 will strip leading and trailing spaces. After the actions are applied,
 the field 'validate' method is called.
 
-A transformation action with the 'to_fif' flag set will cause the value
-produced by this transformation to be copied to the fill-in-form slot, so
-that a 'canonical' form of the input can be presented to the user.
-
-
 =head2 Compound fields
 
 A compound field is a field that has sub-fields. Compound fields can be
