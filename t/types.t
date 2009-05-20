@@ -64,29 +64,29 @@ ok( !$form->field('state')->has_errors, 'no errors on state' );
 my $field = HTML::FormHandler::Field->new( name => 'Test1', apply => [ State ] );
 ok( $field, 'created field with type' );
 $field->input('GG');
-ok( !$field->process, 'field did not validate');
+ok( !$field->validate_field, 'field did not validate');
 is( $field->errors->[0], 'Not a valid state', 'correct error message for State' );
 $field->input('NY');
-ok( $field->process, 'state field validated');
+ok( $field->validate_field, 'state field validated');
 # Email
 SKIP: {
    eval { require Email::Valid };
    skip "Email::Valid not installed", 3 if $@;
    $field = HTML::FormHandler::Field->new( name => 'Test', apply => [ Email ] );
    $field->input('gail@gmail.com');
-   ok( $field->process, 'email field validated' );
+   ok( $field->validate_field, 'email field validated' );
    ok( !$field->has_errors, 'email field is valid');
    $field->input('not_an_email');
-   $field->process;
+   $field->validate_field;
    is( $field->errors->[0], 'Email is not valid', 'error from Email' );
 }
 # IPAddress
 $field = HTML::FormHandler::Field->new( name => 'Test', apply => [ IPAddress ] );
 $field->input('198.168.0.101');
-ok( $field->process, 'IPAddress validated' );
+ok( $field->validate_field, 'IPAddress validated' );
 ok( !$field->has_errors, 'email field is valid');
 $field->input('198.300.0.101');
-$field->process;
+$field->validate_field;
 is( $field->errors->[0], 'Not a valid IP address', 'error from IPAddress' );
 
 

@@ -68,7 +68,7 @@ my $book = $schema->resultset('Book')->find(1);
 
 my $form2 = My::Form2->new(item => $book );
 ok( $form2, 'get form with row object');
-is( $form2->value('title'), 'Harry Potter and the Order of the Phoenix', 'get title from form');
+is( $form2->field('title')->value, 'Harry Potter and the Order of the Phoenix', 'get title from form');
 is( $form2->item_id, 1, 'item_id set from row');
 
 my $book3 = $schema->resultset('Book')->new_result({});
@@ -92,7 +92,7 @@ my $params = {
 
 $form3->process( params => $params );
 is( $book3->author, 'S.Else', 'row object updated');
-is( $form3->value('extra'), 'extra_test', 'value of non-db field');
+is( $form3->field('extra')->value, 'extra_test', 'value of non-db field');
 ok( $form3->item->id, 'get id from new result');
 ok( $form3->item_id, 'item_id has been set');
 $form3->process( params => $params );

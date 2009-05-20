@@ -39,32 +39,32 @@ $form->process( $params );
 ok( $field,  'got password field' );
 
 $field->input( '2192ab201def' );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );
 
 $field->input( 'f oo' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'has spaces' );
 
 $field->input( 'abc%^%' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'match \W' );
 
 $field->input( '123456' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'all digits' );
 
 $field->input( 'ab1' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'too short' );
 
 $field->input( 'my4username' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'matches username' );
 
 my $pass = 'my4user5name';
 $field->input( $pass );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'just right' );
 is ( $field->value, $pass, 'Input and value match' );
 

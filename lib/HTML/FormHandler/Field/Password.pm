@@ -28,7 +28,7 @@ apply(
    ]
 );
 
-after 'process' => sub {
+after 'validate_field' => sub {
    my $self = shift;
 
    if ( $self->noupdate_if_empty && !$self->value )

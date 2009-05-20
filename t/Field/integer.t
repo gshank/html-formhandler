@@ -18,69 +18,69 @@ my $field = $class->new(
 ok( defined $field,  'new() called' );
 
 $field->input( 1 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );
 is( $field->value, 1, 'Test value == 1' );
 
 $field->input( 0 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test for errors 2' );
 is( $field->value, 0, 'Test value == 0' );
 
 
 $field->input( 'checked' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test non integer' );
 
 
 $field->input( '+10' );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test positive' );
 is( $field->value, 10, 'Test value == 10' );
 
 $field->input( '-10' );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test negative' );
 is( $field->value, -10, 'Test value == -10' );
 
 
 $field->input( '-10.123' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test real number' );
 
 $field->range_start( 10 );
 $field->input( 9 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test 9 < 10 fails' );
 
 $field->input( 100 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test 100 > 10 passes ' );
 
 $field->range_end( 20 );
 $field->input( 100 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test 10 <= 100 <= 20 fails' );
 
 $field->range_end( 20 );
 $field->input( 15 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test 10 <= 15 <= 20 passes' );
 
 $field->input( 10 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test 10 <= 10 <= 20 passes' );
 
 $field->input( 20 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test 10 <= 20 <= 20 passes' );
 
 $field->input( 21 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test 10 <= 21 <= 20 fails' );
 
 $field->input( 9 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test 10 <= 9 <= 20 fails' );
 
 TODO: {

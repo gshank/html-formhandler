@@ -42,7 +42,7 @@ $form->process( params => $params );
 ok( $form->validated, 'form validated' );
 
 is_deeply($form->fif, $params, 'get fif with right value');
-is( $form->value('duration')->hours, 2, 'duration value is correct');
+is( $form->field('duration')->value->hours, 2, 'duration value is correct');
 
 {
    package Form::Start;
@@ -65,7 +65,7 @@ $dtform->process( params => $params );
 
 ok( $dtform->validated, 'form validated' );
 
-is( $dtform->value('start_date')->mdy, '10-02-2008', 'datetime value');
+is( $dtform->field('start_date')->value->mdy, '10-02-2008', 'datetime value');
 
 {
    package Field::MyCompound;

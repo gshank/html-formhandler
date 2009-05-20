@@ -198,7 +198,7 @@ Returns true or false
 
 =cut
 
-augment 'process' => sub
+sub _validate_field_hook
 {
    my ($self) = @_;
 
@@ -225,7 +225,6 @@ augment 'process' => sub
          return;
       }
    }
-   inner();
    return 1;
 };
 

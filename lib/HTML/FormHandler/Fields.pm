@@ -434,7 +434,7 @@ sub _fields_validate
       # exist beneath their parents
       next if $field->parent && $field->parent != $self;
       # Validate each field and "inflate" input -> value.
-      $field->process;          # this calls the field's 'validate' routine
+      $field->validate_field;          # this calls the field's 'validate' routine
       next unless $field->has_value && defined $field->value;
       # these methods have access to the inflated values
       $field->_validate($field);    # will execute a form-field validation routine

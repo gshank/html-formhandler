@@ -20,15 +20,15 @@ my $field = $class->new(
 ok( defined $field,  'new() called' );
 
 $field->input( 0 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, '0 is bad year' );
 
 $field->input( (localtime)[5] + 1900 );
-$field->process;
+$field->validate_field;
 ok ( !$field->has_errors, 'Now is just a fine year' );
 
 
 $field->input( 2100 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, '2100 makes the author really old' );
 

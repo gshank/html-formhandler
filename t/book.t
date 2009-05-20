@@ -45,7 +45,7 @@ is_deeply( $form->fif, $good, 'fif correct' );
 my $num_genres = $book->genres->count;
 is( $num_genres, 2, 'multiple select list updated ok');
 
-is( $form->value('format'), 2, 'get value for format' );
+is( $form->field('format')->value, 2, 'get value for format' );
 
 my $id = $book->id;
 

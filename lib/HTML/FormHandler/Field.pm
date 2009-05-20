@@ -301,7 +301,7 @@ In a FormHandler field_list
 =head2 apply
 
 Use the 'apply' keyword to specify an ArrayRef of constraints and coercions to 
-be executed on the field at process time.  
+be executed on the field at validate_field time.  
 
    has_field 'test' => ( 
       apply => [ 'MooseType', { check => sub {...}, message => { } } 
@@ -456,13 +456,11 @@ data representation suitable for displaying in an HTML field
 
 =head1 Processing and validating the field
 
-=head2 Process
+=head2 validate_field
 
 This method does standard validation, which currently tests:
 
     required        -- if field is required and value exists
-
-Then if a value exists, calls the 'augment' validate_field method in subclasses.
 
 If these tests pass, the field's validate method is called
 
@@ -811,7 +809,7 @@ sub add_error
    return;
 }
 
-sub process
+sub validate_field
 {
    my $field = shift;
 
@@ -841,7 +839,7 @@ sub process
       $field->value( $field->input );
    }
 
-   inner();
+   $field->_validate_field_hook();
    # do building of node 
    $field->build_node;
 
@@ -854,12 +852,8 @@ sub process
 
    return !$field->has_errors;
 }
+sub _validate_field_hook { }
 sub build_node { }
-
-sub validate_field
-{
-   return shift->process(@_);
-}
 
 sub _apply_actions
 {

@@ -73,15 +73,13 @@ sub build_node
 
    my $input = $self->input;
 
-   # call augment process in Repeatable
-   inner();
    # is there a better way to do this? 
    if( ref $input eq 'HASH' )
    {
       foreach my $field ( $self->fields )
       {
-         my $field_name = substr( $field->full_name, length($self->full_name) + 1 );
-         # Trim values and move to "input" slot
+         my $field_name = $field->name;
+         # move values to "input" slot
          if ( exists $input->{$field_name} )
          {
             $field->input( $input->{$field_name} )

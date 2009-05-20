@@ -18,33 +18,33 @@ my $field = $class->new(
 ok( defined $field,  'new() called' );
 
 $field->input( 1 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );
 is( $field->value, 1, 'Test value == 1' );
 
 $field->input( 0 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test for errors 2' );
 is( $field->value, 0, 'Test value == 0' );
 
 
 $field->input( 'checked' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test non integer' );
 
 
 $field->input( '+10' );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, 'Test positive' );
 is( $field->value, 10, 'Test value == 10' );
 
 $field->input( '-10' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test negative' );
 
 
 $field->input( '-10.123' );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, 'Test real number ' );
 
 TODO: {

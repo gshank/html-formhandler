@@ -19,15 +19,15 @@ ok( defined $field,  'new() called' );
 
 for ( 1 .. 12 ) {
     $field->input( $_ );
-    $field->process;
+    $field->validate_field;
     ok( !$field->has_errors, $_ . ' is valid' );
 }
 
 $field->input( 0 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, '0 is not valid day of the week' );
 $field->input( 13 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, '13 is not valid day of the week' );
 
 

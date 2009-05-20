@@ -645,11 +645,6 @@ sub process
    return $self->validated;
 }
 
-sub validate
-{
-   shift->process(@_);
-}
-
 sub db_validate
 {
    my $self = shift;
@@ -732,6 +727,7 @@ sub values
 sub value
 {
    my ( $self, $fieldname ) = @_;
+   Carp::carp "The value method is deprecated and will change semantics in next release"; 
    my $field = $self->field( $fieldname, 1 ) || return;
    return $field->value; 
 }

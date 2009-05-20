@@ -18,23 +18,23 @@ my $field = $class->new(
 ok( defined $field,  'new() called' );
 
 $field->input( 0 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, '0 in range' );
 
 $field->input( 59 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, '59 in range' );
 
 $field->input( 12 );
-$field->process;
+$field->validate_field;
 ok( !$field->has_errors, '12 in range' );
 
 $field->input( -1  );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, '-1 out of range' );
 
 
 $field->input( 60 );
-$field->process;
+$field->validate_field;
 ok( $field->has_errors, '60 out of range' );
 

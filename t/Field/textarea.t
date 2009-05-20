@@ -12,6 +12,6 @@ ok( $field, 'get TextArea field');
 
 $field->input("Testing, testing, testing... This is a test");
 
-$field->process;
+$field->validate_field;
 
 ok( !$field->has_errors, 'field has no errors');
