@@ -8,7 +8,6 @@ has '+widget'           => ( default => 'password' );
 has '+min_length'       => ( default => 6 );
 has '+password'         => ( default => 1 );
 has '+required_message' => ( default => 'Please enter a password in this field' );
-has 'noupdate_if_empty' => ( isa => 'Bool', is => 'rw', default => '0' );
 has 'ne_username'       => ( isa => 'Str',  is => 'rw' );
 
 apply(
@@ -31,7 +30,7 @@ apply(
 after 'validate_field' => sub {
    my $self = shift;
 
-   if ( $self->noupdate_if_empty && !$self->value )
+   if ( !$self->required && !$self->value )
    {
       $self->noupdate(1);
       $self->clear_errors;
@@ -42,12 +41,12 @@ sub validate
 {
    my $self = shift;
 
+   $self->noupdate(0);
    return unless $self->SUPER::validate;
 
    my $value = $self->value;
    if ( $self->form && $self->ne_username )
    {
-$DB::single=1;
       my $username = $self->form->get_param( $self->ne_username );
       return $self->add_error( 'Password must not match ' . $self->ne_username )
          if $username && $username eq $value;
@@ -71,6 +70,9 @@ You can add additional checks by using 'apply' in the field definition:
           apply => [ { check => sub { .... },
                        message => 'Password must contain....' } ],
    );
+
+If a password field is not required, then the field will be marked 'noupdate',
+to prevent a null from being saved into the database.
                  
 
 =head2 ne_username
@@ -78,19 +80,6 @@ You can add additional checks by using 'apply' in the field definition:
 Set this attribute to the name of your username field (default 'username')
 if you want to check that the password is not the same as the username.
 Does not check by default.
-
-=head2 noupdate_if_empty
-
-If this flag is set then the database will not be updated if the field is empty.
-This is useful when there are password fields in a form that should be
-processed only if something is entered
-
-=head2 widget
-
-Fields can be given a widget type that is used as a hint for
-the code that renders the field.
-
-This field's widget type is: "".
 
 =head1 AUTHORS
 

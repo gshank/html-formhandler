@@ -127,6 +127,29 @@ sub render_text
    return $output;
 }
 
+=head2 render_password
+
+Output an HTML string for a password widget
+
+=cut
+
+sub render_password
+{
+   my ( $self, $field ) = @_;
+   # label
+   my $fif = $field->fif || '';
+   my $output .= "\n<label class=\"label\" for=\"";
+   $output    .= $field->html_name . "\">";
+   $output    .= $field->label . ": </label>";
+   # input
+   $output .= "<input type=\"password\" name=\"";
+   $output .= $field->html_name . "\"";
+   $output .= " id=\"" . $field->id . "\"";
+   $output .= " value=\"" . $fif . "\">";
+   # value
+   return $output;
+}
+
 =head2 render_hidden
 
 Output an HTML string for a hidden input widget

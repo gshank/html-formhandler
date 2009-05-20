@@ -75,24 +75,12 @@ sub form
    my ( $self, $c ) = @_;
 
    my $user = $c->stash->{user};
-   $c->stash( form => $self->user_form, template => 'user/form.tt',
-      action => $c->chained_uri_for->as_string );
-   # this is quite silly... Taking the data from the database
-   # and storing it again outside of FormHandler
-   # but it demonstrates the use of a non-db form
-   my $user_hashref = {
-      user_name => $user->user_name,
-      fav_cat => $user->fav_cat,
-      fav_book => $user->fav_book,
-      occupation => $user->occupation }; 
-   $self->user_form->validate( 
-      init_object => $user_hashref,
+   $c->stash( form => $self->user_form, template => 'user/form.tt' );
+   $self->user_form->process( item => $user, 
       params => $c->req->parameters );
    return unless $self->user_form->validated;
    my $result = $self->user_form->values;
-   $user->set_columns($result);
-   $user->update_or_insert;
-   $c->res->redirect( $c->uri_for('list') );
+   $c->res->redirect( $c->uri_for_action('/user/view', [$user->id]) );
 }
 
 sub delete : Chained('item') PathPart('delete') Args(0)
