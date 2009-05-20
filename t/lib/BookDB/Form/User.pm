@@ -8,16 +8,16 @@ use DateTime;
 has '+item_class' => ( default => 'User');
 
 has_field 'user_name';
-has_field 'fav_cat' => ( label => 'Favorite Book Category' );
+has_field 'fav_cat' => ( label => 'Category' );
 has_field 'fav_book' => ( label => 'Favorite Book' );
 has_field 'occupation';
 has_field 'country' => ( type => 'Select' );
+has_field 'license' => ( type => 'Select' );
+has_field 'opt_in' => ( type => 'Checkbox' );
 has_field 'birthdate' => ( 
     type => 'Compound',
     apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
 );
-has_field 'license' => ( type => 'Select' );
-has_field 'opt_in' => ( type => 'Checkbox' );
 has_field 'birthdate.year' => ( type => 'Text', );
 has_field 'birthdate.month' => ( type => 'Text', );
 has_field 'birthdate.day' => ( type => 'Text', );
@@ -26,6 +26,12 @@ has_field 'employer' => ( type => 'Compound' );
 has_field 'employer.name';
 has_field 'employer.category';
 has_field 'employer.country';
+
+has_field 'addresses' => ( type => 'Repeatable' );
+has_field 'addresses.address_id' => ( type => 'PrimaryKey' );
+has_field 'addresses.street';
+has_field 'addresses.city';
+has_field 'addresses.country' => ( type => 'Select' );
 
 sub options_opt_in
 {

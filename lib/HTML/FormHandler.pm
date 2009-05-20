@@ -524,6 +524,7 @@ will return the form name + "." + field full_name
  
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
+   enctype - Request enctype
    submit - Store form submit field info. No default value.
    uuid - generates a string containing an HTML field with UUID
 
@@ -556,6 +557,7 @@ has 'num_errors' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
 has 'active_column' => ( isa => 'Str', is => 'rw' );
 has 'http_method' => ( isa => 'Str', is => 'rw', default => 'post' );
+has 'enctype' => (is => 'rw', isa => 'Str', default => 'application/x-www-form-urlencoded');
 has 'action' => ( is => 'rw' );
 has 'submit' => ( is => 'rw' );
 has 'params' => (
@@ -703,7 +705,9 @@ sub fif
       next unless $field->has_fif && defined $fif;
       if ( $field->DOES('HTML::FormHandler::Fields') )
       {
-         %params = ( %params, %{ $self->fif( $prefix . $field->name . '.', $field ) } );
+         my $next_params = $self->fif( $prefix . $field->name . '.', $field );
+         next unless $next_params;
+         %params = ( %params, %{$next_params} );
       }
       else
       {
