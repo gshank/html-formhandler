@@ -18,7 +18,9 @@ my %FeatureMap = (
 
 # various lexical flags
 my ( @Missing, @Existing,  %DisabledTests, $UnderCPAN,     $HasCPANPLUS );
-my ( $Config,  $CheckOnly, $SkipInstall,   $AcceptDefault, $TestOnly );
+my (
+    $Config, $CheckOnly, $SkipInstall, $AcceptDefault, $TestOnly, $AllDeps
+);
 my ( $PostambleActions, $PostambleUsed );
 
 # See if it's a testing or non-interactive session
@@ -72,6 +74,9 @@ sub _init {
         }
         elsif ( $arg =~ /^--test(?:only)?$/ ) {
             $TestOnly = 1;
+        }
+        elsif ( $arg =~ /^--all(?:deps)?$/ ) {
+            $AllDeps = 1;
         }
     }
 }
@@ -170,15 +175,24 @@ sub import {
             }
 
             # XXX: check for conflicts and uninstalls(!) them.
-            if (
-                defined( my $cur = _version_check( _load($mod), $arg ||= 0 ) ) )
+            my $cur = _load($mod);
+            if (_version_cmp ($cur, $arg) >= 0)
             {
                 print "loaded. ($cur" . ( $arg ? " >= $arg" : '' ) . ")\n";
                 push @Existing, $mod => $arg;
                 $DisabledTests{$_} = 1 for map { glob($_) } @skiptests;
             }
             else {
-                print "missing." . ( $arg ? " (would need $arg)" : '' ) . "\n";
+                if (not defined $cur)   # indeed missing
+                {
+                    print "missing." . ( $arg ? " (would need $arg)" : '' ) . "\n";
+                }
+                else
+                {
+                    # no need to check $arg as _version_cmp ($cur, undef) would satisfy >= above
+                    print "too old. ($cur < $arg)\n";
+                }
+
                 push @required, $mod => $arg;
             }
         }
@@ -192,6 +206,7 @@ sub import {
             and (
                 $CheckOnly
                 or ($mandatory and $UnderCPAN)
+                or $AllDeps
                 or _prompt(
                     qq{==> Auto-install the }
                       . ( @required / 2 )
@@ -254,15 +269,19 @@ END_MESSAGE
 sub _check_lock {
     return unless @Missing or @_;
 
+    my $cpan_env = $ENV{PERL5_CPAN_IS_RUNNING};
+
     if ($ENV{PERL5_CPANPLUS_IS_RUNNING}) {
-        my $thing = $ENV{PERL5_CPAN_IS_RUNNING} ? 'CPAN' : 'CPANPLUS';
-        return _running_under($thing);
+        return _running_under($cpan_env ? 'CPAN' : 'CPANPLUS');
     }
 
     require CPAN;
 
-    if ($CPAN::VERSION > '1.89' && $ENV{PERL5_CPAN_IS_RUNNING}) {
-        return _running_under('CPAN');
+    if ($CPAN::VERSION > '1.89') {
+        if ($cpan_env) {
+            return _running_under('CPAN');
+        }
+        return; # CPAN.pm new enough, don't need to check further
     }
 
     # last ditch attempt, this -will- configure CPAN, very sorry
@@ -303,7 +322,7 @@ sub install {
     while ( my ( $pkg, $ver ) = splice( @_, 0, 2 ) ) {
 
         # grep out those already installed
-        if ( defined( _version_check( _load($pkg), $ver ) ) ) {
+        if ( _version_cmp( _load($pkg), $ver ) >= 0 ) {
             push @installed, $pkg;
         }
         else {
@@ -342,7 +361,7 @@ sub install {
 
     # see if we have successfully installed them
     while ( my ( $pkg, $ver ) = splice( @modules, 0, 2 ) ) {
-        if ( defined( _version_check( _load($pkg), $ver ) ) ) {
+        if ( _version_cmp( _load($pkg), $ver ) >= 0 ) {
             push @installed, $pkg;
         }
         elsif ( $args{do_once} and open( FAILED, '>> .#autoinstall.failed' ) ) {
@@ -397,7 +416,7 @@ sub _install_cpanplus {
         my $success;
         my $obj = $modtree->{$pkg};
 
-        if ( $obj and defined( _version_check( $obj->{version}, $ver ) ) ) {
+        if ( $obj and _version_cmp( $obj->{version}, $ver ) >= 0 ) {
             my $pathname = $pkg;
             $pathname =~ s/::/\\W/;
 
@@ -490,7 +509,7 @@ sub _install_cpan {
         my $obj     = CPAN::Shell->expand( Module => $pkg );
         my $success = 0;
 
-        if ( $obj and defined( _version_check( $obj->cpan_version, $ver ) ) ) {
+        if ( $obj and _version_cmp( $obj->cpan_version, $ver ) >= 0 ) {
             my $pathname = $pkg;
             $pathname =~ s/::/\\W/;
 
@@ -554,7 +573,7 @@ sub _update_to {
     my $ver   = shift;
 
     return
-      if defined( _version_check( _load($class), $ver ) );  # no need to upgrade
+      if _version_cmp( _load($class), $ver ) >= 0;  # no need to upgrade
 
     if (
         _prompt( "==> A newer version of $class ($ver) is required. Install?",
@@ -651,7 +670,7 @@ sub _load {
 
 # Load CPAN.pm and it's configuration
 sub _load_cpan {
-    return if $CPAN::VERSION and not @_;
+    return if $CPAN::VERSION and $CPAN::Config and not @_;
     require CPAN;
     if ( $CPAN::HandleConfig::VERSION ) {
         # Newer versions of CPAN have a HandleConfig module
@@ -663,9 +682,11 @@ sub _load_cpan {
 }
 
 # compare two versions, either use Sort::Versions or plain comparison
-sub _version_check {
+# return values same as <=>
+sub _version_cmp {
     my ( $cur, $min ) = @_;
-    return unless defined $cur;
+    return -1 unless defined $cur;  # if 0 keep comparing
+    return 1 unless $min;
 
     $cur =~ s/\s+$//;
 
@@ -676,16 +697,13 @@ sub _version_check {
             ) {
 
             # use version.pm if it is installed.
-            return (
-                ( version->new($cur) >= version->new($min) ) ? $cur : undef );
+            return version->new($cur) <=> version->new($min);
         }
         elsif ( $Sort::Versions::VERSION or defined( _load('Sort::Versions') ) )
         {
 
             # use Sort::Versions as the sorting algorithm for a.b.c versions
-            return ( ( Sort::Versions::versioncmp( $cur, $min ) != -1 )
-                ? $cur
-                : undef );
+            return Sort::Versions::versioncmp( $cur, $min );
         }
 
         warn "Cannot reliably compare non-decimal formatted versions.\n"
@@ -694,7 +712,7 @@ sub _version_check {
 
     # plain comparison
     local $^W = 0;    # shuts off 'not numeric' bugs
-    return ( $cur >= $min ? $cur : undef );
+    return $cur <=> $min;
 }
 
 # nothing; this usage is deprecated.
@@ -784,4 +802,4 @@ END_MAKE
 
 __END__
 
-#line 1022
+#line 1056

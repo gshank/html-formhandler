@@ -6,7 +6,7 @@ use Module::Install::Base;
 
 use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.86';
+	$VERSION = '0.89';
 	@ISA     = qw{Module::Install::Base};
 	$ISCORE  = 1;
 }
@@ -440,21 +440,21 @@ sub license_from {
 	/ixms ) {
 		my $license_text = $1;
 		my @phrases      = (
-			'under the same (?:terms|license) as perl itself' => 'perl',        1,
-			'GNU general public license'                      => 'gpl',         1,
-			'GNU public license'                              => 'gpl',         1,
-			'GNU lesser general public license'               => 'lgpl',        1,
-			'GNU lesser public license'                       => 'lgpl',        1,
-			'GNU library general public license'              => 'lgpl',        1,
-			'GNU library public license'                      => 'lgpl',        1,
-			'BSD license'                                     => 'bsd',         1,
-			'Artistic license'                                => 'artistic',    1,
-			'GPL'                                             => 'gpl',         1,
-			'LGPL'                                            => 'lgpl',        1,
-			'BSD'                                             => 'bsd',         1,
-			'Artistic'                                        => 'artistic',    1,
-			'MIT'                                             => 'mit',         1,
-			'proprietary'                                     => 'proprietary', 0,
+			'under the same (?:terms|license) as (?:perl|the perl programming language) itself' => 'perl', 1,
+			'GNU general public license'         => 'gpl',         1,
+			'GNU public license'                 => 'gpl',         1,
+			'GNU lesser general public license'  => 'lgpl',        1,
+			'GNU lesser public license'          => 'lgpl',        1,
+			'GNU library general public license' => 'lgpl',        1,
+			'GNU library public license'         => 'lgpl',        1,
+			'BSD license'                        => 'bsd',         1,
+			'Artistic license'                   => 'artistic',    1,
+			'GPL'                                => 'gpl',         1,
+			'LGPL'                               => 'lgpl',        1,
+			'BSD'                                => 'bsd',         1,
+			'Artistic'                           => 'artistic',    1,
+			'MIT'                                => 'mit',         1,
+			'proprietary'                        => 'proprietary', 0,
 		);
 		while ( my ($pattern, $license, $osi) = splice(@phrases, 0, 3) ) {
 			$pattern =~ s{\s+}{\\s+}g;
@@ -511,7 +511,7 @@ sub requires_from {
 # Also, convert double-part versions (eg, 5.8)
 sub _perl_version {
 	my $v = $_[-1];
-	$v =~ s/^([1-9])\.([1-9]\d?\d?)$/sprintf("%d.%03d",$1,$2)/e;	
+	$v =~ s/^([1-9])\.([1-9]\d?\d?)$/sprintf("%d.%03d",$1,$2)/e;
 	$v =~ s/^([1-9])\.([1-9]\d?\d?)\.(0|[1-9]\d?\d?)$/sprintf("%d.%03d%03d",$1,$2,$3 || 0)/e;
 	$v =~ s/(\.\d\d\d)000$/$1/;
 	$v =~ s/_.+$//;
@@ -534,7 +534,7 @@ sub WriteMyMeta {
 
 sub write_mymeta {
 	my $self = shift;
-	
+
 	# If there's no existing META.yml there is nothing we can do
 	return unless -f 'META.yml';
 
@@ -574,7 +574,7 @@ sub write_mymeta {
 
 	# Save as the MYMETA.yml file
 	print "Writing MYMETA.yml\n";
-	YAML::Tiny::DumpFile('MYMETA.yml', $meta);	
+	YAML::Tiny::DumpFile('MYMETA.yml', $meta);
 }
 
 1;

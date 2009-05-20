@@ -1,7 +1,6 @@
 ---
 abstract: 'form handler written in Moose '
-author:
-  - 'gshank: Gerda Shank <gshank@cpan.org>'
+author: ~
 build_requires:
   DateTime::Format::MySQL: 0
   DateTime::Format::W3CDTF: 0
@@ -10,7 +9,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.86'
+generated_by: 'Module::Install version 0.89'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -39,6 +38,7 @@ requires:
   MooseX::Types::Common: 0
   Scalar::Util: 0
   UNIVERSAL::require: 0
+  aliased: 0
   perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/

@@ -1,6 +1,6 @@
+use inc::Module::Install 0.89;
 use strict;
 use warnings;
-use inc::Module::Install;
 
 name 'HTML-FormHandler';
 all_from 'lib/HTML/FormHandler.pm';
