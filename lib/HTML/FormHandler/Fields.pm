@@ -60,13 +60,18 @@ has 'fields' => (
    auto_deref => 1,
    provides   => {
       clear => 'clear_fields',
-      push  => 'add_field',
+      push  => 'push_field',
       pop   => 'remove_last_field',
       count => 'num_fields',
       empty => 'has_fields',
       set   => 'set_field_at',
    }
 );
+
+sub add_field
+{
+   shift->push_field(@_);
+}
 
 has 'field_name_space' => (
    isa     => 'Str|Undef',

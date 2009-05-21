@@ -198,7 +198,7 @@ Returns true or false
 
 =cut
 
-sub _validate_field_hook
+sub _inner_validate_field
 {
    my ($self) = @_;
 

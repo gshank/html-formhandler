@@ -628,11 +628,18 @@ sub build_language_handle
    return $lh;
 }
 
+# deprecated
 sub update
 {
    shift->process(@_);
 }
 
+# deprecated
+sub validate
+{
+   shift->process(@_);
+}
+  
 sub process
 {
    my ( $self, @args ) = @_;

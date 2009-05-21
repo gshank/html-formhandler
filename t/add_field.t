@@ -32,7 +32,7 @@ ok( $form, 'get form' );
 
 my $field = HTML::FormHandler::Field::Text->new( name => 'Testfield' );
 
-$form->add_field($field);
+$form->push_field($field);
 
 ok( $form->field('Testfield'), 'form now has test field' );
 

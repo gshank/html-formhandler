@@ -839,7 +839,7 @@ sub validate_field
       $field->value( $field->input );
    }
 
-   $field->_validate_field_hook();
+   $field->_inner_validate_field;
    # do building of node 
    $field->build_node;
 
@@ -852,7 +852,7 @@ sub validate_field
 
    return !$field->has_errors;
 }
-sub _validate_field_hook { }
+sub _inner_validate_field { }
 sub build_node { }
 
 sub _apply_actions
