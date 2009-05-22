@@ -32,7 +32,7 @@ my $good = {
     'publisher' => 'EreWhon Publishing',
 };
 
-ok( $form->update( params => $good ), 'Good data' );
+ok( $form->process( params => $good ), 'Good data' );
 
 my $book = $form->item;
 END { $book->delete };
@@ -102,6 +102,6 @@ $form->set_param( format => 2 );
 my $validated = $form->validate_form;
 ok( $validated, 'now form validates' );
 
-$form->update;
+$form->process;
 is( $book->publisher, 'EreWhon Publishing', 'publisher has not changed');
 

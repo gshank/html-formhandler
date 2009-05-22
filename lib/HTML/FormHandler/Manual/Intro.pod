@@ -496,6 +496,11 @@ Repeatable fields are used for arrays of compound fields.
 The arrays will be built from arrays passed in the params, or from
 related ('has_many') rows in the database.
 
+It is also used for arrays of single fields using the 'contains' keyword:
+
+  has_field 'tags' => ( type => 'Repeatable' );
+  has_field 'tags.contains' => ( type => '+Tag' );
+
 See L<HTML::FormHandler::Field::Repeatable> for more information.
 
 =head2 Filters, transformations, and constraints

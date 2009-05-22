@@ -11,12 +11,20 @@ HTML::FormHandler::Field::Repeatable - Repeatable (array) field
 
 =head1 SYNOPSIS
 
-In a form, for an array of hashrefs, equivalent to a 'has_many' database relationship:
+In a form, for an array of hashrefs, equivalent to a 'has_many' database 
+relationship. 
 
   has_field 'addresses' => ( type => 'Repeatable' );
+  has_field 'address_id' => ( type => 'PrimaryKey' );
   has_field 'addresses.street';
   has_field 'addresses.city';
   has_field 'addresses.state';
+
+For a database field include a PrimaryKey hidden field, or set 'auto_id' to
+have an 'id' field automatically created.
+
+In a form, for an array of single fields (not directly equivalent to a
+database relationship):
 
   has_field 'tags' => ( type => 'List' );
   has_field 'tags.contains' => ( type => 'Text',
@@ -24,20 +32,32 @@ In a form, for an array of hashrefs, equivalent to a 'has_many' database relatio
                     message => 'Not a valid tag' } ]
   );
 
+or single fields which are compound fields:
+
+  has_field 'addresses' => ( type => 'Repeatable' );
+  has_field 'addresses.contains' => ( type => '+MyAddress' );
+
 =head1 DESCRIPTION
 
-This field class represent  a simple array. 
+This class represents an array. It can either be an array of hashrefs 
+(compound fields) or an array of single fields.
 
-It will build an array of elements. The type of the element is declared
-in a field with a subtype of 'contains'. 
+The 'contains' keyword is used for elements that do not have names
+because they are not hash elements.  
+
+This field node will build arrays of fields from the the parameters or an
+initial object, or empty fields for an empty form.
+
 The name of the element fields will be an array index,
 starting with 0. Therefore the first array element can be accessed with:
 
    $form->field('tags')->field('0')
+   $form->field('addresses')->field('0)->field('city')
 
 or using the shortcut form:
 
    $form->field('tags.0')
+   $form->field('addresses.0.city')
 
 
 =head1 ATTRIBUTES
@@ -55,6 +75,10 @@ This attribute (default 1) indicates how many empty fields to present
 in an empty form which hasn't been filled from parameters or database
 rows. 
 
+=item auto_id
+
+Will create an 'id' field automatically
+
 =back
 
 =cut
@@ -65,6 +89,7 @@ has 'contains' => ( isa => 'HTML::FormHandler::Field', is => 'rw',
 has 'num_when_empty' => ( isa => 'Int', is => 'rw', default => 1 );
 has 'num_extra' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'index' => ( isa => 'Int', is => 'rw', default => 0 );
+has 'auto_id' => ( isa => 'Bool', is => 'rw', default => 0 );
 
 sub clear_other
 {
@@ -91,10 +116,14 @@ sub create_element
    my $instance = Instance->new( name => 'contains', parent => $self ); 
    # copy the fields from this field into the instance
    $instance->add_field( $self->fields );
-   unless( grep $_->can('is_primary_key') && $_->is_primary_key, @{$instance->fields})
+   if( $self->auto_id )
    {
-      $instance->add_field( 
-         HTML::FormHandler::Field->new(type => 'PrimaryKey', name => 'id' ));
+      unless( grep $_->can('is_primary_key') && $_->is_primary_key, 
+                                                  @{$instance->fields})
+      {
+         $instance->add_field( 
+            HTML::FormHandler::Field->new(type => 'PrimaryKey', name => 'id' ));
+      }
    }
    $_->parent($instance) for $instance->fields;
    return $instance;

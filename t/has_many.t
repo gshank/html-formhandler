@@ -11,7 +11,7 @@ use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
    extends 'HTML::FormHandler';
 
    has_field 'my_test';
-   has_field 'addresses' => ( type => 'Repeatable' );
+   has_field 'addresses' => ( type => 'Repeatable', auto_id => 1 );
    has_field 'addresses.street';
    has_field 'addresses.city';
    has_field 'addresses.country';

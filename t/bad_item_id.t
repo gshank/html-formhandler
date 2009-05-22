@@ -68,7 +68,7 @@ $id = $book->id;
 $form = My::Form2->new( $book );
 ok( $form, 'get form for Form2' );
 
-$form->update( params => { title => 'How to Test, Volume 2' } );
+$form->process( params => { title => 'How to Test, Volume 2' } );
 
 is( $book->title, 'How to Test, Volume 2', 'get new title');
 

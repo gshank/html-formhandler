@@ -2,14 +2,14 @@ use strict;
 use warnings;
 use Test::More tests => 6;
 
-use_ok('HTML::FormHandler::Field::List');
+use_ok('HTML::FormHandler::Field::Repeatable');
 
 {
    package List::Form;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   has_field 'tags' => ( type => 'List' );
+   has_field 'tags' => ( type => 'Repeatable' );
    has_field 'tags.contains';
 
 }
