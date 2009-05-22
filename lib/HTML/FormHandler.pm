@@ -880,7 +880,8 @@ sub _init_from_object
       next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
       #      $value = $field->_apply_deflations( $value );
-      if ( $field->isa('HTML::FormHandler::Field::Repeatable') )
+      if ( $field->isa('HTML::FormHandler::Field::Repeatable') ||
+           $field->isa('HTML::FormHandler::Field::List' ) )
       {
          $field->_init_from_object( $value );
       }
