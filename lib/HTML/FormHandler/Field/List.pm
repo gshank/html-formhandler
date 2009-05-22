@@ -3,14 +3,18 @@ package HTML::FormHandler::Field::List;
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
 
+use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
+
 =head1 NAME
 
 HTML::FormHandler::Field::List - List field 
 
 =head1 SYNOPSIS
 
+In a form:
+
   has_field 'tags' => ( type => 'List' );
-  has_field 'tags.element' => ( type => 'Text',
+  has_field 'tags.contains' => ( type => 'Text',
        apply => [ { check => ['perl', 'programming', 'linux', 'internet'],
                     message => 'Not a valid tag' } ]
   );
@@ -20,7 +24,7 @@ HTML::FormHandler::Field::List - List field
 This field class represent  a simple array. 
 
 It will build an array of elements. The type of the element is declared
-in a field with a subtype of 'element'. 
+in a field with a subtype of 'contains'. 
 The name of the element fields will be an array index,
 starting with 0. Therefore the first array element can be accessed with:
 
@@ -50,8 +54,8 @@ rows.
 
 =cut
 
-has 'element' => ( isa => 'HTML::FormHandler::Field', is => 'rw',
-     predicate => 'has_element');
+has 'contains' => ( isa => 'HTML::FormHandler::Field', is => 'rw',
+     predicate => 'has_contains');
 
 has 'num_when_empty' => ( isa => 'Int', is => 'rw', default => 1 );
 has 'num_extra' => ( isa => 'Int', is => 'rw', default => 0 );
@@ -60,12 +64,66 @@ has 'index' => ( isa => 'Int', is => 'rw', default => 0 );
 sub clear_other
 {
    my $self = shift;
+
    # must clear out instances built last time
-   my $element = $self->field('element');
-   $self->element($element) if $element;
+   unless ( $self->has_contains )
+   {
+      if( $self->num_fields == 1 && $self->field('contains') )
+      {
+         $self->contains( $self->field('contains') );
+      }
+      else
+      {
+         $self->contains( $self->create_element );
+      } 
+   }
    $self->clear_fields;
-   # move element back into place 
-   $self->fields([$self->element]) if $self->has_element;
+}
+
+sub create_element
+{
+   my ( $self ) = @_;
+   my $instance = Instance->new( name => 'contains', parent => $self ); 
+   # copy the fields from this field into the instance
+   $instance->add_field( $self->fields );
+   unless( grep $_->can('is_primary_key') && $_->is_primary_key, @{$instance->fields})
+   {
+      $instance->add_field( 
+         HTML::FormHandler::Field->new(type => 'PrimaryKey', name => 'id' ));
+   }
+   $_->parent($instance) for $instance->fields;
+   return $instance;
+}
+
+sub clone_element
+{
+   my ( $self, $index ) = @_;
+
+   my $field = $self->contains->clone;
+   $field->name($index);
+   $field->parent($self);
+   if( $field->has_fields )
+   {
+      $self->clone_fields($field, [$field->fields]);
+   }
+   return $field;
+}
+
+sub clone_fields
+{
+   my ( $self, $parent, $fields ) = @_;
+   my @field_array;
+   foreach my $field ( @{$fields} )
+   {
+      my $new_field = $field->clone;
+      if( $new_field->has_fields )
+      {
+         $self->clone_fields( $new_field, [$new_field->fields] );
+      }
+      $new_field->parent($parent);
+      push @field_array, $new_field;
+   }
+   $parent->fields(\@field_array);
 }
 
 
@@ -86,9 +144,7 @@ sub build_node
       my $index = 0;
       foreach my $element ( @{$input} )
       {
-         my $field = $self->element->clone;
-         $field->name($index);
-         $field->parent($self);
+         my $field = $self->clone_element($index);
          $field->input($element);
          push @fields, $field;
          $index++;
@@ -118,18 +174,40 @@ sub _init_from_object
    # Create field instances and fill with values
    my $index = 0;
    my @fields;
+   my @new_values;
    foreach my $element ( @{$values} )
    {
-      my $field = $self->element->clone;
-      $field->name($index);
-      $field->parent($self);
-      $field->value($element);
+      my $field = $self->clone_element($index);
+      if( $field->has_fields )
+      {
+         $self->form->_init_from_object($field, $element);
+         my $ele_value = $self->make_values([$field->fields]);
+         $field->value($ele_value);
+         push @new_values, $ele_value;
+      }
+      else
+      {
+         $field->value($element);
+      }
       push @fields, $field;
       $index++;
    } 
    $self->index($index);
    $self->fields(\@fields);
-   $self->value($values);
+   $self->value(\@new_values) if scalar @new_values;
+   $self->value($values) unless scalar @new_values;
+}
+
+sub make_values
+{
+   my ( $self, $fields ) = @_;
+
+   my $values;
+   foreach my $field ( @{$fields} )
+   {
+      $values->{$field->accessor} = $field->value;
+   }
+   return $values;
 }
 
 # this is called when there are no params and no initial object
@@ -145,8 +223,7 @@ sub _init
    my @fields;
    while( $count > 0 )
    {
-      my $field = $self->element->clone;
-      $field->name($index);
+      my $field = $self->clone_element($index);
       push @fields, $field;
       $index++;
       $count--;

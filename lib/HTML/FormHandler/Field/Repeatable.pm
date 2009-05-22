@@ -2,37 +2,43 @@ package HTML::FormHandler::Field::Repeatable;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
+
 use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
 
 =head1 NAME
 
-HTML::FormHandler::Field::Repeatable - Multiple row field
+HTML::FormHandler::Field::Repeatable - Repeatable (array) field 
 
 =head1 SYNOPSIS
+
+In a form, for an array of hashrefs, equivalent to a 'has_many' database relationship:
 
   has_field 'addresses' => ( type => 'Repeatable' );
   has_field 'addresses.street';
   has_field 'addresses.city';
   has_field 'addresses.state';
 
+  has_field 'tags' => ( type => 'List' );
+  has_field 'tags.contains' => ( type => 'Text',
+       apply => [ { check => ['perl', 'programming', 'linux', 'internet'],
+                    message => 'Not a valid tag' } ]
+  );
+
 =head1 DESCRIPTION
 
-This field class represent arrays of hashrefs. It allows you to connect
-to 'has_many' relationships in the database. 
+This field class represent  a simple array. 
 
-It will build intermediate container fields 
-(HTML::FormHandler::Repeatable::Instance) to hold each instance of
-the array. The name of these instance fields will be an array index,
+It will build an array of elements. The type of the element is declared
+in a field with a subtype of 'contains'. 
+The name of the element fields will be an array index,
 starting with 0. Therefore the first array element can be accessed with:
 
-   $form->field('addresses')->field('0')->field('street')
+   $form->field('tags')->field('0')
 
 or using the shortcut form:
 
-   $form->field('addresses.0.street')
+   $form->field('tags.0')
 
-The fields as defined in the form (which are used to clone array
-elements) are stored in 'declared_fields'.
 
 =head1 ATTRIBUTES
 
@@ -53,32 +59,8 @@ rows.
 
 =cut
 
-has 'instances' => (
-   metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef',
-   is         => 'rw',
-   default    => sub { [] },
-   auto_deref => 1,
-   provides   => {
-      clear => 'clear_instances',
-      push  => 'add_instance',
-      count => 'num_instances',
-      empty => 'has_instances',
-      set   => 'set_instance_at',
-   }
-);
-
-has 'declared_fields' => (
-   metaclass => 'Collection::Array',
-   isa       => 'ArrayRef',
-   is        => 'rw',
-   default   => sub { [] },
-   auto_deref => 1,
-   provides   => {
-     clear => 'clear_declared_fields',
-     empty => 'has_declared_fields',
-   },
-);
+has 'contains' => ( isa => 'HTML::FormHandler::Field', is => 'rw',
+     predicate => 'has_contains');
 
 has 'num_when_empty' => ( isa => 'Int', is => 'rw', default => 1 );
 has 'num_extra' => ( isa => 'Int', is => 'rw', default => 0 );
@@ -87,11 +69,66 @@ has 'index' => ( isa => 'Int', is => 'rw', default => 0 );
 sub clear_other
 {
    my $self = shift;
+
    # must clear out instances built last time
-   $self->clear_instances;
-   # move declared fields back into place so that Repeatable will
-   # be called to build instances again
-   $self->fields([$self->declared_fields]) if $self->has_declared_fields;
+   unless ( $self->has_contains )
+   {
+      if( $self->num_fields == 1 && $self->field('contains') )
+      {
+         $self->contains( $self->field('contains') );
+      }
+      else
+      {
+         $self->contains( $self->create_element );
+      } 
+   }
+   $self->clear_fields;
+}
+
+sub create_element
+{
+   my ( $self ) = @_;
+   my $instance = Instance->new( name => 'contains', parent => $self ); 
+   # copy the fields from this field into the instance
+   $instance->add_field( $self->fields );
+   unless( grep $_->can('is_primary_key') && $_->is_primary_key, @{$instance->fields})
+   {
+      $instance->add_field( 
+         HTML::FormHandler::Field->new(type => 'PrimaryKey', name => 'id' ));
+   }
+   $_->parent($instance) for $instance->fields;
+   return $instance;
+}
+
+sub clone_element
+{
+   my ( $self, $index ) = @_;
+
+   my $field = $self->contains->clone;
+   $field->name($index);
+   $field->parent($self);
+   if( $field->has_fields )
+   {
+      $self->clone_fields($field, [$field->fields]);
+   }
+   return $field;
+}
+
+sub clone_fields
+{
+   my ( $self, $parent, $fields ) = @_;
+   my @field_array;
+   foreach my $field ( @{$fields} )
+   {
+      my $new_field = $field->clone;
+      if( $new_field->has_fields )
+      {
+         $self->clone_fields( $new_field, [$new_field->fields] );
+      }
+      $new_field->parent($parent);
+      push @field_array, $new_field;
+   }
+   $parent->fields(\@field_array);
 }
 
 
@@ -105,19 +142,20 @@ sub build_node
    my $input = $self->input;
    $self->clear_other;
    # if Repeatable has array input, need to build instances
+   my @fields;
    if ( ref $input eq 'ARRAY' )
    {
      # build appropriate instance array
       my $index = 0;
-      foreach my $row ( @{$input} )
+      foreach my $element ( @{$input} )
       {
-         my $instance = $self->create_instance( $index );
-         $instance->input($row);
+         my $field = $self->clone_element($index);
+         $field->input($element);
+         push @fields, $field;
          $index++;
       } 
       $self->index($index);
-      $self->declared_fields([$self->fields]);
-      $self->fields([$self->instances]);
+      $self->fields(\@fields);
    }
    return unless $self->has_fields;
    # call fields_validate to loop through array of fields created
@@ -140,46 +178,29 @@ sub _init_from_object
    $self->clear_other;
    # Create field instances and fill with values
    my $index = 0;
+   my @fields;
    my @new_values;
-   foreach my $row ( @{$values} )
+   foreach my $element ( @{$values} )
    {
-      my $instance = $self->create_instance( $index );
-      # load values from row into instance
-      $self->form->_init_from_object($instance, $row);
-      # create value for instance
-      my $inst_value = $self->make_values([$instance->fields]);
-      $instance->value($inst_value);
-      # save values for Repeatable value
-      push @new_values, $inst_value;
+      my $field = $self->clone_element($index);
+      if( $field->has_fields )
+      {
+         $self->form->_init_from_object($field, $element);
+         my $ele_value = $self->make_values([$field->fields]);
+         $field->value($ele_value);
+         push @new_values, $ele_value;
+      }
+      else
+      {
+         $field->value($element);
+      }
+      push @fields, $field;
       $index++;
    } 
    $self->index($index);
-   $self->declared_fields([$self->fields]);
-   $self->fields([$self->instances]);
-   $self->value(\@new_values);
-}
-
-# this is called when there are no params and no initial object
-# because we need to build empty instances, and load select lists
-sub _init
-{
-   my $self = shift;
-
-   $self->clear_other;
-   my $count = $self->num_when_empty;
-   my $index = 0;
-   # build empty instance
-   while( $count > 0 )
-   {
-      my $instance = $self->create_instance( $index );
-      $index++;
-      $count--;
-   } 
-   $self->index($index);
-   $self->declared_fields([$self->fields]);
-   $self->fields([$self->instances]);
-   # initialize the created instances
-   $_->_init for $self->fields;
+   $self->fields(\@fields);
+   $self->value(\@new_values) if scalar @new_values;
+   $self->value($values) unless scalar @new_values;
 }
 
 sub make_values
@@ -194,33 +215,26 @@ sub make_values
    return $values;
 }
 
-sub create_instance
-{
-   my ( $self , $index ) = @_;
-   my $instance = Instance->new( name => "$index", parent => $self ); 
-   # copy the fields from this field into the instance
-   $instance->add_field( $self->clone_fields );
-   unless( grep $_->can('is_primary_key') && $_->is_primary_key, @{$instance->fields})
-   {
-      $instance->add_field( 
-         HTML::FormHandler::Field->new(type => 'Hidden', name => 'id' ));
-   }
-   $self->add_instance($instance);
-   $_->parent($instance) for $instance->fields;
-   return $instance;
-}
-
-sub clone_fields
+# this is called when there are no params and no initial object
+# because we need to build empty instances, and load select lists
+sub _init
 {
    my $self = shift;
-   my @field_array;
 
-   foreach my $field ( $self->fields )
+   $self->clear_other;
+   my $count = $self->num_when_empty;
+   my $index = 0;
+   # build empty instance
+   my @fields;
+   while( $count > 0 )
    {
-      my $new_field = $field->clone;
-      push @field_array, $new_field;
-   }
-   return @field_array;
+      my $field = $self->clone_element($index);
+      push @fields, $field;
+      $index++;
+      $count--;
+   } 
+   $self->index($index);
+   $self->fields(\@fields);
 }
 
 

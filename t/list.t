@@ -10,7 +10,7 @@ use_ok('HTML::FormHandler::Field::List');
    extends 'HTML::FormHandler';
 
    has_field 'tags' => ( type => 'List' );
-   has_field 'tags.element';
+   has_field 'tags.contains';
 
 }
 
