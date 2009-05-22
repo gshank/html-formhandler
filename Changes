@@ -1,8 +1,9 @@
 Revision history for HTML::FormHandler 
 0.23
-    Refactor us use only 'process'. Deprecate 'validate' and 'update'
+    Refactor HTH to use only 'process'. Deprecate 'validate' and 'update'
     Add field_list array, deprecate other usages. 
     Clean up documentation
+    Add Repeatable field to support has_many relationships
 
 0.22 Fri May 1, 2009, 17:00
     Removed development only test from distribution

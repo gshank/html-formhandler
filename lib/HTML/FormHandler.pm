@@ -631,12 +631,14 @@ sub build_language_handle
 # deprecated
 sub update
 {
+   warn "HFH update method is deprecated. Please switch to using 'process'.";
    shift->process(@_);
 }
 
 # deprecated
 sub validate
 {
+   warn "HFH validate method is deprecated. Please switch to using 'process'.";
    shift->process(@_);
 }
   
