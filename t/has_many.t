@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 13;
+use Test::More tests => 15;
 
 use_ok( 'HTML::FormHandler::Field::Repeatable' );
 use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
@@ -89,3 +89,21 @@ $init_object->{addresses}->[0]->{city} = 'Primary City';
 $init_object->{addresses}->[2]->{country} = 'Grand Fenwick';
 is_deeply( $form->values, $init_object, 'still get right values');
 
+TODO: {
+   local $TODO = "Params doesn't handle missing list element";
+   $fif = {
+      'addresses.0.street' => 'First Street',
+      'addresses.0.city' => 'Prime City',
+      'addresses.0.country' => 'Utopia',
+      'addresses.0.id' => '0',
+      'addresses.2.street' => 'Third Street',
+      'addresses.2.city' => 'Tertiary City',
+      'addresses.2.country' => 'Atlantis',
+      'addresses.2.id' => '2',
+   };
+
+   $form->process($fif);
+
+   ok( $form->validated, 'form validated' );
+   is( $form->field('addresses')->num_fields, 2, 'right number of fields');
+}
