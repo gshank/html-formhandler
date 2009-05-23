@@ -15,7 +15,7 @@ use Scalar::Util qw(blessed);
 
 use 5.008;
 
-our $VERSION = '0.23';
+our $VERSION = '0.24';
 
 =head1 NAME
 
@@ -273,20 +273,9 @@ The parameters are stored in a 'params' attribute.
 Also: set_param, get_param, clear_params, delete_param, 
 has_params from Moose 'Collection::Hash' metaclass. 
 
-The 'set_param' method could be used to add additional field
-input that doesn't come from the HTML form, similar to a hidden field:
+You can add an additional param when setting them:
 
-   my $form = MyApp::Form->new( item => $item, params => $params );
-   $form->set_param('comment', 'updated by edit form');
-   return unless $form->process;
-
-Params are cleared at the beginning of 'process' if the form has been 
-processed before. For that case you can clear the form yourself: 
-   
-   $self->form->clear;
-   $self->form->params($params);
-   $self->form->set_param('comment', 'updated by edit form');
-   return unless $self->form->process($item => $item); 
+   $form->process( params => { %{$c->req->params}, new_param  => 'something' } );
 
 =head2 Getting data out
 
@@ -305,12 +294,16 @@ Or you can use the 'fif' method on individual fields:
 =head3 values
 
 Returns a hashref of all field values. Useful for non-database forms.
-The 'fif' and 'values' hashrefs will be the same unless there's a
+The 'fif' and 'values' hashrefs might be the same for simple forms unless there's a
 difference in format between the HTML field values (in fif) and the saved value
 or unless the field 'name' and 'accessor' are different. 'fif' returns
 a hash with the field names for the keys and the field's 'fif' for the
 values; 'values' returns a hash with the field accessors for the keys, and the
 field's 'value' for the the values. 
+
+Forms containing arrays to be processed with L<HTML::FormHandler::Field::Repeatable>
+will have parameters with dots and numbers, like 'addresses.0.city', while the
+values hash will transform the fields with numbers to arrays.
 
 =head2 Accessing and setting up fields
 
@@ -363,13 +356,10 @@ This is the method that is usually called to access a field:
     my $title = $form->field('title')->value;
     [% f = form.field('title') %]
 
+    my $city = $form->field('addresses.0.city')->value;
+
 Pass a second true value to die on errors.
  
-=head3 value($name)
-
-Convenience function to return the value of the field. Returns
-undef if field not found. The equivalent of C<< $form->field('name')->value >>
-
 =head2 Constraints and validation
 
 Most validation in performed on a per-field basis, and there are a number
@@ -384,9 +374,9 @@ no access to other field information.
 This is probably the best place to 
 put constraints and transforms if all that is needed is the current value.
 The L<HTML::FormHandler::Field::Compound> fields receive as value 
-a hash containing values of their child fields - this maybe used for
+a hash containing values of their child fields - this may be used for
 easy creation of objects (like DateTime).
-See the L<HTML::FormHandler::Field/apply> for more documentation.
+See L<HTML::FormHandler::Field/apply> for more documentation.
 
    has_field 'test' => ( apply => [ 'MyConstraint', 
                          { check => sub {... },
@@ -414,6 +404,7 @@ this method can be set with 'set_validate' on the field. The default is
 
    sub validate_testfield { my ( $self, $field ) = @_; ... }
 
+If the field name has dots they should be replaced with underscores.
 
 =head3 cross_validate
 
@@ -991,7 +982,8 @@ sub _clear_dependency
 sub _munge_params
 {
    my ( $self, $params, $attr ) = @_;
-   my $new_params = HTML::FormHandler::Params->expand_hash($params);
+   my $_fix_params = HTML::FormHandler::Params->new;
+   my $new_params = $_fix_params->expand_hash($params);
    if ( $self->html_prefix )
    {
       $new_params = $new_params->{$self->name};

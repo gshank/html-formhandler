@@ -178,6 +178,7 @@ sub build_node
       my $index = 0;
       foreach my $element ( @{$input} )
       {
+         next unless $element;
          my $field = $self->clone_element($index);
          $field->input($element);
          push @fields, $field;
@@ -211,6 +212,7 @@ sub _init_from_object
    my @new_values;
    foreach my $element ( @{$values} )
    {
+      next unless $element;
       my $field = $self->clone_element($index);
       if( $field->has_fields )
       {

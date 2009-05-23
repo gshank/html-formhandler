@@ -2,13 +2,15 @@ use Test::More tests => 6;
 
 use_ok( 'HTML::FormHandler::Params' );
 
+my $_params = HTML::FormHandler::Params->new;
+
 my $p1 = {
    'book.author' => 'J.Doe',
    'book.title' =>  'Doing something',
    'book.date' => '2002',
 };
 
-my $p1_exp = HTML::FormHandler::Params->expand_hash( $p1 );
+my $p1_exp = $_params->expand_hash( $p1 );
 
 is_deeply( $p1_exp, { book => { author => 'J.Doe', 
                          title => 'Doing something',
@@ -37,7 +39,7 @@ my $p_hash = {
    ]
 };
 
-my $p2_exp = HTML::FormHandler::Params->expand_hash( $p2 );
+my $p2_exp = $_params->expand_hash( $p2 );
 is_deeply( $p2_exp, $p_hash, 'get expanded hash for dot notation' ); 
 
 my $p3 = {
@@ -49,7 +51,7 @@ my $p3 = {
    'books+1+date' => '2004'
 };
 
-my $p3_exp = HTML::FormHandler::Params->expand_hash( $p3, '+' );
+my $p3_exp = $_params->expand_hash( $p3, '+' );
 is_deeply( $p3_exp, $p_hash, 'get expanded hash for plus notation' ); 
 
 
@@ -62,7 +64,7 @@ my $p4 = {
    'books[1]date' => '2004'
 };
 
-my $p4_exp = HTML::FormHandler::Params->expand_hash( $p4, '[]' );
+my $p4_exp = $_params->expand_hash( $p4, '[]' );
 is_deeply( $p4_exp, $p_hash, 'get expanded hash for bracket notation' ); 
 
 my $p5 = {
@@ -78,6 +80,6 @@ my $p5_hash = {
          date   => '2003',
       },
    };
-my $p5_exp = HTML::FormHandler::Params->expand_hash( $p5 );
+my $p5_exp = $_params->expand_hash( $p5 );
 is_deeply( $p5_exp, $p5_hash, 'get hash from single brackets');
 

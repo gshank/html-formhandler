@@ -1,17 +1,17 @@
 package    # hide from Pause
    HTML::FormHandler::Params;
 
-use strict;
-use warnings;
+use Moose;
 use Carp;
 
-sub separator { '.' }
-sub max_array { 100 }
+has 'separator' => ( isa => 'Str', is => 'rw', default => '.' );
+has 'max_array' => ( isa => 'Int', is => 'rw', default => '100' );
+
 sub split_name
 {
-   my ( $class, $name, $sep ) = @_;
+   my ( $self, $name, $sep ) = @_;
 
-   $sep ||= $class->separator();
+   $sep ||= $self->separator;
    $sep = "\Q$sep";
 
    if( $sep eq '[]' )
@@ -43,23 +43,23 @@ sub split_name
 
 sub expand_hash
 {
-   my ( $class, $flat, $sep ) = @_;
+   my ( $self, $flat, $sep ) = @_;
 
    my $deep = {};
-   $sep  ||= $class->separator;
+   $sep  ||= $self->separator;
 
    for my $name ( keys %$flat )
    {
 
-      my ( $first, @segments ) = $class->split_name($name, $sep);
+      my ( $first, @segments ) = $self->split_name($name, $sep);
 
       my $box_ref = \$deep->{$first};
       for (@segments)
       {
-         if ( $class->max_array && /^(0|[1-9]\d*)$/ )
+         if ( $self->max_array && /^(0|[1-9]\d*)$/ )
          {
             croak "HFH: param array limit exceeded $1 for $name=$_"
-               if ( $1 >= $class->max_array );
+               if ( $1 >= $self->max_array );
             $$box_ref = [] unless defined $$box_ref;
             croak "HFH: param clash for $name=$_"
                unless ref $$box_ref eq 'ARRAY';
@@ -83,28 +83,28 @@ sub expand_hash
 
 sub collapse_hash
 {
-   my $class = shift;
+   my $self = shift;
    my $deep  = shift;
    my $flat  = {};
 
-   $class->_collapse_hash( $deep, $flat, () );
+   $self->_collapse_hash( $deep, $flat, () );
    return $flat;
 }
 
 sub join_name
 {
-   my ( $class, @array ) = @_;
-   my $sep = substr( $class->separator, 0, 1 );
+   my ( $self, @array ) = @_;
+   my $sep = substr( $self->separator, 0, 1 );
    return join $sep, @array;
 }
 
 sub _collapse_hash
 {
-   my ( $class, $deep, $flat, @segments ) = @_;
+   my ( $self, $deep, $flat, @segments ) = @_;
 
    if ( !ref $deep )
    {
-      my $name = $class->join_name(@segments);
+      my $name = $self->join_name(@segments);
       $flat->{$name} = $deep;
    }
    elsif ( ref $deep eq 'HASH' )
@@ -113,27 +113,27 @@ sub _collapse_hash
       {
          # escape \ and separator chars (once only, at this level)
          my $name = $_;
-         if ( defined( my $sep = $class->separator ) )
+         if ( defined( my $sep = $self->separator ) )
          {
             $sep = "\Q$sep";
             $name =~ s/([\\$sep])/\\$1/g;
          }
-         $class->_collapse_hash( $deep->{$_}, $flat, @segments, $name );
+         $self->_collapse_hash( $deep->{$_}, $flat, @segments, $name );
       }
    }
    elsif ( ref $deep eq 'ARRAY' )
    {
-      croak "HFH: param array limit exceeded $#$deep for ", $class->join_name(@_)
-         if ( $#$deep + 1 >= $class->max_array );
+      croak "HFH: param array limit exceeded $#$deep for ", $self->join_name(@_)
+         if ( $#$deep + 1 >= $self->max_array );
       for ( 0 .. $#$deep )
       {
-         $class->_collapse_hash( $deep->[$_], $flat, @segments, $_ )
+         $self->_collapse_hash( $deep->[$_], $flat, @segments, $_ )
             if defined $deep->[$_];
       }
    }
    else
    {
-      croak "Unknown reference type for ", $class->join_name(@segments), ":", ref $deep;
+      croak "Unknown reference type for ", $self->join_name(@segments), ":", ref $deep;
    }
 }
 

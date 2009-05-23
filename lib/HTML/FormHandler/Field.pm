@@ -1029,8 +1029,14 @@ sub input_defined
    return unless $self->has_input;
    my $value = $self->input;
    # check for one value as defined
-   return grep { /\S/ } @$value
-      if ref $value eq 'ARRAY';
+   if( ref $value eq 'ARRAY' )
+   {
+      foreach my $elem (@$value)
+      {
+         next unless $elem;
+         return 1 if $elem;
+      }
+   }
    return defined $value && $value =~ /\S/;
 }
 
