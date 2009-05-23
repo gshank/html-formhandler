@@ -580,14 +580,6 @@ has 'widget' => ( isa => 'Str', is => 'rw', default => 'text' );
 has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'unique' => ( isa => 'Bool', is => 'rw' );
 has 'unique_message' => ( isa => 'Str', is => 'rw' );
-sub value_sprintf
-{
-   die "The 'value_sprintf' attribute has been removed. Please use a transformation instead.";
-}
-sub input_to_value
-{
-   die "The 'input_to_value' method has been removed. Use a transformation or move to the 'validate' method.";
-}
 has 'id' => ( isa => 'Str', is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id
 {

@@ -7,12 +7,9 @@ with 'HTML::FormHandler::Fields';
 with 'HTML::FormHandler::TransformAndCheck';
 
 use Carp;
-use UNIVERSAL::require;
 use Locale::Maketext;
 use HTML::FormHandler::I18N; 
 use HTML::FormHandler::Params;
-use Scalar::Util qw(blessed);
-
 
 use 5.008;
 
