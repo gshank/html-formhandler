@@ -4,6 +4,7 @@ use Moose;
 use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Model';
 with 'HTML::FormHandler::Fields';
+with 'HTML::FormHandler::TransformAndCheck';
 
 use Carp;
 use UNIVERSAL::require;
@@ -625,14 +626,7 @@ sub update
    warn "HFH update method is deprecated. Please switch to using 'process'.";
    shift->process(@_);
 }
-
-# deprecated
-sub validate
-{
-   warn "HFH validate method is deprecated. Please switch to using 'process'.";
-   shift->process(@_);
-}
-  
+ 
 sub process
 {
    my ( $self, @args ) = @_;
@@ -713,30 +707,7 @@ sub fif
    return \%params;
 }
 
-sub values
-{
-   my $self = shift;
-   my $values;
-   foreach my $field( $self->fields )
-   {
-      next if $field->noupdate;
-      next unless $field->has_value;
-      next if $field->has_parent;
-      $values->{$field->accessor} = $field->value unless $field->clear;
-      $values->{$field->accessor} = undef if $field->clear; 
-   }
-   return $values;
-}
-
-sub value
-{
-   my ( $self, $fieldname ) = @_;
-   Carp::carp "The value method is deprecated and will change semantics in next release"; 
-   my $field = $self->field( $fieldname, 1 ) || return;
-   return $field->value; 
-}
-
-sub cross_validate { 1 }
+sub values { shift->value }
 
 # deprecated
 sub has_error
@@ -787,27 +758,10 @@ sub validate_form
    my $self = shift;
    my $params = $self->params; 
    $self->_set_dependency;    # set required dependencies
-   my $fields_in_params;
-   foreach my $field ( $self->fields )
-   {
-      # Trim values and move to "input" slot
-      if ( exists $params->{$field->full_name} )
-      {
-         $field->input( $params->{$field->full_name} );
-         $fields_in_params++;
-      }
-      elsif ( $field->has_input_without_param )
-      {
-         $field->input( $field->input_without_param );
-         $fields_in_params++;
-      }
-   }
-   return unless $fields_in_params;
-
-
-   $self->_fields_validate;
-      
-   $self->cross_validate($params);
+   $self->input( $params );
+   $self->build_node;
+   $self->_apply_actions;
+   $self->validate();
    # model specific validation 
    $self->validate_model;
    $self->_clear_dependency;
@@ -867,6 +821,7 @@ sub _init_from_object
    $node ||= $self;
    return unless $item; 
    warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
+   my $my_value;
    for my $field ( $node->fields )
    {
       next if $field->parent && $field->parent != $node;
@@ -898,7 +853,9 @@ sub _init_from_object
          }
          $field->_load_options if $field->can('_load_options');
       }
+      $my_value->{$field->name} = $field->value;
    }
+   $self->value( $my_value );
    $self->did_init_obj(1);
 }
 

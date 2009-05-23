@@ -426,7 +426,7 @@ sub sorted_fields
 }
 
 #  the routine for looping through and processing each field
-#  Called by FormHandler and Field::Compound
+#  Called in build_node
 sub _fields_validate
 {
    my $self = shift;
@@ -514,6 +514,40 @@ sub dump_validated
       ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";
    } 
 }
+
+sub build_node
+{  
+   my $self = shift;
+
+   my $input = $self->input;
+   # is there a better way to do this? 
+   if( ref $input eq 'HASH' )
+   {  
+      foreach my $field ( $self->fields )
+      {  
+         my $field_name = $field->name; #substr( $field->full_name, length($self->full_name) + 1 );
+         # Trim values and move to "input" slot
+         if ( exists $input->{$field_name} )
+         {  
+            $field->input( $input->{$field_name} )
+         }
+         elsif ( $field->has_input_without_param )
+         {  
+            $field->input( $field->input_without_param );
+         }
+      }
+   }
+   $self->clear_fif;
+   return unless $self->has_fields;
+   $self->_fields_validate;
+   my %value_hash;
+   for my $field ( $self->fields )
+   {  
+      $value_hash{ $field->accessor } = $field->value if $field->has_value;
+   }
+   $self->value( \%value_hash );
+}
+
 
 no Moose::Role;
 1;

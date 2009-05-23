@@ -67,41 +67,6 @@ sub BUILD
    $self->_build_fields;
 }
 
-sub build_node
-{
-   my $self = shift;
-
-   my $input = $self->input;
-
-   # is there a better way to do this? 
-   if( ref $input eq 'HASH' )
-   {
-      foreach my $field ( $self->fields )
-      {
-         my $field_name = $field->name;
-         # move values to "input" slot
-         if ( exists $input->{$field_name} )
-         {
-            $field->input( $input->{$field_name} )
-         }
-         elsif ( $field->has_input_without_param )
-         {
-            $field->input( $field->input_without_param );
-         }
-      }
-   }
-   $self->clear_fif;
-   return unless $self->has_fields;
-   $self->_fields_validate;
-   my %value_hash;
-   for my $field ( $self->fields )
-   { 
-      $value_hash{ $field->accessor } = $field->value;
-   }
-   $self->value( \%value_hash );
-} 
-
-
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;
