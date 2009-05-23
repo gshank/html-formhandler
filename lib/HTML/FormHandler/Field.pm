@@ -852,8 +852,8 @@ sub validate_field
 
    return !$field->has_errors;
 }
-sub _inner_validate_field { }
 sub build_node { }
+sub _inner_validate_field { }
 
 sub _apply_actions
 {

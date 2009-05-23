@@ -1,0 +1,277 @@
+package HTML::FormHandler::TransformAndCheck;
+
+use Moose::Role;
+use Carp;
+
+has 'input' => (
+   is        => 'rw',
+   clearer   => 'clear_input',
+   predicate => 'has_input',
+);
+
+has 'value' => (
+   is        => 'rw',
+   clearer   => 'clear_value',
+   predicate => 'has_value',
+);
+has 'required' => ( isa => 'Bool', is => 'rw', default => '0' );
+has 'required_message' => (
+   isa     => 'Str',
+   is      => 'rw',
+   lazy    => 1,
+   default => sub { shift->label . ' field is required' }
+);
+has 'range_start' => ( isa => 'Int|Undef', is => 'rw', default => undef );
+has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
+has 'actions' => (
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef',
+   is         => 'rw',
+   auto_deref => 1,
+   default    => sub { [] },
+   provides   => {
+      'push'  => 'add_action',
+      'count' => 'num_actions',
+      'empty' => 'has_actions',
+      'clear' => 'clear_actions',
+   }
+);
+
+sub test_ranges
+{
+   my $field = shift;
+   return 1 if $field->can('options') || $field->has_errors;
+
+   my $input = $field->input;
+
+   return 1 unless defined $input;
+
+   my $low  = $field->range_start;
+   my $high = $field->range_end;
+
+   if ( defined $low && defined $high )
+   {  
+      return $input >= $low && $input <= $high
+         ? 1
+         : $field->add_error( 'value must be between [_1] and [_2]', $low, $high );
+   }
+
+   if ( defined $low )
+   {  
+      return $input >= $low
+         ? 1
+         : $field->add_error( 'value must be greater than or equal to [_1]', $low );
+   }
+
+   if ( defined $high )
+   {  
+      return $input <= $high
+         ? 1
+         : $field->add_error( 'value must be less than or equal to [_1]', $high );
+   }
+
+   return 1;
+}
+
+sub _build_apply_list
+{
+   my $self = shift;
+   my @apply_list;
+   foreach my $sc ( reverse $self->meta->linearized_isa )
+   {
+      my $meta = $sc->meta;
+      if ( $meta->can('calculate_all_roles') )
+      {
+         foreach my $role ( $meta->calculate_all_roles )
+         {
+            if ( $role->can('apply_list') && $role->has_apply_list )
+            {
+               foreach my $apply_def ( @{ $role->apply_list} )
+               {
+                  my %new_apply = %{$apply_def}; # copy hashref
+                  push @apply_list, \%new_apply;
+               }
+            }
+         }
+      }
+      if ( $meta->can('apply_list') && $meta->has_apply_list )
+      {
+         foreach my $apply_def ( @{ $meta->apply_list} )
+         {
+            my %new_apply = %{$apply_def}; # copy hashref
+            push @apply_list, \%new_apply;
+         }
+      }
+   }
+   $self->add_action( @apply_list );
+}
+
+sub process
+{
+   my $field = shift;
+
+   $field->clear_errors;
+   # See if anything was submitted
+   if( !$field->has_input || !$field->input_defined )
+   {
+      if( $field->required )
+      {
+         $field->add_error( $field->required_message ) if ( $field->required );
+         $field->value(undef)                          if ( $field->has_input );
+         return;
+      }
+      elsif ( !$field->has_input )
+      {
+         return;
+      }
+      elsif( !$field->input_defined )
+      {
+         $field->value(undef);
+         return;
+      }
+   }
+   else
+   {
+      $field->clear_value;
+      $field->value( $field->input );
+   }
+
+   $field->augment_process();
+#   inner();
+   # do building of node 
+   $field->build_node if $field->DOES('HTML::FormHandler::Fields');
+
+   $field->_apply_actions;
+
+   return unless $field->validate;
+   return if $field->has_errors;
+   return unless $field->test_ranges;
+
+   return !$field->has_errors;
+}
+
+sub augment_process {};
+
+sub _apply_actions
+{
+   my $self  = shift;
+
+   my $error_message;
+   local $SIG{__WARN__} = sub {
+      my $error = shift;
+      $error_message = $error;
+      return 1;
+   };
+   for my $action ( @{ $self->actions || [] } )
+   {
+      $error_message = undef;
+      # the first time through value == input
+      my $value = $self->value;
+      my $new_value = $value;
+      # Moose constraints 
+      if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' )
+      {
+         $action = { type => $action };
+      }
+      if ( exists $action->{type} )
+      {
+         my $tobj;
+         if( ref $action->{type} eq 'MooseX::Types::TypeDecorator' )
+         {
+            $tobj = $action->{type};
+         }
+         else
+         {
+            my $type = $action->{type};
+            $tobj = Moose::Util::TypeConstraints::find_type_constraint($type)
+               or die "Cannot find type constraint $type";
+         }
+         if ( $tobj->has_coercion && $tobj->validate($value) )
+         {
+            eval { $new_value = $tobj->coerce($value) };
+            if ($@)
+            {
+               if ( $tobj->has_message )
+               {
+                  $error_message = $tobj->message->($value);
+               }
+               else
+               {
+                  $error_message = $@;
+               }
+            }
+            else
+            {
+               $self->value($new_value);
+            }
+            
+         }
+         $error_message ||= $tobj->validate($new_value);
+      }
+      # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
+      # actions in a hashref
+      elsif ( ref $action->{check} eq 'CODE' )
+      {
+         if ( !$action->{check}->($value) )
+         {
+            $error_message = 'Wrong value';
+         }
+      }
+      elsif ( ref $action->{check} eq 'Regexp' )
+      {
+         if ( $value !~ $action->{check} )
+         {
+            $error_message = "\"$value\" does not match";
+         }
+      }
+      elsif ( ref $action->{check} eq 'ARRAY' )
+      {
+         if ( !grep { $value eq $_ } @{ $action->{check} } )
+         {
+            $error_message = "\"$value\" not allowed";
+         }
+      }
+      elsif ( ref $action->{transform} eq 'CODE' )
+      {
+         $new_value = eval { 
+            no warnings 'all';
+            $action->{transform}->($value);
+         };
+         if ($@)
+         {
+            $error_message = $@ || 'error occurred';
+         }
+         else
+         {
+            $self->value($new_value);
+         }
+      }
+      if ( defined $error_message )
+      {
+         my @message = ($error_message);
+         if ( defined $action->{message} )
+         {
+            my $act_msg = $action->{message};
+            if ( ref $act_msg eq 'CODEREF' )
+            {
+               $act_msg = $act_msg->($value); 
+            }
+            if ( ref $act_msg eq 'ARRAY' )
+            {
+               @message = @{ $act_msg };
+            }
+            elsif ( ref \$act_msg eq 'SCALAR' )
+            {
+               @message = ( $act_msg );
+            }
+         }
+         $self->add_error(@message);
+      }
+   }
+}
+
+sub validate { 1 }
+
+no Moose::Role;
+1;
+
