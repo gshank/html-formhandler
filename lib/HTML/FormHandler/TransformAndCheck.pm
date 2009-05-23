@@ -106,7 +106,7 @@ sub _build_apply_list
    $self->add_action( @apply_list );
 }
 
-sub process
+sub validate_field
 {
    my $field = shift;
 
@@ -136,8 +136,7 @@ sub process
       $field->value( $field->input );
    }
 
-   $field->augment_process();
-#   inner();
+   $field->_inner_validate_field();
    # do building of node 
    $field->build_node if $field->DOES('HTML::FormHandler::Fields');
 
@@ -150,7 +149,7 @@ sub process
    return !$field->has_errors;
 }
 
-sub augment_process {};
+sub _inner_validate_field {};
 
 sub _apply_actions
 {
