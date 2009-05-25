@@ -10,27 +10,10 @@ has '+password'         => ( default => 1 );
 has '+required_message' => ( default => 'Please enter a password in this field' );
 has 'ne_username'       => ( isa => 'Str',  is => 'rw' );
 
-apply(
-   [
-      {
-         check   => sub { $_[0] !~ /\s/ },
-         message => 'Password can not contain spaces'
-      },
-      {
-         check => sub { $_[0] !~ /\W/ },
-         message => 'Password must be made up of letters, digits, and underscores'
-      },
-      {
-         check   => sub { $_[0] !~ /^\d+$/ },
-         message => 'Password must not be all digits'
-      },
-   ]
-);
-
 after 'validate_field' => sub {
    my $self = shift;
 
-   if ( !$self->required && !$self->value )
+   if ( !$self->required && !(defined($self->value) && length($self->value)) )
    {
       $self->noupdate(1);
       $self->clear_errors;
