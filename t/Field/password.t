@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 12;
 
 
 use HTML::FormHandler;
@@ -42,18 +42,6 @@ $field->input( '2192ab201def' );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );
 
-$field->input( 'f oo' );
-$field->validate_field;
-ok( $field->has_errors, 'has spaces' );
-
-$field->input( 'abc%^%' );
-$field->validate_field;
-ok( $field->has_errors, 'match \W' );
-
-$field->input( '123456' );
-$field->validate_field;
-ok( $field->has_errors, 'all digits' );
-
 $field->input( 'ab1' );
 $field->validate_field;
 ok( $field->has_errors, 'too short' );
@@ -62,11 +50,17 @@ $field->input( 'my4username' );
 $field->validate_field;
 ok( $field->has_errors, 'matches username' );
 
+$field->input( '' );
+$field->validate_field;
+ok( !$field->has_errors, 'empty password accepted' );
+is($field->noupdate, 1, 'noupdate has been set on password field' );
+
 my $pass = 'my4user5name';
 $field->input( $pass );
 $field->validate_field;
 ok( !$field->has_errors, 'just right' );
 is ( $field->value, $pass, 'Input and value match' );
+
 
 
 {
@@ -76,7 +70,7 @@ is ( $field->value, $pass, 'Input and value match' );
    extends 'HTML::FormHandler';
 
    has '+field_name_space' => ( default => 'Field' );
-   has_field 'password' => ( type => 'Password', noupdate_if_empty => 1 );
+   has_field 'password' => ( type => 'Password', required => 1 );
 
 }
 
@@ -88,9 +82,9 @@ $params = {
 };
 
 $form->process( params => $params );
-ok( $form->validated, 'form validated' );
+ok( !$form->validated, 'form validated' );
 
-is( $form->field('password')->noupdate, 1, 'noupdate has been set on password field' );
+ok( !$form->field('password')->noupdate, q[noupdate is 'false' on password field] );
 
 
 
