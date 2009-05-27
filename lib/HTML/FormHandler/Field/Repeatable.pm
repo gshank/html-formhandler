@@ -210,7 +210,7 @@ sub _init_from_object
    my $index = 0;
    my @fields;
    my @new_values;
-   $values = [$values] if ref $values ne 'ARRAY';
+   $values = [$values] if ( $values && ref $values ne 'ARRAY');
    foreach my $element ( @{$values} )
    {
       next unless $element;

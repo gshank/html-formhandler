@@ -36,11 +36,9 @@ requires:
   MooseX::Getopt: 0.16
   MooseX::Types: 0
   MooseX::Types::Common: 0
-  Scalar::Util: 0
-  UNIVERSAL::require: 0
   aliased: 0
   perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://github.com/gshank/html-formhandler/tree/master
-version: 0.23
+version: 0.24

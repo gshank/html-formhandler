@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 15;
+use Test::More tests => 18;
 
 use_ok( 'HTML::FormHandler::Field::Repeatable' );
 use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
@@ -104,3 +104,25 @@ $form->process($fif);
 
 ok( $form->validated, 'form validated' );
 is( $form->field('addresses')->num_fields, 2, 'right number of fields');
+
+$fif = {
+   'addresses.0.street' => 'Main Street',
+   'addresses.0.city' => 'Prime City',
+   'addresses.0.country' => 'Utopia',
+   'addresses.0.id' => '0',
+};
+
+ok( $form->process($fif), 'process a single repeatable element');
+is( $form->field('addresses')->field('0')->field('street')->value, 'Main Street', 'get value');
+
+my $values = {
+   'addresses' => [
+      {
+         'city' => 'Prime City',
+         'country' => 'Utopia',
+         'id' => 0,
+         'street' => 'Main Street',
+      }
+   ]
+};
+is_deeply( $form->values, $values, 'get right values' );
