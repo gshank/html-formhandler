@@ -8,9 +8,7 @@ our $VERSION = '0.01';
 use MooseX::Types -declare => [
   'PositiveNum', 'PositiveInt', 'NegativeNum', 'NegativeInt', 'SingleDigit',
   'SimpleStr', 'NonEmptySimpleStr', 'Password', 'StrongPassword', 'NonEmptyStr',
-  'Trim', 'Email', 'State', 'StateOrProvince', 'Province', 'Zip', 'PostCode',
-  'ZipOrPostCode', 'Phone', 'AmericanPhone', 'CCNumber', 'CCExp', 'CCType',
-  'IPAddress', 'DateTime', 'Word',
+  'Email', 'State', 'Zip', 'IPAddress', 'NoSpaces', 'WordChars', 'NotAllDigits', 
 ];
 
 use MooseX::Types::Moose ('Str', 'Num', 'Int');
