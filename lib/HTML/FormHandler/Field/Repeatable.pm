@@ -209,6 +209,7 @@ sub _init_from_object
    my $index = 0;
    my @fields;
    my @new_values;
+   $values = [$values] if ref $values ne 'ARRAY';
    foreach my $element ( @{$values} )
    {
       my $field = $self->clone_element($index);

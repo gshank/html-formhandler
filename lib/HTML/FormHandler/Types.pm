@@ -158,5 +158,21 @@ subtype IPAddress,
   },
   message {"Not a valid IP address"};
 
+subtype NoSpaces,
+  as Str,
+  where { $_[0] !~ /\s/ },
+  message { 'Password can not contain spaces' };
+
+subtype WordChars,
+  as Str,
+  where { $_ !~ /\s/ },
+  message { 'Password must be made up of letters, digits, and underscores' };
+
+subtype NotAllDigits,
+  as Str,
+  where { $_ !~ /^\d+$/ },
+  message { 'Password must not be all digits' };
+
+
 1;
 
