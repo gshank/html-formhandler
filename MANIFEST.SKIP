@@ -13,7 +13,4 @@
 ^lib/DBIx*
 ^*.old$
 ^*.new$
-^t/db_acc.t$
-^t/structured.t$
-^lib/HTML/FormHandler/Field/List.pm$
 ^NONE$

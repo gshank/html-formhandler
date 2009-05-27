@@ -1,11 +1,11 @@
+2009/05/23
+  Improve example of Repeatable form (BookDB, User) to do adds & deletes with js
+
 2009/05/14
-  Handle simple arrays (Neither 'Select' nor 'Repeatable' do simple arrays)
   Create more usable 'add_field' routine that will handle ordering, parent,
       and form attributes. Use in create_instance.
 
 2009/05/02
-  allow interpolating field value in messages 
-  check name usage for consistency
   add Rendering modules: TT using Data::Section? using HTML::Dom or Treebuilder?, Reaction?
 
 09/04/23
@@ -16,10 +16,8 @@
   improve auto field support 
   investigate a Catalyst View to provide better template support (like Reaction)
   investigate other Form processing HTML generation
-  improve testing of Render::Simple. Make sure all field types are handled.
   clean up DateTime fields (make consistent), better tests
   testcases for noupdate and clear flags
-  look for other missing tests
   View::TT FillInForm role (check with jhannah)
 
 

@@ -2,8 +2,6 @@ package HTML::FormHandler::Fields;
 
 use Moose::Role;
 use Carp;
-use UNIVERSAL::require;
-use Class::Inspector;
 
 =head1 NAME
 
@@ -311,9 +309,8 @@ sub _make_field
          : $type
       : 'HTML::FormHandler::Field::' . $type;
 
-   $class->require
-      or die "Could not load field class '$type' $class for field '$name'"
-      if !Class::Inspector->loaded($class);
+    Class::MOP::load_class($class)
+      or die "Could not load field class '$type' $class for field '$name'";
 
    $field_attr->{form} = $self->form if $self->form;
    # parent and name correction for names with dots
