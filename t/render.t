@@ -133,7 +133,7 @@ is( $output7,
 my $output8 = $form->render_field( $form->field('start_date') );
 is( $output8, 
    '
-<div><fieldset class="start_date">
+<div><fieldset class="start_date"><legend>Start_date</legend>
 <div>
 <label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="renderformmonth" value="7"></div>
 
