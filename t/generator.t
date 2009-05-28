@@ -26,6 +26,6 @@ my $form_code = $generator->generate_form();
 ok( $form_code, 'form code generated' );
 #warn $form_code;
 eval $form_code;
-ok( !$@, 'Form code compiles' );
+ok( !$@, 'Form code compiles' ) or warn $@;
 ok( UserForm->new, 'Form creation works' );
 

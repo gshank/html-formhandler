@@ -36,6 +36,7 @@ use HTML::FormHandler::Field::Text;
        ]
    );
 
+   has_field 'submit' => ( widget => 'submit', value => 'Update' );
 
    has '+dependency' => ( default => sub { [ ['start_date.month',
          'start_date.day', 'start_date.year'] ] } );
