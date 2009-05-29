@@ -304,6 +304,7 @@ sub render_compound
    my ( $self, $field ) = @_;
 
    my $output = '<fieldset class="' . $field->html_name . '">';
+   $output .= '<legend>' . $field->label . '</legend>';
    foreach my $subfield ($field->sorted_fields)
    {
       $output .= $self->render_field($subfield);

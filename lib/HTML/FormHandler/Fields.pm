@@ -446,10 +446,10 @@ sub _fields_validate
 
 sub cross_validate { }
 
-sub clear_other
+after clear_data => sub
 {
    $_->clear_data for shift->fields;
-}
+};
 
 sub clear_errors
 {

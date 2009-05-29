@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 27;
+my $tests = 28;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
@@ -91,4 +91,6 @@ ok( $form->process( $init_object ), 'form validates with params' );
 is_deeply( $form->values, $init_object, 'get right values from form'); 
 is_deeply( $form->fif, $init_object, 'get right fif with init_object');
 
+$form->clear;
+is( $form->value, undef, 'Form value cleared' );
 

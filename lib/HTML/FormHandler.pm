@@ -670,7 +670,7 @@ sub clear_state
 
 sub clear_data
 {
-   $_->clear_data for shift->fields;
+   shift->clear_value;
 }
 
 sub clear_fif { shift->clear_fifs }
