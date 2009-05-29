@@ -750,23 +750,6 @@ sub _apply_deflation
    return $value;
 }
 
-sub input_defined
-{
-   my ($self) = @_;
-   return unless $self->has_input;
-   my $value = $self->input;
-   # check for one value as defined
-   if( ref $value eq 'ARRAY' )
-   {
-      foreach my $elem (@$value)
-      {
-         next unless $elem;
-         return 1 if $elem;
-      }
-   }
-   return defined $value && $value =~ /\S/;
-}
-
 # use Class::MOP to clone 
 sub clone
 {

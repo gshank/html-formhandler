@@ -106,6 +106,32 @@ sub _build_apply_list
    $self->add_action( @apply_list );
 }
 
+sub has_some_value
+{
+    my $x = shift;
+    return $x =~ /\S/ if ! ref $x;
+    if( ref $x eq 'ARRAY' ){
+        for my $elem ( @$x ){
+            return 1 if has_some_value( $elem );
+        }
+        return 0;
+    }
+    if( ref $x eq 'HASH' ){
+        for my $key ( keys %$x ){
+            return 1 if has_some_value( $x->{$key} );
+        }
+        return 0;
+    }
+}
+    
+
+sub input_defined
+{
+   my ($self) = @_;
+   return unless $self->has_input;
+   return has_some_value( $self->input );
+}
+
 sub validate_field
 {
    my $field = shift;

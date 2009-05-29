@@ -1,4 +1,4 @@
-use Test::More tests => 16;
+use Test::More tests => 17;
 
 use lib 't/lib';
 
@@ -72,8 +72,8 @@ is( $dtform->field('start_date')->value->mdy, '10-02-2008', 'datetime value');
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler::Field::Compound';
 
-   has_field 'aaa' => ( type => 'Text' );
-   has_field 'bbb' => ( type => 'Text' );
+   has_field 'aaa';
+   has_field 'bbb';
 }
 
 
@@ -82,7 +82,7 @@ is( $dtform->field('start_date')->value->mdy, '10-02-2008', 'datetime value');
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   has_field 'compound' => ( type => '+Field::MyCompound' );
+   has_field 'compound' => ( type => '+Field::MyCompound', apply => [ { check => sub { $_[0]->{aaa} eq 'aaa'}, message => 'Must be "aaa"' } ] );
 }
 $form = Form::TestValues->new;
 ok( $form, 'Compound form with separate fields declarations created' );
@@ -94,6 +94,7 @@ $params = {
 $form->process( params => $params );
 is_deeply( $form->values, { compound => { aaa => 'aaa', bbb => 'bbb' } }, 'Compound with separate fields - values in hash' );
 is_deeply( $form->fif, $params, 'get fif from compound field' );
-
+$form->process( params => { 'compound.aaa' => undef } );
+ok( !$form->field( 'compound' )->has_errors, 'Not required copound with empty sub values is not checked');
 
 
