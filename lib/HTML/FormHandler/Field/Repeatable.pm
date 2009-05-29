@@ -15,7 +15,7 @@ In a form, for an array of hashrefs, equivalent to a 'has_many' database
 relationship. 
 
   has_field 'addresses' => ( type => 'Repeatable' );
-  has_field 'address_id' => ( type => 'PrimaryKey' );
+  has_field 'addresses.address_id' => ( type => 'PrimaryKey' );
   has_field 'addresses.street';
   has_field 'addresses.city';
   has_field 'addresses.state';
@@ -26,7 +26,7 @@ have an 'id' field automatically created.
 In a form, for an array of single fields (not directly equivalent to a
 database relationship):
 
-  has_field 'tags' => ( type => 'List' );
+  has_field 'tags' => ( type => 'Repeatable' );
   has_field 'tags.contains' => ( type => 'Text',
        apply => [ { check => ['perl', 'programming', 'linux', 'internet'],
                     message => 'Not a valid tag' } ]

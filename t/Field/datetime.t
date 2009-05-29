@@ -4,21 +4,12 @@ use warnings;
 use lib './t';
 use MyTest
     tests   => 2,
-    recommended => [qw/ DateTime /];
+    recommended => ['DateTime'];
 
+use_ok( 'HTML::FormHandler::Field::DateTime' );
 
+my $field = HTML::FormHandler::Field::DateTime->new( name => 'test_field' );
 
-    my $class = 'HTML::FormHandler::Field::DateTime';
-
-    my $name = $1 if $class =~ /::([^:]+)$/;
-
-    use_ok( $class );
-
-    my $field = $class->new(
-        name    => 'test_field',
-        type    => $name,
-    );
-
-    ok( defined $field,  'new() called' );
+ok( defined $field,  'new() called' );
 
 

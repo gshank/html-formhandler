@@ -107,7 +107,7 @@ in the database...).  You can process the input for the non-updatable field
 field in a number of different places, depending on what is most logical. 
 Some of the choices are: 
 
-   1) cross_validate
+   1) validate (for the form or field)
    2) validate_model
    3) model_update
 
@@ -278,6 +278,24 @@ Then pass it in when you process the form:
 
   $form->process( item => $item, params => $c->req->parameters, user_id = $c->user->user_id );
 
+=head2 Doing cross validation in roles
+
+In a role that handles a number of different fields, you may want to
+perform cross validation after the individual fields are validated.
+You can do that with the 'after' method modifier on the 'validate' method:
+
+
+   package MyApp::Form::Roles::DateFromTo;
+
+   use HTML::FormHandler::Moose::Role;
+   has_field 'date_from' => ( type => 'Date' );
+   has_field 'date_to'   => ( type => 'Date' );
+
+   after 'validate' => sub {
+      my $self = shift;
+      $self->field('date_from')->add_error('From date must be before To date')
+         if $self->field('date_from')->value gt $self->field('date_to')->value;
+   };
 
 =head1 AUTHOR
 

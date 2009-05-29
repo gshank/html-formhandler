@@ -404,8 +404,10 @@ this method can be set with 'set_validate' on the field. The default is
 
 If the field name has dots they should be replaced with underscores.
 
-=head3 cross_validate
+=head3 validate
 
+(This method used to be called 'cross_validate'. It was renamed to 'validate'
+to make the api more consistent.)
 This is a form method that is useful for cross checking values after they have
 been saved as their final validated value, and for performing more complex 
 dependency validation. It is called after all other field validation is done, 
@@ -776,6 +778,8 @@ sub validate_form
 
    return $self->validated;
 }
+
+sub cross_validate { shift->validate(@_) }
 
 sub _setup_form
 {
