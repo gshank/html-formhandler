@@ -109,6 +109,8 @@ sub _build_apply_list
 sub has_some_value
 {
     my $x = shift;
+
+    return unless defined $x;
     return $x =~ /\S/ if ! ref $x;
     if( ref $x eq 'ARRAY' ){
         for my $elem ( @$x ){
