@@ -119,6 +119,13 @@ be used to fill in the form (put in the C<< $form->fif >> hash, or the
 field C<< $field->fif >>), but a value entered in the form WILL be used
 to update the database.
 
+This can be used for to set an 'updated_by_form' type column.
+
+  has_field 'user_updated' => ( writeonly => 1, value => 1 );
+
+Then in your database class create a 'user_updated' method to take
+whatever action you want.
+
 If you want to enter fields from an additional table that is related to
 this one in a 'single' relationship, you can use the DBIx::Class 'proxy'
 feature to create accessors for those fields.
@@ -282,7 +289,9 @@ Then pass it in when you process the form:
 
 In a role that handles a number of different fields, you may want to
 perform cross validation after the individual fields are validated.
-You can do that with the 'after' method modifier on the 'validate' method:
+In the form you could use the 'validate' method, but that doesn't help
+if you want to keep the functionality packaged in a role. Instead you
+can use the 'after' method modifier on the 'validate' method:
 
 
    package MyApp::Form::Roles::DateFromTo;
@@ -296,6 +305,20 @@ You can do that with the 'after' method modifier on the 'validate' method:
       $self->field('date_from')->add_error('From date must be before To date')
          if $self->field('date_from')->value gt $self->field('date_to')->value;
    };
+
+=head2 Changing required flag before validation 
+
+Sometimes a field is required in one situation and not required in another.
+You can use a method modifier before 'validate_form':
+
+   before 'validate_form' => sub {
+      my $self = shift;
+      my $required = 0;
+      $required = 1
+         if( $self->field('some_field')->value eq 'something' );
+      $self->field('some_field')->required($required);
+   };
+
 
 =head1 AUTHOR
 

@@ -826,6 +826,7 @@ sub _init_from_object
    for my $field ( $node->fields )
    {
       next if $field->parent && $field->parent != $node;
+      next if $field->writeonly;
       next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
       #      $value = $field->_apply_deflations( $value );

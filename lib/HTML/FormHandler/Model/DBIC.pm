@@ -334,18 +334,6 @@ sub _fix_value
    return $value;
 }
 
-=pod
-
-sub _get_pk_for_related {
-    my ( $self, $object, $relation ) = @_;
-
-    my $source = $object->result_source;
-    my $result_source = $self->_get_related_source( $source, $relation );
-    return $result_source->primary_columns;
-}
-
-=cut
-
 sub _get_related_source {
     my ( $self, $source, $name ) = @_;
 
@@ -488,20 +476,6 @@ sub resultset
    die "You must supply a schema for your FormHandler form" unless $self->schema;
    return $self->schema->resultset( $self->source_name || $self->item_class );
 }
-
-=pod
-
-sub compute_model_stuff {
-    my ( $self, $field, $source ) = @_;
-    if( ! $source ){
-        return if !$self->schema;
-        $source = $self->source;
-    }
-    return $self->_get_related_source( $source, $field->accessor );
-}
-
-=cut
-
 
 sub new_lookup_options
 {

@@ -42,30 +42,30 @@ sub test_ranges
    my $field = shift;
    return 1 if $field->can('options') || $field->has_errors;
 
-   my $input = $field->input;
+   my $value = $field->value;
 
-   return 1 unless defined $input;
+   return 1 unless defined $value;
 
    my $low  = $field->range_start;
    my $high = $field->range_end;
 
    if ( defined $low && defined $high )
    {  
-      return $input >= $low && $input <= $high
+      return $value >= $low && $value <= $high
          ? 1
          : $field->add_error( 'value must be between [_1] and [_2]', $low, $high );
    }
 
    if ( defined $low )
    {  
-      return $input >= $low
+      return $value >= $low
          ? 1
          : $field->add_error( 'value must be greater than or equal to [_1]', $low );
    }
 
    if ( defined $high )
    {  
-      return $input <= $high
+      return $value <= $high
          ? 1
          : $field->add_error( 'value must be less than or equal to [_1]', $high );
    }
@@ -112,27 +112,23 @@ sub validate_field
 
    $field->clear_errors;
    # See if anything was submitted
-   if( !$field->has_input || !$field->input_defined )
+   if( $field->required && (!$field->has_input || !$field->input_defined) )
    {
-      if( $field->required )
-      {
-         $field->add_error( $field->required_message ) if ( $field->required );
-         $field->value(undef)                          if ( $field->has_input );
-         return;
-      }
-      elsif ( !$field->has_input )
-      {
-         return;
-      }
-      elsif( !$field->input_defined )
-      {
-         $field->value(undef);
-         return;
-      }
+      $field->add_error( $field->required_message ) if ( $field->required );
+      $field->value(undef)                          if ( $field->has_input );
+      return;
+   }
+   elsif ( !$field->has_input )
+   {
+      return;
+   }
+   elsif( !$field->input_defined )
+   {
+      $field->value(undef);
+      return;
    }
    else
    {
-      $field->clear_value;
       $field->value( $field->input );
    }
 
@@ -142,10 +138,11 @@ sub validate_field
 
    $field->_apply_actions;
 
-   return unless $field->validate;
-   return if $field->has_errors;
-   return unless $field->test_ranges;
-
+   my $not_valid = !$field->validate ||
+                    $field->has_errors ||
+                   !$field->test_ranges;
+     
+   $field->clear_value if $field->noupdate; 
    return !$field->has_errors;
 }
 

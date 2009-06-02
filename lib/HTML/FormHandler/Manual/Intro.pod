@@ -204,24 +204,7 @@ stash variable:
     $c->stash( fillinform => $self->form->fif );
     return unless $form->validated;
  
-and then check for the stash variable in your end routine and call
-FillInForm:
-
-   sub end : Private
-   {
-      my ( $self, $c ) = @_;
-      $c->forward('render') unless $c->res->output;
-      if ($c->stash->{fillinform})
-      {
-         $c->response->body(
-            HTML::FillInForm->new->fill(
-               scalarref => \$c->response->{body},
-               fdat      => $c->stash->{fillinform},
-            )
-         );
-      }
-   }
-   sub render : ActionClass('RenderView') { }
+and use L<Catalyst::View::FillInForm> view role in your Catalyst view. 
 
 =head1 Non-database forms
 
@@ -700,7 +683,8 @@ You can use the hash returned by the form method "fif":
 
    [% form.fif.book %]
 
-Or you can use L<HTML::FillInForm> and the C<< $form->fif hash >>. 
+Or you can use L<HTML::FillInForm> (and L<Catalyst::View::FillInform> if you
+are using Catalyst) and the C<< $form->fif hash >>. 
 
 If you are already using FormHandler field attributes in your form elements,
 then using the field 'fif' method is probably easiest. If you are not using

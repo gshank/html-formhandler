@@ -31,7 +31,7 @@ has '+widget' => ( default => 'compound' );
 has 'year_start' => ( isa => 'Int', is => 'rw', default => '2002'  );
 has 'year_end' => ( isa => 'Int', is => 'rw', default => '2012' );
 
-has_field 'year' => ( 'Integer' );
+has_field 'year' => ( type => 'Integer' );
 has_field 'month' => ( type => 'Integer', range_start => 1,
      range_end => 12 );
 has_field 'day' => ( type => 'Integer', range_start => 1,
