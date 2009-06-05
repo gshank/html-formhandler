@@ -119,13 +119,6 @@ be used to fill in the form (put in the C<< $form->fif >> hash, or the
 field C<< $field->fif >>), but a value entered in the form WILL be used
 to update the database.
 
-This can be used for to set an 'updated_by_form' type column.
-
-  has_field 'user_updated' => ( writeonly => 1, value => 1 );
-
-Then in your database class create a 'user_updated' method to take
-whatever action you want.
-
 If you want to enter fields from an additional table that is related to
 this one in a 'single' relationship, you can use the DBIx::Class 'proxy'
 feature to create accessors for those fields.
@@ -317,6 +310,16 @@ You can use a method modifier before 'validate_form':
       $required = 1
          if( $self->field('some_field')->value eq 'something' );
       $self->field('some_field')->required($required);
+   };
+
+=head2 Extra database actions
+
+Use the 'before' or 'after' method modifiers for 'update_model', to flag a record
+as updated by the user, for example:
+
+   before 'update_model' => sub {
+      my $self = shift;
+      $self->item->user_updated if $self->item;
    };
 
 
