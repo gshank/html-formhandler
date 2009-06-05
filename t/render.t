@@ -1,4 +1,4 @@
-use Test::More tests => 10;
+use Test::More tests => 11;
 
 use HTML::FormHandler::Field::Text;
 
@@ -36,6 +36,8 @@ use HTML::FormHandler::Field::Text;
        ]
    );
 
+   has_field 'ip' => ( widget => 'no_render' );
+   
    has_field 'submit' => ( widget => 'submit', value => 'Update' );
 
    has '+dependency' => ( default => sub { [ ['start_date.month',
@@ -145,6 +147,8 @@ is( $output8,
 </fieldset></div>
 ',
    'output from DateTime' );
+
+is( $form->render_field( $form->field('ip')), '', 'no_render' );
 
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
