@@ -32,13 +32,11 @@ ok( $form1, 'get first form' );
    has '+html_prefix' => ( default => 1 );
 
    sub field_list {
-       return {
-           fields    => {
-               field_one => 'Text',
-               field_two => 'Text',
-               field_three => 'Text',
-           },
-       };
+       [ 
+            field_one => 'Text',
+            field_two => 'Text',
+            field_three => 'Text',
+       ] 
    }
 }
 my $form2 = My::Form::Two->new;

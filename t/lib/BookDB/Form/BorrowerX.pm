@@ -21,8 +21,7 @@ has '+item_class' => ( default => 'Borrower' );
 __PACKAGE__->meta->make_immutable;
 
 sub field_list {
-	return {
-		fields => {
+      [
 			name         => {
                 type => 'Text',
                 required => 1,
@@ -48,11 +47,7 @@ sub field_list {
                 label => 'URL',
             },
          books => 'Text',
-		},
-      unique => {
-         name => 'That name is already in our user directory'
-      },
-	};
+		]
 }
 
 

@@ -44,20 +44,18 @@ is( $errors[0], 'Duplicate value for ISBN', 'error message for duplicate');
    has '+item_class' => ( default => 'Book' );
 
    sub field_list {
-       return {
-           fields    => [
-               title     => {
-                  type => 'Text',
-                  required => 1,
-               },
-               author    => 'Text',
-               isbn => {
-                  type => 'Text',
-                  unique => 1,
-                  unique_message => 'Duplicate ISBN number',
-               }
-           ],
-       };
+        [
+            title     => {
+               type => 'Text',
+               required => 1,
+            },
+            author    => 'Text',
+            isbn => {
+               type => 'Text',
+               unique => 1,
+               unique_message => 'Duplicate ISBN number',
+            }
+        ]
    }
 }
 
