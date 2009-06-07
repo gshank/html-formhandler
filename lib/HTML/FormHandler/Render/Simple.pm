@@ -115,11 +115,9 @@ sub render_text
 {
    my ( $self, $field ) = @_;
    # label
-   my $fif = $field->fif || '';
-   my $output .= "\n<label class=\"label\" for=\"";
-   $output    .= $field->html_name . "\">";
-   $output    .= $field->label . ": </label>";
+   my $output = $self->_label( $field );
    # input
+   my $fif = $field->fif || '';
    $output .= "<input type=\"text\" name=\"";
    $output .= $field->html_name . "\"";
    $output .= " id=\"" . $field->id . "\"";
@@ -138,10 +136,8 @@ sub render_password
 {
    my ( $self, $field ) = @_;
    # label
+   my $output = $self->_label( $field );
    my $fif = $field->fif || '';
-   my $output .= "\n<label class=\"label\" for=\"";
-   $output    .= $field->html_name . "\">";
-   $output    .= $field->label . ": </label>";
    # input
    $output .= "<input type=\"password\" name=\"";
    $output .= $field->html_name . "\"";
@@ -181,8 +177,7 @@ sub render_select
    my ( $self, $field ) = @_;
 
    my $fif = $field->fif || '';
-   my $output = "<label class=\"label\" for=\"";
-   $output .= $field->html_name . "\">" . $field->label . ": </label>";
+   my $output = $self->_label( $field );
    $output .= "<select name=\"" . $field->html_name . "\"";
    $output .= " multiple=\"multiple\" size=\"5\"" if $field->multiple == 1;
    $output .= "\">";
@@ -233,8 +228,7 @@ sub render_checkbox
    my ( $self, $field ) = @_;
 
    my $fif = $field->fif || '';
-   my $output = "<label class=\"label\" for=\"";
-   $output .= $field->html_name . "\">" . $field->label . ": </label>";
+   my $output = $self->_label( $field );
    $output .= "<input type=\"checkbox\" name=\"";
    $output .= $field->html_name . '" value="' . $field->checkbox_value . '"';
    $output .= " checked=\"checked\"" if $fif eq $field->checkbox_value;
@@ -283,15 +277,22 @@ sub render_textarea
    my $cols  = $field->cols || 10;
    my $rows  = $field->rows || 5;
    my $name  = $field->html_name;
-   my $label = $field->label;
 
-   my $output =
-        qq(\n<label class="label" for="$name">)
-      . qq($label: </label>)
+   my $output = $self->_label( $field )
       . qq(<textarea name="$name" id="$id" )
       . qq(rows="$rows" cols="$cols">$fif</textarea>);
 
    return $output;
+}
+
+sub _label
+{
+   my ( $self, $field ) = @_;
+   return '<label class="label" for="' 
+   . $field->html_name 
+   . '">'
+   . $field->label 
+   . ': </label>'
 }
 
 =head2 render_compound
