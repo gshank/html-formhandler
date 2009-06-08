@@ -1,4 +1,4 @@
-use Test::More tests => 10;
+use Test::More tests => 11;
 
 use HTML::FormHandler::Field::Text;
 
@@ -36,6 +36,8 @@ use HTML::FormHandler::Field::Text;
        ]
    );
 
+   has_field 'ip' => ( widget => 'no_render' );
+   
    has_field 'submit' => ( widget => 'submit', value => 'Update' );
 
    has '+dependency' => ( default => sub { [ ['start_date.month',
@@ -82,8 +84,7 @@ $form->process( $params );
 my $output1 = $form->render_field( $form->field('test_field') );
 is( $output1, 
    '
-<div>
-<label class="label" for="test_field">TEST: </label><input type="text" name="test_field" id="f99" value="something"></div>
+<div><label class="label" for="test_field">TEST: </label><input type="text" name="test_field" id="f99" value="something"></div>
 ',
    'output from text field');
 
@@ -111,8 +112,7 @@ is( $output4,
 my $output5 = $form->render_field( $form->field('comments') );
 is( $output5, 
    '
-<div>
-<label class="label" for="comments">Comments: </label><textarea name="comments" id="renderformcomments" rows="5" cols="10">Four score and seven years ago...</textarea></div>
+<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="renderformcomments" rows="5" cols="10">Four score and seven years ago...</textarea></div>
 ',
    'output from textarea' );
 
@@ -134,17 +134,16 @@ my $output8 = $form->render_field( $form->field('start_date') );
 is( $output8, 
    '
 <div><fieldset class="start_date"><legend>Start_date</legend>
-<div>
-<label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="renderformmonth" value="7"></div>
+<div><label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="renderformmonth" value="7"></div>
 
-<div>
-<label class="label" for="start_date.day">Day: </label><input type="text" name="start_date.day" id="renderformday" value="14"></div>
+<div><label class="label" for="start_date.day">Day: </label><input type="text" name="start_date.day" id="renderformday" value="14"></div>
 
-<div>
-<label class="label" for="start_date.year">Year: </label><input type="text" name="start_date.year" id="renderformyear" value="2006"></div>
+<div><label class="label" for="start_date.year">Year: </label><input type="text" name="start_date.year" id="renderformyear" value="2006"></div>
 </fieldset></div>
 ',
    'output from DateTime' );
+
+is( $form->render_field( $form->field('ip')), '', 'no_render' );
 
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
