@@ -512,10 +512,10 @@ has 'fif_from_value' => ( isa => 'Str', is => 'rw',
 sub _build_fif {
    my $self = shift;
 
-   return if( defined $self->password && $self->password == 1 );
+   return '' if( defined $self->password && $self->password == 1 );
    if ( $self->has_input && !$self->fif_from_value )
    {
-      return $self->input;
+      return defined $self->input ? $self->input : '';
    }
    my $parent = $self->parent;
    if ( defined $parent &&
@@ -532,9 +532,9 @@ sub _build_fif {
    }
    if ( $self->fif_from_value )
    {
-      return $self->input;
+      return defined $self->input ? $self->input : '';
    }
-   return;
+   return '';
 }
 
 has 'accessor' => (
