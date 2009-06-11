@@ -9,15 +9,13 @@ use_ok( 'HTML::FormHandler' );
    extends 'HTML::FormHandler';
 
    sub field_list {
-       return {
-           fields    => [
-               field_one => 'Text',
-               field_two => 'Text',
-               field_three => 'Text',
-               field_four => 'Text',
-               field_five => 'Text',
-           ],
-       };
+        [
+            field_one => 'Text',
+            field_two => 'Text',
+            field_three => 'Text',
+            field_four => 'Text',
+            field_five => 'Text',
+        ]
    }
 }
 

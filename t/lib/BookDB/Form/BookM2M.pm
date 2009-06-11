@@ -20,10 +20,7 @@ Catalyst Form.
 has '+item_class' => ( default => 'Book' );
 
 sub field_list {
-	my $self = shift;
-
-	return {
-		fields => {
+	   [	
 			title   => {
 				type => 'Text',
 				required => 1,
@@ -75,8 +72,7 @@ sub field_list {
             type => 'Text',
             order => 9,
          },
-		},
-	};
+      ]
 }
 
 # The following subroutine makes the same select list as

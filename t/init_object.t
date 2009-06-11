@@ -21,7 +21,7 @@ my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
    has '+item_class' => ( default => 'Book' );
    has_field 'title' => ( type => 'Text', required => 1 );
    has_field 'author' => ( type => 'Text' );
-   has_field 'user_updated' => ( writeonly => 1, value => 1 );
+   has_field 'user_updated' => ( type => 'Hidden', writeonly => 1, value => 1 );
    has_field 'publisher' => ( noupdate => 1 );
    sub init_value_author
    {

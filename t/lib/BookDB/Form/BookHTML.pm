@@ -8,17 +8,15 @@ has '+name' => ( default => 'book' );
 has '+html_prefix' => ( default => 1 );
 
 sub field_list {
-    return {
-        fields    => [
-            title     => {
-               type => 'Text',
-               required => 1,
-            },
-            author    => 'Text',
-            pages     => 'Integer',
-            year      => 'Integer',
-        ],
-    };
+     [
+         title     => {
+            type => 'Text',
+            required => 1,
+         },
+         author    => 'Text',
+         pages     => 'Integer',
+         year      => 'Integer',
+     ]
 }
 
 1;

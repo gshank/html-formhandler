@@ -3,11 +3,7 @@ use Test::More (tests => 3);
 use HTML::FormHandler;
 
 my $form = HTML::FormHandler->new(
-    field_list => {
-        fields => [
-            foo => { type => 'Text', required => 1 }
-        ]
-    }
+    field_list => [ foo => { type => 'Text', required => 1 } ]
 );
 
 if (! $form->process( params => { bar => 1, } )) {
