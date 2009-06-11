@@ -265,11 +265,15 @@ sub get_elements {
     for my $col ( $source->columns ) {
         my $new_element = { name => $col };
         my $info = $source->column_info($col);
-        if( $primary_columns{$col} ){ 
-            # - generated schemas have not is_auto_increment set so
-            # so the below needs to be commented out
-            # and $info->{is_auto_increment} ){  
-            unshift @fields, "has_field '$col' => ( type => 'Hidden' );\n";
+        if( $primary_columns{$col}  
+            && ( 
+                $info->{is_auto_increment} 
+                # in SQLite integer primary key is computed automatically just like auto increment
+                || $self->is_SQLite_auto_pk( $source, $info ) 
+            )
+        ){  
+            # for PK in the root use item_id, here only PKs for related rows
+            unshift @fields, "has_field '$col' => ( type => 'Hidden' );\n" if $level > 1;
         }   
         else{
             next if grep { $_ eq $col } @exclude;
@@ -280,6 +284,15 @@ sub get_elements {
         unshift @fields, "has_field '$many->[0]' => ( type => 'Select', multiple => 1 );\n"
     }
     return { fields => \@fields };
+}
+
+sub is_SQLite_auto_pk{
+    my ( $self, $source, $info ) = @_;
+    return if $self->schema->storage->sqlt_type ne 'SQLite';
+    return if ! grep $info->{data_type}, qw/INTEGER Integer integer INT Int int/;
+    my @pks = $source->primary_columns;
+    return if scalar @pks > 1;
+    return 1;
 }
 
 sub get_foreign_cols{
