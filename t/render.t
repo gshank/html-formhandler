@@ -1,4 +1,4 @@
-use Test::More tests => 11;
+use Test::More tests => 12;
 
 use HTML::FormHandler::Field::Text;
 
@@ -15,6 +15,7 @@ use HTML::FormHandler::Field::Text;
                label => 'TEST',
                id    => 'f99',
             );
+   has_field 'number';
    has_field 'fruit' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple' );
    has_field 'active' => ( type => 'Checkbox' );
@@ -66,6 +67,7 @@ ok( $form, 'create form');
 
 my $params = {
    test_field => 'something',
+   number => 0,
    fruit => 2,
    vegetables => [2,4],
    active => 'now',
@@ -80,6 +82,12 @@ my $params = {
 
 $form->process( $params );
 
+is( $form->render_field( $form->field('number') ),
+    '
+<div><label class="label" for="number">Number: </label><input type="text" name="number" id="renderformnumber" value="0"></div>
+',
+    "value '0' is rendered"
+);
 
 my $output1 = $form->render_field( $form->field('test_field') );
 is( $output1, 
