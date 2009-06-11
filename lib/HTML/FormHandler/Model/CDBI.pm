@@ -1,4 +1,5 @@
-package HTML::FormHandler::Model::CDBI;
+package  # hide from Pause
+   HTML::FormHandler::Model::CDBI;
 
 use Moose;
 use Carp;
@@ -24,12 +25,12 @@ HTML::FormHandler::Model::CDBI - Class::DBI model class for HTML::FormHandler
     # Define the fields that this form will operate on
     sub field_list {
         return {
-            fields => [
+            [
                 name        => 'Text',
                 age         => 'PosInteger',
                 sex         => 'Select',
                 birthdate   => 'DateTimeDMYHM',
-            ],
+            ]
         };
     }
 
@@ -37,8 +38,11 @@ HTML::FormHandler::Model::CDBI - Class::DBI model class for HTML::FormHandler
 
 A Class::DBI database model for HTML::FormHandler
 
-I don't use CDBI, so this module is not well tested. Patches
-and tests gratefully accepted.
+I don't use CDBI, so this module almost certainly doesn't work.
+It is only being left here as a starting point in case somebody is
+interested in getting it to work.
+
+Patches and tests gratefully accepted.
 
 
 =head1 METHODS

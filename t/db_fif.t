@@ -55,7 +55,7 @@ my $db_fif = {
 };
 
 my $fif = $form->fif;
-is_deeply( $db_fif, $fif, 'get right fif from db');
+is_deeply( $fif, $db_fif, 'get right fif from db');
 is( $form->field('opt_in')->fif, 0, 'right value for field with 0');
 is( $form->field('license')->fif, 3, 'right value for license field');
 

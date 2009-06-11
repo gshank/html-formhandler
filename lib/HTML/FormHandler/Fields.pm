@@ -66,6 +66,8 @@ has 'fields' => (
    }
 );
 
+has 'fields_from_model' => ( isa => 'Bool', is => 'rw' );
+
 sub add_field
 {
    shift->push_field(@_);
@@ -163,6 +165,7 @@ sub _process_field_list
          if ( ref $flist->{'fields'} eq 'ARRAY' );
    }
    # don't encourage use of these two. functionality too limited. 
+   $self->_process_field_array( $self->model_fields ) if $self->fields_from_model;
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_required'}, 1 ) )
       if $flist->{'auto_required'};
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_optional'}, 0 ) )

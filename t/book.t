@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 27;
+   plan tests => 28;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -46,6 +46,10 @@ my $num_genres = $book->genres->count;
 is( $num_genres, 2, 'multiple select list updated ok');
 
 is( $form->field('format')->value, 2, 'get value for format' );
+
+$good->{genres} = 2;
+ok( $form->process($good), 'handle one value for multiple select' );
+
 
 my $id = $book->id;
 

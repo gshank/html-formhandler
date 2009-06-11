@@ -628,11 +628,11 @@ sub update
  
 sub process
 {
-   my ( $self, @args ) = @_;
+   my $self = shift;
 
    warn "HFH: process ", $self->name, "\n" if $self->verbose;
    $self->clear if $self->processed;
-   $self->_setup_form(@args);
+   $self->_setup_form(@_);
    $self->validate_form if $self->has_params;
    $self->update_model if $self->validated;
    $self->dump_fields if $self->verbose;
