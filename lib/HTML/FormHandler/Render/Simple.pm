@@ -175,7 +175,8 @@ sub render_select
 
    my $output = $self->_label( $field );
    $output .= '<select name="' . $field->html_name . '"';
-   $output .= ' multiple="multiple" size="5"' if $field->multiple == 1;
+   $output .= ' multiple="multiple"' if $field->multiple == 1; 
+   $output .= ' size="' . $field->size . '"' if $field->size;
    $output .= '>';
    foreach my $option ( $field->options )
    {

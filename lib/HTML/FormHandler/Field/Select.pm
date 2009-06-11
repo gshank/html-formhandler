@@ -80,7 +80,7 @@ at a given time.  Defaults to 0.
 
 =cut
 
-has 'size'     => ( isa => 'Int|Undef', is => 'rw', default => '0' );
+has 'size'     => ( isa => 'Int|Undef', is => 'rw' );
 
 =head2 label_column
 
