@@ -99,14 +99,14 @@ is( $output1,
 my $output2 = $form->render_field( $form->field('fruit') );
 is( $output2, 
    '
-<div><label class="label" for="fruit">Fruit: </label><select name="fruit""><option value="1" >apples</option><option value="2" selected="selected">oranges</option><option value="3" >kiwi</option></select></div>
+<div><label class="label" for="fruit">Fruit: </label><select name="fruit"><option value="1" >apples</option><option value="2" selected="selected">oranges</option><option value="3" >kiwi</option></select></div>
 ',
    'output from select field');
 
 my $output3 = $form->render_field( $form->field('vegetables') );
 is( $output3, 
    '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" multiple="multiple" size="5""><option value="2"  selected="selected">broccoli</option><option value="4"  selected="selected">peas</option><option value="1" >lettuce</option><option value="3" >carrots</option></select></div>
+<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" multiple="multiple" size="5"><option value="2"  selected="selected">broccoli</option><option value="4"  selected="selected">peas</option><option value="1" >lettuce</option><option value="3" >carrots</option></select></div>
 ',
    'output from select multiple field');
 

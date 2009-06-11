@@ -240,23 +240,6 @@ sub _init
    $self->_load_options;
 }
 
-sub _load_options_old
-{
-   my ( $self, $node, $model_stuff ) = @_;
-
-   $node ||= $self;
-   warn "HFH: load_options ", $node->name, "\n" if $self->verbose;
-   for my $field ( $node->fields ){
-       if( $field->isa( 'HTML::FormHandler::Field::Compound' ) ){
-           my $new_model_stuff = $self->compute_model_stuff( $field, $model_stuff );
-           $self->_load_options( $field, $new_model_stuff );
-       }
-       else {
-           $self->_load_field_options($field, $model_stuff);
-       }
-   }
-}
-
 sub _load_options
 {
    my $self = shift;

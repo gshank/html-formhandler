@@ -15,6 +15,10 @@
    </p>
 
    <p>
+   [% form.render_field('genres') %]
+   </p>
+
+   <p>
    [% f = form.field('genres') %]
    <label class="label" for="[% f.name %]">[% f.label %]</label>
    <select name="[% f.name %]" multiple="multiple" size="5">
