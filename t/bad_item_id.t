@@ -70,6 +70,7 @@ ok( $form, 'get form for Form2' );
 
 $form->process( params => { title => 'How to Test, Volume 2' } );
 
+$book->discard_changes;
 is( $book->title, 'How to Test, Volume 2', 'get new title');
 
 is( $book->id, $id, 'id is correct' );

@@ -40,6 +40,7 @@ END { $book->delete };
 ok ($book, 'get book object from form');
 
 is_deeply( $form->values, $good, 'values correct' );
+$good->{$_} = '' for qw/ year comment pages/;
 is_deeply( $form->fif, $good, 'fif correct' );
 
 my $num_genres = $book->genres->count;

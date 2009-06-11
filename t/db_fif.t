@@ -51,11 +51,14 @@ my $db_fif = {
    'license' => 3,
    'occupation' => 'management',
    'opt_in' => 0,
-   'user_name' => 'jdoe'
+   'user_name' => 'jdoe',
+# empty values (not loaded, but fif always has value)
+   'employer.country' => '',
+   'employer.name' => '',
+   'employer.category' => '',
 };
 
-my $fif = $form->fif;
-is_deeply( $db_fif, $fif, 'get right fif from db');
+is_deeply( $form->fif, $db_fif, 'get right fif from db');
 is( $form->field('opt_in')->fif, 0, 'right value for field with 0');
 is( $form->field('license')->fif, 3, 'right value for license field');
 

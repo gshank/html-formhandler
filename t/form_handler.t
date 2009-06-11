@@ -84,12 +84,15 @@ $form->process(params => {});
 ok( !$form->validated, 'form validated' );
 is_deeply( $form->values, $init_object, 'get right values from form'); 
 $init_object->{my_selected} = 0;  # checkboxes must be forced to 0
-is_deeply( $form->fif, $init_object, 'get right fif with init_object');
+my %fif = %$init_object;
+$fif{somename} = '';
+$fif{fruit} = '';
+is_deeply( $form->fif, \%fif, 'get right fif with init_object');
 
 # make sure that checkbox is 0 in values
 ok( $form->process( $init_object ), 'form validates with params' );
 is_deeply( $form->values, $init_object, 'get right values from form'); 
-is_deeply( $form->fif, $init_object, 'get right fif with init_object');
+is_deeply( $form->fif, \%fif, 'get right fif with init_object');
 
 $form->clear;
 is( $form->value, undef, 'Form value cleared' );

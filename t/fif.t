@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 24;
+   plan tests => 23;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -44,6 +44,10 @@ is_deeply( $fif, {
       author => 'S.Else',
       publisher => 'NoWhere',
       pages => '702',
+      comment => '',
+      format => '',
+      genres => '',
+      year => '',
    }, 'get form fif' );
 
 $fif->{pages} = '501';
@@ -65,8 +69,7 @@ is( $form->field('author')->fif, 'S.Else', 'get field fif value after validate' 
 
 
 $form->clear_state;
-ok( !$form->fif, 'clear_state clears fif' );
-
+ok( ! ( grep { $_ ne '' } ( values %{ $form->fif } ) ), 'clear_state clears fif' );
 
 my $params = {
    title => 'Testing form',
@@ -86,6 +89,7 @@ is( $form->field('pages')->fif, 699, 'get field fif after validation' );
 
 is( $form->field('author')->fif, 'J.Doe', 'get field author after validation' );
 
+$params->{$_} = '' for qw/ comment format genres year /;
 is_deeply( $form->fif, $params, 'get form fif after validation' );
 
 {
@@ -112,6 +116,4 @@ $params = {
 $form->process($params);
 ok($form->validated, 'form validated');
 is_deeply($form->fif, $params, 'fif is correct');
-$form->clear_state;
-ok( !$form->fif, 'fif is cleared');
 

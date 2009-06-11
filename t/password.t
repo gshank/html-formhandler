@@ -17,7 +17,7 @@ is( $field->password, 1, 'password is set');
 $field->value('abcdef');
 is( $field->value, 'abcdef', 'set and get value' );
 
-is( $field->fif, undef, 'no fif for password');
+is( $field->fif, '', 'no fif for password');
 
 $field = HTML::FormHandler::Field::Text->new(
    name => 'not_password',

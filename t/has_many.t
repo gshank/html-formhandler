@@ -76,14 +76,17 @@ my $fif = {
    'addresses.2.city' => 'Tertiary City',
    'addresses.2.country' => 'Atlantis',
    'addresses.2.id' => '2',
+   'my_test' => '',
 };
 
 is_deeply( $form->fif, $fif, 'get fill in form');
 $fif->{'addresses.0.city'} = 'Primary City';
 $fif->{'addresses.2.country'} = 'Grand Fenwick';
+delete $fif->{my_test};
 
 $form->clear;
 $form->process($fif);
+$fif->{my_test} = '';
 is_deeply( $form->fif, $fif, 'still get right fif');
 $init_object->{addresses}->[0]->{city} = 'Primary City';
 $init_object->{addresses}->[2]->{country} = 'Grand Fenwick';
