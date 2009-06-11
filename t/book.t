@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 28;
+   plan tests => 29;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -49,11 +49,12 @@ is( $form->field('format')->value, 2, 'get value for format' );
 
 $good->{genres} = 2;
 ok( $form->process($good), 'handle one value for multiple select' );
-
+is_deeply( $form->field('genres')->value, [2], 'right value for genres' );
 
 my $id = $book->id;
 
 $good->{author} = '';
+$good->{genres} = [2,4];
 $form->process($good);
 
 ok( $form->validated, 'form validated with null author');

@@ -205,19 +205,24 @@ sub _inner_validate_field
    # load options because this is params validation 
    $self->_load_options;
 
-   my $input = $self->input;
-   return 1 unless defined $input;    # nothing to check
+   my $value = $self->value;
+   return 1 unless defined $value;    # nothing to check
 
-   if ( ref $input eq 'ARRAY'
+   if ( ref $value eq 'ARRAY'
       && !( $self->can('multiple') && $self->multiple ) )
    {
       $self->add_error('This field does not take multiple values');
       return;
    }
+   elsif ( ref $value ne 'ARRAY' && $self->multiple )
+   {
+      $value = [$value];
+      $self->value($value);
+   } 
 
    # create a lookup hash
    my %options = map { $_->{value} => 1 } $self->options;
-   for my $value ( ref $input eq 'ARRAY' ? @$input : ($input) )
+   for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) )
    {
       unless ( $options{$value} )
       {
