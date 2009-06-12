@@ -46,6 +46,7 @@ has_field 'url' => (
             );
 has_field 'active' => ( type => 'Boolean', label => "Active?" );
 
+has_field 'submit' => ( type => 'Submit', value => 'Save' );
 
 =head1 AUTHOR
 

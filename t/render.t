@@ -1,4 +1,4 @@
-use Test::More tests => 12;
+use Test::More tests => 13;
 
 use HTML::FormHandler::Field::Text;
 
@@ -39,7 +39,7 @@ use HTML::FormHandler::Field::Text;
 
    has_field 'ip' => ( widget => 'no_render' );
    
-   has_field 'submit' => ( widget => 'submit', value => 'Update' );
+   has_field 'submit' => ( type => 'Submit', value => 'Update' );
 
    has '+dependency' => ( default => sub { [ ['start_date.month',
          'start_date.day', 'start_date.year'] ] } );
@@ -153,7 +153,14 @@ is( $output8,
 
 is( $form->render_field( $form->field('ip')), '', 'no_render' );
 
+my $output9 = $form->render_field( $form->field('submit') );
+is( $output9, '
+<div><input type="submit" name="submit" id="renderformsubmit" value="Update"></div>
+', 'output from Submit');
+
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
 #warn $output;
+
+
 
