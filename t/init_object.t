@@ -4,7 +4,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 17;
+   plan tests => 18;
 }
 
 use_ok('HTML::FormHandler::Model::DBIC');
@@ -58,7 +58,9 @@ my $params = {
 ok( $form->process( $params ), 'validate data' );
 ok( $form->field('title')->value_changed, 'init_value ne value');
 is( $form->field('user_updated')->value, 1, 'writeonly field has value' );
-is( $form->field('publisher')->value, undef, 'value for noupdate field' );
+is( $form->field('publisher')->value, 'anything', 'value for noupdate field' );
+my $values = $form->value;
+ok( !exists $values->{publisher}, 'no publisher in values' );
 
 ok( $form->update_model, 'update validated data');
 

@@ -547,6 +547,7 @@ sub build_node
    my %value_hash;
    for my $field ( $self->fields )
    {  
+      next if $field->noupdate;
       $value_hash{ $field->accessor } = $field->value if $field->has_value;
    }
    $self->value( \%value_hash );
