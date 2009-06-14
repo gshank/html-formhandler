@@ -841,10 +841,8 @@ sub _init_from_object
       }
       else
       {
-         if ( $field->_can_init_value )
+         if ( my @values = $field->get_init_value )
          {
-            my @values;
-            @values = $field->_init_value( $field, $item );
             my $value = @values > 1 ? \@values : shift @values;
             $field->init_value($value) if $value;
             $field->value($value)      if $value;

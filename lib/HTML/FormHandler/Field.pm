@@ -654,7 +654,7 @@ sub _can_init_value
          && $self->form->can( $self->set_init );
    return 1;
 }
-sub _init_value
+sub get_init_value
 {
    my $self = shift;
    return unless $self->_can_init_value;
@@ -693,7 +693,16 @@ sub BUILD
    $self->add_action( @{$params->{apply}} ) if $params->{apply};
 }
 
-sub _init { }
+sub _init 
+{ 
+   my $self = shift;
+   if ( my @values = $self->get_init_value )
+   {
+      my $value = @values > 1 ? \@values : shift @values;
+      $self->init_value($value) if $value;
+      $self->value($value)      if $value;
+   }
+}
 
 sub full_name
 {
