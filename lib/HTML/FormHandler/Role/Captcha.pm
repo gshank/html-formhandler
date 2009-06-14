@@ -56,6 +56,18 @@ sub set_captcha
 sub render_captcha
 {
    my ( $self, $field ) = @_;
+
+   my $output = $self->_label( $field );
+   $output .= '<img src="' . $self->captcha_image_url . '"/>';
+   $output .= '<input id="' . $field->id . '" name="';
+   $output .= $field->name . '">';
+   return $output;
+}
+
+sub captcha_image_url
+{
+   my $self = shift;
+   return '/captcha/test';
 }
 
 1;

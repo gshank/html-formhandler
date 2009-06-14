@@ -1,4 +1,4 @@
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 use HTML::FormHandler::Field::Text;
 
@@ -18,6 +18,8 @@ use HTML::FormHandler::Field::Text;
    has_field 'number';
    has_field 'fruit' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple' );
+   has_field 'opt_in' => ( type => 'Select', widget => 'radio_group',
+      options => [{ value => 0, label => 'No'}, { value => 1, label => 'Yes'} ] );
    has_field 'active' => ( type => 'Checkbox' );
    has_field 'comments' => ( type => 'TextArea' );
    has_field 'hidden' => ( type => 'Hidden' );
@@ -157,6 +159,12 @@ my $output9 = $form->render_field( $form->field('submit') );
 is( $output9, '
 <div><input type="submit" name="submit" id="renderformsubmit" value="Update"></div>
 ', 'output from Submit');
+
+my $output10 = $form->render_field( $form->field('opt_in') );
+is( $output10, '
+<div><label class="label" for="opt_in">Yes: </label><input type="radio" value="1" name="opt_in"  />
+</div>
+', 'output from radio group' );
 
 my $output = $form->render;
 ok( $output, 'get rendered output from form');

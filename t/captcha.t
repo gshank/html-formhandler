@@ -5,7 +5,7 @@ use Test::More;
 BEGIN {
    eval "use GD::SecurityImage";
    plan skip_all => 'GD::SecurityImage required' if $@;
-   plan tests => 8;
+   plan tests => 9;
 }
 
 use_ok( 'HTML::FormHandler::Field::Captcha' );
@@ -15,9 +15,11 @@ use_ok( 'HTML::FormHandler::Field::Captcha' );
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Role::Captcha';
+   with 'HTML::FormHandler::Render::Simple';
 
    has_field 'some_field' => (order => 1);
    has_field 'subject' => (order => 2);
+   has_field '+captcha' => ( id => 'captcha' );
 
 }
 
@@ -44,3 +46,7 @@ ok( !$form->field('captcha')->fif, 'no fif for captcha' );
 $form->process( ctx => $ctx, params => { some_field => 'test', subject => 'Testing captcha', captcha => $rnd2 } );
 ok( $form->validated, 'form validated' );
 
+my $render = $form->render_field('captcha');
+is( $render, '
+<div class="captcha ><label class="label" for="captcha">Verification: </label><img src="/captcha/test"/><input id="captcha" name="captcha"></div>
+', 'captcha renders ok' );

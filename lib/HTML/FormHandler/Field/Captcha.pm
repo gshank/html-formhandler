@@ -40,13 +40,14 @@ has 'scramble' => ( isa => 'Int', is => 'rw', default => '0' );
 has 'lines'    => ( isa => 'Int', is => 'rw', default => '2' );
 has 'gd_font'  => ( isa => 'Str', is => 'rw', default => 'Large' );
 has 'image'    => ( is => 'rw' );
+has '+css_class' => ( default => 'captcha' );
 
 has '+noupdate' => ( default => 1 );
 
 sub get_init_value 
 {
    my $self = shift;
-$DB::single=1;
+
    my $captcha = $self->form->get_captcha;
    if( $captcha )
    {
@@ -74,7 +75,7 @@ $DB::single=1;
 sub validate
 {
    my $self = shift;
-$DB::single=1;
+
    my $captcha = $self->form->get_captcha;
    unless ($captcha->{rnd} eq $self->value)
    {
@@ -93,7 +94,7 @@ $DB::single=1;
 sub gen_captcha
 {
    my $self = shift;
-$DB::single=1;
+
    my ( $image, $type, $rnd ) = GD::SecurityImage->new(
       height   => $self->height,
       width    => $self->width,
