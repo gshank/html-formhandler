@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 use_ok( 'HTML::FormHandler::Field::Repeatable' );
 use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
@@ -133,5 +133,4 @@ is_deeply( $form->values, $values, 'get right values' );
 $form->clear_init_object;
 $form->process( { my_test => 'test' } );
 ok( !exists $form->value()->{addresses}, 'Addresses deleted' );
-warn Dumper( $form->value ); use Data::Dumper;
 
