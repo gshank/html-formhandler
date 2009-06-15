@@ -129,3 +129,9 @@ my $values = {
    ]
 };
 is_deeply( $form->values, $values, 'get right values' );
+
+$form->clear_init_object;
+$form->process( { my_test => 'test' } );
+ok( !exists $form->value()->{addresses}, 'Addresses deleted' );
+warn Dumper( $form->value ); use Data::Dumper;
+
