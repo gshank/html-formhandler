@@ -6,7 +6,7 @@ use lib 't/lib';
 use BookDB::Schema::DB;
 use MyTest
     tests   => 3,
-    recommended => ['DateTime'];
+    recommended => ['DBIx::Class', 'DateTime'];
 
 use_ok( 'HTML::FormHandler::Field::DateTime' );
 
@@ -31,3 +31,4 @@ my $user = $schema->resultset( 'User' )->first;
 my $form = UserForm->new( item => $user );
 ok( $form, 'Form with DateTime field loaded from the db' );
    
+

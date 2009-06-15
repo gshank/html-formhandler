@@ -244,6 +244,7 @@ sub _load_options
 {
    my $self = shift;
 
+   return if $self->has_options;
    my @options;
    if( $self->_can_options )
    {
