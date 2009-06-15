@@ -458,42 +458,6 @@ after clear_data => sub
    $_->clear_data for shift->fields;
 };
 
-sub clear_errors
-{
-   $_->clear_errors for shift->fields;
-}
-
-sub clear_fifs
-{
-   my $self = shift;
-
-   foreach my $field ($self->fields)
-   {
-      $field->clear_fifs if $field->can('clear_fifs');
-      $field->clear_fif;
-   }
-}
-
-sub clear_values
-{
-   my $self = shift;
-   foreach my $field ($self->fields)
-   {
-      $field->clear_values if $field->can('clear_values');
-      $field->clear_value;
-   }
-}
-
-sub clear_inputs
-{
-   my $self = shift;
-   foreach my $field ($self->fields)
-   {
-      $field->clear_inputs if $field->can('clear_inputs');
-      $field->clear_input;
-   }
-}
-
 sub dump_fields { shift->dump( @_) }
 sub dump
 {
@@ -541,7 +505,6 @@ sub build_node
          }
       }
    }
-   $self->clear_fif;
    return unless $self->has_fields;
    $self->_fields_validate;
    my %value_hash;

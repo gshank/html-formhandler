@@ -1,0 +1,65 @@
+
+Recursive operations
+
+  Clear
+    in HFH
+
+      Maybe 'clear' and 'clear_state' could be combined, but there
+      are a number of tests that use clear_state
+      sub clear
+      { 
+         my $self = shift;
+         warn "HFH: clear ", $self->name, "\n" if $self->verbose;
+         $self->clear_state;
+         $self->clear_params;
+         $self->clear_ctx;
+         $self->processed(0);
+         $self->did_init_obj(0);
+      }
+      sub clear_state
+      {
+         my $self = shift;
+         $self->validated(0);
+         $self->ran_validation(0);
+         $self->num_errors(0);
+         $self->clear_data;
+      }
+      sub clear_data
+      {
+         shift->clear_value;
+      }
+
+   in Fields.pm
+      after clear_data => sub
+      {
+         $_->clear_data for shift->fields;
+      };
+
+   in Field.pm
+
+      sub clear_data
+      {
+         my $self = shift;
+         $self->clear_input;
+         $self->clear_value;
+         $self->clear_fif;
+         $self->clear_errors;
+         $self->clear_init_value;
+         $self->clear_fif_from_value;
+         $self->clear_other;
+      }
+      sub clear_other { }
+
+  Field::Repeatable
+      sub clear_other ...
+
+
+
+  FIF
+    HFH->fif
+
+  Value
+    TransformAndCheck has 'value'
+    Fields->value
+
+

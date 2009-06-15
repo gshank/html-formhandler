@@ -14,3 +14,4 @@
 ^*.old$
 ^*.new$
 ^NONE$
+^dev_notes.txt$

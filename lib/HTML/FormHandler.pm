@@ -673,8 +673,6 @@ sub clear_data
    shift->clear_value;
 }
 
-sub clear_fif { shift->clear_fifs }
-
 sub fif
 {
    my ( $self, $prefix, $node ) = @_;

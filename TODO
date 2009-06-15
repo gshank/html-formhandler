@@ -17,7 +17,4 @@
   investigate a Catalyst View to provide better template support (like Reaction)
   investigate other Form processing HTML generation
   clean up DateTime fields (make consistent), better tests
-  testcases for noupdate and clear flags
-  View::TT FillInForm role (check with jhannah)
-
 
