@@ -97,7 +97,12 @@ sub render_field
    die "Widget method $method not implemented in H::F::Render::Simple"
       unless $self->can($method);
    my $class = '';
-   $class = ' class="error"' if $field->has_errors;
+   if( $field->css_class || $field->has_errors )
+   {
+      $class .= ' class="';
+      $class .= $field->css_class . ' ' if $field->css_class;
+      $class .= ' error"' if $field->has_errors;
+   }
    my $output = qq{\n<div$class>};
    $output .= $self->$method($field);
    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
@@ -251,7 +256,7 @@ sub render_radio_group
       $output = '<label class="label" for="';
       $output .= $field->html_name . '">' . $option->{label} . ': </label>';
       $output .= '<input type="radio" value="' . $option->{value} . '"';
-      $output .= ' name="' . $field->html_name;
+      $output .= ' name="' . $field->html_name . '" ';
       $output .= ' selected="selected"' if $option->{value} eq $self->fif;
       $output .= " />\n";
    }
