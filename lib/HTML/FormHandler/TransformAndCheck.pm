@@ -124,6 +124,7 @@ sub has_some_value
         }
         return 0;
     }
+    return blessed $x; # true if blessed, otherwise false
 }
     
 
