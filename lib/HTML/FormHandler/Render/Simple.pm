@@ -125,7 +125,7 @@ sub render_text
    $output .= '<input type="text" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
-   $output .= ' value="' . $field->fif . '">';
+   $output .= ' value="' . $field->fif . '" />';
    # value
    return $output;
 }
@@ -145,7 +145,7 @@ sub render_password
    $output .= '<input type="password" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
-   $output .= ' value="' . $field->fif . '">';
+   $output .= ' value="' . $field->fif . '" />';
    # value
    return $output;
 }
@@ -163,7 +163,7 @@ sub render_hidden
    my $output = '<input type="hidden" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
-   $output .= ' value="' . $field->fif . '">';
+   $output .= ' value="' . $field->fif . '" />';
    # value
    return $output;
 }
@@ -180,6 +180,7 @@ sub render_select
 
    my $output = $self->_label( $field );
    $output .= '<select name="' . $field->html_name . '"';
+   $output .= ' id="' . $field->id . '"';
    $output .= ' multiple="multiple"' if $field->multiple == 1; 
    $output .= ' size="' . $field->size . '"' if $field->size;
    $output .= '>';
@@ -231,9 +232,9 @@ sub render_checkbox
 
    my $output = $self->_label( $field );
    $output .= '<input type="checkbox" name="';
-   $output .= $field->html_name . '" value="' . $field->checkbox_value . '"';
+   $output .= $field->html_name . '" id="' . $field->id . '" value="' . $field->checkbox_value . '"';
    $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
-   $output .= '/>';
+   $output .= ' />';
    return $output;
 }
 
@@ -254,11 +255,11 @@ sub render_radio_group
    foreach my $option ( $field->options )
    {
       $output = '<label class="label" for="';
-      $output .= $field->html_name . '">' . $option->{label} . ': </label>';
+      $output .= $field->id . '">' . $option->{label} . ': </label>';
       $output .= '<input type="radio" value="' . $option->{value} . '"';
-      $output .= ' name="' . $field->html_name . '" ';
+      $output .= ' name="' . $field->html_name . '" id="' . $field->id . '"';
       $output .= ' selected="selected"' if $option->{value} eq $self->fif;
-      $output .= " />\n";
+      $output .= ' />';
    }
    return $output;
 }
@@ -289,7 +290,7 @@ sub _label
 {
    my ( $self, $field ) = @_;
    return '<label class="label" for="' 
-   . $field->html_name 
+   . $field->id
    . '">'
    . $field->label 
    . ': </label>'
@@ -327,7 +328,7 @@ sub render_submit
    my $output = '<input type="submit" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
-   $output .= ' value="' . $fif . '">';
+   $output .= ' value="' . $fif . '" />';
    return $output;
 }
 
