@@ -34,12 +34,20 @@ has 'options' => ( isa => 'ArrayRef[HashRef]', is => 'rw',
                    lazy => 1, 
                    builder => 'build_options' );
 sub build_options { [] };
+has 'options_from' => ( isa => 'Str', is => 'rw', default => 'none' );
 
 =head2 set_options
 
 Name of form method that sets options
 
 =cut
+
+sub BUILD
+{
+   my $self = shift;
+$DB::single=1;
+   $self->options_from('build') if $self->options && $self->has_options;   
+}
 
 has 'set_options' => ( isa => 'Str', is => 'rw',
        default => sub {
@@ -244,17 +252,19 @@ sub _load_options
 {
    my $self = shift;
 
-   return if $self->has_options;
+   return if $self->options_from eq 'build';
    my @options;
    if( $self->_can_options )
    {
       @options = $self->_options;
+      $self->options_from('method');
    }
    elsif( $self->form )
    {
       my $full_accessor; 
       $full_accessor = $self->parent->full_accessor if $self->parent;
       @options = $self->form->lookup_options($self, $full_accessor);
+      $self->options_from('model') if scalar @options;
    }
    return unless @options; # so if there isn't an options method and no options
                            # from a table, already set options attributes stays put

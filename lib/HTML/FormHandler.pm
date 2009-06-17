@@ -839,8 +839,8 @@ sub _init_from_object
          if ( my @values = $field->get_init_value )
          {
             my $value = @values > 1 ? \@values : shift @values;
-            $field->init_value($value) if $value;
-            $field->value($value)      if $value;
+            $field->init_value($value) if defined $value;
+            $field->value($value)      if defined $value;
          }
          else
          {
