@@ -426,9 +426,7 @@ post-validation values of all the fields.
 Various clear methods are used in internal processing, and might be
 useful in some situations.
 
-   clear - clears state, params, ctx
-   clear_state - clears flags, errors, fif, values, input 
-   clear_values, clear_errors, clear_fif - on all fields
+   clear - clears state, params, ctx, flags, errors, fif, values, input 
 
 =head2 Miscellaneous attributes
 
