@@ -20,8 +20,6 @@ my $form = BookDB::Form::BookAuto->new(item_id => undef, schema => $schema);
 
 ok( !$form->process, 'Empty data' );
 
-$form->clear_state;
-
 # This is munging up the equivalent of param data from a form
 my $good = {
     'title' => 'How to Test Perl Form Processors',
@@ -39,9 +37,7 @@ ok ($book, 'get book object from form');
 
 # clean up book db & form
 $book->delete;
-$form->clear_state;
 
-$_->clear_input for $form->fields;
 my $bad_1 = {
     'book.title' => '',
     notitle => 'not req',
@@ -49,7 +45,6 @@ my $bad_1 = {
 };
 
 ok( !$form->process( $bad_1 ), 'bad 1' );
-$form->clear_state;
 
 my $bad_2 = {
     'title' => "Another Silly Test Book",
@@ -66,7 +61,4 @@ ok( $form->field('year')->has_errors, 'year has error' );
 ok( !$form->field('pages')->has_errors, 'pages has no error' );
 
 ok( !$form->field('author')->has_errors, 'author has no error' );
-
-$form->clear_state;
-
 

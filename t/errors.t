@@ -78,6 +78,3 @@ is_deeply( \@field_names,
 
 is( $form->field('fruit')->id, "testform_fruit", 'field has id' ); 
 
-$form->clear_state;
-
-

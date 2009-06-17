@@ -652,25 +652,21 @@ sub clear
 { 
    my $self = shift;
    warn "HFH: clear ", $self->name, "\n" if $self->verbose;
-   $self->clear_state;
+   $self->clear_data;
+   $self->validated(0);
+   $self->ran_validation(0);
+   $self->num_errors(0);
    $self->clear_params;
    $self->clear_ctx;
    $self->processed(0);
    $self->did_init_obj(0);
 }
 
-sub clear_state
-{
-   my $self = shift;
-   $self->validated(0);
-   $self->ran_validation(0);
-   $self->num_errors(0);
-   $self->clear_data;
-}
-
 sub clear_data
 {
-   shift->clear_value;
+   my $self = shift;
+   $self->clear_value;
+   $self->clear_input;
 }
 
 sub fif
