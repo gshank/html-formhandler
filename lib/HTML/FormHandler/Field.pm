@@ -507,8 +507,7 @@ has 'fif' => (
     predicate => 'has_fif',
     lazy_build => 1,
 );
-has 'fif_from_value' => ( isa => 'Str', is => 'rw',
-    clearer => 'clear_fif_from_value');
+has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 sub _build_fif {
    my $self = shift;
 
@@ -774,7 +773,6 @@ sub clear_data
    $self->clear_fif;
    $self->clear_errors;
    $self->clear_init_value;
-   $self->clear_fif_from_value;
    $self->clear_other;
 }
 sub clear_other { }
