@@ -252,14 +252,14 @@ sub render_radio_group
    my ( $self, $field ) = @_;
 
    my $output = "\n";
+   $output .= $self->_label($field) . " <br />";
    foreach my $option ( $field->options )
    {
-      $output = '<label class="label" for="';
-      $output .= $field->id . '">' . $option->{label} . ': </label>';
       $output .= '<input type="radio" value="' . $option->{value} . '"';
       $output .= ' name="' . $field->html_name . '" id="' . $field->id . '"';
       $output .= ' selected="selected"' if $option->{value} eq $self->fif;
       $output .= ' />';
+      $output .= $option->{label} . '<br />';
    }
    return $output;
 }

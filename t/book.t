@@ -6,7 +6,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 29;
+   plan tests => 28;
 }
 
 use_ok( 'HTML::FormHandler' );
@@ -60,7 +60,6 @@ $form->process($good);
 
 ok( $form->validated, 'form validated with null author');
 
-ok( $form->field('author')->value_changed, 'init value and value of author are different');
 is( $book->author, undef, 'updated author with null value');
 is( $form->field('author')->value, undef, 'author value right in form');
 is( $form->field('publisher')->value, 'EreWhon Publishing', 'right publisher');
