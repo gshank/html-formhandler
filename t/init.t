@@ -31,10 +31,7 @@ my $params = { reqname => 'Sweet', optname => 'Charity', somename => 'Exists' };
 $form->process( init_object => $init_object, params => $params ); 
 ok( $form->validated, 'form with init_obj & params validated' );
 is( $form->field('reqname')->init_value, 'From Method', 'correct init_value');
-TODO: {
-   local $TODO = 'no init_value when params';
-   is(  $form->field('optname')->init_value, 'Over Again', 'correct init_value no meth');
-}
+is(  $form->field('optname')->init_value, 'Over Again', 'correct init_value no meth');
 is( $form->field('somename')->init_value, 'SN from meth', 'correct for init_obj undef');
 is( $form->field('somename')->value, 'Exists', 'correct value for init_obj undef');
 
