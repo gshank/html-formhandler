@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 29;
+my $tests = 30;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
