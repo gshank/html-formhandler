@@ -45,7 +45,7 @@ Name of form method that sets options
 sub BUILD
 {
    my $self = shift;
-$DB::single=1;
+
    $self->options_from('build') if $self->options && $self->has_options;   
 }
 
@@ -244,6 +244,8 @@ sub _inner_validate_field
 sub _init
 {
    my $self = shift;
+
+   $self->SUPER::_init;
    # load options when no input and no value (empty form )
    $self->_load_options;
 }

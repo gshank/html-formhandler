@@ -695,6 +695,7 @@ sub BUILD
 sub _init 
 { 
    my $self = shift;
+
    if ( my @values = $self->get_init_value )
    {
       my $value = @values > 1 ? \@values : shift @values;

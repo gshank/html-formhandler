@@ -143,6 +143,7 @@ sub update_model
         updates => $self->values,
     );
     $update_params{ object } = $self->item if $self->item;
+$DB::single=1;
     my $new_item = DBIx::Class::ResultSet::RecursiveUpdate::Functions::recursive_update( %update_params );
     $new_item->discard_changes;
     $self->item($new_item);

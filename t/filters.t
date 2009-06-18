@@ -111,7 +111,7 @@ my $params = {
 };
 $form->process($params);
 
-is( $form->field('sprintf_filter')->value, '<1e+02>', 'sprintf filter' );
+like( $form->field('sprintf_filter')->value, qr/<1e\+0+2>/, 'sprintf filter' );
 ok( $form->field('date_time_error')->has_errors,      'DateTime error catched' );
 is( $form->field('date_time_error')->errors->[0], 'Not a valid DateTime', 'error message');
 is( ref $form->field('date_time')->value, 'DateTime',   'DateTime object created' );

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 29;
+my $tests = 30;
 plan tests => $tests;
 
 use_ok( 'HTML::FormHandler' );
@@ -16,6 +16,7 @@ use_ok( 'HTML::FormHandler' );
    has_field 'reqname' => ( required => 1 );
    has_field 'somename';
    has_field 'my_selected' => ( type => 'Checkbox' );
+   has_field 'must_select' => ( type => 'Checkbox', required => 1 );
    sub field_list {
        return  [
             fruit       => 'Select',
@@ -43,6 +44,7 @@ my $good = {
     reqname => 'hello',
     optname => 'not req',
     fruit   => 2,
+    must_select => 1,
 };
 
 ok( $form->process( $good ), 'Good data' );
@@ -66,6 +68,7 @@ my $bad_1 = {
 ok( !$form->process( $bad_1 ), 'bad 1' );
 ok( $form->field('fruit')->has_errors, 'fruit has error' );
 ok( $form->field('reqname')->has_errors, 'reqname has error' );
+ok( $form->field('must_select')->has_errors, 'must_select has error' );
 ok( !$form->field('optname')->has_errors, 'optname has no error' );
 is( $form->field('fruit')->id, "testform_fruit", 'field has id' ); 
 is( $form->field('fruit')->label, 'Fruit', 'field label');
@@ -87,10 +90,12 @@ $init_object->{my_selected} = 0;  # checkboxes must be forced to 0
 my %fif = %$init_object;
 $fif{somename} = '';
 $fif{fruit} = '';
+$fif{must_select} = 0;
 is_deeply( $form->fif, \%fif, 'get right fif with init_object');
-
 # make sure that checkbox is 0 in values
-ok( $form->process( $init_object ), 'form validates with params' );
+$init_object->{must_select} = 1;
+$fif{must_select} = 1;
+ok( $form->process( $init_object), 'form validates with params' );
 is_deeply( $form->values, $init_object, 'get right values from form'); 
 is_deeply( $form->fif, \%fif, 'get right fif with init_object');
 
