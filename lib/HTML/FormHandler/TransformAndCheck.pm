@@ -127,20 +127,6 @@ sub has_some_value
     return blessed $x; # true if blessed, otherwise false
 }
 
-sub is_submitted
-{
-    my $self = shift;
-    return unless $self->can( 'widget' ) && $self->widget eq 'no_render';
-    return unless $self->has_input;
-   
-    return 1 if ! $self->DOES('HTML::FormHandler::Fields');
-    for my $sub_node ( $self->fields ){
-        return 1 if $sub_node->is_submitted;
-    }
-    return;
-}
-   
-
 sub input_defined
 {
    my ($self) = @_;

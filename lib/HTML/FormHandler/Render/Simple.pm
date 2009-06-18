@@ -92,7 +92,6 @@ sub render_field
    {
       $field = $self->field($field);
    }
-   return '' if $field->widget eq 'no_render';
    my $method = 'render_' . $field->widget;
    die "Widget method $method not implemented in H::F::Render::Simple"
       unless $self->can($method);

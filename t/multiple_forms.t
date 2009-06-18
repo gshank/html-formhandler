@@ -1,4 +1,4 @@
-use Test::More tests => 10;
+use Test::More tests => 9;
 
 
 use_ok( 'HTML::FormHandler' );
@@ -16,7 +16,6 @@ use_ok( 'HTML::FormHandler' );
    has_field 'field_one';
    has_field 'field_two';
    has_field 'field_three';
-   has_field 'no_render_field' => ( widget => 'no_render' );
 }
 my $form1 = My::Form::One->new;
 ok( $form1, 'get first form' );
@@ -60,7 +59,6 @@ is_deeply( $fif_params, {
    'One.field_one' => 'First field in first form',
    'One.field_two' => 'Second field in first form',
    'One.field_three' => 'Third field in first form',
-   'One.no_render_field' => '',
    }, 'fif params correct');
 
 $form2->process( $params );
@@ -75,12 +73,4 @@ $params = {
 };
 $form2 = My::Form::Two->new( params => $params );
 ok( !$form2->has_params, 'has_params checks only params intented for the form');
-$params = {
-   'Two.field_one' => 'First field in first form',
-   'Two.field_two' => 'Second field in first form',
-   'Two.field_three' => 'Third field in first form',
-   'One.no_render_field' => 'aaa',
-};
-$form1 = My::Form::One->new( params => $params );
-ok( !$form1->is_submitted, 'is_submitted with only no_render params' );
 
