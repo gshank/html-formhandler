@@ -41,11 +41,18 @@ has '+input_without_param' => ( default => 0 );
 
 __PACKAGE__->meta->make_immutable;
 
-sub value {
+sub value 
+{
     my $field = shift;
     return $field->SUPER::value( @_ ) if @_;
     my $v = $field->SUPER::value;
     return defined $v ? $v : 0;
+}
+
+sub validate
+{
+   my $self = shift;
+   $self->add_error( $self->required_message) if( $self->required && !$self->value );
 }
 
 

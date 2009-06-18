@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-plan tests => 10;
+plan tests => 11;
 
 my $class = 'HTML::FormHandler::Field::Checkbox';
 
@@ -38,6 +38,13 @@ $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 4' );
 is( $field->value, 0, 'input undef is 0' );
 
+$field = $class->new(
+    name    => 'test_field2',
+    required => 1 
+);
+$field->input(0);
+$field->validate_field;
+ok( $field->has_errors, 'required field fails with 0');
 
 
 
