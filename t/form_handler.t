@@ -100,5 +100,6 @@ is_deeply( $form->values, $init_object, 'get right values from form');
 is_deeply( $form->fif, \%fif, 'get right fif with init_object');
 
 $form->clear;
-is( $form->value, undef, 'Form value cleared' );
+ok( !$form->has_value, 'Form value cleared' );
+ok( !$form->has_input, 'Form input cleared' );
 

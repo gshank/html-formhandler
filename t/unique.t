@@ -20,8 +20,6 @@ my $form = BookDB::Form::Book->new(item_id => undef, schema => $schema);
 
 ok( !$form->process, 'Empty data' );
 
-$form->clear_state;
-
 # This is munging up the equivalent of param data from a form
 my $params = {
     'title' => 'How to Test Perl Form Processors',

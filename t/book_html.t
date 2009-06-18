@@ -23,8 +23,6 @@ my $form = BookDB::Form::BookHTML->new(item_id => undef, schema => $schema);
 
 ok( !$form->process, 'Empty data' );
 
-$form->clear_state;
-
 # This is munging up the equivalent of param data from a form
 my $good = {
     'book.title' => 'How to Test Perl Form Processors',
@@ -44,8 +42,6 @@ ok ( $book->title eq 'How to Test Perl Form Processors', 'get title');
 
 # clean up book db & form
 $book->delete;
-$form->clear_state;
-$_->clear_input for $form->fields;
 
 my $bad_1 = {
     'book.notitle' => 'not req',
@@ -53,7 +49,6 @@ my $bad_1 = {
 };
 
 ok( !$form->process( $bad_1 ), 'bad 1' );
-$form->clear_state;
 
 my $bad_2 = {
     'book.title' => "Another Silly Test Book",
@@ -68,7 +63,4 @@ ok( !$form->process( $bad_2 ), 'bad 2');
 ok( $form->field('pages')->has_errors, 'pages has error' );
 
 ok( !$form->field('author')->has_errors, 'author has no error' );
-
-$form->clear_state;
-
 

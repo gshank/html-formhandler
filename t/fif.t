@@ -68,8 +68,8 @@ is( $form->field('author')->fif, 'S.Else', 'get field fif value after validate' 
 #ok( !$form->field('author')->has_input, 'no input for field');
 
 
-$form->clear_state;
-ok( ! ( grep { $_ ne '' } ( values %{ $form->fif } ) ), 'clear_state clears fif' );
+$form->clear;
+ok( ! ( grep { $_ ne '' } ( values %{ $form->fif } ) ), 'clear clears fif' );
 
 my $params = {
    title => 'Testing form',

@@ -426,9 +426,7 @@ post-validation values of all the fields.
 Various clear methods are used in internal processing, and might be
 useful in some situations.
 
-   clear - clears state, params, ctx
-   clear_state - clears flags, errors, fif, values, input 
-   clear_values, clear_errors, clear_fif - on all fields
+   clear - clears state, params, ctx, flags, errors, fif, values, input 
 
 =head2 Miscellaneous attributes
 
@@ -652,25 +650,21 @@ sub clear
 { 
    my $self = shift;
    warn "HFH: clear ", $self->name, "\n" if $self->verbose;
-   $self->clear_state;
+   $self->clear_data;
+   $self->validated(0);
+   $self->ran_validation(0);
+   $self->num_errors(0);
    $self->clear_params;
    $self->clear_ctx;
    $self->processed(0);
    $self->did_init_obj(0);
 }
 
-sub clear_state
-{
-   my $self = shift;
-   $self->validated(0);
-   $self->ran_validation(0);
-   $self->num_errors(0);
-   $self->clear_data;
-}
-
 sub clear_data
 {
-   shift->clear_value;
+   my $self = shift;
+   $self->clear_value;
+   $self->clear_input;
 }
 
 sub fif
@@ -802,14 +796,17 @@ sub _setup_form
    # will be done in init_object when there's an initial object
    # in validation routines when there are params
    # and by _init for empty forms
-   if( ($self->init_object || $self->item) && !$self->did_init_obj )
+   if( !$self->has_params && !$self->did_init_obj )
    {
-      $self->_init_from_object( $self, $self->init_object || $self->item );
-   }
-   if ( !$self->has_params && !$self->did_init_obj )
-   {
-      # no initial object. empty form form must be initialized
-      $self->_init;
+      if( ($self->init_object || $self->item) )
+      {
+         $self->_init_from_object( $self, $self->init_object || $self->item );
+      }
+      else
+      {
+         # no initial object or params. empty form must be initialized
+         $self->_init;
+      }
    }
 }
 
@@ -842,8 +839,8 @@ sub _init_from_object
          if ( my @values = $field->get_init_value )
          {
             my $value = @values > 1 ? \@values : shift @values;
-            $field->init_value($value) if $value;
-            $field->value($value)      if $value;
+            $field->init_value($value) if defined $value;
+            $field->value($value)      if defined $value;
          }
          else
          {
