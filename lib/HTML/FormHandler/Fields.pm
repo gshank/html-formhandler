@@ -100,13 +100,7 @@ sub has_field_list
 # there is no initial object and no params
 sub _init
 {
-   my $self = shift;
-$DB::single=1;
-   foreach my $field ( $self->fields )
-   {
-      $field->_init;
-   }
-#   $_->_init for shift->fields;
+   $_->_init for shift->fields;
 }
 
 # calls routines to process various field lists
@@ -450,7 +444,7 @@ sub _fields_validate
       next if $field->parent && $field->parent != $self;
       # Validate each field and "inflate" input -> value.
       $field->validate_field;          # this calls the field's 'validate' routine
-      next unless $field->has_value && defined $field->value;
+      next unless ($field->has_value && defined $field->value);
       # these methods have access to the inflated values
       $field->_validate($field);    # will execute a form-field validation routine
    }
@@ -504,6 +498,10 @@ sub build_node
          if ( exists $input->{$field_name} )
          {  
             $field->input( $input->{$field_name} )
+         }
+         elsif( $field->DOES('HTML::FormHandler::Field::Repeatable') )
+         {
+            $field->clear_other;
          }
          elsif ( $field->has_input_without_param )
          {  

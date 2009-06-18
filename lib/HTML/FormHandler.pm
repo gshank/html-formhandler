@@ -796,15 +796,15 @@ sub _setup_form
    # will be done in init_object when there's an initial object
    # in validation routines when there are params
    # and by _init for empty forms
-   if( !$self->has_params && !$self->did_init_obj )
+   if( !$self->did_init_obj )
    {
-      if( ($self->init_object || $self->item) )
+      if( $self->init_object || $self->item )
       {
          $self->_init_from_object( $self, $self->init_object || $self->item );
       }
-      else
+      elsif ( !$self->has_params )
       {
-         # no initial object or params. empty form must be initialized
+         # no initial object. empty form form must be initialized
          $self->_init;
       }
    }

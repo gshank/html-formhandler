@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 19;
+use Test::More tests => 21;
 
 use_ok( 'HTML::FormHandler::Field::Repeatable' );
 use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
@@ -130,6 +130,14 @@ my $values = {
 };
 is_deeply( $form->values, $values, 'get right values' );
 
+my $no_repeat = {
+   my_test => 'test'
+};
+$form->process( $no_repeat );
+ok( !exists $form->value()->{addresses}, 'Addresses deleted not in params' );
+
+$form->process({});
+ok( exists $form->value->{addresses}, 'Addresses are back' );
 $form->clear_init_object;
 $form->process( { my_test => 'test' } );
 ok( !exists $form->value()->{addresses}, 'Addresses deleted' );

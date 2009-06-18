@@ -45,7 +45,8 @@ is_deeply( $form->field('employer')->value,
      category => "Computers",
      country => "United Kingdom" }, 'value is correct' );
 $params->{opt_in} = 0;
-$params->{$_} = '' for qw/ country fav_book license fav_cat /;
+$params->{license} = 0;
+$params->{$_} = '' for qw/ country fav_book fav_cat /;
 is_deeply( $form->fif, $params, 'fif is correct' );
 
 
