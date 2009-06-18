@@ -100,7 +100,13 @@ sub has_field_list
 # there is no initial object and no params
 sub _init
 {
-   $_->_init for shift->fields;
+   my $self = shift;
+$DB::single=1;
+   foreach my $field ( $self->fields )
+   {
+      $field->_init;
+   }
+#   $_->_init for shift->fields;
 }
 
 # calls routines to process various field lists
