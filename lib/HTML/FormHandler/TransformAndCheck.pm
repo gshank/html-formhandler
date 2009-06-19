@@ -146,27 +146,30 @@ sub validate_field
       $field->value(undef)                          if ( $field->has_input );
       return;
    }
-   elsif ( !$field->has_input )
+   elsif ( !$field->has_input && !$field->DOES('HTML::FormHandler::Field::Repeatable') )
    {
       return;
    }
-   elsif( !$field->input_defined )
+   elsif( !$field->input_defined && !$field->DOES('HTML::FormHandler::Field::Repeatable'))
    {
       $field->value(undef);
       return;
    }
+   
+   # do building of node 
+   if( $field->DOES('HTML::FormHandler::Fields') ){
+       $field->build_node;
+   }
    else
    {
-      $field->value( $field->input );
+       $field->value( $field->input );
    }
-
+   
    $field->_inner_validate_field();
-   # do building of node 
-   $field->build_node if $field->DOES('HTML::FormHandler::Fields');
-
    $field->_apply_actions;
-
-   my $not_valid = !$field->validate || $field->has_errors || !$field->test_ranges;
+   $field->validate;
+   $field->test_ranges;
+     
    return !$field->has_errors;
 }
 
