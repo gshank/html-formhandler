@@ -449,6 +449,10 @@ sub _fields_validate
       $field->_validate($field);    # will execute a form-field validation routine
    }
    $self->cross_validate;
+   # move errors up to parent
+   $self->parent->push_errors( $self->errors )
+      if( $self->parent && $self->parent->DOES('HTML::FormHandler::Field') );
+
 }
 
 sub cross_validate { }

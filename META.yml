@@ -3,7 +3,6 @@ abstract: 'form handler written in Moose '
 author: ~
 build_requires:
   DateTime::Format::MySQL: 0
-  DateTime::Format::SQLite: 0
   DateTime::Format::W3CDTF: 0
   ExtUtils::MakeMaker: 6.42
   Test::More: 0.77

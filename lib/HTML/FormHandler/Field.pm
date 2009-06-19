@@ -690,6 +690,9 @@ sub BUILD
    $self->add_action($self->trim) if $self->trim;
    $self->_build_apply_list;
    $self->add_action( @{$params->{apply}} ) if $params->{apply};
+   $self->set_validate;
+   $self->set_init;
+
 }
 
 sub _init 
