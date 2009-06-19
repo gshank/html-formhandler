@@ -1,24 +1,21 @@
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 
 use_ok( 'HTML::FormHandler' );
 
 {
    package My::Form::One;
-   use Moose;
+   use HTML::FormHandler::Moose;
+
    extends 'HTML::FormHandler';
 
    # this form specifies the form name
    has '+name' => ( default => 'One' );
    has '+html_prefix' => ( default => 1 );
 
-   sub field_list {
-      return [
-         field_one => 'Text',
-         field_two => 'Text',
-         field_three => 'Text',
-      ];
-   }
+   has_field 'field_one';
+   has_field 'field_two';
+   has_field 'field_three';
 }
 my $form1 = My::Form::One->new;
 ok( $form1, 'get first form' );
@@ -53,7 +50,6 @@ my $params = {
    $form2->field('field_three')->html_name => 
               'Third field in second form',
 };
-
 $form1->process( $params );
 ok( $form1->validated, 'validated first form' );
 is( $form1->field('field_one')->value, 'First field in first form',
@@ -62,11 +58,19 @@ my $fif_params = $form1->fif;
 is_deeply( $fif_params, {
    'One.field_one' => 'First field in first form',
    'One.field_two' => 'Second field in first form',
-   'One.field_three' => 'Third field in first form'}, 'fif params correct');
+   'One.field_three' => 'Third field in first form',
+   }, 'fif params correct');
 
 $form2->process( $params );
 ok( $form2->validated, 'validated second form' );
 is( $form2->field('field_three')->value, 'Third field in second form',
    'value of field in second form is correct' );
 
+$params = {
+   'One.field_one' => 'First field in first form',
+   'One.field_two' => 'Second field in first form',
+   'One.field_three' => 'Third field in first form',
+};
+$form2 = My::Form::Two->new( params => $params );
+ok( !$form2->has_params, 'has_params checks only params intented for the form');
 

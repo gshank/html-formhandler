@@ -126,7 +126,6 @@ sub has_some_value
     }
     return blessed $x; # true if blessed, otherwise false
 }
-    
 
 sub input_defined
 {

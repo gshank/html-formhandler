@@ -940,8 +940,9 @@ sub _munge_params
    {
       $new_params = $new_params->{$self->name};
    }
-   my $final_params = {%{$params}, %{$new_params}};
-   $self->{params} = $final_params;
+   $new_params = {} if !defined $new_params;
+#   my $final_params = {%{$params}, %{$new_params}};
+   $self->{params} = $new_params;
 }
 
 =head1 SUPPORT

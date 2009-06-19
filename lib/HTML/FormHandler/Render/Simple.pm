@@ -61,10 +61,10 @@ sub render
 {
    my $self = shift;
    my $output = '<form ';
-   $output .= 'action="' . $self->action if $self->action;
-   $output .= '" id="' . $self->name if $self->name;
-   $output .= '" method="' . $self->http_method if $self->http_method;
-   $output .= '">' . "\n";
+   $output .= 'action="' . $self->action . '" ' if $self->action;
+   $output .= 'id="' . $self->name . '" ' if $self->name;
+   $output .= 'method="' . $self->http_method . '"' if $self->http_method;
+   $output .= '>' . "\n";
    $output .= '<fieldset class="main_fieldset">' if $self->auto_fieldset;
 
    foreach my $field ( $self->sorted_fields )
@@ -92,7 +92,6 @@ sub render_field
    {
       $field = $self->field($field);
    }
-   return '' if $field->widget eq 'no_render';
    my $method = 'render_' . $field->widget;
    die "Widget method $method not implemented in H::F::Render::Simple"
       unless $self->can($method);

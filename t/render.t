@@ -39,8 +39,6 @@ use HTML::FormHandler::Field::Text;
        ]
    );
 
-   has_field 'ip' => ( widget => 'no_render' );
-   
    has_field 'submit' => ( type => 'Submit', value => 'Update' );
 
    has '+dependency' => ( default => sub { [ ['start_date.month',
@@ -153,8 +151,6 @@ is( $output8,
 ',
    'output from DateTime' );
 
-is( $form->render_field( $form->field('ip')), '', 'no_render' );
-
 my $output9 = $form->render_field( $form->field('submit') );
 is( $output9, '
 <div><input type="submit" name="submit" id="renderformsubmit" value="Update" /></div>
@@ -168,7 +164,6 @@ is( $output10, '
 
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
-#warn $output;
-
+ok( $output =~ /^<form id="renderform" method="post">/, 'Form tag OK' );
 
 
