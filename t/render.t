@@ -1,4 +1,4 @@
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 use HTML::FormHandler::Field::Text;
 
@@ -164,7 +164,6 @@ is( $output10, '
 
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
-#warn $output;
-
+ok( $output =~ /^<form id="renderform" method="post">/, 'Form tag OK' );
 
 

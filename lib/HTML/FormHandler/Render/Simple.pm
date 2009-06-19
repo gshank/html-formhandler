@@ -61,10 +61,10 @@ sub render
 {
    my $self = shift;
    my $output = '<form ';
-   $output .= 'action="' . $self->action if $self->action;
-   $output .= '" id="' . $self->name if $self->name;
-   $output .= '" method="' . $self->http_method if $self->http_method;
-   $output .= '">' . "\n";
+   $output .= 'action="' . $self->action . '" ' if $self->action;
+   $output .= 'id="' . $self->name . '" ' if $self->name;
+   $output .= 'method="' . $self->http_method . '"' if $self->http_method;
+   $output .= '>' . "\n";
    $output .= '<fieldset class="main_fieldset">' if $self->auto_fieldset;
 
    foreach my $field ( $self->sorted_fields )
