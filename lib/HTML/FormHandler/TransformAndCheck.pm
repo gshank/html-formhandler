@@ -146,11 +146,11 @@ sub validate_field
       $field->value(undef)                          if ( $field->has_input );
       return;
    }
-   elsif ( !$field->has_input )
+   elsif ( !$field->has_input && !$field->DOES('HTML::FormHandler::Field::Repeatable') )
    {
       return;
    }
-   elsif( !$field->input_defined )
+   elsif( !$field->input_defined && !$field->DOES('HTML::FormHandler::Field::Repeatable'))
    {
       $field->value(undef);
       return;

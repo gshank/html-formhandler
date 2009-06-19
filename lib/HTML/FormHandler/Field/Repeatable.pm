@@ -188,7 +188,6 @@ sub build_node
       $self->index($index);
       $self->fields(\@fields);
    }
-   return unless $self->has_fields;
    # call fields_validate to loop through array of fields created
    $self->_fields_validate;
    # now that values have been filled in via fields_validate,

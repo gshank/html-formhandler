@@ -134,11 +134,11 @@ my $no_repeat = {
    my_test => 'test'
 };
 $form->process( $no_repeat );
-ok( !exists $form->value()->{addresses}, 'Addresses deleted not in params' );
+is_deeply( $form->value()->{addresses}, [],  'Addresses deleted not in params' );
 
 $form->process({});
-ok( exists $form->value->{addresses}, 'Addresses are back' );
+ok( exists $form->value->{addresses}[0], 'Addresses are back' );
 $form->clear_init_object;
 $form->process( { my_test => 'test' } );
-ok( !exists $form->value()->{addresses}, 'Addresses deleted' );
+is_deeply( $form->value()->{addresses}, [], 'Addresses deleted' );
 
