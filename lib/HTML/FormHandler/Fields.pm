@@ -513,7 +513,6 @@ sub build_node
          }
       }
    }
-   return unless $self->has_fields;
    $self->_fields_validate;
    my %value_hash;
    for my $field ( $self->fields )
