@@ -27,9 +27,9 @@ my $form = BookDB::Form::Book->new( item => $book );
 
 ok( !$form->db_validate, 'Bad db data doesn\'t validate' );
 
-$form->set_param( year => 1999 );
-$form->set_param( pages => 101 );
-my $validated = $form->validate_form;
+$bad->{year} = 1999;
+$bad->{pages} = 101;
+my $validated = $form->process( $bad );
 ok( $validated, 'now form validates' );
 
 $form->update_model;

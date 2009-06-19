@@ -65,6 +65,20 @@ has 'fields' => (
       set   => 'set_field_at',
    }
 );
+has 'error_fields' => (
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef[HTML::FormHandler::Field]',
+   is         => 'rw',
+   default    => sub { [] },
+   auto_deref => 1,
+   provides   => {
+      empty => 'has_error_fields',
+      clear => 'clear_error_fields',
+      push  => 'add_error_field',
+      count => 'num_error_fields'
+   }
+);
+
 
 has 'fields_from_model' => ( isa => 'Bool', is => 'rw' );
 
@@ -438,29 +452,38 @@ sub _fields_validate
    foreach my $field ( $self->fields )
    {
       next if $field->clear;    # Skip validation
-      # parent fields will call validation for children
-      # there shouldn't be fields like this now. child fields should only
-      # exist beneath their parents
-      next if $field->parent && $field->parent != $self;
       # Validate each field and "inflate" input -> value.
-      $field->validate_field;          # this calls the field's 'validate' routine
-      next unless ($field->has_value && defined $field->value);
-      # these methods have access to the inflated values
-      $field->_validate($field);    # will execute a form-field validation routine
+      $field->validate_field;   # this calls the field's 'validate' routine
+      $field->_validate($field) # form field validation method
+           if ($field->has_value && defined $field->value);
    }
    $self->cross_validate;
-   # move errors up to parent
-   $self->parent->push_errors( $self->errors )
-      if( $self->parent && $self->parent->DOES('HTML::FormHandler::Field') );
-
 }
 
 sub cross_validate { }
 
 after clear_data => sub
 {
-   $_->clear_data for shift->fields;
+   my $self = shift;
+   $self->clear_error_fields;
+   $_->clear_data for $self->fields;
 };
+
+sub get_error_fields
+{
+   my $self = shift;
+   my @error_fields;
+   foreach my $field ($self->sorted_fields)
+   {
+      if( $field->has_fields )
+      {
+         $field->get_error_fields;
+         push @error_fields, $field->error_fields if $field->has_error_fields;
+      }
+      push @error_fields, $field if $field->has_errors;
+   }
+   $self->add_error_field(@error_fields) if scalar @error_fields;
+}
 
 sub dump_fields { shift->dump( @_) }
 sub dump
@@ -491,13 +514,15 @@ sub build_node
 {  
    my $self = shift;
 
+   return unless $self->has_fields;
    my $input = $self->input;
-   # is there a better way to do this? 
+   # transfer the input values to the input attributes of the
+   # subfields 
    if( ref $input eq 'HASH' )
    {  
       foreach my $field ( $self->fields )
       {  
-         my $field_name = $field->name; #substr( $field->full_name, length($self->full_name) + 1 );
+         my $field_name = $field->name; 
          # Trim values and move to "input" slot
          if ( exists $input->{$field_name} )
          {  
@@ -513,7 +538,6 @@ sub build_node
          }
       }
    }
-   return unless $self->has_fields;
    $self->_fields_validate;
    my %value_hash;
    for my $field ( $self->fields )

@@ -101,10 +101,11 @@ ok( $form->field('pages')->has_errors, 'pages has error' );
 ok( !$form->field('author')->has_errors, 'author has no error' );
 ok( $form->field('format')->has_errors, 'format has error' );
 
-$form->set_param( year => 1999 );
-$form->set_param( pages => 101 );
-$form->set_param( format => 2 );
-my $validated = $form->validate_form;
+my $values = $form->value;
+$values->{year} = 1999;
+$values->{pages} = 101;
+$values->{format} = 2;
+my $validated = $form->validate( $values );
 ok( $validated, 'now form validates' );
 
 $form->process;

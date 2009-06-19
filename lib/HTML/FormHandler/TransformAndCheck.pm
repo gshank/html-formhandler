@@ -167,7 +167,6 @@ sub validate_field
    $field->_apply_actions;
 
    my $not_valid = !$field->validate || $field->has_errors || !$field->test_ranges;
-     
    return !$field->has_errors;
 }
 

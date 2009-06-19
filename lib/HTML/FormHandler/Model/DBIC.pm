@@ -354,6 +354,9 @@ For fields that are marked "unique", checks the database for uniqueness.
 
 =cut
 
+# this needs to be rewritten to be called at the field level
+# right now it will only work on fields immediately contained
+# by the form
 sub validate_unique
 {
    my ($self) = @_;
