@@ -761,7 +761,7 @@ sub validate_form
    my $errors;
    for ( $self->fields )
    {
-      $errors++ if $_->has_errors;
+      $errors += $_->num_errors;
    }
    $self->num_errors( $errors || 0 );
    $self->ran_validation(1);

@@ -46,6 +46,7 @@ sub BUILD
 {
    my $self = shift;
 
+   $self->set_options;
    $self->options_from('build') if $self->options && $self->has_options;   
 }
 

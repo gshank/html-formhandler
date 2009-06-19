@@ -1,4 +1,4 @@
-use Test::More tests => 17;
+use Test::More tests => 20;
 
 use lib 't/lib';
 
@@ -55,6 +55,13 @@ is( $form->field('duration')->value->hours, 2, 'duration value is correct');
    has_field 'start_date.day' => ( type => 'MonthDay' );
    has_field 'start_date.year' => ( type => 'Year' );
 
+   sub validate_start_date_month
+   {
+      my ( $self, $field ) = @_;
+      $field->add_error("That month is not available")
+          if( $field->value == 8 );
+   }
+
 }
 
 my $dtform = Form::Start->new;
@@ -62,10 +69,14 @@ ok( $dtform, 'datetime form' );
 $params = { name => 'DT_testing', 'start_date.month' => '10',
     'start_date.day' => '2', 'start_date.year' => '2008' };
 $dtform->process( params => $params );
-
 ok( $dtform->validated, 'form validated' );
-
 is( $dtform->field('start_date')->value->mdy, '10-02-2008', 'datetime value');
+$params->{'start_date.month'} = 8;
+$dtform->process( params => $params );
+ok( !$dtform->validated, 'form did not validate' );
+ok( $dtform->has_errors, 'form has error' );
+is_deeply( [$dtform->errors], ['That month is not available'], 'correct error' );
+
 
 {
    package Field::MyCompound;

@@ -114,7 +114,8 @@ sub clear_other
 sub create_element
 {
    my ( $self ) = @_;
-   my $instance = Instance->new( name => 'contains', parent => $self ); 
+   my $instance = Instance->new( name => 'contains', parent => $self,
+      form => $self->form ); 
    # copy the fields from this field into the instance
    $instance->add_field( $self->fields );
    if( $self->auto_id )
@@ -151,6 +152,7 @@ sub clone_fields
    foreach my $field ( @{$fields} )
    {
       my $new_field = $field->clone;
+      $new_field->errors([]);
       if( $new_field->has_fields )
       {
          $self->clone_fields( $new_field, [$new_field->fields] );
