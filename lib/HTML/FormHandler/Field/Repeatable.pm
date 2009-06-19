@@ -108,6 +108,7 @@ sub clear_other
       } 
    }
    $self->clear_fields;
+   $self->clear_value;
 }
 
 sub create_element

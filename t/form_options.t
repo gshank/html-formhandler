@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use HTML::FormHandler::Field::Text;
 
@@ -17,6 +17,8 @@ use HTML::FormHandler::Field::Text;
             );
    has_field 'fruit' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple' );
+
+   sub init_value_fruit { 2 }
 
    sub options_fruit {
        return (
@@ -63,6 +65,8 @@ my $params = {
    fruit => 2,
    vegetables => [2,4],
 };
+
+is( $form->field('fruit')->value, 2, 'initial value ok');
 
 $form->process( $params );
 ok( $form->validated, 'form validated' );

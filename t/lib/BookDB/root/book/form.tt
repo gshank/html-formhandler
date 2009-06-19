@@ -19,16 +19,6 @@
    </p>
 
    <p>
-   [% f = form.field('genres') %]
-   <label class="label" for="[% f.name %]">[% f.label %]</label>
-   <select name="[% f.name %]" multiple="multiple" size="5">
-     [% FOR option IN f.options %]
-       <option value="[% option.value %]" [% FOREACH selval IN f.fif %][% IF selval == option.value %]selected="selected"[% END %][% END %]>[% option.label | html %]</option>
-     [% END %] 
-   </select>
-   </p>
-
-   <p>
    [% f = form.field('publisher') %]
    [% PROCESS widget/text.tt %]
    </p>
