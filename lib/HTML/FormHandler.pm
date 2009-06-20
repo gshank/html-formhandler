@@ -62,8 +62,6 @@ to update a 'Book' record:
       extends 'Catalyst::Controller';
    }
    use MyApp::Form::Book;
-   has 'edit_form' => ( isa => 'MyApp::Form::Book', is => 'rw',
-       lazy => 1, default => sub { MyApp::Form::Book->new } );
 
    sub book_base : Chained PathPart('book') CaptureArgs(0)
    {
@@ -79,24 +77,19 @@ to update a 'Book' record:
    {
       my ( $self, $c ) = @_;
 
-      $c->stash( form => $self->edit_form, template => 'book/form.tt' );
-      return unless $self->edit_form->process( item => $c->stash->{book},
+      my $form = MyApp::Form::Book->new;
+      $c->stash( form => $form, template => 'book/form.tt' );
+      return unless $form->process( item => $c->stash->{book},
          params => $c->req->parameters );
       $c->res->redirect( $c->uri_for('list') );
    }
 
-The example above creates the form as a persistent part of the application
-with the Moose <C has 'edit_form' > declaration.
-If you prefer, it also works fine to create the form on each request:
+The example above creates the form dynamically on each request. 
+You can also use a Moose attribute for the form.
     
-    my $form = MyApp::Form->new;
-    $form->process( item => $book, params => $params );
+    has 'form' => ( isa => 'MyApp::Form::Book', is => 'ro',
+       default => sub { MyApp::Form::Book->new } );
 
-or, for a non-database form:
-
-    my $form = MyApp::Form->new;
-    $form->process( $params );
-   
 A dynamic form may be created in a controller using the field_list
 attribute to set fields:
 
@@ -113,7 +106,8 @@ attribute to set fields:
 
 HTML::FormHandler allows you to define HTML form fields and validators. It can
 be used for both database and non-database forms, and will
-automatically update or create rows in a database.
+automatically update or create rows in a database. It can also be used
+to process structured data that doesn't come from an HTML form.
 
 One of its goals is to keep the controller interface as simple as possible,
 and to minimize the duplication of code. In most cases, interfacing your
@@ -267,11 +261,7 @@ or as structured data in the form of hashes and lists:
 CGI style parameters will be converted to hashes and lists for HFH to
 operate on.
 
-The parameters are stored in a 'params' attribute.
-Also: set_param, get_param, clear_params, delete_param, 
-has_params from Moose 'Collection::Hash' metaclass. 
-
-You can add an additional param when setting them:
+You can add an additional param when setting params:
 
    $form->process( params => { %{$c->req->params}, new_param  => 'something' } );
 
@@ -291,7 +281,8 @@ Or you can use the 'fif' method on individual fields:
 
 =head3 values
 
-Returns a hashref of all field values. Useful for non-database forms.
+Returns a hashref of all field values. Useful for non-database forms, or if
+you want to update the databse yourself.
 The 'fif' and 'values' hashrefs might be the same for simple forms unless there's a
 difference in format between the HTML field values (in fif) and the saved value
 or unless the field 'name' and 'accessor' are different. 'fif' returns
@@ -314,6 +305,7 @@ of the field class.
 
 The most common way of declaring fields is the 'has_field' syntax.
 Using the 'has_field' syntax sugar requires C< use HTML::FormHandler::Moose; >.
+or C< use HTML::FormHandler::Moose::Role; > in a role. 
 See L<HTML::FormHandler::Manual::Intro>
 
    use HTML::FormHandler::Moose;
@@ -360,7 +352,7 @@ Pass a second true value to die on errors.
  
 =head2 Constraints and validation
 
-Most validation in performed on a per-field basis, and there are a number
+Most validation is performed on a per-field basis, and there are a number
 of different places in which validation can be performed. 
 
 =head3 Apply actions
@@ -423,10 +415,10 @@ post-validation values of all the fields.
 
 =head2 Clear form state
 
-Various clear methods are used in internal processing, and might be
-useful in some situations.
-
-   clear - clears state, params, ctx, flags, errors, fif, values, input 
+The clear method is called at the beginning of 'process' if the form
+object is reused, such as when it is persistent in a Moose attribute,
+or in tests.  If you add other attributes to your form that are set on 
+each request, you may need to clear those yourself.
 
 =head2 Miscellaneous attributes
 
@@ -448,7 +440,7 @@ the DBIC model).
 
 =head3 ctx
 
-Place to store application context
+Place to store application context for your use in your form's methods.
 
 =head3 language_handle, build_language_handle
 
@@ -516,7 +508,6 @@ will return the form name + "." + field full_name
    enctype - Request enctype
    submit - Store form submit field info. No default value.
    uuid - generates a string containing an HTML field with UUID
-
 
 =cut
 
@@ -919,7 +910,6 @@ sub _munge_params
       $new_params = $new_params->{$self->name};
    }
    $new_params = {} if !defined $new_params;
-#   my $final_params = {%{$params}, %{$new_params}};
    $self->{params} = $new_params;
 }
 

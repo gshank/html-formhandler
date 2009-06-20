@@ -32,7 +32,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    readonly      HTML hint to make the field readonly (for templates) Init: 0 
    clear         Don't validate and remove from database
    noupdate      Don't update this field in the database
-   writeonly     Do not call field class's "fif_value" routine. 
+   writeonly     Do not call retrieve initial values
    errors        Errors associated with this field 
                  (also num_errors, clear_errors, has_errors, add_error)
    label_column  Select lists: column to use for labels (default: name)

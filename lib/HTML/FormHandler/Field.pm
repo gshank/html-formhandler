@@ -39,12 +39,15 @@ This is the base class for form fields. The 'type' of a field class
 is used in the FormHandler field_list or has_field to identify which field class to
 load. If the type is not specified, it defaults to Text. 
 
+There are two rough categories of Field classes: those that do extra processing
+and those that are simple validators. The 'Compound', 'Repeatable', and
+'Select' fields are fields that are functional.
+
 A number of field classes are provided by the distribution. The basic
-field types are:
+validat field types are:
 
    Text
    Integer
-   Select
    Boolean
 
 These field types alone would be enough for most applications, since
@@ -56,6 +59,8 @@ good idea.
 
 Inheritance hierarchy of the distribution's field classes:
 
+   Compound
+      Repeatable
    Text
       Money
       Password
@@ -74,7 +79,6 @@ Inheritance hierarchy of the distribution's field classes:
          Year
       MonthName 
       Weekday
-         WeekdayStr
    Boolean
       Checkbox
    DateMDY
@@ -106,7 +110,7 @@ is 'Money'. Classes that you define yourself are prefixed with '+'.
 =item accessor
 
 If the name of your field is different than your database accessor, use
-this attribute to provide the name of accessor.
+this attribute to provide the accessor.
 
 =item full_name
 
@@ -210,21 +214,25 @@ Fields of different type can use the same widget.
 
 This attribute is set in the field classes, or in the fields
 defined in the form. If you want a new widget type, use a new
-name and provide a C<< 'widget_<name>' >> method in Render::Simple
-or a widget template if you are using a template based rendering
-system. (see L<HTML::FormHandler::Manual::Templates>) 
+name and provide a C<< 'widget_<name>' >> method in your copy
+of Render::Simple or in your form class.
+If you are using a template based rendering system you will want
+to create a widget template.
+(see L<HTML::FormHandler::Manual::Templates>) 
 
 Widget types for the provided field classes:
 
     Widget      : Field classes 
     ------------:-----------------------------------
     text        : Text, Integer
-    checkbox    : Checkbox, Select
-    radio       : Boolean, Select
-    select      : Select, Multiple
+    checkbox    : Checkbox, Boolean
+    radio_group : Select, Multiple, IntRange (etc) 
+    select      : Select, Multiple, IntRange (etc)
     textarea    : TextArea, HtmlArea
-    compound    : DateTime
+    compound    : Compound, Repeatable, DateTime
     password    : Password
+    hidden      : Hidden
+    submit      : Submit
 
 The default widget is 'text'.
 
@@ -460,27 +468,15 @@ data representation suitable for displaying in an HTML field
 
 =head2 validate_field
 
-This method does standard validation, which currently tests:
-
-    required        -- if field is required and value exists
-
-If these tests pass, the field's 'apply' list actions are executed
-and then validate method is called
-
-    $field->validate;
-
-If C<< $field->validate >> returns true then the input value
-is copied from the input attribute to the field's value attribute.
-
-The field's error list and internal value are reset upon entry.
+This is the base class validation routine. Most users will not
+do anything with this. It might be useful for method modifiers.
 
 =head2 validate
 
 This field method can be used in addition to or instead of 'apply' actions
-in custom field classes. It is not called if the field already has errors.
-It should validate the field data and returns true if
-the data validates.  An error message must be added to the field with
-C<< $field->add_error( ... ) >> if the value does not validate. 
+in custom field classes. 
+It should validate the field data and set error messages on
+errors with C<< $field->add_error >>. 
 
     sub validate {
         my $field = shift;
@@ -566,8 +562,6 @@ has 'html_name' => (
    lazy    => 1,
    builder => 'build_html_name'
 );
-# following is to maintain compatibility. remove eventually
-sub prename { shift->html_name }
 sub build_html_name
 {
    my $self = shift;
@@ -690,11 +684,13 @@ sub BUILD
    $self->add_action($self->trim) if $self->trim;
    $self->_build_apply_list;
    $self->add_action( @{$params->{apply}} ) if $params->{apply};
-   $self->set_validate;
-   $self->set_init;
+   $self->set_validate; # to vivify
+   $self->set_init;     # to vivify
 
 }
 
+# this is the recursive routine that is used
+# to initial fields if there is no initial object and no params
 sub _init 
 { 
    my $self = shift;
@@ -778,16 +774,8 @@ sub clear_data
    $self->clear_init_value;
    $self->clear_other;
 }
+# clear_other used in Repeatable
 sub clear_other { }
-
-# removed pod to discourage use of fif_value
-# This method will probably be replaced by deflate or something
-# similar in the near future
-sub fif_value
-{
-   my ( $self, $value ) = @_;
-   return $value;
-}
 
 sub value_changed
 {

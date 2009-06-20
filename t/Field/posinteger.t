@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-my $tests = 12;
+my $tests = 11;
 plan tests => $tests;
 
 my $class = 'HTML::FormHandler::Field::PosInteger';
@@ -46,16 +46,4 @@ ok( $field->has_errors, 'Test negative' );
 $field->input( '-10.123' );
 $field->validate_field;
 ok( $field->has_errors, 'Test real number ' );
-
-TODO: {
-    $field->value( 123.456 );
-    local $TODO = 'What if the datastore has a non integer?';
-    is( $field->fif_value, '123', 'Test non-integer formatted ' );
-}
-
-
-
-
-
-
 

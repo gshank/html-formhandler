@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
-my $tests = 21;
+my $tests = 20;
 plan tests => $tests;
 
 my $class = 'HTML::FormHandler::Field::Integer';
@@ -82,12 +82,6 @@ ok( $field->has_errors, 'Test 10 <= 21 <= 20 fails' );
 $field->input( 9 );
 $field->validate_field;
 ok( $field->has_errors, 'Test 10 <= 9 <= 20 fails' );
-
-TODO: {
-    $field->value( 123.456 );
-    local $TODO = 'What if the datastore has a non integer?';
-    is( $field->fif_value, '123', 'Test non-integer formatted ' );
-}
 
 
 1;
