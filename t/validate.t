@@ -10,7 +10,7 @@ use Test::More tests => 3;
    has_field 'date_from' => ( type => 'Date' );
    has_field 'date_to'   => ( type => 'Date' );
 
-   after 'cross_validate' => sub {
+   after 'validate' => sub {
       my $self = shift;
       $self->field('date_from')->add_error('From date must be before To date')
          if $self->field('date_from')->value gt $self->field('date_to')->value;

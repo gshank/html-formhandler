@@ -166,9 +166,7 @@ sub validate_field
    }
    
    $field->_inner_validate_field();
-
    $field->_apply_actions;
-
    $field->validate;
    $field->test_ranges;
      

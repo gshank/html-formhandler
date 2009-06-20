@@ -4,29 +4,25 @@ Recursive operations
   Clear
     in HFH
 
-      Maybe 'clear' and 'clear_state' could be combined, but there
-      are a number of tests that use clear_state
       sub clear
       { 
          my $self = shift;
          warn "HFH: clear ", $self->name, "\n" if $self->verbose;
-         $self->clear_state;
+         $self->clear_data;
+         $self->validated(0);
+         $self->ran_validation(0);
+         $self->num_errors(0);
          $self->clear_params;
          $self->clear_ctx;
          $self->processed(0);
          $self->did_init_obj(0);
       }
-      sub clear_state
-      {
-         my $self = shift;
-         $self->validated(0);
-         $self->ran_validation(0);
-         $self->num_errors(0);
-         $self->clear_data;
-      }
+
       sub clear_data
       {
-         shift->clear_value;
+         my $self = shift;
+         $self->clear_value;
+         $self->clear_input;
       }
 
    in Fields.pm
@@ -54,12 +50,15 @@ Recursive operations
       sub clear_other ...
 
 
-
-  FIF
-    HFH->fif
-
-  Value
-    TransformAndCheck has 'value'
-    Fields->value
+Validation
+   validate_form (HFH) 
+     build_node (Fields) 
+        fields_validate (Fields in HFH & Compound)
+           validate_field (TransformAndCheck in HFH & Field)
+              build_node ( if field is Compound (recursive))
+              _apply_actions (T&C)
+              validate (Field subclasses)
+           _validate (form method pointed to in Field)
+       
 
 

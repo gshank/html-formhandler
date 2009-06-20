@@ -17,7 +17,7 @@ use Test::More tests => 3;
    sub validate_addresses_city
    {
       my ( $self, $field ) = @_;
-      $field->add_error("Invalid City") 
+      $field->add_error("Invalid City: " . $field->value) 
          if( $field->value !~ /City/ );
    }
 }

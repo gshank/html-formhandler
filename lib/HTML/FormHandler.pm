@@ -542,7 +542,6 @@ has 'language_handle' => (
    is      => 'rw',
    builder => 'build_language_handle'
 );
-has 'num_errors' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
 has 'active_column' => ( isa => 'Str', is => 'rw' );
 has 'http_method' => ( isa => 'Str', is => 'rw', default => 'post' );
@@ -653,7 +652,6 @@ sub clear
    $self->clear_data;
    $self->validated(0);
    $self->ran_validation(0);
-   $self->num_errors(0);
    $self->clear_params;
    $self->clear_ctx;
    $self->processed(0);
@@ -704,21 +702,6 @@ sub values { shift->value }
 sub has_error
 {
    my $self = shift;
-   return $self->ran_validation && !$self->validated;
-}
-
-sub has_errors
-{
-   for ( shift->fields )
-   {
-      return 1 if $_->has_errors;
-   }
-   return 0;
-}
-
-sub error_fields
-{
-   return grep { $_->has_errors } shift->sorted_fields;
 }
 
 # deprecated?
@@ -756,22 +739,17 @@ sub validate_form
    # model specific validation 
    $self->validate_model;
    $self->_clear_dependency;
-
-   # count errors 
-   my $errors;
-   for ( $self->fields )
-   {
-      $errors += $_->num_errors;
-   }
-   $self->num_errors( $errors || 0 );
+   $self->get_error_fields;
    $self->ran_validation(1);
-   $self->validated( !$errors );
+   $self->validated( $self->num_errors == 0  );
    $self->dump_validated if $self->verbose;
-
    return $self->validated;
 }
 
 sub cross_validate { shift->validate(@_) }
+
+sub has_errors { shift->has_error_fields }
+sub num_errors { shift->num_error_fields }
 
 sub _setup_form
 {

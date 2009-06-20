@@ -746,8 +746,7 @@ sub add_error
          || die "Failed call to Locale::Maketext->get_handle";
    }
    my $message = $lh->maketext(@message);
-   $self->push_errors( $message ) unless $self->errors_on_parent;
-   $self->parent->push_errors( $message ) if $self->parent;
+   $self->push_errors( $message );
    return;
 }
 
