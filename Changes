@@ -1,5 +1,5 @@
 Revision history for HTML::FormHandler 
-0.24 
+0.24 Sat June 20, 2009 
     Refactor validation processing for api consistency
     Skip empty undef array elements. Update Password and PrimaryKey fields.
     Fix bugs: calling validate_ method, recognizing errors in repeatable fields,
