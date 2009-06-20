@@ -11,7 +11,6 @@ Recursive operations
          $self->clear_data;
          $self->validated(0);
          $self->ran_validation(0);
-         $self->num_errors(0);
          $self->clear_params;
          $self->clear_ctx;
          $self->processed(0);
@@ -28,7 +27,9 @@ Recursive operations
    in Fields.pm
       after clear_data => sub
       {
-         $_->clear_data for shift->fields;
+         my $self = shift;
+         $self->clear_error_fields;
+         $self->clear_data for shift->fields;
       };
 
    in Field.pm
@@ -41,7 +42,6 @@ Recursive operations
          $self->clear_fif;
          $self->clear_errors;
          $self->clear_init_value;
-         $self->clear_fif_from_value;
          $self->clear_other;
       }
       sub clear_other { }
