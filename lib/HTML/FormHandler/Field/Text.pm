@@ -8,8 +8,6 @@ has 'size' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has 'min_length' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has '+widget' => ( default => 'text' );
 
-__PACKAGE__->meta->make_immutable;
-
 sub validate {
     my $field = shift;
 
@@ -64,5 +62,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

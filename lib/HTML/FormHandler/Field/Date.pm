@@ -56,9 +56,6 @@ sub validate
     $self->value($dt);
 }
 
-
-
-
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;

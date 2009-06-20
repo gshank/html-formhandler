@@ -44,12 +44,12 @@ has '+widget'           => ( default => 'password' );
 has '+min_length'       => ( default => 6 );
 has '+password'         => ( default => 1 );
 has '+required_message' => ( default => 'Please enter a password in this field' );
-has 'ne_username'       => ( isa => 'Str',  is => 'rw' );
+has 'ne_username'       => ( isa     => 'Str', is => 'rw' );
 
 after 'validate_field' => sub {
    my $self = shift;
 
-   if ( !$self->required && !(defined($self->value) && length($self->value)) )
+   if ( !$self->required && !( defined( $self->value ) && length( $self->value ) ) )
    {
       $self->noupdate(1);
       $self->clear_errors;
@@ -72,7 +72,6 @@ sub validate
    }
    return 1;
 }
-
 
 =head1 AUTHORS
 

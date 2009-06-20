@@ -27,9 +27,9 @@ If all validation is performed in the parent class so that no
 validation is necessary in the child classes, then the field class
 'Nested' may be used.
 
-Error messages will be applied to both parent classes and child
-classes unless the 'errors_on_parent' flag is set. (This flag is
-set for the 'Nested' field class.)
+Error messages will be available in the field on which the error 
+occurred. You can access 'error_fields' on the form or on Compound
+fields (and subclasses, like Repeatable).
 
 The process method of this field runs the process methods on the child fields
 and then builds a hash of these fields values.  This hash is available for 

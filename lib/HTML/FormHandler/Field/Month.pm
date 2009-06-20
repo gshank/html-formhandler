@@ -7,9 +7,6 @@ our $VERSION = '0.01';
 has '+range_start' => ( default => 1 );
 has '+range_end' => ( default => 12 );
 
-__PACKAGE__->meta->make_immutable;
-
-
 =head1 NAME
 
 HTML::FormHandler::Field::Month - Select list of 1 to 12
@@ -29,5 +26,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

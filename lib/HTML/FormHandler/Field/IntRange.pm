@@ -8,8 +8,6 @@ has 'label_format' => ( isa => 'Str', is => 'rw', default => '%d' );
 has '+range_start' => ( default => 1 );
 has '+range_end' => ( default => 10 );
 
-__PACKAGE__->meta->make_immutable;
-
 sub build_options {
     my $self = shift;
 
@@ -39,14 +37,11 @@ HTML::FormHandler::Field::IntRange - Select an integer range in a select list
 
 =head1 DESCRIPTION
 
-This field generates a select list of numbers from 1 to 10.  The range can be
-overridden in the constructor:
+This field generates a select list of numbers from 1 to 10. Override the
+range_start and range_end for a select list with a different range. 
 
-    age => {
-        type        => 'IntRange',
-        range_start => 0,
-        range_end   => 100,
-    },
+   has_field 'age' => ( type => 'IntRange', 
+               range_start => 0, range_end => 100 );
 
 Widget type is 'select'.
 
@@ -61,5 +56,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

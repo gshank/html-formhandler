@@ -37,6 +37,11 @@ sub apply ( [
 
 HTML::FormHandler::Field::DateMDY
 
+=head1 SYNOPSIS
+
+For date fields in the format nn/nn/nnnn. An example of a date
+class using constraint actions.
+
 =head1 AUTHORS
 
 Gerda Shank
@@ -48,5 +53,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

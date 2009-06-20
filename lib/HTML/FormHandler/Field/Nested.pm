@@ -13,10 +13,6 @@ This field class is intended for nested elements of compound fields. It
 does no particular validation, since the compound field should handle
 that.
 
-=head2 parent
-
-This attribute must be set on a nested field
-
 =cut
 
 has '+errors_on_parent' => ( default => 1 );

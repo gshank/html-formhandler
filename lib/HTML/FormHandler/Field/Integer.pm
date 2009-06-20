@@ -17,8 +17,6 @@ apply( [
    } ]
 );
 
-__PACKAGE__->meta->make_immutable;
-
 
 =head1 NAME
 
@@ -27,7 +25,7 @@ HTML::FormHandler::Field::Integer - validate an integer value
 =head1 DESCRIPTION
 
 This accpets a positive or negative integer.  Negative integers may
-be prefixed with a dash.  By default a max of eight digets are accepted.
+be prefixed with a dash.  By default a max of eight digits are accepted.
 Widget type is 'text'.
 
 =head1 AUTHORS
@@ -41,5 +39,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

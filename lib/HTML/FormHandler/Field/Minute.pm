@@ -8,11 +8,10 @@ has '+range_start' => ( default => 0 );
 has '+range_end' => ( default => 59 );
 has '+label_format' => ( default => '%02d' );
 
-__PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
-HTML::FormHandler::Field::Minute - input range from 0 to 60
+HTML::FormHandler::Field::Minute - input range from 0 to 59
 
 =head1 DESCRIPTION
 
@@ -30,5 +29,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

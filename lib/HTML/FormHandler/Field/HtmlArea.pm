@@ -10,8 +10,6 @@ my $tidy;
 
 has '+widget' => ( default => 'textarea' );
 
-__PACKAGE__->meta->make_immutable;
-
 sub validate {
     my $field = shift;
 
@@ -105,5 +103,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

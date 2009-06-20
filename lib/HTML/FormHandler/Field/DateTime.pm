@@ -46,11 +46,6 @@ the same terms as Perl itself.
 
 has '+widget' => ( default => 'compound' );
 
-
-__PACKAGE__->meta->make_immutable;
-
-# override completely validate
-
 sub validate 
 {
     my ( $self ) = @_;
@@ -67,9 +62,7 @@ sub validate
     $self->value($dt);
 }
 
-
-
-
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;
 

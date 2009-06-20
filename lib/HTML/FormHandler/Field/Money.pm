@@ -22,7 +22,7 @@ apply(  [
 
 =head1 NAME
 
-HTML::FormHandler::Field::Money - Input US currenty-like values.
+HTML::FormHandler::Field::Money - Input US currency-like values.
 
 =head1 DESCRIPTION
 

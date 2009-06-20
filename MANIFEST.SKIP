@@ -15,3 +15,6 @@
 ^*.new$
 ^NONE$
 ^dev_notes.txt$
+^*.Captcha.pm$
+^t/captcha.t$
+^Date.pm$

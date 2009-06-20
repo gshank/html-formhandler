@@ -5,11 +5,8 @@ extends 'HTML::FormHandler::Field';
 our $VERSION = '0.01';
 
 has '+widget' => ( default => 'textarea' );
-has 'cols' => ( isa => 'Int', is => 'rw' );
-has 'rows' => ( isa => 'Int', is => 'rw' );
-
-__PACKAGE__->meta->make_immutable;
-
+has 'cols'    => ( isa     => 'Int', is => 'rw' );
+has 'rows'    => ( isa     => 'Int', is => 'rw' );
 
 =head1 NAME
 
@@ -26,8 +23,6 @@ the same terms as Perl itself.
 
 =cut
 
-
-
-
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

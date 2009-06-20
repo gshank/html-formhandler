@@ -4,9 +4,6 @@ use Moose;
 extends 'HTML::FormHandler::Field::Select';
 our $VERSION = '0.01';
 
-
-__PACKAGE__->meta->make_immutable;
-
 sub build_options {
     my $i = 1;
     my @months = qw/
@@ -50,5 +47,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

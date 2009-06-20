@@ -15,12 +15,13 @@ Similar to Checkbox, except only returns values of 1 or 0.
 
 =cut
 
-sub value {
-    my $self = shift;
+sub value
+{
+   my $self = shift;
 
-    my $v = $self->SUPER::value(@_);
+   my $v = $self->SUPER::value(@_);
 
-    return $v ? 1 : 0;
+   return $v ? 1 : 0;
 }
 
 =head1 AUTHORS

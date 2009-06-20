@@ -2,6 +2,9 @@ Revision history for HTML::FormHandler
 0.24 
     Refactor validation processing for api consistency
     Skip empty undef array elements. Update Password and PrimaryKey fields.
+    Fix bugs: calling validate_ method, recognizing errors in repeatable fields,
+    handling empty repeatable elements,
+    incorrect cloning in Repeatable, rendering fixes/updates.
 
 0.23 Fri May 22, 2009
     Refactor HTH to use only 'process'. Deprecate 'validate' and 'update'

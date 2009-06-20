@@ -20,16 +20,15 @@ Uses the 'submit' widget.
 
 =cut
 
-
 has 'value' => (
    is        => 'rw',
    predicate => 'has_value',
-   default => 'Save'
+   default   => 'Save'
 );
 
-has '+widget' => ( default => 'submit' );
+has '+widget'    => ( default => 'submit' );
 has '+writeonly' => ( default => 1 );
-has '+noupdate' => ( default => 1 );
+has '+noupdate'  => ( default => 1 );
 
 sub validate_field { }
 

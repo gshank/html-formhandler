@@ -24,7 +24,7 @@ For a database field include a PrimaryKey hidden field, or set 'auto_id' to
 have an 'id' field automatically created.
 
 In a form, for an array of single fields (not directly equivalent to a
-database relationship):
+database relationship) use the 'contains' pseudo field name:
 
   has_field 'tags' => ( type => 'Repeatable' );
   has_field 'tags.contains' => ( type => 'Text',
@@ -32,10 +32,14 @@ database relationship):
                     message => 'Not a valid tag' } ]
   );
 
-or single fields which are compound fields:
+or use 'contains' withsingle fields which are compound fields:
 
   has_field 'addresses' => ( type => 'Repeatable' );
   has_field 'addresses.contains' => ( type => '+MyAddress' );
+
+If the MyAddress field contains fields 'address_id', 'street', 'city', and
+'state', then this syntax is functionally equivalent to the first method
+where the fields are declared with dots ('addresses.city');
 
 =head1 DESCRIPTION
 
@@ -270,5 +274,6 @@ sub _init
    $self->fields(\@fields);
 }
 
-
+__PACKAGE__->meta->make_immutable;
+no Moose;
 1;

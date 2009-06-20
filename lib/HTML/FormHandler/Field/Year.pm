@@ -16,9 +16,6 @@ has '+range_end' => ( default => sub {
    }
 );
 
-__PACKAGE__->meta->make_immutable;
-
-
 =head1 NAME
 
 HTML::FormHandler::Field::Year - Select a recent year.
@@ -39,5 +36,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

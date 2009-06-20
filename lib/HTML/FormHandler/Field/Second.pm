@@ -7,8 +7,6 @@ our $VERSION = '0.01';
 has '+range_start' => ( default => 0 );
 has '+range_end' => ( default => 59 );
 
-__PACKAGE__->meta->make_immutable;
-
 =head1 NAME
 
 HTML::FormHandler::Field::Second - Select list for seconds
@@ -28,5 +26,6 @@ the same terms as Perl itself.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;
