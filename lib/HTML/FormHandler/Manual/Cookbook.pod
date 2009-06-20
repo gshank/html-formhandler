@@ -36,13 +36,11 @@ or if you want a new form on each call:
    }
 
 Then you could just pass in the item_id. You could simplify even that by 
-creating a method that takes a simple ID. (You have to use 'update' here
-instead of 'process', because 'process' would clear out the schema and
-params you've already set.)
+creating a method that takes a simple ID.
 
    sub form {
      my ( $self, $id ) = @_;
-     return $self->form->update( item_id => $id ); 
+     return $self->form->process( item_id => $id ); 
    }
 
 and in your controller action:
@@ -278,6 +276,36 @@ Then pass it in when you process the form:
 
   $form->process( item => $item, params => $c->req->parameters, user_id = $c->user->user_id );
 
+=head2 Handle extra database fields
+
+If there is another database field that needs to be updated when a row is 
+created, add an attribute to the form, and then process it with 
+C< after 'update_model' >.
+
+In the form:
+
+    has 'user_id' => ( isa => 'Int', is => 'ro' );
+
+    after 'update_model' => sub {
+       my $self = shift;
+       $self->item->user_id( $self->user_id )
+           unless $self->item->user_id;
+    };
+
+Then just use an additional parameter when you create/process your form:
+
+    $form->process( item => $item, params => $params, user_id => $c->user->user_id );
+
+=head2 Record the user update 
+
+Use the 'before' or 'after' method modifiers for 'update_model', to flag a record
+as updated by the user, for example:
+
+   before 'update_model' => sub {
+      my $self = shift;
+      $self->item->user_updated if $self->item;
+   };
+
 =head2 Doing cross validation in roles
 
 In a role that handles a number of different fields, you may want to
@@ -310,16 +338,6 @@ You can use a method modifier before 'validate_form':
       $required = 1
          if( $self->field('some_field')->value eq 'something' );
       $self->field('some_field')->required($required);
-   };
-
-=head2 Extra database actions
-
-Use the 'before' or 'after' method modifiers for 'update_model', to flag a record
-as updated by the user, for example:
-
-   before 'update_model' => sub {
-      my $self = shift;
-      $self->item->user_updated if $self->item;
    };
 
 

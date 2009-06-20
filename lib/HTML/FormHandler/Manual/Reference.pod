@@ -18,7 +18,8 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    name          Field name. Must be the same as database column name or rel
    type          Field type. From a Field class: 'Text', 'Select', etc
    accessor      Database accessor name if different than field name
-   set_validate   Name of validation method in form. Default is validate_$fieldname
+   set_validate  Name of validation method in form. Default is validate_$fieldname
+   set_init      Name of the form method used to initial a field
    required      Field is required
    required_message  If this field is required, the message to display on failure 
    id            Useful for javascript that requires unique id. Set in Field.
@@ -32,7 +33,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    readonly      HTML hint to make the field readonly (for templates) Init: 0 
    clear         Don't validate and remove from database
    noupdate      Don't update this field in the database
-   writeonly     Do not call retrieve initial values
+   writeonly     Do not retrieve initial values
    errors        Errors associated with this field 
                  (also num_errors, clear_errors, has_errors, add_error)
    label_column  Select lists: column to use for labels (default: name)
@@ -82,7 +83,7 @@ These attributes are usually accessed in a subroutine or in a template.
    fields         Field array
    parent         For compound/related fields: parent field reference 
    html_prefix    Flag to prefix html field names with the form name
-   ctx
+   ctx            Application context for your use
     
     
 =head2 Form methods
@@ -93,8 +94,7 @@ These attributes are usually accessed in a subroutine or in a template.
    fields          The array of fields
    sorted_fields   The sorted array of fields
    field( $name )  Returns a field object
-   value( $name )  Returns the value for a field object
-   values          Returns a hashref of values (with accessor keys)
+   value           Returns a hashref of values (with accessor keys)
    fif             Returns a hashref for filling in form  
 
    has_errors      True if any field has errors 
@@ -112,13 +112,12 @@ These attributes are usually accessed in a subroutine or in a template.
    options_$fieldname       Provides a list of key value pairs for select lists
    validate_$fieldname      Validation routine for field 
    init_value_$fieldname    Overrides initial value for the field
-   cross_validate           For validation after individual fields are validated 
+   validate                 For validation after individual fields are validated 
    
-=head2 Methods to subclass from HTML::FormHandler::Model::DBIC
+=head2 Methods from HTML::FormHandler::Model::DBIC for method modifiers
 
    validate_model    Add additional database type validation
    update_model      To perform additional database actions update
-   guess_field_type  To create better field type assignment for auto forms 
      
 =head1 Useful in a template
 

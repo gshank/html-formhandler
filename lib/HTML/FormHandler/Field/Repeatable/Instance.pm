@@ -1,4 +1,5 @@
-package HTML::FormHandler::Field::Repeatable::Instance;
+package  # hide from Pause
+   HTML::FormHandler::Field::Repeatable::Instance;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
@@ -10,7 +11,7 @@ HTML::FormHandler::Field::Repeatable::Instance
 =head1 SYNOPSIS
 
 This is a simple container class to hold an instance of a Repeatable field.
-It will have a name like '0', '1'...
+It will have a name like '0', '1'... Users should not need to use this class.
 
 =cut
 
@@ -23,5 +24,6 @@ sub full_accessor
    return $parent->full_accessor;
 }
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

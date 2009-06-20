@@ -11,7 +11,7 @@ and highly automatic templates. There is a simple rendering role,
 L<HTML::FormHandler::Render::Simple>, and FormHandler is designed to
 make it easy to produce alternative rendering modules.
 
-The DBIC & CDBI  models will save form fields automatically to the database, will
+The DBIC & CDBI models will save form fields automatically to the database, will
 retrieve selection lists from the database (with type => 'Select' and a 
 fieldname containing a single relationship, or type => 'Multiple' and a
 many_to_many relationship), and will save the selected values (one value for 
@@ -87,14 +87,17 @@ In a template, for an input field:
    </p>
 
 The value can come from the hash returned by $form->fif, from the 'fif'
-attribute of the field, or can be supplied by FillInForm.
+attribute of the field, or can be supplied by FillInForm and the
+L<Catalyst::View::FillInForm> role on your view class.
 Plain HTML works fine for a simple input field if you use FillInForm to
 supply the value.
 
 For a select list, provide a relationship name as the field name, or provide
-an options_<field_name> subroutine in the form. FillInForm alone is not
-enough for select fields, since you need to access the field 'options'.
-(field attributes: sort_order, label_column, active_column). TT example:
+an options_<field_name> subroutine in the form.  You need to access the field 
+'options' to create a select list.  You could,
+of course, create the select lists by hand or some other way, but if you
+don't use the same method that is used by your FormHandler Select field,
+you risk getting out of sync.  TT example:
 
    <p>
    [% f = form.field('sex') %]
@@ -157,7 +160,7 @@ You can also create a new form on each request with new:
    my $form = BookDB::Form::Book->new( item => $book );
    return unless $form->process( params => $c->req->parameters );
 
-There is also a 'validated' flag that:
+There is also a 'validated' flag:
 
    $form->process( params => $c->req->parameters );
    return unless $form->validated;
@@ -196,15 +199,13 @@ for all the form's fields:
 
 If you want to use L<HTML::FillInForm> to fill in values instead of the 
 doing it in directly in a template using either the field or the form 'fif'
-methods, you will need to set that up yourself in an 'end' routine
-or a finalize method. One option would be to set the 'fif' hash in a
-stash variable:
+methods, you can use L<Catalyst::View::FillInForm> on your view class 
+and set the 'fif' hash in the 'fillinform' stash variable:
 
     $self->form->process( ... );
     $c->stash( fillinform => $self->form->fif );
     return unless $form->validated;
  
-and use L<Catalyst::View::FillInForm> view role in your Catalyst view. 
 
 =head1 Non-database forms
 
@@ -221,20 +222,22 @@ the 'values' method.
    return unless $form->validated;
    my $result = $form->values;
 
+These is the same 'value' structure that FormHandler uses to update
+the database.
 
 =head1 Form Models 
 
 For a database form, use a model base class that interfaces with the 
-database, such as L<HTML::FormHandler::Model::DBIC> or 
-L<HTML::FormHandler::Model::CDBI>.
+database, such as L<HTML::FormHandler::Model::DBIC>.
 
 When using a database model, form field values for the row are retrieved from
 the database using the field 'accessor' attributes (defaults to fieldname) 
 as database class accessors. 
+
 FormHandler will use relationships to populate single and multiple 
-selection lists, and validate input. It doesn't yet do anything with other
-relationships (though there are plans), but it will return a hash of the 
-relationship created with HashRefInflator.
+selection lists, and validate input. A 'single' relationship is processed
+by L<HTML::FormHandler::Field::Compound>. A 'has_many' relationship is
+processed by L<HTML::FormHandler::Field::Repeatable>. 
 
 You can pass in either the primary key and or a row object to the form. If a 
 primary key (item_id) is passed in, you must also provide the schema. 
@@ -251,7 +254,7 @@ The standard way to use FormHandler is with field names that match your
 database accessors. If you want to prepend the HTML field names with a
 name plus dot, you can set the form 'name' and use the 'html_prefix'
 flag. "$name." will be stripped from the beginning of the HTML fields
-before the parameters are set, and will be added in 'fif'. The field's 
+before processing by HFH, and will be added back in 'fif'. The field's 
 'html_name' convenience attribute will return this name for use in templates.
 
 If you want the FormHandler field name to be different than the
@@ -283,9 +286,9 @@ class name. To use this sugar, you must do
 
    use HTML::FormHandler::Moose;
 
-instead of C< use Moose; >. (Moose best practice advises putting 
-C< no HTML::FormHandler::Moose; > or C<< use namespace:clean -except => 'meta' >> at
-the end of the package to keep the namespace clean of imported methods.) 
+instead of C< use Moose; >. (Moose best practice advises using
+C< use namespace::autoclean; >> or putting C< no HTML::FormHandler::Moose; > 
+at the end of the package to keep the namespace clean of imported methods.) 
 
 To declare fields use the syntax:
 
@@ -350,8 +353,7 @@ will modify existing attributes or be added to an existing field definition:
 
 An array of name, specification pairs to define fields.
 
-The field_list is one way to define the fields in your form (though
-you can also add fields individually). 
+The field_list is one way to define the fields in your form.
 
    has '+field_list' => ( default => sub { 
          [
@@ -389,9 +391,7 @@ provided by FormHandler. You can customize the validation in your form on a
 per field basis, but validation that will be used for more than one field 
 might be more easily handled in a custom field class. 
 
-Fields can also be added dynamically with the 'add_field' method.
-
-In the template the fields are accessed with C< form.field('name') >.
+In the templates the fields are accessed with C< form.field('name') >.
 Field errors are in C<< $field->errors >>. 
 
 The fields are assumed to be in the HTML::FormHandler::Field name
@@ -414,7 +414,7 @@ Each field has a "value" method, which is the field's internal value.  This is
 the value your database object would have (e.g. scalar, boolean 0 or 1,
 DateTime object).  
 
-When data is passed in to validate the form, the input in copied into the
+When data is passed in to validate the form, the input is copied into the
 'value' attribute of the field, and the actions specified by 'apply'
 will be performed on the value. This includes the 'trim' transform which
 will strip leading and trailing spaces. After the actions are applied,
@@ -513,7 +513,7 @@ either method.
 
 Subclass a custom field from L<HTML::FormHandler::Field>, or one of the
 existing subclasses. Almost everything that is done in a custom field
-class can also be done declaratively. The advantage of a field class
+class can also be done in a form. The advantage of a field class
 is that it can simplify declaration of often-repeated sets of attributes. 
 
 The simplest subclasses contain only a 'validate' routine or an 'apply' attribute,
@@ -521,10 +521,10 @@ which is called by the base Field class from 'process'. Look at
 L<HTML::FormHandler::Field::Email>, for example.
 
 If the field's value will be an object instead of a simple scalar, such
-as a DateTime, then you will also need a transformation method to reformat
+as a DateTime, then you will also need a deflation to reformat
 the object into a form suitable for an HTML form field.
 
-Some custom field might only require setting certain attributes to
+Some custom fields might only require setting certain attributes to
 defaults, such as the L<HTML::FormHandler::Field::Hour> field, which
 set 'range_start' to 0 and 'range_end' to 23. A 'select' field might
 override the 'build_options' builder for the 'options' array, like
@@ -642,13 +642,13 @@ A different form method name for this can be specified with the field's
        ...
     } 
 
-=item cross_validate
+=item validate 
 
 Handle cross-field validation, or any validation that needs to be done after
-the entire form is validated.  This method is executed whether or not the form 
+the entire form is validated.  This form method is executed whether or not the form 
 has validated so far.
 
-   sub cross_validate {
+   sub validate {
       my $self = shift;
       if ( $self->field('count')->value && $self->field('duration')->value )
       {
@@ -752,10 +752,14 @@ has lots of examples. Here is an example of a test script for a DBIC form:
    ok( !$form->field('author')->has_errors, 'author has no error' );
    ok( $form->field('format')->has_errors, 'format has error' );
 
-   $form->set_param( year => 1999 );
-   $form->set_param( pages => 101 );
-   $form->set_param( format => 2 );
-   ok( $form->process, 'now form validates' );
+   my $good = { 
+      title => "Another Silly Test Book",
+      author => "C. Foolish",
+      year => 1999,
+      pages => 101,
+      format => 2 
+   };
+   ok( $form->process($good), 'now form validates' );
    
 
 
