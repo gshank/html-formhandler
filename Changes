@@ -1,4 +1,7 @@
 Revision history for HTML::FormHandler 
+0.25 Sat June 20, 2009
+    Add dependency for DateTime::Format::SQLite
+
 0.24 Sat June 20, 2009 
     Refactor validation processing for api consistency
     Skip empty undef array elements. Update Password and PrimaryKey fields.
