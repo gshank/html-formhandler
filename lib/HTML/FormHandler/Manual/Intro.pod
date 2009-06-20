@@ -503,7 +503,9 @@ specified, allowing fine-grained control over inflation and validation.
 
 You can also create a simple subroutine in your form class to perform validation.
 The default name of this subroutine is 'validate_<fieldname>', but the name can
-also be set in the field with the 'set_validate' attribute. 
+also be set in the field with the 'set_validate' attribute. (This method is
+not called when the field is empty. Use 'required'/'required_message' for
+that case.) 
 
 If you need to access form attributes such as the schema, the 'set_validate'
 subroutine may be preferable, but most validations can be performed using
@@ -641,6 +643,8 @@ A different form method name for this can be specified with the field's
     sub check_age {
        ...
     } 
+
+This method is not called when the field is empty.
 
 =item validate 
 
