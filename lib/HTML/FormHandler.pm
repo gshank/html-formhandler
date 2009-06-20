@@ -2,7 +2,7 @@ package HTML::FormHandler;
 
 use Moose;
 use MooseX::AttributeHelpers;
-extends 'HTML::FormHandler::Model';
+with 'HTML::FormHandler::Model';
 with 'HTML::FormHandler::Fields';
 with 'HTML::FormHandler::TransformAndCheck';
 

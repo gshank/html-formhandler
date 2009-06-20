@@ -1,8 +1,7 @@
 package HTML::FormHandler::Model;
 
-use Moose;
+use Moose::Role;
 use Carp;
-use Data::Dumper;
 
 =head1 NAME
 
@@ -92,9 +91,6 @@ has 'item_class' => (
    isa     => 'Str',
    is      => 'rw',
 );
-
-# tell Moose to make this class immutable
-HTML::FormHandler::Model->meta->make_immutable;
 
 =head2 guess_field_type
 
