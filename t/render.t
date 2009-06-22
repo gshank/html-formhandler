@@ -1,4 +1,4 @@
-use Test::More tests => 16;
+use Test::More tests => 15;
 
 use HTML::FormHandler::Field::Text;
 
@@ -165,8 +165,5 @@ is( $output10, '
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
 ok( $output =~ /^<form id="renderform" name="renderform" method="post">/, 'Form tag OK' );
-
-$form->structure( 'table' );
-ok( $form->render, 'get table rendered output from form');
 
 is( $form->render_field( $form->field('no_render')), '', 'no_render' );

@@ -56,7 +56,6 @@ To render all the fields in a form in sorted order (using
 =cut
 
 has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', default => 1 );
-has 'structure' => ( isa => 'Str', is => 'rw', default => 'div' );
 has 'label_types' => (
    metaclass  => 'Collection::Hash',
    isa        => 'HashRef[Str]',
@@ -81,20 +80,14 @@ sub render
    $output .= 'name="' . $self->name . '" ' if $self->name;
    $output .= 'method="' . $self->http_method . '"' if $self->http_method;
    $output .= '>' . "\n";
-   
-   if( $self->structure eq 'table' ){
-       $output .= "<table>\n";
-   }
-   $output .= '<fieldset class="main_fieldset">' if $self->auto_fieldset && $self->structure ne 'table';
+   $output .= '<fieldset class="main_fieldset">' if $self->auto_fieldset;
 
    foreach my $field ( $self->sorted_fields )
    {
       $output .= $self->render_field($field);
    }
-   $output .= '</fieldset>' if $self->auto_fieldset && $self->structure ne 'table';
-   if( $self->structure eq 'table' ){
-       $output .= "<table>\n";
-   }
+   
+   $output .= '</fieldset>' if $self->auto_fieldset;
    $output .= "</form>\n";
    return $output;
 }
@@ -115,7 +108,6 @@ sub render_field {
        $field = $self->field($field);
     }
     return '' if $field->widget eq 'no_render';
-    my $method = 'render_field_' . $self->structure;
     my $field_method = 'render_' . $field->widget;
     die "Widget method $field_method not implemented in H::F::Render::Simple"
       unless $self->can($field_method);
@@ -126,10 +118,10 @@ sub render_field {
        $class .= $field->css_class . ' ' if $field->css_class;
        $class .= ' error"' if $field->has_errors;
     }
-    return $self->$method($field, $field_method, $class);
+    return $self->render_field_struct($field, $field_method, $class);
 }
 
-sub render_field_div
+sub render_field_struct
 {
    my ( $self, $field, $method, $class ) = @_;
    my $output = qq{\n<div$class>};
@@ -147,25 +139,6 @@ sub render_field_div
        $output .= '</fieldset>';
    }
    $output .= "</div>\n";
-   return $output;
-}
-
-sub render_field_table
-{
-   my ( $self, $field, $method, $class ) = @_;
-   my $output = qq{\n<tr$class>};
-   my $l_type = defined $self->get_label_type( $field->widget ) ? $self->get_label_type( $field->widget ) : '';
-   if( $l_type eq 'label' ){
-       $output .= '<td>' . $self->_label( $field ) . '</td>';
-   }
-   elsif( $l_type eq 'legend' ){
-       $output .= '<td>' . $self->_label( $field ) . '</td>';
-       $output .= '</tr><tr>';
-   }
-   $output .= '<td>' . $self->$method($field) . '<td>';
-   $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
-   $output .= '</td>';
-   $output .= "</tr>\n";
    return $output;
 }
 
