@@ -158,12 +158,11 @@ is( $output9, '
 
 my $output10 = $form->render_field( $form->field('opt_in') );
 is( $output10, '
-<div>
-<label class="label" for="renderformopt_in">Opt_in: </label> <br /><input type="radio" value="0" name="opt_in" id="renderformopt_in" />No<br /><input type="radio" value="1" name="opt_in" id="renderformopt_in" />Yes<br /></div>
+<div><label class="label" for="renderformopt_in">Opt_in: </label> <br /><input type="radio" value="0" name="opt_in" id="renderformopt_in" />No<br /><input type="radio" value="1" name="opt_in" id="renderformopt_in" />Yes<br /></div>
 ', 'output from radio group' );
 
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
-ok( $output =~ /^<form id="renderform" method="post">/, 'Form tag OK' );
+ok( $output =~ /^<form id="renderform" name="renderform" method="post">/, 'Form tag OK' );
 
 
