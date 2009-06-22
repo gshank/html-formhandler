@@ -114,9 +114,10 @@ sub render_field {
     {  
        $field = $self->field($field);
     }
+    return '' if $field->widget eq 'no_render';
     my $method = 'render_field_' . $self->structure;
     my $field_method = 'render_' . $field->widget;
-    die "Widget method $method not implemented in H::F::Render::Simple"
+    die "Widget method $field_method not implemented in H::F::Render::Simple"
       unless $self->can($field_method);
     my $class = '';
     if( $field->css_class || $field->has_errors )

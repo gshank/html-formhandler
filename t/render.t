@@ -1,4 +1,4 @@
-use Test::More tests => 14;
+use Test::More tests => 16;
 
 use HTML::FormHandler::Field::Text;
 
@@ -43,6 +43,7 @@ use HTML::FormHandler::Field::Text;
 
    has '+dependency' => ( default => sub { [ ['start_date.month',
          'start_date.day', 'start_date.year'] ] } );
+   has_field 'no_render' => ( widget => 'no_render' );
    sub options_fruit {
        return (
            1   => 'apples',
@@ -165,4 +166,7 @@ my $output = $form->render;
 ok( $output, 'get rendered output from form');
 ok( $output =~ /^<form id="renderform" name="renderform" method="post">/, 'Form tag OK' );
 
+$form->structure( 'table' );
+ok( $form->render, 'get table rendered output from form');
 
+is( $form->render_field( $form->field('no_render')), '', 'no_render' );
