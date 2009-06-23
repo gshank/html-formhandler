@@ -56,6 +56,20 @@ To render all the fields in a form in sorted order (using
 =cut
 
 has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', default => 1 );
+has 'label_types' => (
+   metaclass  => 'Collection::Hash',
+   isa        => 'HashRef[Str]',
+   is         => 'rw',
+   default    => sub { {
+           text => 'label', password => 'label', 'select' => 'label',  checkbox => 'label', textarea => 'label',
+           radio_group => 'label', compound => 'legend'
+       }
+   },
+   auto_deref => 1,
+   provides   => {
+       get       => 'get_label_type',
+   },
+);
 
 sub render
 {
@@ -63,6 +77,7 @@ sub render
    my $output = '<form ';
    $output .= 'action="' . $self->action . '" ' if $self->action;
    $output .= 'id="' . $self->name . '" ' if $self->name;
+   $output .= 'name="' . $self->name . '" ' if $self->name;
    $output .= 'method="' . $self->http_method . '"' if $self->http_method;
    $output .= '>' . "\n";
    $output .= '<fieldset class="main_fieldset">' if $self->auto_fieldset;
@@ -71,6 +86,7 @@ sub render
    {
       $output .= $self->render_field($field);
    }
+   
    $output .= '</fieldset>' if $self->auto_fieldset;
    $output .= "</form>\n";
    return $output;
@@ -85,26 +101,43 @@ Render a field passing in a field object or a field name
 
 =cut
 
-sub render_field
+sub render_field {
+    my( $self, $field ) = @_;
+    unless ( $field->isa('HTML::FormHandler::Field') )
+    {  
+       $field = $self->field($field);
+    }
+    return '' if $field->widget eq 'no_render';
+    my $field_method = 'render_' . $field->widget;
+    die "Widget method $field_method not implemented in H::F::Render::Simple"
+      unless $self->can($field_method);
+    my $class = '';
+    if( $field->css_class || $field->has_errors )
+    {
+       $class .= ' class="';
+       $class .= $field->css_class . ' ' if $field->css_class;
+       $class .= ' error"' if $field->has_errors;
+    }
+    return $self->render_field_struct($field, $field_method, $class);
+}
+
+sub render_field_struct
 {
-   my ( $self, $field ) = @_;
-   unless ( $field->isa('HTML::FormHandler::Field') )
-   {
-      $field = $self->field($field);
-   }
-   my $method = 'render_' . $field->widget;
-   die "Widget method $method not implemented in H::F::Render::Simple"
-      unless $self->can($method);
-   my $class = '';
-   if( $field->css_class || $field->has_errors )
-   {
-      $class .= ' class="';
-      $class .= $field->css_class . ' ' if $field->css_class;
-      $class .= ' error"' if $field->has_errors;
-   }
+   my ( $self, $field, $method, $class ) = @_;
    my $output = qq{\n<div$class>};
+   my $l_type = defined $self->get_label_type( $field->widget ) ? $self->get_label_type( $field->widget ) : '';
+   if( $l_type eq 'label' ){
+       $output .= $self->_label( $field );
+   }
+   elsif( $l_type eq 'legend' ){
+       $output .= '<fieldset class="' . $field->html_name . '">';
+       $output .= '<legend>' . $field->label . '</legend>';
+   }
    $output .= $self->$method($field);
    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
+   if( $l_type eq 'legend' ){
+       $output .= '</fieldset>';
+   }
    $output .= "</div>\n";
    return $output;
 }
@@ -118,14 +151,10 @@ Output an HTML string for a text widget
 sub render_text
 {
    my ( $self, $field ) = @_;
-   # label
-   my $output = $self->_label( $field );
-   # input
-   $output .= '<input type="text" name="';
+   my $output = '<input type="text" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
    $output .= ' value="' . $field->fif . '" />';
-   # value
    return $output;
 }
 
@@ -138,14 +167,10 @@ Output an HTML string for a password widget
 sub render_password
 {
    my ( $self, $field ) = @_;
-   # label
-   my $output = $self->_label( $field );
-   # input
-   $output .= '<input type="password" name="';
+   my $output = '<input type="password" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
    $output .= ' value="' . $field->fif . '" />';
-   # value
    return $output;
 }
 
@@ -158,12 +183,10 @@ Output an HTML string for a hidden input widget
 sub render_hidden
 {
    my ( $self, $field ) = @_;
-   # input
    my $output = '<input type="hidden" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
    $output .= ' value="' . $field->fif . '" />';
-   # value
    return $output;
 }
 
@@ -177,8 +200,7 @@ sub render_select
 {
    my ( $self, $field ) = @_;
 
-   my $output = $self->_label( $field );
-   $output .= '<select name="' . $field->html_name . '"';
+   my $output = '<select name="' . $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
    $output .= ' multiple="multiple"' if $field->multiple == 1; 
    $output .= ' size="' . $field->size . '"' if $field->size;
@@ -229,8 +251,7 @@ sub render_checkbox
 {
    my ( $self, $field ) = @_;
 
-   my $output = $self->_label( $field );
-   $output .= '<input type="checkbox" name="';
+   my $output = '<input type="checkbox" name="';
    $output .= $field->html_name . '" id="' . $field->id . '" value="' . $field->checkbox_value . '"';
    $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
    $output .= ' />';
@@ -250,8 +271,7 @@ sub render_radio_group
 {
    my ( $self, $field ) = @_;
 
-   my $output = "\n";
-   $output .= $self->_label($field) . " <br />";
+   my $output = " <br />";
    foreach my $option ( $field->options )
    {
       $output .= '<input type="radio" value="' . $option->{value} . '"';
@@ -278,8 +298,7 @@ sub render_textarea
    my $rows  = $field->rows || 5;
    my $name  = $field->html_name;
 
-   my $output = $self->_label( $field )
-      . qq(<textarea name="$name" id="$id" )
+   my $output = qq(<textarea name="$name" id="$id" )
       . qq(rows="$rows" cols="$cols">$fif</textarea>);
 
    return $output;
@@ -305,13 +324,12 @@ sub render_compound
 {
    my ( $self, $field ) = @_;
 
-   my $output = '<fieldset class="' . $field->html_name . '">';
-   $output .= '<legend>' . $field->label . '</legend>';
+   my $output = '';
    foreach my $subfield ($field->sorted_fields)
    {
       $output .= $self->render_field($subfield);
    }
-   $output .= '</fieldset>';
+   return $output;
 }
 
 =head2 render_submit

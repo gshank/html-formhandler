@@ -4,7 +4,7 @@ use MooseX::AttributeHelpers;
 
 use DBIx::Class;
 use Template;
-use version; our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -12,8 +12,7 @@ HTML::FormHandler::Generator::DBIC - generate form classes from DBIC schema
 
 =head1 SYNOPSIS
 
-   form_generator.pl --rs_name=Book --schema_name=BookDB::Schema::DB 
-          --db_dsn=dbi:SQLite:t/db/book.db
+   form_generator.pl --rs_name=Book --schema_name=BookDB::Schema::DB --db_dsn=dbi:SQLite:t/db/book.db > BookForm.pm
 
 =head1 DESCRIPTION
 
@@ -23,6 +22,18 @@ Options:
   schema_name   -- Schema Name 
   db_dsn           -- dsn connect info
 
+
+This software is still experimental in the meaninig that the output, 
+the generated classes, are changed from time to time.  This should
+not impact the main usage for this module that we had in mind, that is
+generating the initial version of a FormHandler form class, copying
+it to the project and modyfing it.
+
+Here is another usage example:
+
+   perl -It/lib script/form_generator.pl --rs_name=Book --schema_name=BookDB::Schema::DB --db_dsn=dbi:SQLite:t/db/book.db > BookForm.pm
+
+You can run it from the untarred distrubution of HTML::FormHandler.
 
 =cut
 

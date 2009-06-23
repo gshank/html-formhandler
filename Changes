@@ -1,4 +1,10 @@
 Revision history for HTML::FormHandler 
+<<<<<<< HEAD:Changes
+=======
+0.26 Tues June 23, 2009
+    Fix dependency test failures on UNIVERSAL::require and version
+
+>>>>>>> 30d2d142305a0587313c87ad9260ed6509c1e963:Changes
 0.25 Sat June 20, 2009
     Add dependency for DateTime::Format::SQLite
 

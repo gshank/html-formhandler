@@ -3,7 +3,6 @@ package HTML::FormHandler::Model::DBIC;
 use Moose;
 extends 'HTML::FormHandler';
 use Carp;
-use UNIVERSAL::require;
 use DBIx::Class::ResultClass::HashRefInflator;
 use DBIx::Class::ResultSet::RecursiveUpdate;
 use Scalar::Util qw(blessed);
