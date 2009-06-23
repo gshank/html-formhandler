@@ -4,7 +4,7 @@ use MooseX::AttributeHelpers;
 
 use DBIx::Class;
 use Template;
-use version; our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
