@@ -47,7 +47,6 @@ lib/HTML/FormHandler/Field/TextArea.pm
 lib/HTML/FormHandler/Field/Weekday.pm
 lib/HTML/FormHandler/Field/Year.pm
 lib/HTML/FormHandler/Fields.pm
-lib/HTML/FormHandler/Fields/FromDB.pm
 lib/HTML/FormHandler/Generator/DBIC.pm
 lib/HTML/FormHandler/I18N.pm
 lib/HTML/FormHandler/I18N/en_us.pm
@@ -89,7 +88,6 @@ t/constraints.t
 t/controller.t
 t/db/book.db
 t/db/bookdb.sql
-t/db_acc.t
 t/db_fif.t
 t/db_has_many.t
 t/db_options.t
@@ -215,7 +213,6 @@ t/process.t
 t/regression_field_error.t
 t/related.t
 t/render.t
-t/render_structured.t
 t/render_table.t
 t/repeatable_errors.t
 t/script/bookdb_server.pl
