@@ -3,6 +3,7 @@ abstract: 'form handler written in Moose '
 author: ~
 build_requires:
   DateTime::Format::MySQL: 0
+  DateTime::Format::SQLite: 0
   DateTime::Format::W3CDTF: 0
   ExtUtils::MakeMaker: 6.42
   Test::More: 0.77
@@ -27,7 +28,7 @@ recommends:
 requires:
   Carp: 0
   DBIx::Class: 0
-  DBIx::Class::ResultSet::RecursiveUpdate: 0
+  DBIx::Class::ResultSet::RecursiveUpdate: 0.010
   DateTime: 0
   HTML::Entities: 0
   Locale::Maketext: 1.09
@@ -41,4 +42,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://github.com/gshank/html-formhandler/tree/master
-version: 0.24
+version: 0.26

@@ -8,10 +8,6 @@
 2009/05/02
   add Rendering modules: TT using Data::Section? using HTML::Dom or Treebuilder?, Reaction?
 
-09/04/23
-  error messages issues for nested forms: prefix with field name? 
-  improve field HTML produced in Render::Simple to include error messages or special css
-
 09/04/01 gshank
   improve auto field support 
   investigate a Catalyst View to provide better template support (like Reaction)

@@ -31,6 +31,7 @@ recommends 'Test::WWW::Mechanize::Catalyst' => '0.50';
 test_requires 'Test::More'      => '0.77';
 test_requires 'DateTime::Format::MySQL';
 test_requires 'DateTime::Format::W3CDTF' => 0;
+test_requires 'DateTime::Format::SQLite';
 
 tests_recursive();
 
