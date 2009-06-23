@@ -33,13 +33,16 @@ sub render_field_struct
        $output .= '<td>' . $self->_label( $field ) . '</td>';
    }
    elsif( $l_type eq 'legend' ){
-       $output .= '<td>' . $self->_label( $field ) . '</td>';
-       $output .= '</tr><tr>';
+       $output .= '<td>' . $self->_label( $field ) . '</td></tr>';
    }
-   $output .= '<td>' . $self->$method($field) . '<td>';
+   if( $l_type ne 'legend' ){
+       $output .= '<td>';
+   }
+   $output .= $self->$method($field);
    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
-   $output .= '</td>';
-   $output .= "</tr>\n";
+   if( $l_type ne 'legend' ){
+       $output .= "</td></tr>\n";
+   }
    return $output;
 }
 
