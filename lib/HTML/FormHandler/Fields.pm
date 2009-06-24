@@ -454,8 +454,6 @@ sub _fields_validate
       next if $field->clear;    # Skip validation
       # Validate each field and "inflate" input -> value.
       $field->validate_field;   # this calls the field's 'validate' routine
-      $field->_validate($field) # form field validation method
-           if ($field->has_value && defined $field->value);
    }
    $self->cross_validate;
 }

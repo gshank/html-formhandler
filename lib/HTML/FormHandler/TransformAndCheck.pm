@@ -170,6 +170,8 @@ sub validate_field
    $field->_apply_actions;
    $field->validate;
    $field->test_ranges;
+   $field->_validate($field) # form field validation method
+        if ($field->has_value && defined $field->value);
      
    return !$field->has_errors;
 }

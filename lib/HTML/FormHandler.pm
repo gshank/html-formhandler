@@ -388,9 +388,11 @@ in the form class, so you might use this validation method if you don't
 want to create a field subclass. 
 
 It has access to the form ($self) and the field.
-This method is called after the field class 'validate' method. The name of 
-this method can be set with 'set_validate' on the field. The default is 
-'validate_' plus the field name:
+This method is called after the field class 'validate' method, and is not
+called if the value for the field is empty ('', undef). (If you want an
+error message when the field is empty, use the 'required' flag and message.) 
+The name of this method can be set with 'set_validate' on the field. The 
+default is 'validate_' plus the field name:
 
    sub validate_testfield { my ( $self, $field ) = @_; ... }
 

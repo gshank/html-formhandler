@@ -4,6 +4,23 @@ use Moose::Role;
 
 with 'HTML::FormHandler::Render::Simple' => { excludes => [ 'render', 'render_field_struct' ] };
 
+=head1 NAME
+
+HTML::FormHandler::Render::Table - render a form with a table layout
+
+=head1 SYNOPSIS
+
+Include this role in a form:
+
+   package MyApp::Form::User;
+   with 'HTML::FormHandler::Render::Table
+
+Use in a template:
+
+   [% form.render %]
+
+=cut
+
 sub render
 {
    my $self = shift;
@@ -45,6 +62,17 @@ sub render_field_struct
    }
    return $output;
 }
+
+=head1 AUTHORS
+
+HFH Contributors, see L<HTML::FormHandler>
+
+=head1 COPYRIGHT
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut
 
 no Moose::Role;
 1;

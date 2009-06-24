@@ -78,7 +78,16 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
         }
     );
 
-In a template, for an input field:
+For many forms, if L<HTML::FormHandler::Render:Simple> is included as a form role,
+you can render a simple form for scaffolding:
+
+    [% form.render %]
+
+Individual fields can also be rendered:
+
+    [% form.render_field('title') %]
+
+Using a template, for an input field:
 
    <p>
    [% f = form.field('address') %]
@@ -206,6 +215,11 @@ and set the 'fif' hash in the 'fillinform' stash variable:
     $c->stash( fillinform => $self->form->fif );
     return unless $form->validated;
  
+=head1 Form generator
+
+A DBIC form generator is installed with FormHandler. See 
+L<HTML::FormHandler::Generator::DBIC>.
+
 
 =head1 Non-database forms
 
@@ -503,7 +517,9 @@ specified, allowing fine-grained control over inflation and validation.
 
 You can also create a simple subroutine in your form class to perform validation.
 The default name of this subroutine is 'validate_<fieldname>', but the name can
-also be set in the field with the 'set_validate' attribute. 
+also be set in the field with the 'set_validate' attribute. (This method is
+not called when the field is empty. Use 'required'/'required_message' for
+that case.) 
 
 If you need to access form attributes such as the schema, the 'set_validate'
 subroutine may be preferable, but most validations can be performed using
@@ -641,6 +657,8 @@ A different form method name for this can be specified with the field's
     sub check_age {
        ...
     } 
+
+This method is not called when the field is empty.
 
 =item validate 
 

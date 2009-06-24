@@ -1,10 +1,38 @@
 
 Recursive operations
 
-  Clear
+
+Form fields are filled in with input/value by _init_from_object if there's
+  an initial object or model object (row), by the validation process if
+  there are params, and by the '_init' process if there's neither an
+  initial object or params (such as when the form is empty).
+
+Validation
+   validate_form (HFH) 
+     build_node (Fields) 
+        fields_validate (Fields in HFH & Compound)
+           loop through fields doing 'validate_field' (TransformAndCheck in HFH & Field)
+              build_node ( if field is Compound (recursive))
+              _apply_actions (T&C)
+              validate (Field subclasses)
+              _validate (form method pointed to in Field)
+      
+_init
+    initially Called in BUILD or setup_form
+    sub _init is in Fields.pm
+      it loops through the fields calling sub _init in Field.pm
+      special processing for _init in Repeatable and Select
+
+_init_from_object
+    called in BUILD and setup_form
+
+  Clear (recursive)
+    Clear is called in 'process' in HFH. In Fields.pm the "after 'clear_data'"
+    will fire. It loops through all the fields, and if any of them are also
+    compound, another "after 'clear_date'" will fire.  
     in HFH
 
-      sub clear
+      sub clear # called in 'process'
       { 
          my $self = shift;
          warn "HFH: clear ", $self->name, "\n" if $self->verbose;
@@ -48,17 +76,4 @@ Recursive operations
 
   Field::Repeatable
       sub clear_other ...
-
-
-Validation
-   validate_form (HFH) 
-     build_node (Fields) 
-        fields_validate (Fields in HFH & Compound)
-           validate_field (TransformAndCheck in HFH & Field)
-              build_node ( if field is Compound (recursive))
-              _apply_actions (T&C)
-              validate (Field subclasses)
-           _validate (form method pointed to in Field)
-       
-
 

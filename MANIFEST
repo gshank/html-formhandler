@@ -47,7 +47,6 @@ lib/HTML/FormHandler/Field/TextArea.pm
 lib/HTML/FormHandler/Field/Weekday.pm
 lib/HTML/FormHandler/Field/Year.pm
 lib/HTML/FormHandler/Fields.pm
-lib/HTML/FormHandler/Fields/FromDB.pm
 lib/HTML/FormHandler/Generator/DBIC.pm
 lib/HTML/FormHandler/I18N.pm
 lib/HTML/FormHandler/I18N/en_us.pm
@@ -65,7 +64,6 @@ lib/HTML/FormHandler/Moose.pm
 lib/HTML/FormHandler/Moose/Role.pm
 lib/HTML/FormHandler/Params.pm
 lib/HTML/FormHandler/Render/Simple.pm
-lib/HTML/FormHandler/Render/Structured.pm
 lib/HTML/FormHandler/Render/Table.pm
 lib/HTML/FormHandler/TransformAndCheck.pm
 lib/HTML/FormHandler/Types.pm
