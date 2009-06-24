@@ -1,10 +1,7 @@
-use Test::More;
+use strict;
+use warnings;
+use Test::More tests => 12;
 use lib 't/lib';
-
-BEGIN
-{
-   plan tests => 12;
-}
 
 {
 
