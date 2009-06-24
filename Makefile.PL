@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 name 'HTML-FormHandler';
+author 'Gerda Shank';
 all_from 'lib/HTML/FormHandler.pm';
 license 'perl';
 
