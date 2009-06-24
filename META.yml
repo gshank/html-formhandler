@@ -1,7 +1,10 @@
 ---
 abstract: 'form handler written in Moose '
-author: ~
+author:
+  - 'Gerda Shank'
 build_requires:
+  DBIx::Class: 0
+  DBIx::Class::ResultSet::RecursiveUpdate: 0.010
   DateTime::Format::MySQL: 0
   DateTime::Format::SQLite: 0
   DateTime::Format::W3CDTF: 0
@@ -20,14 +23,8 @@ no_index:
   directory:
     - inc
     - t
-recommends:
-  Catalyst: 0
-  Catalyst::Component::InstancePerContext: 0
-  Template: 0
-  Test::WWW::Mechanize::Catalyst: 0.50
 requires:
   Carp: 0
-  DBIx::Class: 0
   DBIx::Class::ResultSet::RecursiveUpdate: 0.010
   DateTime: 0
   HTML::Entities: 0
@@ -42,4 +39,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://github.com/gshank/html-formhandler/tree/master
-version: 0.26
+version: 0.26001

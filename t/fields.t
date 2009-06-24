@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 187;
+use Test::More tests => 177;
 
 #
 # Boolean
@@ -56,68 +56,7 @@ $field->input(0);
 $field->validate_field;
 ok( $field->has_errors, 'required field fails with 0' );
 
-# datetime
-SKIP:
-{
-   eval { require DBIx::Class; require DateTime; };
-   skip "DBIx::Class required", 3 if $@;
-   use lib './t';
-   use lib 't/lib';
-   use BookDB::Schema::DB;
-   use_ok('HTML::FormHandler::Field::DateTime');
-   my $field = HTML::FormHandler::Field::DateTime->new( name => 'test_field' );
-   ok( defined $field, 'new() called' );
 
-   {
-
-      package UserForm;
-
-      use HTML::FormHandler::Moose;
-      extends 'HTML::FormHandler::Model::DBIC';
-      with 'HTML::FormHandler::Render::Simple';
-
-      has_field 'birthdate'      => ( type => 'DateTime' );
-      has_field 'birthdate.year' => ( type => 'Year' );
-   }
-
-   my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
-   my $user = $schema->resultset('User')->first;
-   my $form = UserForm->new( item => $user );
-   ok( $form, 'Form with DateTime field loaded from the db' );
-}
-
-# email
-#
-#
-SKIP:
-{
-   eval { require Email::Valid };
-   skip "Email::Valid required", 5 if $@;
-
-   my $class = 'HTML::FormHandler::Field::Email';
-   use_ok($class);
-   my $field = $class->new( name => 'test_field',); 
-   ok( defined $field, 'new() called' );
-
-   $field->input('foo@bar.com');
-   $field->validate_field;
-   ok( !$field->has_errors, 'Test for errors 1' );
-   is( $field->value, 'foo@bar.com', 'value returned' );
-
-   $field->input('foo@bar');
-   $field->validate_field;
-   ok( $field->has_errors, 'Test for errors 1' );
-   is(
-      $field->errors->[0],
-      'Email should be of the format someuser@example.com',
-      'Test error message'
-   );
-
-   $field->input('someuser@example.com');
-   $field->validate_field;
-   ok( !$field->has_errors, 'Test for errors 2' );
-
-}
 
 # hidden
 
