@@ -78,7 +78,16 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
         }
     );
 
-In a template, for an input field:
+For many forms, if L<HTML::FormHandler::Render:Simple> is included as a form role,
+you can render a simple form for scaffolding:
+
+    [% form.render %]
+
+Individual fields can also be rendered:
+
+    [% form.render_field('title') %]
+
+Using a template, for an input field:
 
    <p>
    [% f = form.field('address') %]
@@ -206,6 +215,11 @@ and set the 'fif' hash in the 'fillinform' stash variable:
     $c->stash( fillinform => $self->form->fif );
     return unless $form->validated;
  
+=head1 Form generator
+
+A DBIC form generator is installed with FormHandler. See 
+L<HTML::FormHandler::Generator::DBIC>.
+
 
 =head1 Non-database forms
 

@@ -20,20 +20,20 @@ Options:
 
   rs_name       -- Resultset Name
   schema_name   -- Schema Name 
-  db_dsn           -- dsn connect info
+  db_dsn        -- dsn connect info
 
 
-This software is still experimental in the meaninig that the output, 
-the generated classes, are changed from time to time.  This should
+This package should be considered still experimental since the output, 
+of the generated classes will be changed from time to time.  This should
 not impact the main usage for this module that we had in mind, that is
 generating the initial version of a FormHandler form class, copying
-it to the project and modyfing it.
+it to the project and modifying it.
 
 Here is another usage example:
 
-   perl -It/lib script/form_generator.pl --rs_name=Book --schema_name=BookDB::Schema::DB --db_dsn=dbi:SQLite:t/db/book.db > BookForm.pm
+   script/form_generator.pl --rs_name=Book --schema_name=BookDB::Schema::DB --db_dsn=dbi:SQLite:t/db/book.db > BookForm.pm
 
-You can run it from the untarred distrubution of HTML::FormHandler.
+This script is installed into the system with the rest of FormHandler.
 
 =cut
 
