@@ -39,6 +39,7 @@ unless ( $@ )
 
 tests();
 author_tests('t/dbic');
+author_tests('t/xt');
 
 install_script 'form_generator.pl'; 
 auto_install();
