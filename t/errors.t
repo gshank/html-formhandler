@@ -76,7 +76,7 @@ is_deeply( \@field_names,
            [ 'reqname', 'fruit', 'silly_name' ],
            'error field names' );
 
-is( $form->field('fruit')->id, "testform_fruit", 'field has id' ); 
+is( $form->field('fruit')->id, "fruit", 'field has id' ); 
 
 {
    package Repeatable::Form;

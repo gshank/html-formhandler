@@ -2,7 +2,8 @@ package HTML::FormHandler::Render::Table;
 
 use Moose::Role;
 
-with 'HTML::FormHandler::Render::Simple' => { excludes => [ 'render', 'render_field_struct' ] };
+with 'HTML::FormHandler::Render::Simple' => 
+      { excludes => [ 'render', 'render_field_struct', 'render_end', 'render_start' ] };
 
 =head1 NAME
 
@@ -24,6 +25,19 @@ Use in a template:
 sub render
 {
    my $self = shift;
+
+   my $output = $self->render_start;
+   foreach my $field ( $self->sorted_fields )
+   {
+      $output .= $self->render_field($field);
+   }
+   $output .= $self->render_end; 
+   return $output;
+}
+
+sub render_start
+{
+   my $self = shift;
    my $output = '<form ';
    $output .= 'action="' . $self->action . '" ' if $self->action;
    $output .= 'id="' . $self->name . '" ' if $self->name;
@@ -31,12 +45,12 @@ sub render
    $output .= 'method="' . $self->http_method . '"' if $self->http_method;
    $output .= '>' . "\n";
    $output .= "<table>\n";
-
-   foreach my $field ( $self->sorted_fields )
-   {
-      $output .= $self->render_field($field);
-   }
-   $output .= "</table>\n";
+   return $output;
+}
+sub render_end
+{
+   my $self = shift;
+   my $output .= "</table>\n";
    $output .= "</form>\n";
    return $output;
 }

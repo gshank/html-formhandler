@@ -574,12 +574,7 @@ has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'unique' => ( isa => 'Bool', is => 'rw' );
 has 'unique_message' => ( isa => 'Str', is => 'rw' );
 has 'id' => ( isa => 'Str', is => 'rw', lazy => 1, builder => 'build_id' );
-sub build_id
-{
-   my $field = shift;
-   my $form_name = $field->form ? $field->form->name : 'fld-';
-   return $form_name . $field->name;
-}
+sub build_id { shift->html_name }
 has 'javascript' => ( isa => 'Str', is => 'rw' );
 has 'password' => ( isa => 'Bool', is => 'rw' );
 has 'writeonly' => ( isa => 'Bool', is => 'rw' );

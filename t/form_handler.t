@@ -72,7 +72,7 @@ ok( $form->field('fruit')->has_errors,       'fruit has error' );
 ok( $form->field('reqname')->has_errors,     'reqname has error' );
 ok( $form->field('must_select')->has_errors, 'must_select has error' );
 ok( !$form->field('optname')->has_errors,    'optname has no error' );
-is( $form->field('fruit')->id,    "testform_fruit", 'field has id' );
+is( $form->field('fruit')->id,    "fruit", 'field has id' );
 is( $form->field('fruit')->label, 'Fruit',          'field label' );
 
 ok( !$form->process( {} ), 'no leftover params' );

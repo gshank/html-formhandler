@@ -1,3 +1,6 @@
+2009/06/25
+  Create multibox widget & rendering for checkbox group for multiple select
+
 2009/05/23
   Improve example of Repeatable form (BookDB, User) to do adds & deletes with js
 
@@ -13,4 +16,3 @@
   investigate a Catalyst View to provide better template support (like Reaction)
   investigate other Form processing HTML generation
   clean up DateTime fields (make consistent), better tests
-

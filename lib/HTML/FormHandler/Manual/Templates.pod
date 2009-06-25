@@ -47,16 +47,23 @@ And include them in a generic template:
        <p><span class="error" id="error">[% error %] </span></p>
      [% END %]
    [% END %]
-   <label class="label" for="[% f.name %]">[% f.label %]</label>
-   <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
+   <label class="label" for="[% f.id %]">[% f.label %]</label>
+   <input type="text" name="[% f.html_name %]" id="[% f.id %]" value="[% f.fif %]">
    </div>
+
+Simple text field;
+
+   [% f = form.field('text_field') %]
+   <div><label class="label" for="[% f.id %]">[% f.label %]: </label>
+   <input type="text" name="[% f.html_name %]" id="[% f.id %]" value="[% f.fif %]" /> </div>
+
 
 =head2 Select field
 
 Single select:
 
-   <label class="label" for="[% f.name %]">[% f.label %]</label>
-   <select name="[% f.name %]">
+   <label class="label" for="[% f.id %]">[% f.label %]</label>
+   <select name="[% f.html_name %]" id="[% f.id %]>
      [% FOR option IN f.options %]
        <option value="[% option.value %]" 
        [% IF option.value == f.fif %]
@@ -68,8 +75,9 @@ Single select:
 
 Multiple select:
 
-   <label class="label" for="[% f.name %]">[% f.label || f.name %]</label>
-   <select name="[% f.name %]" multiple="multiple" size="5">
+   <label class="label" for="[% f.id %]">[% f.label %]</label>
+   <select name="[% f.html_name %]" id="[% f.id %] 
+             multiple="multiple" size="[% f.size %]">
      [% FOR option IN f.options %]
        <option value="[% option.value %]" 
        [% FOREACH optval IN f.value %]
@@ -83,9 +91,39 @@ Multiple select:
 
 =head2 Checkbox
 
-  <input type="checkbox" name="[% f.name %]" value="1"
-      [% IF f.fif == 1 %] checked="checked"[% END %] />
+   <div><label class="label" for="[% f.id %]">[% f.label %]: </label>
+   <input type="checkbox" name="[% f.html_name %]" id="[% f.id %]" value="1" />
+   </div>
 
+=head2 Textarea
+
+   <div><label class="label" for="[% f.id %]">[% f.label %]" </label>
+   <textarea name="[% f.html_name %]" id="[% f.id %]" 
+        rows="[% f.rows %]" cols="[% f.cols %]">[% f.fif %]</textarea></div>
+
+=head2 Hidden
+
+   <div><input type="hidden" name="[% f.html_name %]" id="[% f.id %]" 
+       value="[% f.fif %]" /></div>
+
+=head2 Submit
+
+   <div><input type="submit" name="[% f.html_name %]" id="[% f.id %]" 
+       value="[% f.value %]" /></div>
+
+=head2 Radio group
+
+   <div>
+   <label class="label" for="[% f.id %]">[% f.label %]</label>
+   [% FOR option IN f.options %]
+     <input type="radio" value="[% option.value %]" 
+        name="[% f.name %]"
+     [% IF option.value == f.fif %]
+        checked="checked"
+     [% END %]>
+     [% option.label %]</br>
+     [% END %] 
+   </div>
 
 =head1 AUTHOR
 
