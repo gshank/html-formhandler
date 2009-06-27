@@ -371,15 +371,10 @@ sub validate_unique
       next unless defined $value;
       my $accessor   = $field->accessor;
 
-      # look for rows with this value 
-      my $count = $rs->search( { $accessor => $value } )->count;
-      # not found, this one is unique
+      my @id_clause = ();
+      @id_clause = _id_clause( $rs, $self->item_id ) if defined $self->item;
+      my $count = $rs->search( { $accessor => $value, @id_clause } )->count;
       next if $count < 1;
-      # found this value, but it's the same row we're updating
-      next
-         if $count == 1
-            && $self->item_id 
-            && $self->item_id eq $rs->search( { $accessor => $value } )->first->id;
       my $field_error = $field->unique_message || 'Duplicate value for ' . $field->label;
       $field->add_error( $field_error );
       $found_error++;
@@ -387,6 +382,25 @@ sub validate_unique
 
    return $found_error;
 }
+
+sub _id_clause {
+    my( $resultset, $id ) = @_;
+    my @pks = $resultset->result_source->primary_columns;
+    my @ids;
+    if( ref $id eq 'ARRAY' ){
+        @ids = @$id;
+    }
+    else{
+        @ids = ( $id );
+    }
+    my %result;
+    for my $i ( $#ids ){
+        $result{$pks[$i]} = { '!=' => $ids[$i] };
+    }
+    return %result;
+}
+
+
 
 =head2 build_item
 
