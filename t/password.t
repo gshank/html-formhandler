@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More  tests => 19;
+use Test::More  tests => 22;
 use lib 't/lib';
 
 use_ok( 'HTML::FormHandler::Field::Text' );
@@ -99,6 +99,7 @@ is ( $field->value, $pass, 'Input and value match' );
 
    has '+field_name_space' => ( default => 'Field' );
    has_field 'password' => ( type => 'Password', required => 1 );
+   has_field '_password' => ( type => 'PasswordConf', );
 
 }
 
@@ -113,4 +114,12 @@ $form->process( params => $params );
 ok( !$form->validated, 'form validated' );
 
 ok( !$form->field('password')->noupdate, q[noupdate is 'false' on password field] );
+
+ok( $form->field('_password')->has_errors, 'Password confirmation has errors' );
+
+$form->process( params => { password => 'aaaaaa', _password => 'bbbb' } );
+ok( $form->field('_password')->has_errors, 'Password confirmation has errors' );
+
+$form->process( params => { password => 'aaaaaa', _password => 'aaaaaa' } );
+ok( $form->validated, 'password confirmation validated' );
 
