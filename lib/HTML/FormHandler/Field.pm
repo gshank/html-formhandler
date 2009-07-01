@@ -234,8 +234,6 @@ Widget types for the provided field classes:
     hidden      : Hidden
     submit      : Submit
 
-The default widget is 'text'.
-
 =head2 Flags
 
    password  - prevents the entered value from being displayed in the form
@@ -569,7 +567,7 @@ sub build_html_name
                                  $self->form->name . "." : '';
    return $prefix . $self->full_name;
 }
-has 'widget' => ( isa => 'Str', is => 'rw', default => 'text' );
+has 'widget' => ( isa => 'Str', is => 'rw' );
 has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'unique' => ( isa => 'Bool', is => 'rw' );
 has 'unique_message' => ( isa => 'Str', is => 'rw' );

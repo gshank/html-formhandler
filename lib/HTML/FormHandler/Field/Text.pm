@@ -5,6 +5,7 @@ extends 'HTML::FormHandler::Field';
 our $VERSION = '0.01';
 
 has 'size' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
+has 'maxlength' => ( isa => 'Int|Undef', is => 'rw' );
 has 'min_length' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has '+widget' => ( default => 'text' );
 
@@ -14,7 +15,7 @@ sub validate {
     return unless $field->SUPER::validate;
     my $value = $field->input;
     # Check for max length
-    if ( my $size = $field->size  ) {
+    if ( my $size = $field->maxlength ) {
         return $field->add_error( 'Please limit to [quant,_1,character]. You submitted [_2]', $size, length $value )
             if length $value > $size;
     }
