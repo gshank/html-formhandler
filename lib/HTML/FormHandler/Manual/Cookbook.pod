@@ -6,46 +6,6 @@ HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
 
 Collection of use recipes for L<HTML::FormHandler>
 
-=head1 Passing in even fewer parameters 
-
-If you like to bring the number of parameters down to the absolute minimum,
-you could either create a base controller that would set the schema and params
-in the form on each call using L<Catalyst::Component::InstancePerContext>,  
-or set them in a base Chained method. For a persistent form:
-
-   has 'edit_form' => ( isa => 'BookDB::Form::Book', is => 'rw',
-      lazy => 1, default => sub { BookDB::Form::Book->new } );
-
-   sub book_base : Chained PathPart('book') CaptureArgs(0)
-   {
-      my ( $self, $c ) = @_;
-      $self->edit_form->clear;  
-      $self->edit_form->schema( $c->model('DB')->schema );
-      $self->edit_form->params( $c->req->parameters );
-   }
-
-or if you want a new form on each call:
-
-   has 'edit_form' => ( isa => 'BookDB::Form::Book', is => 'rw' );
-
-   sub book_base : Chained PathPart('book') CaptureArgs(0)
-   {
-      my ( $self, $c ) = @_;
-      $self->edit_form( MyApp::Form->new( schema => $c->model('DB)->schema,
-          params => $c->req->parameters ) );
-   }
-
-Then you could just pass in the item_id. You could simplify even that by 
-creating a method that takes a simple ID.
-
-   sub form {
-     my ( $self, $id ) = @_;
-     return $self->form->process( item_id => $id ); 
-   }
-
-and in your controller action:
-
-   return unless $self->form($id);
 
 =head1 Select lists
 
