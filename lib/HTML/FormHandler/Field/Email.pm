@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::Email;
 
 use HTML::FormHandler::Moose;
-extends 'HTML::FormHandler::Field';
+extends 'HTML::FormHandler::Field::Text';
 use Email::Valid;
 our $VERSION = '0.02';
 

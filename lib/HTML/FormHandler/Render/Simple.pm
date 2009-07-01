@@ -211,6 +211,8 @@ sub render_text
    my $output = '<input type="text" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
+   $output .= ' size="' . $field->size . '"' if $field->size;
+   $output .= ' maxlength="' . $field->maxlength. '"' if $field->maxlength;
    $output .= ' value="' . $field->fif . '" />';
    return $output;
 }
@@ -221,6 +223,8 @@ sub render_password
    my $output = '<input type="password" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
+   $output .= ' size="' . $field->size . '"' if $field->size;
+   $output .= ' maxlength="' . $field->maxlength. '"' if $field->maxlength;
    $output .= ' value="' . $field->fif . '" />';
    return $output;
 }

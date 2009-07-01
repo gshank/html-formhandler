@@ -1,0 +1,172 @@
+=head1 NAME
+
+HTML::FormHandler::Manual::Catalyst - Using HFH forms in Catalyst controllers
+
+=head1 SYNOPSIS
+
+This part of the FormHandler Manual is devoted to using the L<HTML::FormHandler>
+package in Catalyst controllers.
+
+See the other FormHandler documentation at L<HTML::FormHandler::Manual>, or
+the base class at L<HTML::FormHandler>.
+
+=head1 DESCRIPTION
+
+Although L<HTML::FormHandler> can be used in any Perl web application, module, or
+script, one of its most common uses is in L<Catalyst> applications.
+
+Using a form takes only a few lines of code, so it's not necessary to have
+a L<Catalyst> base controller, although you could make a base controller for
+FormHandler if you're doing more than the basics.
+
+=head2 A Controller Example
+
+The following example uses chained dispatching. The 'form' method is called
+by both the create and edit actions.
+
+   package BookDB::Controller::Borrower;
+
+   use Moose;
+   BEGIN {
+      extends 'Catalyst::Controller';
+   }
+
+   sub borrower_base : Chained PathPart('borrower') CaptureArgs(0) { }
+
+   sub list : Chained('borrower_base') PathPart('list') Args(0)
+   {
+      my ( $self, $c ) = @_;
+      my $borrowers = [ $c->model('DB::Borrower')->all ];
+      my @columns = ( 'name', 'email' );
+      $c->stash( borrowers => $borrowers, columns => \@columns,
+                 template => 'borrower/list.tt' );
+   }
+
+   sub add : Chained('borrower_base') PathPart('add') Args(0)
+   {
+      my ( $self, $c ) = @_;
+      # Create the empty borrower row for the form
+      $c->stash( borrower => $c->model('DB::Borrower')->new_result({}) );
+      return $self->form($c);
+   }
+
+   sub item : Chained('borrower_base') PathPart('') CaptureArgs(1)
+   {
+      my ( $self, $c, $borrower_id ) = @_;
+      $c->stash( borrower => $c->model('DB::Borrower')->find($borrower_id) );
+   }
+
+   sub edit : Chained('item') PathPart('edit') Args(0)
+   {
+      my ( $self, $c ) = @_;
+      return $self->form($c);
+   }
+
+   sub form
+   {
+      my ( $self, $c ) = @_;
+
+      my $form = BookDB::Form::Borrower->new;
+      $c->stash( form => $form, template => 'borrower/form.tt' );
+      return unless $form->process( item => $c->stash->{borrower},
+         params => $c->req->parameters );
+      $c->res->redirect( $c->uri_for($self->action_for('list')) );
+   }
+
+   sub delete : Chained('item') PathPart('delete') Args(0)
+   {
+      my ( $self, $c ) = @_;
+
+      $c->stash->{borrower}->delete;
+      $c->res->redirect( $c->uri_for($c->action_for('list')) );
+   }
+
+   1;
+
+=head2 Another way to set up your form 
+
+If you are setting the schema or other form attributes (such as the user_id,
+or other attributes) on your form you could create a base controller that would set 
+these in the form on each call using L<Catalyst::Component::InstancePerContext>,  
+or set them in a base Chained method. 
+
+   sub book_base : Chained PathPart('book') CaptureArgs(0)
+   {
+      my ( $self, $c ) = @_;
+      my $form = MyApp::Form->new;  
+      $form->schema( $c->model('DB')->schema );
+      $form->params( $c->req->parameters );
+      $form->user_id( $c->user->id );
+      $c->stash( form => $form );
+   }
+
+Then you could just pass in the item_id when the form is processed.
+
+   return unless $c->stash->{form}->process($id);
+
+=head2 Using  HTML::FillInForm
+
+If you want to use L<HTML::FillInForm> to fill in values instead of the 
+doing it in directly in a template using either the field or the form 'fif'
+methods, you can use L<Catalyst::View::FillInForm> on your view class:
+
+    package MyApp::View::TT;
+    use Moose;
+    with 'Catalyst::View::FillInForm';
+    ....
+    1;
+
+and set the 'fif' hash in the 'fillinform' stash variable:
+
+    $self->form->process( ... );
+    $c->stash( fillinform => $self->form->fif );
+    return unless $form->validated;
+
+When the 'fillinform' stash variable is set, HTML::FillInForm will automatically
+be used by your view to fill in the the form values. This can be very helpful
+when you want to build your forms by hand, or when you have legacy forms that
+you're just trying to hook up to FormHandler.
+
+=head2 The Catalyst context
+
+FormHandler has a 'ctx' attribute that can be used to set the Catalyst context (or
+anything you want, really). But if you can avoid passing in the context, you should do so,
+because you're mixing up your MVC and it makes it much more difficult to test your
+forms. But if you need to do it, you can:
+
+    my $form = MyApp::Form->new( ctx => $c );
+
+Usually you should prefer to add new attributes to your form:
+
+    package MyApp::Form;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has 'user_id' => ( is => 'rw' );
+    has 'hostname' => ( is => 'rw' );
+    has 'captcha_store' => ( is => 'rw' );
+    ....
+    1;
+
+Then just pass the attributes in on new:
+
+    my $form => MyApp::Form->new( user_id => $c->user->id, hostname => $c->req->host,
+        captcha_store => $c->{session}->{captcha} );
+   
+Or set them using accessors:
+
+    $form->user_id( $c->user->id );
+    $form->hostname( $c->req->host );
+    $form->captcha_store( $c->{session}->{captcha} );
+
+Then you can access these attributes in your form validation methods:
+
+    sub validate_selection {
+       my ( $self, $field ) = @_;
+       if( $field->value eq 'something' && $self->hostname eq 'something_else' )
+       {
+          $field->add_error("some error message" );
+       }
+    }
+
+=cut
