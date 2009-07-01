@@ -11,7 +11,7 @@ use HTML::FormHandler::Field::Text;
 
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
-               type => 'Text',
+               size => 20,
                label => 'TEST',
                id    => 'f99',
             );
@@ -94,7 +94,7 @@ is( $form->render_field( $form->field('number') ),
 my $output1 = $form->render_field( $form->field('test_field') );
 is( $output1, 
    '
-<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" value="something" /></div>
+<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" /></div>
 ',
    'output from text field');
 
@@ -144,11 +144,11 @@ my $output8 = $form->render_field( $form->field('start_date') );
 is( $output8, 
    '
 <div><fieldset class="start_date"><legend>Start_date</legend>
-<div><label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="start_date.month" value="7" /></div>
+<div><label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" /></div>
 
-<div><label class="label" for="start_date.day">Day: </label><input type="text" name="start_date.day" id="start_date.day" value="14" /></div>
+<div><label class="label" for="start_date.day">Day: </label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" /></div>
 
-<div><label class="label" for="start_date.year">Year: </label><input type="text" name="start_date.year" id="start_date.year" value="2006" /></div>
+<div><label class="label" for="start_date.year">Year: </label><input type="text" name="start_date.year" id="start_date.year" size="8" value="2006" /></div>
 </fieldset></div>
 ',
    'output from DateTime' );

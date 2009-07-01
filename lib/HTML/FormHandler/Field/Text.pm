@@ -5,7 +5,18 @@ extends 'HTML::FormHandler::Field';
 our $VERSION = '0.01';
 
 has 'size' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
-has 'min_length' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
+has 'maxlength' => ( isa => 'Int|Undef', is => 'rw' );
+has 'minlength' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
+has 'min_length' => ( isa => 'Int|Undef', is => 'rw', default => '0', reader => '_min_length_r', writer => '_min_length_w' ); # for backcompat
+sub min_length {
+    my ( $self, $value ) = @_;
+    warn "Please use the 'minlength' attribute - 'min_length' is deprecated";
+    if( $value ){
+        $self->_min_length_w($value);
+    }
+    return $self->_min_length_r;
+}
+
 has '+widget' => ( default => 'text' );
 
 sub validate {
@@ -14,13 +25,13 @@ sub validate {
     return unless $field->SUPER::validate;
     my $value = $field->input;
     # Check for max length
-    if ( my $size = $field->size  ) {
+    if ( my $size = $field->maxlength ) {
         return $field->add_error( 'Please limit to [quant,_1,character]. You submitted [_2]', $size, length $value )
             if length $value > $size;
     }
 
     # Check for min length
-    if ( my $size = $field->min_length  ) {
+    if ( my $size = $field->minlength || $field->_min_length_r ) {
         return $field->add_error( 
            'Input must be at least [quant,_1,character]. You submitted [_2]', 
            $size, length $value )

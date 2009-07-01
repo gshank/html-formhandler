@@ -4,7 +4,7 @@ use lib 't/lib';
 BEGIN {
    eval "use DBIx::Class";
    plan skip_all => 'DBIX::Class required' if $@;
-   plan tests => 7;
+   plan tests => 8;
 }
 
 use_ok( 'BookDB::Form::Book');
@@ -65,5 +65,8 @@ ok( ! $form2->process( $params ), 'duplicate isbn again' );
 
 is( $errors[0], 'Duplicate ISBN number', 'field error message for duplicate');
 
+my $book = $schema->resultset('Book')->find(1);
+my $form3 = My::Form->new( item_id => [ $book->id ], schema => $schema );
+ok( $form3->process( $params ), 'Updating works' );
 
 
