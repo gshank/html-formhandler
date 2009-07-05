@@ -18,7 +18,7 @@ use HTML::FormHandler::Types (':all');
      => as 'Int'
      => where { $_ > 10 }
      => message { "This number ($_) is not greater than 10" };
-  
+
   has 'posint' => ( is => 'rw', isa => PositiveInt);
   has_field 'test' => ( apply => [ PositiveInt ] );
   has_field 'text_gt' => ( apply=> [ 'GreaterThan10' ] );
@@ -59,7 +59,7 @@ ok( !$form->field('test')->has_errors, 'no errors on MooseX type');
 ok( !$form->field('text_gt')->has_errors, 'no errors on subtype');
 ok( !$form->field('text_both')->has_errors, 'no errors on both');
 ok( !$form->field('state')->has_errors, 'no errors on state' );
-   
+
 # State
 my $field = HTML::FormHandler::Field->new( name => 'Test1', apply => [ State ] );
 ok( $field, 'created field with type' );

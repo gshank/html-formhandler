@@ -42,7 +42,7 @@ use HTML::FormHandler::Field::Text;
 my $form = Test::Form->new;
 ok( $form, 'create form');
 
-is_deeply( [$form->field('vegetables')->options], 
+is_deeply( [$form->field('vegetables')->options],
    [ {'label' => 'lettuce',
       'value' => 1 },
      {'label' => 'broccoli',

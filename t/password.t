@@ -42,7 +42,7 @@ use_ok( 'HTML::FormHandler::Field::Password' );
    extends 'HTML::FormHandler';
 
    sub field_list {
-       return [ 
+       return [
                login       => 'Text',
                username    => 'Text',
                password    => { type => 'Password',

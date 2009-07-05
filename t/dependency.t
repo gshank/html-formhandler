@@ -21,7 +21,7 @@ use DateTime;
          [
             [ 'address', 'city', 'state', 'zip' ],
             [ 'cc_no', 'cc_expires' ],
-         ] 
+         ]
       }
    );
 

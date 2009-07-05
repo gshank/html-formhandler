@@ -33,7 +33,7 @@ use HTML::FormHandler::Field::Text;
        range_end => 2020 );
 
    has_field 'two_errors' => (
-       apply => [ 
+       apply => [
           { check   => [ ], message => 'First constraint error' },
           { check   => [ ], message => 'Second constraint error' }
        ]
@@ -76,8 +76,8 @@ my $params = {
    hidden => '1234',
    selected => '1',
    'start_date.month' => '7',
-   'start_date.day' => '14', 
-   'start_date.year' => '2006', 
+   'start_date.day' => '14',
+   'start_date.year' => '2006',
    two_errors => 'aaa',
    opt_in => 0,
 };
@@ -92,35 +92,35 @@ is( $form->render_field( $form->field('number') ),
 );
 
 my $output1 = $form->render_field( $form->field('test_field') );
-is( $output1, 
+is( $output1,
    '
 <div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" /></div>
 ',
    'output from text field');
 
 my $output2 = $form->render_field( $form->field('fruit') );
-is( $output2, 
+is( $output2,
    '
 <div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0" >apples</option><option value="2" id="fruit.1" selected="selected">oranges</option><option value="3" id="fruit.2" >kiwi</option></select></div>
 ',
    'output from select field');
 
 my $output3 = $form->render_field( $form->field('vegetables') );
-is( $output3, 
+is( $output3,
    '
 <div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="2" id="vegetables.0" selected="selected">broccoli</option><option value="4" id="vegetables.1" selected="selected">peas</option><option value="1" id="vegetables.2" >lettuce</option><option value="3" id="vegetables.3" >carrots</option></select></div>
 ',
    'output from select multiple field');
 
 my $output4 = $form->render_field( $form->field('active') );
-is( $output4, 
+is( $output4,
    '
 <div><label class="label" for="active">Active: </label><input type="checkbox" name="active" id="active" value="1" /></div>
-', 
+',
    'output from checkbox field');
 
 my $output5 = $form->render_field( $form->field('comments') );
-is( $output5, 
+is( $output5,
    '
 <div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...</textarea></div>
 ',
@@ -130,18 +130,18 @@ my $output6 = $form->render_field( $form->field('hidden') );
 is( $output6,
    '
 <div><input type="hidden" name="hidden" id="hidden" value="1234" /></div>
-', 
+',
    'output from hidden field' );
 
 my $output7 = $form->render_field( $form->field('selected') );
-is( $output7, 
+is( $output7,
    '
 <div><label class="label" for="selected">Selected: </label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" /></div>
 ',
    'output from boolean' );
 
 my $output8 = $form->render_field( $form->field('start_date') );
-is( $output8, 
+is( $output8,
    '
 <div><fieldset class="start_date"><legend>Start_date</legend>
 <div><label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" /></div>

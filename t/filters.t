@@ -25,7 +25,7 @@ BEGIN
 
    subtype 'MyInt'
        => as 'Int';
- 
+
    coerce 'MyInt'
        => from 'MyStr'
        => via { return $1 if /(\d+)/ };
@@ -45,7 +45,7 @@ BEGIN
       apply => [ { transform => sub{ DateTime->new( $_[0] ) },
                    message => 'Not a valid DateTime' } ],
    );
-   has_field 'date_time' => ( 
+   has_field 'date_time' => (
       type => 'Compound',
       apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
    );
@@ -59,8 +59,8 @@ BEGIN
    has_field 'coerce_pass' => (
       apply => [ 'MyInt' ]
    );
-   
-   has_field 'date_coercion_pass' => ( 
+
+   has_field 'date_coercion_pass' => (
       type => 'Compound',
       apply => [ 'MyDateTime' ],
    );
@@ -68,7 +68,7 @@ BEGIN
    has_field 'date_coercion_pass.month' => ( type => 'Text', );
    has_field 'date_coercion_pass.day' => ( type => 'Text', );
 
-   has_field 'date_coercion_error' => ( 
+   has_field 'date_coercion_error' => (
       type => 'Compound',
       apply => [ 'MyDateTime' ],
    );
@@ -76,7 +76,7 @@ BEGIN
    has_field 'date_coercion_error.month' => ( type => 'Text', );
    has_field 'date_coercion_error.day' => ( type => 'Text', );
 
-   has_field 'date_time_fif' => ( 
+   has_field 'date_time_fif' => (
       type => 'Compound',
       apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
       deflation => sub { { year => 1000, month => 1, day => 1 } },

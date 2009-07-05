@@ -72,11 +72,11 @@ is_deeply( \@errors, [
 is( $form->num_errors, 3, 'number of errors' );
 
 my @field_names = $form->error_field_names;
-is_deeply( \@field_names, 
+is_deeply( \@field_names,
            [ 'reqname', 'fruit', 'silly_name' ],
            'error field names' );
 
-is( $form->field('fruit')->id, "fruit", 'field has id' ); 
+is( $form->field('fruit')->id, "fruit", 'field has id' );
 
 {
    package Repeatable::Form;
@@ -92,7 +92,7 @@ is( $form->field('fruit')->id, "fruit", 'field has id' );
    sub validate_addresses_city
    {
       my ( $self, $field ) = @_;
-      $field->add_error("Invalid City: " . $field->value) 
+      $field->add_error("Invalid City: " . $field->value)
          if( $field->value !~ /City/ );
    }
 }
