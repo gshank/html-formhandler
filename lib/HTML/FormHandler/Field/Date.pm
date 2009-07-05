@@ -12,7 +12,7 @@ HTML::FormHandler::Field::Date
 
 =head1 DESCRIPTION
 
-This is a date field that predefines day, month, and year subfields.  
+This is a date field that predefines day, month, and year subfields.
 It has two additional attributes, 'year_start' and 'year_end'.
 
 =head1 AUTHORS
@@ -35,10 +35,10 @@ has_field 'year' => ( type => 'Integer' );
 has_field 'month' => ( type => 'Integer', range_start => 1,
      range_end => 12 );
 has_field 'day' => ( type => 'Integer', range_start => 1,
-     range_end => 31 ); 
+     range_end => 31 );
 
 
-sub validate 
+sub validate
 {
     my ( $self ) = @_;
 
@@ -48,7 +48,7 @@ sub validate
     foreach my $child ($self->fields)
     {
        next unless $child->value;
-       push @dt_parms, ($child->accessor => $child->value); 
+       push @dt_parms, ($child->accessor => $child->value);
     }
 
     # set the value

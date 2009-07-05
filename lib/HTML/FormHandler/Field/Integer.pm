@@ -12,7 +12,7 @@ apply( [
       $value =~ s/^\+//;
       return $value;
    }},
-   { check => sub { $_[0] =~ /^-?\d+$/ }, 
+   { check => sub { $_[0] =~ /^-?\d+$/ },
      message => 'Value must be an integer'
    } ]
 );

@@ -11,13 +11,13 @@ HTML::FormHandler::Fields - role to build field array
 
 These are the methods that are necessary to build and access the
 fields arrays in a form and a compound field. This is a role which
-is composed into L<HTML::FormHandler> and 
+is composed into L<HTML::FormHandler> and
 L<HTML::FormHandler::Field::Compound>
 
 =head2 fields
 
 The field definitions as built from the field_list and the 'has_field'
-declarations. This is a MooseX::AttributeHelpers::Collection::Array, 
+declarations. This is a MooseX::AttributeHelpers::Collection::Array,
 and provides clear_fields, add_field, remove_last_field, num_fields,
 has_fields, and set_field_at methods.
 
@@ -34,7 +34,7 @@ Convenience function for use with 'set_field_at'. Pass in 'name' of field
 =head2 sorted_fields
 
 Calls fields and returns them in sorted order by their "order"
-value. Non-sorted fields are retrieved with 'fields'. 
+value. Non-sorted fields are retrieved with 'fields'.
 
 =head2 clear methods
 
@@ -42,7 +42,7 @@ value. Non-sorted fields are retrieved with 'fields'.
   clear_fifs
   clear_values
 
-=head2 Dump information 
+=head2 Dump information
 
    dump - turn verbose flag on to get this output
    dump_validated - shorter version
@@ -119,7 +119,7 @@ sub _init
 
 # calls routines to process various field lists
 # orders the fields after processing in order to skip
-# fields which have had the 'order' attribute set 
+# fields which have had the 'order' attribute set
 sub _build_fields
 {
    my $self = shift;
@@ -172,13 +172,13 @@ sub _process_field_list
    # these next two are deprecated. use array instead
    if ( $flist->{'fields'} )
    {
-      warn 'Using the \'fields\' key in field_list is deprecated. Please switch to using field_list => [ <fields> ] instead'; 
+      warn 'Using the \'fields\' key in field_list is deprecated. Please switch to using field_list => [ <fields> ] instead';
       $self->_process_field_array( $self->_hashref_fields( $flist->{'fields'} ) )
          if( ref $flist->{'fields'} eq 'HASH' );
       $self->_process_field_array( $self->_array_fields( $flist->{'fields'} ) )
          if ( ref $flist->{'fields'} eq 'ARRAY' );
    }
-   # don't encourage use of these two. functionality too limited. 
+   # don't encourage use of these two. functionality too limited.
    $self->_process_field_array( $self->model_fields ) if $self->fields_from_model;
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_required'}, 1 ) )
       if $flist->{'auto_required'};
@@ -205,7 +205,7 @@ sub _build_meta_field_list
                foreach my $fld_def ( @{ $role->field_list} )
                {
                   my %new_fld = %{$fld_def}; # copy hashref
-                  push @field_list, \%new_fld; 
+                  push @field_list, \%new_fld;
                }
             }
          }
@@ -215,7 +215,7 @@ sub _build_meta_field_list
          foreach my $fld_def ( @{$meta->field_list} )
          {
             my %new_fld = %{$fld_def}; # copy hashref
-            push @field_list, \%new_fld; 
+            push @field_list, \%new_fld;
          }
       }
    }
@@ -344,17 +344,17 @@ sub _make_field
       if ($parent)
       {
          die "The parent of field " . $field_attr->{name} . " is not a Compound Field"
-            unless $parent->isa('HTML::FormHandler::Field::Compound'); 
+            unless $parent->isa('HTML::FormHandler::Field::Compound');
          $field_attr->{parent} = $parent;
          $field_attr->{name}   = $simple_name;
       }
    }
    elsif ( !($self->form && $self == $self->form ) )
    {
-      # set parent 
+      # set parent
       $field_attr->{parent} = $self;
    }
-   $self->_update_or_create( $field_attr->{parent} || $self->form, 
+   $self->_update_or_create( $field_attr->{parent} || $self->form,
                           $field_attr, $class, $do_update );
 }
 
@@ -362,15 +362,15 @@ sub _make_field
 # update, replace, or create field
 sub _update_or_create
 {
-   my ( $self, $parent, $field_attr, $class, $do_update ) = @_; 
+   my ( $self, $parent, $field_attr, $class, $do_update ) = @_;
 
    my $index = $parent->field_index( $field_attr->{name} );
    my $field;
-   if ( defined $index ) 
-   { 
+   if ( defined $index )
+   {
       if( $do_update ) # this field started with '+'. Update.
       {
-         $field = $parent->field($field_attr->{name}); 
+         $field = $parent->field($field_attr->{name});
          die "Field to update for " . $field_attr->{name} . " not found"
             unless $field;
          delete $field_attr->{name};
@@ -383,13 +383,13 @@ sub _update_or_create
       else # replace existing field
       {
          $field = $class->new( %{$field_attr} );
-         $parent->set_field_at( $index, $field ); 
+         $parent->set_field_at( $index, $field );
       }
    }
    else # new field
-   {  
+   {
       $field = $class->new( %{$field_attr} );
-      $parent->add_field($field); 
+      $parent->add_field($field);
    }
 }
 
@@ -418,7 +418,7 @@ sub field
       my $f = $self->form || $self;
       foreach my $fname (@names)
       {
-         $f = $f->field($fname); 
+         $f = $f->field($fname);
          return unless $f;
       }
       return $f;
@@ -503,27 +503,27 @@ sub dump_validated
    foreach my $field ( $self->fields )
    {
       $field->dump_validated if $field->can('dump_validated');
-      warn "HFH: ", $field->name, ": ", 
+      warn "HFH: ", $field->name, ": ",
       ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";
-   } 
+   }
 }
 
 sub build_node
-{  
+{
    my $self = shift;
 
    return unless $self->has_fields;
    my $input = $self->input;
    # transfer the input values to the input attributes of the
-   # subfields 
+   # subfields
    if( ref $input eq 'HASH' )
-   {  
+   {
       foreach my $field ( $self->fields )
-      {  
-         my $field_name = $field->name; 
+      {
+         my $field_name = $field->name;
          # Trim values and move to "input" slot
          if ( exists $input->{$field_name} )
-         {  
+         {
             $field->input( $input->{$field_name} )
          }
          elsif( $field->DOES('HTML::FormHandler::Field::Repeatable') )
@@ -531,7 +531,7 @@ sub build_node
             $field->clear_other;
          }
          elsif ( $field->has_input_without_param )
-         {  
+         {
             $field->input( $field->input_without_param );
          }
       }
@@ -539,7 +539,7 @@ sub build_node
    $self->_fields_validate;
    my %value_hash;
    for my $field ( $self->fields )
-   {  
+   {
       next if $field->noupdate;
       $value_hash{ $field->accessor } = $field->value if $field->has_value;
    }

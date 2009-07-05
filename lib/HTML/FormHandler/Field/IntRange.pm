@@ -38,9 +38,9 @@ HTML::FormHandler::Field::IntRange - Select an integer range in a select list
 =head1 DESCRIPTION
 
 This field generates a select list of numbers from 1 to 10. Override the
-range_start and range_end for a select list with a different range. 
+range_start and range_end for a select list with a different range.
 
-   has_field 'age' => ( type => 'IntRange', 
+   has_field 'age' => ( type => 'IntRange',
                range_start => 0, range_end => 100 );
 
 Widget type is 'select'.

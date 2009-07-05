@@ -14,10 +14,10 @@ Add metaclass to field_list attribute
 
 =cut
 
-has 'field_list' => ( 
+has 'field_list' => (
    metaclass => 'Collection::Array',
    is => 'rw',
-   isa => 'ArrayRef', 
+   isa => 'ArrayRef',
    default => sub { [] },
    provides => {
       'push' => 'add_to_field_list',
@@ -26,10 +26,10 @@ has 'field_list' => (
    }
 );
 
-has 'apply_list' => ( 
+has 'apply_list' => (
    metaclass => 'Collection::Array',
    is => 'rw',
-   isa => 'ArrayRef', 
+   isa => 'ArrayRef',
    default => sub { [] },
    provides => {
       'push' => 'add_to_apply_list',

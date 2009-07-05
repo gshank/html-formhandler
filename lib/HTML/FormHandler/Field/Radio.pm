@@ -18,11 +18,11 @@ atomic radio buttons.
     [% IF field.fif == field.radio_value %]
        select="selected"
     [% END %]
-   />  
+   />
 
 
 =head2 radio_value
-  
+
 See synopsis. Sets the value used in the radio button.
 
 =cut

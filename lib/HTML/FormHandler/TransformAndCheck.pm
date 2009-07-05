@@ -50,21 +50,21 @@ sub test_ranges
    my $high = $field->range_end;
 
    if ( defined $low && defined $high )
-   {  
+   {
       return $value >= $low && $value <= $high
          ? 1
          : $field->add_error( 'value must be between [_1] and [_2]', $low, $high );
    }
 
    if ( defined $low )
-   {  
+   {
       return $value >= $low
          ? 1
          : $field->add_error( 'value must be greater than or equal to [_1]', $low );
    }
 
    if ( defined $high )
-   {  
+   {
       return $value <= $high
          ? 1
          : $field->add_error( 'value must be less than or equal to [_1]', $high );
@@ -156,8 +156,8 @@ sub validate_field
       $field->value(undef);
       return;
    }
-   
-   # do building of node 
+
+   # do building of node
    if( $field->DOES('HTML::FormHandler::Fields') ){
        $field->build_node;
    }
@@ -165,14 +165,14 @@ sub validate_field
    {
        $field->value( $field->input );
    }
-   
+
    $field->_inner_validate_field();
    $field->_apply_actions;
    $field->validate;
    $field->test_ranges;
    $field->_validate($field) # form field validation method
         if ($field->has_value && defined $field->value);
-     
+
    return !$field->has_errors;
 }
 
@@ -194,7 +194,7 @@ sub _apply_actions
       # the first time through value == input
       my $value = $self->value;
       my $new_value = $value;
-      # Moose constraints 
+      # Moose constraints
       if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' )
       {
          $action = { type => $action };
@@ -230,7 +230,7 @@ sub _apply_actions
             {
                $self->value($new_value);
             }
-            
+
          }
          $error_message ||= $tobj->validate($new_value);
       }
@@ -259,7 +259,7 @@ sub _apply_actions
       }
       elsif ( ref $action->{transform} eq 'CODE' )
       {
-         $new_value = eval { 
+         $new_value = eval {
             no warnings 'all';
             $action->{transform}->($value);
          };
@@ -280,7 +280,7 @@ sub _apply_actions
             my $act_msg = $action->{message};
             if ( ref $act_msg eq 'CODEREF' )
             {
-               $act_msg = $act_msg->($value); 
+               $act_msg = $act_msg->($value);
             }
             if ( ref $act_msg eq 'ARRAY' )
             {

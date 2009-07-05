@@ -32,8 +32,8 @@ sub validate {
 
     # Check for min length
     if ( my $size = $field->minlength || $field->_min_length_r ) {
-        return $field->add_error( 
-           'Input must be at least [quant,_1,character]. You submitted [_2]', 
+        return $field->add_error(
+           'Input must be at least [quant,_1,character]. You submitted [_2]',
            $size, length $value )
             if length $value < $size;
     }
@@ -57,7 +57,7 @@ This setting may also be used in formatting the field in the user interface.
 
 =head2 min_length [integer]
 
-This integer value, if non-zero, defines the minimum number of characters that must 
+This integer value, if non-zero, defines the minimum number of characters that must
 be entered.
 
 =head1 AUTHORS

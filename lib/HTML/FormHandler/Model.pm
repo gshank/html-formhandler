@@ -26,7 +26,7 @@ mapping (ORM) tool.
 
 =head2 item, build_item
 
-The "item" is initialized with "build_item" the first time $form->item is called.  
+The "item" is initialized with "build_item" the first time $form->item is called.
 "item" must be defined in the model class to fetch the object based on the item id.
 It should return the item's object.  Column values are fetched and updated
 by calling methods on the returned object.
@@ -45,10 +45,10 @@ has 'item' => (
    trigger => sub { shift->set_item(@_) }
 );
 sub build_item  { return }
-sub set_item 
-{ 
+sub set_item
+{
    my ( $self, $item) = @_;
-   $self->item_class( ref $item ); 
+   $self->item_class( ref $item );
 }
 
 =head2 item_id
@@ -96,7 +96,7 @@ has 'item_class' => (
 
 Returns the guessed field type.  The field name is passed as the first argument.
 This is only required if using "Auto" type of fields in your form classes.
-You could override this in your form class, for example, if you use a field 
+You could override this in your form class, for example, if you use a field
 naming convention that indicates the field type.
 
 The metadata info about the columns can be used to assign types.
@@ -110,7 +110,7 @@ sub guess_field_type
 
 =head2 lookup_options
 
-Retrieve possible options for a given select field from the database.  
+Retrieve possible options for a given select field from the database.
 The default method returns undef.
 
 Returns an array reference of key/value pairs for the column passed in.

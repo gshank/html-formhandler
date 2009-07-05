@@ -8,13 +8,13 @@ our $VERSION = '0.01';
 
 =head1 NAME
 
-HTML::FormHandler::Field::Duration -  DateTime::Duration from HTML form values 
+HTML::FormHandler::Field::Duration -  DateTime::Duration from HTML form values
 
 =head1 SubFields
 
 Subfield names:
 
-  years, months, weeks, days, hours, minutes, seconds, nanoseconds 
+  years, months, weeks, days, hours, minutes, seconds, nanoseconds
 
 For example:
 
@@ -27,7 +27,7 @@ For example:
 
 =cut
 
-sub validate 
+sub validate
 {
     my ( $self ) = @_;
 
@@ -39,7 +39,7 @@ sub validate
           $self->add_error( "Invalid value for " . $self->label . " " . $child->label );
           next;
        }
-       push @dur_parms, ($child->accessor => $child->value); 
+       push @dur_parms, ($child->accessor => $child->value);
     }
 
     # set the value

@@ -10,10 +10,10 @@ HTML::FormHandler::Field::Checkbox - A checkbox field type
 
 =head1 DESCRIPTION
 
-This field is very similar to the Boolean Widget except that this 
-field allows other positive values besides 1. Since unselected 
-checkboxes do not return a parameter, fields with Checkbox type 
-will always be set to the 'input_without_param' default if they 
+This field is very similar to the Boolean Widget except that this
+field allows other positive values besides 1. Since unselected
+checkboxes do not return a parameter, fields with Checkbox type
+will always be set to the 'input_without_param' default if they
 do not appear in the form.
 
 =head2 widget
@@ -34,7 +34,7 @@ of this attribute (the unchecked value). Default = 0
 
 has '+input_without_param' => ( default => 0 );
 
-sub value 
+sub value
 {
     my $field = shift;
     return $field->SUPER::value( @_ ) if @_;

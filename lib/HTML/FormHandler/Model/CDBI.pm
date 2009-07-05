@@ -58,7 +58,7 @@ HTML::FormHandler::Model::CDBI->meta->make_immutable;
 =head2 init_item
 
 This is called first time $form->item is called.
-It does the equivalent of: 
+It does the equivalent of:
 
     return $self->item_class->retrieve( $self->item_id );
 
@@ -408,7 +408,7 @@ sub update_model
 =head2 items_same
 
 Returns true if the two passed in cdbi objects are the same object.
-If both are undefined returns true.  
+If both are undefined returns true.
 
 =cut
 

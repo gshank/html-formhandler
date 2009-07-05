@@ -8,7 +8,7 @@ our $VERSION = '0.03';
 
 =head1 NAME
 
-HTML::FormHandler::Generator::DBIC - generate form classes from DBIC schema 
+HTML::FormHandler::Generator::DBIC - generate form classes from DBIC schema
 
 =head1 SYNOPSIS
 
@@ -19,11 +19,11 @@ HTML::FormHandler::Generator::DBIC - generate form classes from DBIC schema
 Options:
 
   rs_name       -- Resultset Name
-  schema_name   -- Schema Name 
+  schema_name   -- Schema Name
   db_dsn        -- dsn connect info
 
 
-This package should be considered still experimental since the output, 
+This package should be considered still experimental since the output,
 of the generated classes will be changed from time to time.  This should
 not impact the main usage for this module that we had in mind, that is
 generating the initial version of a FormHandler form class, copying
@@ -37,18 +37,18 @@ This script is installed into the system with the rest of FormHandler.
 
 =cut
 
-has db_dsn => ( 
-    is => 'ro', 
+has db_dsn => (
+    is => 'ro',
     isa => 'Str',
 );
 
-has db_user => ( 
-    is => 'ro', 
+has db_user => (
+    is => 'ro',
     isa => 'Str',
 );
 
-has db_password => ( 
-    is => 'ro', 
+has db_password => (
+    is => 'ro',
     isa => 'Str',
 );
 
@@ -104,11 +104,11 @@ has 'packages' => (
        keys      => 'used_packages',
    },
    curries  => {
-       set => { 
+       set => {
            add_package => sub {
                my ($self, $body, $package) = @_;
                $body->($self, $package, 1);
-           } 
+           }
        }
    }
 );
@@ -150,7 +150,7 @@ my $form_template = <<'END';
     package [% cf.class %]Field;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Field::Compound';
-    
+
     [% FOR field = cf.fields -%]
     [% field %]
     [% END %]
@@ -195,8 +195,8 @@ sub get_config {
     return $config;
 }
 
-   
-   
+
+
 sub m2m_for_class {
     my( $self, $class ) = @_;
     return if not $self->m2m;
@@ -212,7 +212,7 @@ my %types = (
     number    => 'Number',
     numeric   => 'Number',
 );
- 
+
 sub field_def {
     my( $self, $name, $info ) = @_;
     my $output = '';
@@ -222,7 +222,7 @@ sub field_def {
         $output .= <<'END';
 
             type => 'Compound',
-            apply => [ 
+            apply => [
                 {
                     transform => sub{ DateTime->new( $_[0] ) },
                     message => "Not a valid DateTime",
@@ -233,7 +233,7 @@ END
         $output .= "        has_field '$name.$_';\n" for qw( year month day );
         return $output;
     }
-    my $type = $types{ $info->{data_type} } || 'Text'; 
+    my $type = $types{ $info->{data_type} } || 'Text';
     $type = 'TextArea' if defined($info->{size}) && $info->{size} > 60;
     $output .= "type => '$type', ";
     $output .= "size => $info->{size}, " if $type eq 'Text' && $info->{size};
@@ -276,16 +276,16 @@ sub get_elements {
     for my $col ( $source->columns ) {
         my $new_element = { name => $col };
         my $info = $source->column_info($col);
-        if( $primary_columns{$col}  
-            && ( 
-                $info->{is_auto_increment} 
+        if( $primary_columns{$col}
+            && (
+                $info->{is_auto_increment}
                 # in SQLite integer primary key is computed automatically just like auto increment
-                || $self->is_SQLite_auto_pk( $source, $info ) 
+                || $self->is_SQLite_auto_pk( $source, $info )
             )
-        ){  
+        ){
             # for PK in the root use item_id, here only PKs for related rows
             unshift @fields, "has_field '$col' => ( type => 'Hidden' );\n" if $level > 1;
-        }   
+        }
         else{
             next if grep { $_ eq $col } @exclude;
             unshift @fields, $self->field_def( $col, $info );
@@ -314,7 +314,7 @@ sub get_foreign_cols{
             push @cols, get_foreign_cols( $c1 );
         }
     }
-    elsif ( ref $cond eq 'HASH' ){ 
+    elsif ( ref $cond eq 'HASH' ){
         for my $key ( keys %{$cond} ){
             if( $key =~ /foreign\.(.*)/ ){
                 push @cols, $1;
@@ -332,7 +332,7 @@ sub get_self_cols{
             push @cols, get_self_cols( $c1 );
         }
     }
-    elsif ( ref $cond eq 'HASH' ){ 
+    elsif ( ref $cond eq 'HASH' ){
         for my $key ( values %{$cond} ){
             if( $key =~ /self\.(.*)/ ){
                 push @cols, $1;

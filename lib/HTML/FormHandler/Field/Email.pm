@@ -10,7 +10,7 @@ apply ([
    { transform => sub { lc( $_[0] ) } },
    { check => sub { Email::Valid->address( $_[0] ) },
      message => ['Email should be of the format [_1]',
-                 'someuser@example.com' ] 
+                 'someuser@example.com' ]
    }
 ]);
 
@@ -20,7 +20,7 @@ HTML::FormHandler::Field::Email - Validates email uisng Email::Valid
 
 =head1 DESCRIPTION
 
-Validates that the input looks like an email address uisng L<Email::Valid>. 
+Validates that the input looks like an email address uisng L<Email::Valid>.
 Widget type is 'text'.
 
 =head1 DEPENDENCIES

@@ -2,7 +2,7 @@ package HTML::FormHandler::Render::Table;
 
 use Moose::Role;
 
-with 'HTML::FormHandler::Render::Simple' => 
+with 'HTML::FormHandler::Render::Simple' =>
       { excludes => [ 'render', 'render_field_struct', 'render_end', 'render_start' ] };
 
 =head1 NAME
@@ -31,7 +31,7 @@ sub render
    {
       $output .= $self->render_field($field);
    }
-   $output .= $self->render_end; 
+   $output .= $self->render_end;
    return $output;
 }
 

@@ -12,7 +12,7 @@ HTML::FormHandler::Field::DateTime
 
 =head1 DESCRIPTION
 
-This is a compound field that uses modified field names for the 
+This is a compound field that uses modified field names for the
 sub fields instead of using a separate sub-form. Widget type is 'compound'.
 
 If you want to use drop-down select boxes for your DateTime, you
@@ -31,7 +31,7 @@ If you want simple input fields:
     has_field 'my_date.month' => ( type => 'Integer', range_start => 1,
          range_end => 12 );
     has_field 'my_date.day' => ( type => 'Integer', range_start => 1,
-         range_end => 31 ); 
+         range_end => 31 );
 
 =head1 AUTHORS
 
@@ -46,7 +46,7 @@ the same terms as Perl itself.
 
 has '+widget' => ( default => 'compound' );
 
-sub validate 
+sub validate
 {
     my ( $self ) = @_;
 
@@ -54,7 +54,7 @@ sub validate
     foreach my $child ($self->fields)
     {
        next unless $child->value;
-       push @dt_parms, ($child->accessor => $child->value); 
+       push @dt_parms, ($child->accessor => $child->value);
     }
 
     # set the value

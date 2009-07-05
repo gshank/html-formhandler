@@ -33,7 +33,7 @@ In a custom field class:
    sub build_options {
        my $i = 0;
        my @days = ('Sunday', 'Monday', 'Tuesda', 'Wednesday',
-           'Thursday', 'Friday', 'Saturday' ); 
+           'Thursday', 'Friday', 'Saturday' );
        return [
            map {
                {   value => $i++, label => $_ }
@@ -53,7 +53,7 @@ The primary key is used as the value. The other columns used are:
 
     label_column  --  Used for the labels in the options
     active_column --  The name of the column to be used in the query
-                      that allows the rows retrieved to be restricted 
+                      that allows the rows retrieved to be restricted
     sort_column   --  The name of the column used to sort the options
 
 
