@@ -25,8 +25,7 @@ requires 'aliased';
 test_requires 'Test::More'      => '0.77';
 
 # developer mode 
-if ( -e './.developer') {
-   $Module::Install::AUTHOR = 1;
+if ( $Module::Install::AUTHOR ) {
    test_requires 'DBIx::Class';
    test_requires 'DBIx::Class::ResultSet::RecursiveUpdate' => '0.010';
    test_requires 'DateTime::Format::MySQL';
