@@ -158,7 +158,8 @@ sub render_start
 sub render_end
 {
    my $self = shift;
-   my $output .= '</fieldset>' if $self->auto_fieldset;
+   my $output;
+   $output .= '</fieldset>' if $self->auto_fieldset;
    $output .= "</form>\n";
    return $output;
 }
@@ -372,6 +373,7 @@ the same terms as Perl itself.
 
 =cut
 
+no Moose::Role;
 1;
 
 

@@ -593,6 +593,7 @@ has 'errors' => (
       'clear' => 'clear_errors',
    }
 );
+sub validated { !shift->has_errors }
 has 'set_validate' => (
    isa     => 'Str',
    is      => 'rw',
