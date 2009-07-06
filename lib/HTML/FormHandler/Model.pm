@@ -180,5 +180,5 @@ the same terms as Perl itself.
 
 =cut
 
-no Moose;
+no Moose::Role;
 1;

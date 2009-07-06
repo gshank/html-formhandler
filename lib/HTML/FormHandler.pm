@@ -2,9 +2,7 @@ package HTML::FormHandler;
 
 use Moose;
 use MooseX::AttributeHelpers;
-with 'HTML::FormHandler::Model';
-with 'HTML::FormHandler::Fields';
-with 'HTML::FormHandler::TransformAndCheck';
+with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields', 'HTML::FormHandler::TransformAndCheck';
 
 use Carp;
 use Locale::Maketext;
@@ -810,9 +808,9 @@ sub _init_from_object
       {
          if ( my @values = $field->get_init_value )
          {
-            my $value = @values > 1 ? \@values : shift @values;
-            $field->init_value($value) if defined $value;
-            $field->value($value)      if defined $value;
+            my $values_ref = @values > 1 ? \@values : shift @values;
+            $field->init_value($values_ref) if defined $values_ref;
+            $field->value($values_ref)      if defined $values_ref;
          }
          else
          {
@@ -963,6 +961,6 @@ the same terms as Perl itself.
 
 =cut
 
-HTML::FormHandler->meta->make_immutable;
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;
