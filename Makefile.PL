@@ -6,6 +6,7 @@ BEGIN {
     if ($Module::Install::AUTHOR) { # Not strictly needed, but reminds idiots like
                                     # me what M::I extensions I need ;)
         require Module::Install::AuthorRequires;
+        require Module::Install::AuthorTests;
     }
 }
 
