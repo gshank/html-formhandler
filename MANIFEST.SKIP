@@ -18,3 +18,5 @@
 ^*.Captcha.pm$
 ^t/captcha.t$
 ^Date.pm$
+^t/db/book.db$
+
