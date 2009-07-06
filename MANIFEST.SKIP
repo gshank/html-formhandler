@@ -18,3 +18,4 @@
 ^*.Captcha.pm$
 ^t/captcha.t$
 ^Date.pm$
+^.developer$

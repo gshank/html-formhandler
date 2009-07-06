@@ -2,8 +2,9 @@ package HTML::FormHandler::Field::DateMDY;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field';
+use DateTime;
 
-sub apply ( [
+apply ( [
    {  transform => sub { 
          my( $month, $day, $year) = split /\//, $_[0];
          return {
@@ -16,20 +17,21 @@ sub apply ( [
          my $month = shift->{month};
          return $month =~ /^\d+$/ &&
                 $month > 0 && $month < 13; 
-      }, message => 'Month is not valid' },
+      }, message => 'month is not valid' },
    {  check => sub {
          my $day = shift->{day};
          return $day =~ /^\d+$/ &&
                 $day > 0 && $day <= 31; 
-      }, message => 'Day is not valid' },
+      }, message => 'day is not valid' },
    {  check => sub {
-         my $year = shift=>{year};
+         my $year = shift->{year};
          return $year =~ /^\d+$/ &&
                 $year > 2007 && $year <= 2020; 
       }, message => 'Year is not valid' },
    {  transform => sub {
-         return DateTime->new($_[0} );
-      }, message => 'Could not create valid DateTime' },
+         return DateTime->new($_[0] );
+      }, message => 'Not a valid date' },
+
 ]);
 
 

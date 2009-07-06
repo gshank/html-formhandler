@@ -554,6 +554,7 @@ has 'params' => (
       empty  => 'has_params',
    },
 );
+sub submitted { shift->has_params }
 has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
 has '_required' => (
    metaclass  => 'Collection::Array',
