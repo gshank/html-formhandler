@@ -608,13 +608,6 @@ sub build_language_handle
    return $lh;
 }
 
-# deprecated
-sub update
-{
-   warn "HFH update method is deprecated. Please switch to using 'process'.";
-   shift->process(@_);
-}
-
 sub process
 {
    my $self = shift;
@@ -689,12 +682,6 @@ sub fif
 }
 
 sub values { shift->value }
-
-# deprecated
-sub has_error
-{
-   my $self = shift;
-}
 
 # deprecated?
 sub error_field_names

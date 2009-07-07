@@ -38,9 +38,9 @@ value. Non-sorted fields are retrieved with 'fields'.
 
 =head2 clear methods
 
-  clear_errors
-  clear_fifs
-  clear_values
+  clear_data
+  clear_fields
+  clear_error_fields
 
 =head2 Dump information
 

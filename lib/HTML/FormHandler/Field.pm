@@ -551,8 +551,6 @@ has 'label' => (
 has 'title' => ( isa => 'Str', is => 'rw' );
 has 'style' => ( isa => 'Str', is => 'rw' );
 has 'css_class' => ( isa => 'Str', is => 'rw' );
-# should we remove/deprecate this?
-has 'sub_form' => ( isa => 'HTML::FormHandler', is => 'rw' );
 has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
 has 'html_name' => (
    isa     => 'Str',
