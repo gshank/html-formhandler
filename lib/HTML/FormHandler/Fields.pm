@@ -169,15 +169,6 @@ sub _process_field_list
       if $flist->{'required'};
    $self->_process_field_array( $self->_hashref_fields( $flist->{'optional'}, 0 ) )
       if $flist->{'optional'};
-   # these next two are deprecated. use array instead
-   if ( $flist->{'fields'} )
-   {
-      warn 'Using the \'fields\' key in field_list is deprecated. Please switch to using field_list => [ <fields> ] instead';
-      $self->_process_field_array( $self->_hashref_fields( $flist->{'fields'} ) )
-         if( ref $flist->{'fields'} eq 'HASH' );
-      $self->_process_field_array( $self->_array_fields( $flist->{'fields'} ) )
-         if ( ref $flist->{'fields'} eq 'ARRAY' );
-   }
    # don't encourage use of these two. functionality too limited.
    $self->_process_field_array( $self->model_fields ) if $self->fields_from_model;
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_required'}, 1 ) )
