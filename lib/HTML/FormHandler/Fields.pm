@@ -455,10 +455,7 @@ sub _fields_validate
       # Validate each field and "inflate" input -> value.
       $field->validate_field;   # this calls the field's 'validate' routine
    }
-   $self->cross_validate;
 }
-
-sub cross_validate { }
 
 after clear_data => sub
 {
