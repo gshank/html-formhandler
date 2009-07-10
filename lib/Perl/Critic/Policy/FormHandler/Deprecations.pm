@@ -18,6 +18,12 @@ sub applies_to           { return 'PPI::Token::Word'           }
 sub violates {
     my ($self, $elem ) = @_;
 
+    if( is_method_call( $elem ) && $elem->literal eq 'has_error' ){
+        return $self->violation('The "has_error" method used.',
+            'The "has_error" method is deprecated.',
+            $elem
+        );
+    }
     return if ! is_function_call($elem);
     if( $elem eq 'has' ){
         my $farg = first_arg( $elem );
