@@ -25,7 +25,7 @@ ok( $form, 'created hasmany form');
 $form = Repeatable::Form->new;
 ok( $form->field('addresses')->has_fields, 'created form again with fields');
 
-# empty form, creating new record 
+# empty form, creating new record
 $form->process( params => {} );
 ok( $form->field('addresses')->field('0')->field('city'), 'empty field exists' );
 
@@ -52,14 +52,14 @@ my $init_object = {
    ]
 };
 
-$form = Repeatable::Form->new( init_object => $init_object ); 
+$form = Repeatable::Form->new( init_object => $init_object );
 ok( $form, 'created form from initial object' );
 
-is_deeply( $form->values, $init_object, 'get values back out' ); 
+is_deeply( $form->values, $init_object, 'get values back out' );
 is_deeply( $form->field('addresses')->value, $init_object->{addresses}, 'hasmany field value');
 is_deeply( $form->field('addresses')->field('0')->value, $init_object->{addresses}->[0],
     'instance field value' );
-is( $form->field('addresses')->field('0')->field('city')->value, 'Prime City', 
+is( $form->field('addresses')->field('0')->field('city')->value, 'Prime City',
     'compound subfield value');
 
 

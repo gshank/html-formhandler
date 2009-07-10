@@ -7,12 +7,12 @@ use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
 
 =head1 NAME
 
-HTML::FormHandler::Field::Repeatable - Repeatable (array) field 
+HTML::FormHandler::Field::Repeatable - Repeatable (array) field
 
 =head1 SYNOPSIS
 
-In a form, for an array of hashrefs, equivalent to a 'has_many' database 
-relationship. 
+In a form, for an array of hashrefs, equivalent to a 'has_many' database
+relationship.
 
   has_field 'addresses' => ( type => 'Repeatable' );
   has_field 'addresses.address_id' => ( type => 'PrimaryKey' );
@@ -43,11 +43,11 @@ where the fields are declared with dots ('addresses.city');
 
 =head1 DESCRIPTION
 
-This class represents an array. It can either be an array of hashrefs 
+This class represents an array. It can either be an array of hashrefs
 (compound fields) or an array of single fields.
 
 The 'contains' keyword is used for elements that do not have names
-because they are not hash elements.  
+because they are not hash elements.
 
 This field node will build arrays of fields from the the parameters or an
 initial object, or empty fields for an empty form.
@@ -77,7 +77,7 @@ additional an additional array element.
 
 This attribute (default 1) indicates how many empty fields to present
 in an empty form which hasn't been filled from parameters or database
-rows. 
+rows.
 
 =item auto_id
 
@@ -109,7 +109,7 @@ sub clear_other
       else
       {
          $self->contains( $self->create_element );
-      } 
+      }
    }
    $self->clear_fields;
    $self->clear_value;
@@ -119,15 +119,15 @@ sub create_element
 {
    my ( $self ) = @_;
    my $instance = Instance->new( name => 'contains', parent => $self,
-      form => $self->form ); 
+      form => $self->form );
    # copy the fields from this field into the instance
    $instance->add_field( $self->fields );
    if( $self->auto_id )
    {
-      unless( grep $_->can('is_primary_key') && $_->is_primary_key, 
+      unless( grep $_->can('is_primary_key') && $_->is_primary_key,
                                                   @{$instance->fields})
       {
-         $instance->add_field( 
+         $instance->add_field(
             HTML::FormHandler::Field->new(type => 'PrimaryKey', name => 'id' ));
       }
    }
@@ -167,10 +167,10 @@ sub clone_fields
 }
 
 
-# this is called by Field->process when params exist and validation is done. 
-# The input will already have # been set there, now percolate the input down 
+# this is called by Field->process when params exist and validation is done.
+# The input will already have # been set there, now percolate the input down
 # the tree and build instances
-sub build_node 
+sub build_node
 {
    my $self = shift;
 
@@ -189,7 +189,7 @@ sub build_node
          $field->input($element);
          push @fields, $field;
          $index++;
-      } 
+      }
       $self->index($index);
       $self->fields(\@fields);
    }
@@ -199,7 +199,7 @@ sub build_node
    # create combined value for Repeatable
    my @value_array;
    for my $field ( $self->fields )
-   { 
+   {
       push @value_array, $field->value;
    }
    $self->value( \@value_array );
@@ -233,7 +233,7 @@ sub _init_from_object
       }
       push @fields, $field;
       $index++;
-   } 
+   }
    $self->index($index);
    $self->fields(\@fields);
    $self->value(\@new_values) if scalar @new_values;
@@ -269,7 +269,7 @@ sub _init
       push @fields, $field;
       $index++;
       $count--;
-   } 
+   }
    $self->index($index);
    $self->fields(\@fields);
 }

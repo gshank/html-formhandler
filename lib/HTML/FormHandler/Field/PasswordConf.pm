@@ -10,8 +10,8 @@ HTML::FormHandler::Field::PasswordConf - Password confirmation
 
 =head1 DESCRIPTION
 
-This field needs to be declared after the related Password field (or more 
-precisely it needs to come after the Password field in the list returned by 
+This field needs to be declared after the related Password field (or more
+precisely it needs to come after the Password field in the list returned by
 the L<HTML::FormHandler/fields> method).
 
 =head2 password_field

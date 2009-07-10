@@ -13,7 +13,7 @@ HTML::FormHandler::Field::Password - Input a password
 The password field has a default minimum length of 6, which can be
 easily changed:
 
-  has_field 'password' => ( type => 'Password', min_length => 7 ); 
+  has_field 'password' => ( type => 'Password', min_length => 7 );
 
 It does not come with additional default checks, since password
 requirements vary so widely. There are a few constraints in the
@@ -23,14 +23,14 @@ These constraints can be used in the field definitions 'apply':
 
    use HTML::FormHandler::Types ('NoSpaces', 'WordChars', 'NotAllDigits' );
    ...
-   has_field 'password' => ( type => 'Password', 
+   has_field 'password' => ( type => 'Password',
           apply => [ NoSpaces, WordChars, NotAllDigits ],
    );
 
 You can add your own constraints in addition, of course.
 
 If a password field is not required, then the field will be marked 'noupdate',
-to prevent a null from being saved into the database. 
+to prevent a null from being saved into the database.
 
 =head2 ne_username
 

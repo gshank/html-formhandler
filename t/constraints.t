@@ -14,20 +14,20 @@ use lib 't/lib';
    subtype 'Natural'
        => as 'Int'
        => where { $_ > 0 };
- 
+
    subtype 'NaturalLessThanTen'
        => as 'Natural'
        => where { $_ < 10 }
        => message { "This number ($_) is not less than ten!" };
- 
+
    coerce 'Num'
        => from 'Str'
          => via { 0+$_ };
- 
+
    enum 'RGBColors' => qw(red green blue);
- 
+
    no Moose::Util::TypeConstraints;
-   
+  
    has_field 'empty_field' => (
       apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
    );

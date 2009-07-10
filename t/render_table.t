@@ -33,7 +33,7 @@ use HTML::FormHandler::Field::Text;
        range_end => 2020 );
 
    has_field 'two_errors' => (
-       apply => [ 
+       apply => [
           { check   => [ ], message => 'First constraint error' },
           { check   => [ ], message => 'Second constraint error' }
        ]

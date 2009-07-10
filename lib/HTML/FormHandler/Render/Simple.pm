@@ -13,7 +13,7 @@ HTML::FormHandler::Render::Simple - Simple rendering routine
 
 =head1 SYNOPSIS
 
-This is a Moose role that is an example of a very simple rendering 
+This is a Moose role that is an example of a very simple rendering
 routine for L<HTML::FormHandler>. It has almost no features, but can
 be used as an example for producing something more complex.
 The idea is to produce your own custom rendering roles...
@@ -30,7 +30,7 @@ In a template:
    [% form.render %]
 
 or for individual fields:
-  
+
    [% form.field_render( 'title' ) %]
 
 
@@ -51,7 +51,7 @@ create additional widget routines in your form for custom widgets.
 =head2 render
 
 To render all the fields in a form in sorted order (using
-'sorted_fields' method). 
+'sorted_fields' method).
 
 =head2 render_start, render_end
 
@@ -137,8 +137,8 @@ sub render
    {
       $output .= $self->render_field($field);
    }
-   
-   $output .= $self->render_end; 
+
+   $output .= $self->render_end;
    return $output;
 }
 
@@ -168,7 +168,7 @@ sub render_end
 sub render_field {
     my( $self, $field ) = @_;
     unless ( $field->isa('HTML::FormHandler::Field') )
-    {  
+    {
        $field = $self->field($field);
     }
     return '' if $field->widget eq 'no_render';
@@ -246,7 +246,7 @@ sub render_select
 
    my $output = '<select name="' . $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
-   $output .= ' multiple="multiple"' if $field->multiple == 1; 
+   $output .= ' multiple="multiple"' if $field->multiple == 1;
    $output .= ' size="' . $field->size . '"' if $field->size;
    $output .= '>';
    my $index = 0;
@@ -332,10 +332,10 @@ sub render_textarea
 sub _label
 {
    my ( $self, $field ) = @_;
-   return '<label class="label" for="' 
+   return '<label class="label" for="'
    . $field->id
    . '">'
-   . $field->label 
+   . $field->label
    . ': </label>'
 }
 

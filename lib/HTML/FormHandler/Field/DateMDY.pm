@@ -5,7 +5,7 @@ extends 'HTML::FormHandler::Field';
 use DateTime;
 
 apply ( [
-   {  transform => sub { 
+   {  transform => sub {
          my( $month, $day, $year) = split /\//, $_[0];
          return {
             month => $month,
@@ -16,17 +16,17 @@ apply ( [
    {  check => sub {
          my $month = shift->{month};
          return $month =~ /^\d+$/ &&
-                $month > 0 && $month < 13; 
+                $month > 0 && $month < 13;
       }, message => 'month is not valid' },
    {  check => sub {
          my $day = shift->{day};
          return $day =~ /^\d+$/ &&
-                $day > 0 && $day <= 31; 
+                $day > 0 && $day <= 31;
       }, message => 'day is not valid' },
    {  check => sub {
          my $year = shift->{year};
          return $year =~ /^\d+$/ &&
-                $year > 2007 && $year <= 2020; 
+                $year > 2007 && $year <= 2020;
       }, message => 'Year is not valid' },
    {  transform => sub {
          return DateTime->new($_[0] );

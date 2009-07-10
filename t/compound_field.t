@@ -98,7 +98,7 @@ is_deeply( [$dtform->errors], ['That month is not available'], 'correct error' )
 $form = Form::TestValues->new;
 ok( $form, 'Compound form with separate fields declarations created' );
 
-$params = { 
+$params = {
     'compound.aaa' => 'aaa',
     'compound.bbb' => 'bbb',
 };

@@ -21,7 +21,7 @@ A role to use in a form to implement a captcha field.
    with 'HTML::FormHandler::Form::Captcha';
 
 Needs a context object set in the form's 'ctx' attribute which has a session
-hashref in which to store a 'captcha' hashref, such as is provided by Catalyst 
+hashref in which to store a 'captcha' hashref, such as is provided by Catalyst
 session plugin.
 
 =head1 METHODS
@@ -42,7 +42,7 @@ sub get_captcha
 
 =head1 set_captcha
 
-Set a captcha in C<< $self->ctx->{session} >> 
+Set a captcha in C<< $self->ctx->{session} >>
 
 =cut
 

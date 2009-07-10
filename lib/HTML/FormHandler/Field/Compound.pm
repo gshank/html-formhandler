@@ -27,17 +27,17 @@ If all validation is performed in the parent class so that no
 validation is necessary in the child classes, then the field class
 'Nested' may be used.
 
-Error messages will be available in the field on which the error 
+Error messages will be available in the field on which the error
 occurred. You can access 'error_fields' on the form or on Compound
 fields (and subclasses, like Repeatable).
 
 The process method of this field runs the process methods on the child fields
-and then builds a hash of these fields values.  This hash is available for 
+and then builds a hash of these fields values.  This hash is available for
 further processing by L<HTML::FormHandler::Field/actions> and the validate method.
 
 Example:
 
-  has_field 'date_time' => ( 
+  has_field 'date_time' => (
       type => 'Compound',
       actions => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
   );

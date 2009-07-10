@@ -33,7 +33,7 @@ HTML::FormHandler::Field::Multiple - Select one or more options
 
 =head1 DESCRIPTION
 
-This inherits from the Select field, 
+This inherits from the Select field,
 and sets the "multiple" flag true to accept multiple options.
 
 The currently selected items will be put at the top of the list.

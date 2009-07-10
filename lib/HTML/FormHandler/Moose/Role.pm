@@ -17,10 +17,10 @@ Use this module instead of C< use Moose::Role; >
 
    has_field 'username' => ( type => 'Text', ... );
    has_field 'something_else' => ( ... );
-  
+
    no HTML::FormHandler::Moose::Role;
    1;
-   
+
 =cut
 
 Moose::Exporter->setup_import_methods(
