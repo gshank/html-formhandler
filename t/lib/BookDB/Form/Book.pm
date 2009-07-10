@@ -72,6 +72,7 @@ has_field 'comment'  => (
             order => 9,
          );
 
+has_field submit => ( type => 'Submit', value => 'Update' );
 
 sub validate_year {
 	my ( $self, $field ) = @_;
