@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::DateMDY;
 
 use HTML::FormHandler::Moose;
-extends 'HTML::FormHandler::Field';
+extends 'HTML::FormHandler::Field::Text';
 use DateTime;
 
 apply ( [
