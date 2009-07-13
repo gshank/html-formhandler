@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 187;
+use Test::More tests => 188;
 
 #
 # Boolean
@@ -481,7 +481,7 @@ ok( $field->has_errors, '2100 makes the author really old' );
 $class = 'HTML::FormHandler::Field::DateMDY';
 use_ok($class);
 $field = $class->new( name => 'test_field', );
-ok( defined $field, 'new() called' );
+ok( defined $field, 'new() called for DateMDY' );
 $field->input('10/02/2009');
 $field->validate_field;
 ok( $field->validated, 'No errors 1' );
@@ -501,5 +501,8 @@ $field->input('12/31/2008');
 $field->validate_field;
 ok( $field->validated, 'No errors 2' );
 is( $field->fif, $field->value->strftime("%m/%d/%Y", 'fif ok' ), 'fif ok');
+$field->clear_data;
+$field->input('07/07/09');
+ok( $field->validated, 'No errors 3' );
 
 

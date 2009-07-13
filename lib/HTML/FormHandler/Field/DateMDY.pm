@@ -4,6 +4,9 @@ use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
 use DateTime;
 
+has 'year_start' => ( isa => 'Int', is => 'rw', default => '2007' );
+has 'year_end' => ( isa => 'Int', is => 'rw', default => '2020' );
+
 apply ( [
    {  transform => sub {
          my( $month, $day, $year) = split /\//, $_[0];
@@ -24,9 +27,13 @@ apply ( [
                 $day > 0 && $day <= 31;
       }, message => 'day is not valid' },
    {  check => sub {
-         my $year = shift->{year};
-         return $year =~ /^\d+$/ &&
-                $year > 2007 && $year <= 2020;
+         my $datehash = shift;
+         my $year = $datehash->{year};
+         if( $year =~ /^\d\d$/ )
+         {
+            $datehash->{year} = "20" . $year;
+         }
+         return $year =~ /^\d+$/;
       }, message => 'Year is not valid' },
    {  transform => sub {
          return DateTime->new($_[0] );
@@ -34,6 +41,13 @@ apply ( [
 
 ]);
 
+sub validate
+{
+   my $self = shift;
+   return unless (blessed $self->value && $self->value->isa('DateTime'));
+   my $year = $self->value->year;
+   $self->add_error("Not a valid year") unless ($year >= $self->year_start && $year <= $self->year_end );
+}
 
 =head1 NAME
 
