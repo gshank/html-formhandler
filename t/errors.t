@@ -49,7 +49,7 @@ my $bad_1 = {
 
 ok( !$form->process( $bad_1 ), 'bad 1' );
 
-ok( $form->has_error, 'form has error' );
+ok( $form->has_errors, 'form has error' );
 
 ok( $form->field('fruit')->has_errors, 'fruit has error' );
 

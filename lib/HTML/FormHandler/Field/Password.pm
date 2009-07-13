@@ -2,7 +2,7 @@ package HTML::FormHandler::Field::Password;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 NAME
 
@@ -41,7 +41,6 @@ Does not check by default.
 =cut
 
 has '+widget'           => ( default => 'password' );
-has '+min_length'       => ( default => 6 );
 has '+password'         => ( default => 1 );
 has '+required_message' => ( default => 'Please enter a password in this field' );
 has 'ne_username'       => ( isa     => 'Str', is => 'rw' );

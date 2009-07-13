@@ -39,7 +39,8 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    label_column  Select lists: column to use for labels (default: name)
    active_column Select lists: which values to list
    sort_column   Select lists: column to use for sorting (default: label_column)
-   size          Text & select fields. Validated for text.
+   size          Text & select fields.
+   maxlength     Text fields. Validated.
    minlength     Text fields. Used in validation
    range_start   Range start for number fields 
    range_end     Range end for number fields    

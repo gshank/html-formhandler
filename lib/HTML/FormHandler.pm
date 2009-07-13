@@ -725,8 +725,6 @@ sub validate_form
    return $self->validated;
 }
 
-sub cross_validate { shift->validate(@_) }
-
 sub has_errors { shift->has_error_fields }
 sub num_errors { shift->num_error_fields }
 
