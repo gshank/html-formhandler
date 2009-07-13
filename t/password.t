@@ -46,7 +46,9 @@ use_ok( 'HTML::FormHandler::Field::Password' );
                login       => 'Text',
                username    => 'Text',
                password    => { type => 'Password',
-                                ne_username => 'username' },
+                                ne_username => 'username',
+                                minlength => 6,
+                              },
           ];
    }
 
