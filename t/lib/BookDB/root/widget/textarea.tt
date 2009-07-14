@@ -1,4 +1,0 @@
-<label class="label [% IF f.has_errors %]fld_error[% END %]" for="[% f.name %]">[% f.label %]</label>
-<textarea rows="[% f.rows %]" cols="[% f.cols %]">
-[% f.fif %]
-</textarea>

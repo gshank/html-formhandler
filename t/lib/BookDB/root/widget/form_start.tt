@@ -1,2 +1,0 @@
-<form name="[% form.name %]" method="post" action="[% c.uri_for( form.action ) %]">
-

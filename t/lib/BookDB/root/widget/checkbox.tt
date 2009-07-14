@@ -1,1 +1,0 @@
-<input type="checkbox" name="[% f.name %]" value="[% f.name %]" [% IF f.fif %]selected="selected"[% END %]>

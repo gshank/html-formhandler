@@ -32,32 +32,10 @@ requires 'aliased';
 # things the tests need
 test_requires 'Test::More'      => '0.77';
 
-author_requires 'DBIx::Class';
-author_requires 'DBIx::Class::ResultSet::RecursiveUpdate' => '0.010';
-author_requires 'DateTime::Format::MySQL';
-author_requires 'DateTime::Format::W3CDTF' => 0;
-author_requires 'DateTime::Format::SQLite';
-
-eval { require DBIx::Class };
-unless ( $@ )
-{
-   requires 'DBIx::Class::ResultSet::RecursiveUpdate' => '0.010';
-}
-
 tests();
-author_tests('t/dbic');
 author_tests('t/xt');
 
-install_script 'form_generator.pl';
 auto_install();
 
 WriteAll();
-
-# Strip requirement from META.yml generated
-if ($Module::Install::AUTHOR) {
-    Meta->{values}{requires} = [ grep {
-        $_ ne 'DBIx::Class::ResultSet::RecursiveUpdate'
-    } @{Meta->{values}{requires}} ];
-    Meta->write;
-}
 

@@ -1,4 +1,4 @@
-package BookDB::Form::Field::AltText;
+package Field::AltText;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';

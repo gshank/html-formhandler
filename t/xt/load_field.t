@@ -8,8 +8,7 @@ use lib 't/lib';
    extends 'HTML::FormHandler';
 
    # this form specifies the form name
-   #sub init_field_name_space { 'BookDB::Form::Field' }
-   has '+field_name_space' => ( default => 'BookDB::Form::Field' );
+   has '+field_name_space' => ( default => 'Field' );
 
    has_field 'field_one'   => ( type => '+AltText', another_attribute => 'one' );
    has_field 'field_two'   => ( type => '+AltText', another_attribute => 'two' );
