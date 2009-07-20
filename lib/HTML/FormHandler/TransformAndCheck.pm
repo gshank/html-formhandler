@@ -320,6 +320,6 @@ the same terms as Perl itself.
 
 =cut
 
-Moose::Role;
+no Moose::Role;
 1;
 
