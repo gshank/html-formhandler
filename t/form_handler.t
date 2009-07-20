@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 33;
+my $tests = 34;
 plan tests => $tests;
 
 use_ok('HTML::FormHandler');
@@ -105,6 +105,11 @@ is_deeply( $form->fif, \%fif, 'get right fif with init_object' );
 $form->clear;
 ok( !$form->has_value, 'Form value cleared' );
 ok( !$form->has_input, 'Form input cleared' );
+
+# check that form is cleared if fif is done before process
+$form->fif;
+$form->process($init_object);
+is_deeply( $form->fif, \%fif, 'get right fif when process preceded by fif');
 
 $form = HTML::FormHandler->new( field_list => [ foo => { type => 'Text', required => 1 } ] );
 

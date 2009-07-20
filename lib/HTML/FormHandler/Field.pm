@@ -505,6 +505,7 @@ has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 sub _build_fif {
    my $self = shift;
 
+   $self->form->processed(1) if $self->form;
    return '' if( defined $self->password && $self->password == 1 );
    if ( $self->has_input && !$self->fif_from_value )
    {
