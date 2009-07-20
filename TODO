@@ -1,17 +1,11 @@
-2009/06/25
+  Support rendering from field classes
+  Default value for field (like 'set_init' but at field level)
+  Unique support for non-top-level fields?
   Create multibox widget & rendering for checkbox group for multiple select
-
-2009/05/23
   Improve example of Repeatable form (BookDB, User) to do adds & deletes with js
-
-2009/05/14
   Create more usable 'add_field' routine that will handle ordering, parent,
       and form attributes. Use in create_instance.
-
-2009/05/02
   add Rendering modules: TT using Data::Section? using HTML::Dom or Treebuilder?, Reaction?
-
-09/04/01 gshank
   improve auto field support 
   investigate a Catalyst View to provide better template support (like Reaction)
   investigate other Form processing HTML generation

@@ -18,6 +18,10 @@ routine for L<HTML::FormHandler>. It has almost no features, but can
 be used as an example for producing something more complex.
 The idea is to produce your own custom rendering roles...
 
+You are advised to create a copy of this module for use in your
+forms, since it is not possible to make improvements to this module
+and maintain backwards compatibility.
+
 In your Form class:
 
    package MyApp::Form::Silly;

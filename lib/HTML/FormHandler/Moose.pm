@@ -60,7 +60,7 @@ sub apply
 
 =head1 AUTHOR
 
-Gerda Shank, gshank@cpan.org
+HTML::FormHandler Contributors; see HTML::FormHandler
 
 =head1 COPYRIGHT
 

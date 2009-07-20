@@ -19,7 +19,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    type          Field type. From a Field class: 'Text', 'Select', etc
    accessor      Database accessor name if different than field name
    set_validate  Name of validation method in form. Default is validate_$fieldname
-   set_init      Name of the form method used to initial a field
+   set_init      Name of the form method used to initialize a field
    required      Field is required
    required_message  If this field is required, the message to display on failure 
    id            Useful for javascript that requires unique id. Set in Field.
@@ -100,7 +100,7 @@ These attributes are usually accessed in a subroutine or in a template.
 
    has_errors      True if any field has errors 
    num_errors      The number of fields with errors
-   error_fields    Returns an array of fields with errors
+   error_fields    An array of fields with errors
    errors          Returns an array of all errors 
    error_field_names Returns an array of field names with errors
 

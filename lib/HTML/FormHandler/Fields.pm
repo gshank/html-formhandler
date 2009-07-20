@@ -534,6 +534,17 @@ sub build_node
    $self->value( \%value_hash );
 }
 
+=head1 AUTHORS
+
+HTML::FormHandler Contributors; see HTML::FormHandler
+
+=head1 COPYRIGHT
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut
+
 
 no Moose::Role;
 1;

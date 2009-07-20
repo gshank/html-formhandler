@@ -6,8 +6,6 @@ HTML::FormHandler::Manual::Templates - using templates
 
 Documentation on templates to use with L<HTML::FormHandler>
 
-In progress...
-
 =head1 Using templates
 
 There are lots of different ways to set up templates. One way is to
@@ -89,6 +87,11 @@ Multiple select:
      [% END %] 
    </select>
 
+Warning: TT has problems with single element arrays. If you are likely
+to have single a element in a select list, you might want to use the
+rendering method instead or add an extra "choose" row. (If you come up
+with a good solution, please submit a doc patch.)
+
 =head2 Checkbox
 
    <div><label class="label" for="[% f.id %]">[% f.label %]: </label>
@@ -125,9 +128,9 @@ Multiple select:
      [% END %] 
    </div>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Gerda Shank, gshank@cpan.org
+HTML::FormHandler Contributors; see HTML::FormHandler
 
 =head1 COPYRIGHT
 

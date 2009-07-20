@@ -44,7 +44,7 @@ and those that are simple validators. The 'Compound', 'Repeatable', and
 'Select' fields are fields that are functional.
 
 A number of field classes are provided by the distribution. The basic
-validat field types are:
+for-validation (as opposed to 'functional') field types are:
 
    Text
    Integer
@@ -84,6 +84,7 @@ Inheritance hierarchy of the distribution's field classes:
    DateMDY
    DateTime
    Email
+   PrimaryKey 
 
 See the documentation or source for the individual fields.
 
@@ -118,6 +119,10 @@ The name of the field with all parents:
 
    'event.start_date.month'
 
+=item full_accesor
+
+The field accessor with all parents
+
 =item html_name
 
 The full_name plus the form name if 'html_prefix' is set.
@@ -140,7 +145,8 @@ hash. Validation and constraints act on 'value'.
 
 =item fif
 
-Values used to fill in the form. Read only.
+Values used to fill in the form. Read only. Use a deflation to get
+from 'value' to 'fif' if the an inflator was used.
 
    [% form.field('title').fif %]
 
@@ -189,6 +195,10 @@ is defined then process error message as Maketext input.
 See $form->language_handle for details. Returns undef.
 
     return $field->add_error( 'bad data' ) if $bad;
+
+=item error_fields
+
+Compound fields will have an array of errors from the subfields.
 
 =back
 
@@ -239,7 +249,7 @@ Widget types for the provided field classes:
    password  - prevents the entered value from being displayed in the form
    writeonly - The initial value is not taken from the database
    clear     - Always set the database column to null.
-   noupdate  - Do not update this field in the database
+   noupdate  - Do not update this field in the database (does not appear in $form->value)
 
 =head2 Form methods for fields
 
@@ -251,14 +261,17 @@ on a particular field.
 =item set_validate
 
 Specify a form method to be used to validate this field.
-The default is C<< 'validate_' . $field->name >>. (Periods in
+The default is C<< 'validate_' . $field->name >>. Periods in field names
+will be replaced by underscores, so that the field 'addresses.city' will
+use the 'validate_addresses_city' method for validation.
 
    has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
    has_field 'subtitle' => ( isa => 'Str', set_validate => 'check_title' );
 
 =item set_init
 
-The name of the method in the form that provides a field's initial value
+The name of the method in the form that provides a field's initial value.
+Default is C<< 'init_' . $field->name >>. Periods replaced by underscores.
 
 =back
 
@@ -316,7 +329,7 @@ be executed on the field at validate_field time.
    );
 
 In general the action can be of three types: a Moose type (which is
-represented by it's name), a transformation (which is a callback called on
+represented by its name), a transformation (which is a callback called on
 the value of the field), or a constraint ('check') which performs a 'smart match'
 on the value of the field.  Currently we implement the smart match
 in our code - but in the future when Perl 5.10 is more widely used we'll switch
@@ -450,7 +463,10 @@ Trimming is performed before any other defined actions.
 =head2 deflation
 
 A coderef that will convert from an inflated value back to a flat
-data representation suitable for displaying in an HTML field
+data representation suitable for displaying in an HTML field.
+Usually the fif string is taken straight from the input string if
+it exists, so if you want to use a deflated value instead, set
+the 'fif_from_value' flag on the field.
 
    has_field 'my_date_time' => (
       type => 'Compound',
@@ -467,7 +483,9 @@ data representation suitable for displaying in an HTML field
 =head2 validate_field
 
 This is the base class validation routine. Most users will not
-do anything with this. It might be useful for method modifiers.
+do anything with this. It might be useful for method modifiers,
+if you want code that executed before or after the validation
+process.
 
 =head2 validate
 
@@ -480,7 +498,6 @@ errors with C<< $field->add_error >>.
         my $field = shift;
         my $value = $field->value;
         return $field->add_error( ... ) if ( ... );
-        return 1;
     }
 
 =cut
@@ -816,9 +833,9 @@ sub dump
 
 =head1 AUTHORS
 
-Gerda Shank, gshank@cpan.org
+HTML::FormHandler Contributors; see HTML::FormHandler
 
-Based on the original source code of L<Form::Processor::Field> by Bill Moseley
+Initially based on the original source code of L<Form::Processor::Field> by Bill Moseley
 
 =head1 COPYRIGHT
 

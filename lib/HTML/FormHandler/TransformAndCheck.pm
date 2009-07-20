@@ -1,5 +1,16 @@
 package HTML::FormHandler::TransformAndCheck;
 
+=head1 NAME
+
+HTML::FormHandler::TransformAndCheck
+
+=head1 SYNOPSIS
+
+This is a role that contains validation and transformation code
+used by both L<HTML::FormHandler> and L<HTML::FormHandler::Field>.
+
+=cut
+
 use Moose::Role;
 use Carp;
 
@@ -298,6 +309,17 @@ sub _apply_actions
 
 sub validate { 1 }
 
-no Moose::Role;
+=head1 AUTHORS
+
+HTML::FormHandler Contributors; see HTML::FormHandler
+
+=head1 COPYRIGHT
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut
+
+Moose::Role;
 1;
 

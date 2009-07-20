@@ -71,7 +71,7 @@ or using the shortcut form:
 =item  index
 
 This attribute contains the next index number available to create an
-additional an additional array element.
+additional array element.
 
 =item  num_when_empty
 
@@ -91,7 +91,6 @@ has 'contains' => ( isa => 'HTML::FormHandler::Field', is => 'rw',
      predicate => 'has_contains');
 
 has 'num_when_empty' => ( isa => 'Int', is => 'rw', default => 1 );
-has 'num_extra' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'index' => ( isa => 'Int', is => 'rw', default => 0 );
 has 'auto_id' => ( isa => 'Bool', is => 'rw', default => 0 );
 

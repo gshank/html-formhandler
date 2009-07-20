@@ -19,6 +19,9 @@ HTML::FormHandler - form handler written in Moose
 
 =head1 SYNOPSIS
 
+Note: This package no longer includes the DBIC model. If you intend to use
+L<HTML::FormHandler::Model::DBIC>, please install that package separately.
+
 An example of a form class:
 
     package MyApp::Form::User;
@@ -130,15 +133,15 @@ documentation on use and a tutorial, see the manual at
 L<HTML::FormHandler::Manual>.
 
 HTML::FormHandler does not provide a complex HTML generating facility,
-but a simple, sample rendering role is provided by
+but a simple, straightforward rendering role is provided by
 L<HTML::FormHandler::Render::Simple>, which will output HTML formatted
-strings for a field or a form. There are also sample Template Toolkit
-widget files in the example, documented at
-L<HTML::FormHandler::Manual::Templates>.
+strings for a field or a form. L<HTML::FormHandler::Render::Table> will
+display the form using an HTML table layout.  There are also sample Template 
+Toolkit widget files, documented at L<HTML::FormHandler::Manual::Templates>.
 
 The typical application for FormHandler would be in a Catalyst, DBIx::Class,
-Template Toolkit web application, but use is not limited to that.
-
+Template Toolkit web application, but use is not limited to that. FormHandler
+can be used in any Perl application.
 
 =head1 ATTRIBUTES and METHODS
 
@@ -151,7 +154,9 @@ The new constructor takes name/value pairs:
         init_object => { name => 'Your name here', username => 'choose' }
     );
 
-No attributes are required on new for a non-database form.
+No attributes are required on new. The form's fields will be built from
+the form definitions. If no initial data object has been provided, the form
+will be empty. Most attributes can be set on either 'new' or 'process'.
 The common attributes to be passed in to the constructor for a database form
 are either item_id and schema or item:
 
@@ -169,10 +174,11 @@ in the form class:
 
 Examples of creating a form object with new:
 
-    # non-database form
     my $form = MyApp::Form::User->new;
+
     # database form using a row object
     my $form = MyApp::Form::Member->new( item => $row );
+
     # a dynamic form (no form class has been defined)
     my $form = HTML::FormHandler::Model::DBIC->new(
         item_id         => $id,
@@ -217,8 +223,10 @@ from C<< $form->fif >> or a hash of inflated values from C<< $form->values >>.
 
 =head3 params
 
-Parameters must be passed in or set before you call 'process'.
+Parameters must be passed in or already set when you call 'process'.
 HFH gets data to validate and store in the database from the params hash.
+If the params hash is empty, no validation is done, so it is not necessary
+to check for POST and only call process when values are posted.
 
 Params can either be in the form of CGI/HTTP style params:
 
@@ -277,15 +285,15 @@ Or you can use the 'fif' method on individual fields:
 
    [% form.field('title').fif %]
 
-=head3 values
+=head3 value
 
 Returns a hashref of all field values. Useful for non-database forms, or if
-you want to update the databse yourself.
-The 'fif' and 'values' hashrefs might be the same for simple forms unless there's a
+you want to update the database yourself.
+The 'fif' and 'value' hashrefs might be the same for simple forms unless there's a
 difference in format between the HTML field values (in fif) and the saved value
 or unless the field 'name' and 'accessor' are different. 'fif' returns
 a hash with the field names for the keys and the field's 'fif' for the
-values; 'values' returns a hash with the field accessors for the keys, and the
+values; 'value' returns a hash with the field accessors for the keys, and the
 field's 'value' for the the values.
 
 Forms containing arrays to be processed with L<HTML::FormHandler::Field::Repeatable>
@@ -321,6 +329,21 @@ alternative to 'has_field' in small, dynamic forms.
        },
        field_two => 'Text,
     ]
+
+Or the field list can be set inside a form class, when you want to
+add fields to the form depending on some other state.
+
+   sub field_list {
+      my $self = shift;
+      my $fields = $self->schema->resultset('SomeTable')->
+                          search({user_id => $self->user_id, .... });    
+      my @field_list;
+      while ( my $field = $fields->next )
+      {
+         < create field list >
+      }
+      return \@field_list; 
+   }
 
 
 =head3 field_name_space
@@ -382,8 +405,8 @@ It has access to the field ($self).  This method is called after the actions are
 
 You can define a method in your form class to perform validation on a field.
 This method is the equivalent of the field class validate method except it is
-in the form class, so you might use this validation method if you don't
-want to create a field subclass.
+in the form class, so you might use this 
+validation method if you don't want to create a field subclass.
 
 It has access to the form ($self) and the field.
 This method is called after the field class 'validate' method, and is not
@@ -406,6 +429,9 @@ dependency validation. It is called after all other field validation is done,
 and whether or not validation has succeeded, so it has access to the
 post-validation values of all the fields.
 
+This is the best place to do validation checks that depend on the values of
+more than one field.
+
 =head2 Accessing errors
 
   has_errors - returns true or false
@@ -420,12 +446,16 @@ object is reused, such as when it is persistent in a Moose attribute,
 or in tests.  If you add other attributes to your form that are set on
 each request, you may need to clear those yourself.
 
+If you do not call the form's 'process' method on a persistent form,
+such as in a REST controller's non-POST method, you will also need
+to call C<< $form->clear >>.
+
 =head2 Miscellaneous attributes
 
 =head3 name
 
 The form's name.  Useful for multiple forms.
-It used to construct the default 'id' for fields, and is used
+It is used to construct the default 'id' for fields, and is used
 for the HTML field name when 'html_prefix' is set.
 The default is "form" + a one to three digit random number.
 
@@ -444,7 +474,7 @@ Place to store application context for your use in your form's methods.
 
 =head3 language_handle, build_language_handle
 
-Holds a Local::Maketext language handle
+Holds a Locale::Maketext language handle
 
 The builder for this attribute gets the Locale::Maketext language
 handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates
@@ -937,7 +967,7 @@ L<HTML::FormHandler::Moose>
 gshank: Gerda Shank <gshank@cpan.org>
 zby:    Zbigniew Lukasiak <zby@cpan.org>
 
-Based on the source code of L<Form::Processor> by Bill Moseley
+Initially based on the source code of L<Form::Processor> by Bill Moseley
 
 =head1 COPYRIGHT
 

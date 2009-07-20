@@ -167,11 +167,11 @@ sub update_model { }
 
 sub compute_model_stuff {}
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Gerda Shank, gshank@cpan.org
+HTML::FormHandler Contributors; see HTML::FormHandler
 
-Based on the original source code of L<Form::Processor::Model> by Bill Moseley
+Initially based on the original source code of L<Form::Processor::Model> by Bill Moseley
 
 =head1 COPYRIGHT
 

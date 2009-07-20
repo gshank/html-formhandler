@@ -204,5 +204,16 @@ subtype SingleWord,
   where { $_ =~ /^\w*\z/ },
   message { 'Field must contain a single word' };
 
+=head1 AUTHORS
+
+  HTML::FormHandler Contributors; see HTML::FormHandler
+
+=head1 COPYRIGHT
+
+  This library is free software, you can redistribute it and/or modify it under
+  the same terms as Perl itself.
+
+=cut
+
 1;
 

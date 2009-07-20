@@ -43,18 +43,28 @@ In a custom field class:
 
 In a form:
 
-   sub options_opt_in {
-      [ { value => 0, label => 'No' }, {value => 1, label => 'Yes'} ]
+   sub options_fruit {
+       return (
+           1   => 'apples',
+           2   => 'oranges',
+           3   => 'kiwi',
+       );
    }
 
-From a database when the name of the accessor is a relation to the
-table holding the information used to construct the select list.
-The primary key is used as the value. The other columns used are:
+Notice that, as a convenience, the required format for the options array is 
+simpler in the 'options_field_name' method. The hashrefs with 'value' and
+'label' keys will be constructed for you by FormHandler.
 
-    label_column  --  Used for the labels in the options
-    active_column --  The name of the column to be used in the query
+The final source of the options array is a database when the name of the 
+accessor is a relation to the table holding the information used to construct 
+the select list.  The primary key is used as the value. The other columns used are:
+
+    label_column  --  Used for the labels in the options (default 'name')
+    active_column --  The name of the column to be used in the query (default 'active')
                       that allows the rows retrieved to be restricted
     sort_column   --  The name of the column used to sort the options
+
+See also L<HTML::FormHandler::Model::DBIC>, the 'lookup_options' method.
 
 
 =head1 METHODS
