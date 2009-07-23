@@ -6,6 +6,32 @@ HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
 
 Collection of use recipes for L<HTML::FormHandler>
 
+=head1 Add custom attributes to FormHandler fields
+
+If you want to add custom attributes to the FormHandler fields but don't want
+to subclass all the fields, you can apply a role containing the new
+attributes to L<HTML::FormHandler::Field> in your Form's BUILD subroutine.
+
+   package MyApp::Form::Custom;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+   use HTML::FormHandler::Field;
+
+   sub BUILD 
+   {
+      my $self = shift;
+      my $fmeta = HTML::FormHandler::Field->meta;
+      $fmeta->make_mutable;
+      Moose::Util::apply_all_roles( $fmeta, ('Field::Role::Test'));
+      $fmeta->make_immutable;
+   }
+   has_field 'bar';
+   has_field 'foo';
+   1;
+
+If you want all your forms to use fields with the custom attributes, you
+can create a base form object, or turn the code into a role with a method
+modifier on BUILD.
 
 =head1 Select lists
 
