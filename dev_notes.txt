@@ -9,10 +9,10 @@ Form fields are filled in with input/value by _init_from_object if there's
 
 Validation
    validate_form (HFH) 
-     build_node (Fields) 
+     process_node (Fields) 
         fields_validate (Fields in HFH & Compound)
            loop through fields doing 'validate_field' (TransformAndCheck in HFH & Field)
-              build_node ( if field is Compound (recursive))
+              process_node ( if field is Compound (recursive))
               _apply_actions (T&C)
               validate (Field subclasses)
               _validate (form method pointed to in Field)

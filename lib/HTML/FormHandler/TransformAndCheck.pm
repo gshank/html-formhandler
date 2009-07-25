@@ -170,7 +170,7 @@ sub validate_field
 
    # do building of node
    if( $field->DOES('HTML::FormHandler::Fields') ){
-       $field->build_node;
+       $field->process_node;
    }
    else
    {

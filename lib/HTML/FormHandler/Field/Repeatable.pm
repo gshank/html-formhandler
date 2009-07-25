@@ -169,7 +169,7 @@ sub clone_fields
 # this is called by Field->process when params exist and validation is done.
 # The input will already have # been set there, now percolate the input down
 # the tree and build instances
-sub build_node
+sub process_node
 {
    my $self = shift;
 

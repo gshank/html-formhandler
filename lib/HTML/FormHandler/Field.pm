@@ -585,6 +585,7 @@ sub build_html_name
 }
 has 'widget' => ( isa => 'Str', is => 'rw' );
 has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
+has 'inactive' => ( isa => 'Bool', is => 'rw' );
 has 'unique' => ( isa => 'Bool', is => 'rw' );
 has 'unique_message' => ( isa => 'Str', is => 'rw' );
 has 'id' => ( isa => 'Str', is => 'rw', lazy => 1, builder => 'build_id' );

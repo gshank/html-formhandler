@@ -435,7 +435,7 @@ sub sorted_fields
 }
 
 #  the routine for looping through and processing each field
-#  Called in build_node
+#  Called in process_node
 sub _fields_validate
 {
    my $self = shift;
@@ -496,7 +496,7 @@ sub dump_validated
    }
 }
 
-sub build_node
+sub process_node
 {
    my $self = shift;
 

@@ -742,8 +742,8 @@ sub validate_form
    my $params = $self->params;
    $self->_set_dependency;    # set required dependencies
    $self->input( $params );
-   $self->build_node;
-   $self->_apply_actions;
+   $self->process_node; # build and validate
+   $self->_apply_actions; 
    $self->validate();
    # model specific validation
    $self->validate_model;
