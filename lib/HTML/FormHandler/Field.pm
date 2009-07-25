@@ -253,7 +253,6 @@ Widget types for the provided field classes:
 
    password  - prevents the entered value from being displayed in the form
    writeonly - The initial value is not taken from the database
-   clear     - Always set the database column to null.
    noupdate  - Do not update this field in the database (does not appear in $form->value)
 
 =head2 Form methods for fields
@@ -599,7 +598,6 @@ sub build_id { shift->html_name }
 has 'javascript' => ( isa => 'Str', is => 'rw' );
 has 'password' => ( isa => 'Bool', is => 'rw' );
 has 'writeonly' => ( isa => 'Bool', is => 'rw' );
-has 'clear' => ( isa => 'Bool', is => 'rw' );
 has 'disabled' => ( isa => 'Bool', is => 'rw' );
 has 'readonly' => ( isa => 'Bool', is => 'rw' );
 has 'noupdate' => ( isa => 'Bool', is => 'rw' );

@@ -31,7 +31,6 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    password      Remove from params and do not display in forms. 
    disabled      HTML hint to not do updates (for templates) Init: 0
    readonly      HTML hint to make the field readonly (for templates) Init: 0 
-   clear         Don't validate and remove from database
    noupdate      Don't update this field in the database
    writeonly     Do not retrieve initial values
    errors        Errors associated with this field 

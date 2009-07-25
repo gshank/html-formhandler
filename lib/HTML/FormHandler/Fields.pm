@@ -442,7 +442,7 @@ sub _fields_validate
    # validate all fields
    foreach my $field ( $self->fields )
    {
-      next if ( $field->clear || $field->inactive );
+      next if ( $field->inactive );
       # Validate each field and "inflate" input -> value.
       $field->validate_field;   # this calls the field's 'validate' routine
    }

@@ -337,7 +337,7 @@ sub update_model
       next unless exists $fields{$col};
       my $field = delete $fields{$col};
       # If the field is flagged "clear" then set to NULL.
-      my $value = $field->clear ? undef : $field->value;
+      my $value = $field->value;
       if ($item)
       {
          my $cur = $item->$col;
