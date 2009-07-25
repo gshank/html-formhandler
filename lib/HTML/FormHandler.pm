@@ -644,7 +644,7 @@ sub process
 
    warn "HFH: process ", $self->name, "\n" if $self->verbose;
    $self->clear if $self->processed;
-   $self->_setup_form(@_);
+   $self->setup_form(@_);
    $self->validate_form if $self->has_params;
    $self->update_model if $self->validated;
    $self->dump_fields if $self->verbose;
@@ -693,6 +693,7 @@ sub fif
    my %params;
    foreach my $field ( $node->fields )
    {
+      next if $field->inactive;
       next if $field->password;
       my $fif = $field->fif;    # need to force lazy build
       next unless $field->has_fif && defined $fif;
@@ -758,7 +759,7 @@ sub validate_form
 sub has_errors { shift->has_error_fields }
 sub num_errors { shift->num_error_fields }
 
-sub _setup_form
+sub setup_form
 {
    my ($self, @args) = @_;
    if( @args == 1 )

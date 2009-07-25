@@ -133,6 +133,11 @@ The full_name plus the form name if 'html_prefix' is set.
 
 =over
 
+=item inactive
+
+Set this attribute if this field is inactive. This provides a way to define fields
+in the form and selectively set them to inactive.
+
 =item input
 
 The input string from the parameters passed in.
@@ -522,6 +527,7 @@ has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 sub _build_fif {
    my $self = shift;
 
+   return if $self->inactive;
    $self->form->processed(1) if $self->form;
    return '' if( defined $self->password && $self->password == 1 );
    if ( $self->has_input && !$self->fif_from_value )
@@ -585,7 +591,7 @@ sub build_html_name
 }
 has 'widget' => ( isa => 'Str', is => 'rw' );
 has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
-has 'inactive' => ( isa => 'Bool', is => 'rw' );
+has 'inactive' => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
 has 'unique' => ( isa => 'Bool', is => 'rw' );
 has 'unique_message' => ( isa => 'Str', is => 'rw' );
 has 'id' => ( isa => 'Str', is => 'rw', lazy => 1, builder => 'build_id' );

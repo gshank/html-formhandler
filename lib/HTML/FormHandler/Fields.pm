@@ -430,7 +430,7 @@ sub sorted_fields
 {
    my $self = shift;
 
-   my @fields = sort { $a->order <=> $b->order } $self->fields;
+   my @fields = sort { $a->order <=> $b->order } grep { !$_->inactive } $self->fields;
    return wantarray ? @fields : \@fields;
 }
 
@@ -442,7 +442,7 @@ sub _fields_validate
    # validate all fields
    foreach my $field ( $self->fields )
    {
-      next if $field->clear;    # Skip validation
+      next if ( $field->clear || $field->inactive );
       # Validate each field and "inflate" input -> value.
       $field->validate_field;   # this calls the field's 'validate' routine
    }
@@ -518,7 +518,7 @@ sub process_node
          {
             $field->clear_other;
          }
-         elsif ( $field->has_input_without_param )
+         elsif ( $field->has_input_without_param && !$field->inactive )
          {
             $field->input( $field->input_without_param );
          }
@@ -528,7 +528,7 @@ sub process_node
    my %value_hash;
    for my $field ( $self->fields )
    {
-      next if $field->noupdate;
+      next if ( $field->noupdate || $field->inactive );
       $value_hash{ $field->accessor } = $field->value if $field->has_value;
    }
    $self->value( \%value_hash );

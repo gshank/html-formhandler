@@ -217,9 +217,8 @@ and set the 'fif' hash in the 'fillinform' stash variable:
  
 =head1 Form generator
 
-A DBIC form generator is installed with FormHandler. See 
-L<HTML::FormHandler::Generator::DBIC>.
-
+A DBIC form generator is installed with the L<HTML::FormHandler::Model::DBIC>
+package. See L<HTML::FormHandler::Generator::DBIC>.
 
 =head1 Non-database forms
 
@@ -242,7 +241,8 @@ the database.
 =head1 Form Models 
 
 For a database form, use a model base class that interfaces with the 
-database, such as L<HTML::FormHandler::Model::DBIC>.
+database, such as L<HTML::FormHandler::Model::DBIC>, which needs to
+be installed as a separate package.
 
 When using a database model, form field values for the row are retrieved from
 the database using the field 'accessor' attributes (defaults to fieldname) 
@@ -714,6 +714,28 @@ it is possible to have FormHandler process HTML forms that have no template
 references to the form object at all, as long as the field names are correct.
 If you think that FillInForm is evil, then you could manage with only
 using FormHandler to fill in the form.
+
+=head1 Using FormHandler with hand-built forms
+
+You can use FormHandler to validate your data (and load it into a database
+if you choose) with nothing from FormHandler in the templates or HTML at all.
+The 'name' for the HTML form fields must match the HFH field names. If you have 
+compound or repeatable fields, the field names must follow the HFH naming 
+convention. (See the documentation for Compound and Repeatable fields.)
+
+In order to load the form with values, you should use L<HTML::FillInForm>, and
+L<Catalyst::View::FillInForm> if you're using Catalyst. You must put the
+FormHandler 'fif' hash into the Catalyst stash.
+
+   $form->process($params);
+   $c->stash( fillinform => $form->fif );
+   return unless $form->validated;
+
+(Or you could use one of the options described in the previous section for
+minimal interaction with the FormHandler form.)
+
+If you have select lists and use the FormHandler 'Select' field types, you need
+to be careful that the select lists don't get out of sync. 
 
 =head1 Testing
 

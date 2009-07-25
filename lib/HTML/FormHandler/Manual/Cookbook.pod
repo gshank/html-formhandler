@@ -6,6 +6,43 @@ HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
 
 Collection of use recipes for L<HTML::FormHandler>
 
+=head1 Dynamically change the active fields 
+
+A common use case is for forms with some fields that should be displayed in
+some circumstances and not in others. There are a number of ways to do this.
+One way is to use the 'field_list' method:
+
+   sub field_list {
+      my $self = shift;
+      my @fields;
+      <build list of fields>
+      return \@fields;
+   }
+
+This only happens at form construction time, however. Another method that
+works is to define all of the possible fields in your form, and mark some
+of them 'inactive';
+
+   package MyApp::Variable::Form;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   has_field 'foo';
+   has_field 'bar' => ( inactive => 1 );
+   1;
+
+Then you can mark them active or inactive using a Moose method modifier on
+'setup_form'.
+
+   after 'setup_form' => sub {
+      my $self = shift;
+      if( <some condition> ) 
+      {
+         $self->field('foo')->inactive(1);
+         $self->field('bar')->clear_inactive;
+      }
+   }
+   
 =head1 Add custom attributes to FormHandler fields
 
 If you want to add custom attributes to the FormHandler fields but don't want
@@ -22,12 +59,17 @@ attributes to L<HTML::FormHandler::Field> in your Form's BUILD subroutine.
       my $self = shift;
       my $fmeta = HTML::FormHandler::Field->meta;
       $fmeta->make_mutable;
-      Moose::Util::apply_all_roles( $fmeta, ('Field::Role::Test'));
+      Moose::Util::apply_all_roles( $fmeta, ('MyApp::Field::Role::Custom'));
       $fmeta->make_immutable;
    }
    has_field 'bar';
    has_field 'foo';
    1;
+
+   package MyApp::Field::Role::Custom;
+   use Moose::Role;
+   has 'my_extra_attribute => ( isa => 'Bool, is => 'rw' );
+   1; 
 
 If you want all your forms to use fields with the custom attributes, you
 can create a base form object, or turn the code into a role with a method
@@ -94,9 +136,6 @@ Some of the choices are:
    1) validate (for the form or field)
    2) validate_model
    3) model_update
-
-The field 'clear' flag will cause that column in the database to be set to
-null. This flag could be set in a validation routine.
 
 When the field is flagged 'writeonly', the value from the database will not
 be used to fill in the form (put in the C<< $form->fif >> hash, or the
@@ -313,7 +352,7 @@ can use the 'after' method modifier on the 'validate' method:
          if $self->field('date_from')->value gt $self->field('date_to')->value;
    };
 
-=head2 Changing required flag before validation 
+=head2 Changing required flag
 
 Sometimes a field is required in one situation and not required in another.
 You can use a method modifier before 'validate_form':
@@ -322,10 +361,27 @@ You can use a method modifier before 'validate_form':
       my $self = shift;
       my $required = 0;
       $required = 1
-         if( $self->field('some_field')->value eq 'something' );
+         if( $self->params('field_name') eq 'something' ); 
       $self->field('some_field')->required($required);
    };
 
+This happens before the fields contain input or values, so you would need to
+look at the param value. If you need the validated value, it might be better
+to do these sort of checks in the form's 'validate' routine.
+
+   sub validate {
+      my $self = shift;
+      $self->field('dependent_field')->add_error("Field is required")
+          if( $self->field('some_field')->value eq 'something' &&
+              !$self->field('dependent_field')->has_value);
+   }
+
+In a Moose role you would need to use a method modifier instead.
+  
+   after 'validate' => sub { ... };
+
+Don't forget the dependency list, which is used for cases where if any of one
+of a group of fields has a value, all of the fields are required.
 
 =head1 AUTHOR
 
