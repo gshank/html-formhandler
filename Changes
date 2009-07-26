@@ -1,3 +1,9 @@
+0.27 Sat July 25, 2009
+    Split HTML::FormHandler::Model::DBIC into separate distribution
+    Add 'inactive' flag. Cleanup Makefile.PL. 'size' split into 'size' and
+    'maxlength'. 'min_length' renamed to 'minlength'. Add Catalyst pod.
+    'html_name' used for field 'id'. Fix DateMDY field.
+
 0.26 Tues June 23, 2009
     Fix dependency test failures on UNIVERSAL::require and version
 

@@ -5,6 +5,7 @@
 ^MANIFEST.bak$
 ^MANIFEST.SKIP$
 .git/
+.gitignore$
 ^*.tar.gz$
 ^HTML-FormHandler-*/
 ^t/00create_db.t
