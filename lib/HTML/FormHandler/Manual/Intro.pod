@@ -29,7 +29,7 @@ L<HTML::FormHandler::Field> classes to create your own field types, and
 perform specialized validation. You can create L<MooseX::Types> libraries
 and use them to perform field validation.
 
-The L<HTML::FormHandler> package includes a working 
+The L<HTML::FormHandler::Model::DBIC> package includes a working 
 example using a SQLite database and a number of forms in the test directory.
 You can execute the sample from a downloaded distribution package with:
 
@@ -228,10 +228,8 @@ You do not initialize a non-database form with an item or item_id,
 although you can use an init_object for the initial values. 
 
 After validation, you can get a hashref of values back from 
-the 'values' method. 
+the 'value' method. 
 
-   my $form = MyApp::Form::Book->new( init_object => { ... } );
-   $form->process( $params );
    return unless $form->validated;
    my $result = $form->value;
 
@@ -300,7 +298,7 @@ class name. To use this sugar, you must do
    use HTML::FormHandler::Moose;
 
 instead of C< use Moose; >. (Moose best practice advises using
-C< use namespace::autoclean; >> or putting C< no HTML::FormHandler::Moose; > 
+C< use namespace::autoclean; > or putting C< no HTML::FormHandler::Moose; > 
 at the end of the package to keep the namespace clean of imported methods.) 
 
 To declare fields use the syntax:

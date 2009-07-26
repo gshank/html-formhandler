@@ -37,6 +37,12 @@ And include them in a generic template:
 
 =head1 Sample templates
 
+Note that the following templates assume that the field is in a TT variable "f",
+as though they were processed in the above loop. Otherwise the individual
+fields could be preceded by something like:
+
+  [% f = form.field('title') %]
+
 =head2 Text input field with error class on div & error messages
 
    <div class="[% f.css_class %] [% IF f.has_errors %]error_fld[% END %]">

@@ -118,14 +118,10 @@ this is something that would be useful in other places besides your form,
 you should do that processing in the DBIx::Class result class.
 
 If the pre-processing is only relevant to HTML form input, you might want
-to do it in the form.
+to do it in the form by setting a flag to prevent database updates, performing
+the pre-processing, and then updating the database yourself.
 
-     fields => {
-        'my_complex_field' => {
-            type => 'Text',
-            noupdate => 1,
-         }
-      }
+   has_field 'my_complex_field' => ( type => 'Text', noupdate => 1 );
 
 The 'noupdate' flag is set in order to skip an attempt to update the database
 for this field (it would not be necessary if the field doesn't actually exist
@@ -205,7 +201,6 @@ Or you can make these customizations Moose roles.
 A person form:
 
    package Form::Person;
-
    use HTML::FormHandler::Moose; 
    extends 'HTML::FormHandler';
 
@@ -223,7 +218,6 @@ A person form:
 An address form:
 
    package Form::Address;
-
    use HTML::FormHandler::Moose; 
    extends 'HTML::FormHandler';
 
@@ -242,7 +236,6 @@ An address form:
 A form that extends them both:
 
    package Form::Member;
-
    use Moose;
    extends ('Form::Person', 'Form::Address');
 
@@ -253,7 +246,6 @@ Or if you don't need to use the pieces of your forms as forms themself, you can
 use roles;
 
    package Form::Role::Address;
-
    use HTML::FormHandler::Moose::Role; 
 
    has_field 'street';
@@ -271,13 +263,11 @@ use roles;
 You could make roles that are collections of validations:
 
    package Form::Role::Member;
-
    use Moose::Role;
 
    sub check_zip {
       ...
    }
-
    sub check_email {
       ...
    }

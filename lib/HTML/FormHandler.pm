@@ -442,7 +442,7 @@ clear_errors)
 
   $form->field('title')->errors;
 
-Compound fields also have an error of error_fields.
+Compound fields also have an array of error_fields.
 
 =head2 Clear form state
 
@@ -972,7 +972,9 @@ L<HTML::FormHandler::Moose>
 =head1 CONTRIBUTORS
 
 gshank: Gerda Shank <gshank@cpan.org>
+
 zby:    Zbigniew Lukasiak <zby@cpan.org>
+
 t0m:    Tomas Doran <bobtfish@bobtfish.net>
 
 Initially based on the source code of L<Form::Processor> by Bill Moseley
