@@ -233,10 +233,9 @@ the 'values' method.
    my $form = MyApp::Form::Book->new( init_object => { ... } );
    $form->process( $params );
    return unless $form->validated;
-   my $result = $form->values;
+   my $result = $form->value;
 
-These is the same 'value' structure that FormHandler uses to update
-the database.
+The 'value' structure is what FormHandler uses to update the database.
 
 =head1 Form Models 
 
@@ -245,7 +244,7 @@ database, such as L<HTML::FormHandler::Model::DBIC>, which needs to
 be installed as a separate package.
 
 When using a database model, form field values for the row are retrieved from
-the database using the field 'accessor' attributes (defaults to fieldname) 
+the database using the field 'accessor' attributes (defaults to field name) 
 as database class accessors. 
 
 FormHandler will use relationships to populate single and multiple 
@@ -288,8 +287,8 @@ or: C<< $form->field('address.street.streetname') >>.
 
 You can process multiple FormHandler forms at the same time (using
 the same HTML form) with multiple form objects and multiple process/update
-calls. You would have to ensure that there are no duplicate field names by
-using one of the methods mentioned above.
+calls. You would have to ensure that there are no duplicate field names,
+possibly by using 'html_prefix'.
 
 =head1 has_field
 
@@ -322,7 +321,7 @@ instead of:
       }
    );
          
-Fields specified in a field_list will overwrite fields specified with 'has_field'.
+Fields specified in a field_list are processed after fields specified with 'has_field'.
 After processing, fields live in the 'fields' array, and can be accessed with the
 field method: C<< $form->field('title') >>. 
 
@@ -346,7 +345,7 @@ classes using 'with':
 
    package Form::Member;
    use HTML::FormHandler::Moose;
-   with ''Form::Role::Person';
+   with 'Form::Role::Person';
    with 'Form::Role::Address';
    extends 'HTML::FormHandler::Model::DBIC';
 
@@ -432,7 +431,7 @@ When data is passed in to validate the form, the input is copied into the
 'value' attribute of the field, and the actions specified by 'apply'
 will be performed on the value. This includes the 'trim' transform which
 will strip leading and trailing spaces. After the actions are applied,
-the field 'validate' method is called.
+the field's 'validate' method is called.
 
 =head2 Compound fields
 
@@ -537,7 +536,8 @@ which is called by the base Field class from 'process'. Look at
 L<HTML::FormHandler::Field::Email>, for example.
 
 If the field's value will be an object instead of a simple scalar, such
-as a DateTime, then you will also need a deflation to reformat
+as a DateTime and you want to use the transformed value to fill in the
+form, then you will also need a deflation to reformat
 the object into a form suitable for an HTML form field.
 
 Some custom fields might only require setting certain attributes to

@@ -72,8 +72,8 @@ attributes to L<HTML::FormHandler::Field> in your Form's BUILD subroutine.
    1; 
 
 If you want all your forms to use fields with the custom attributes, you
-can create a base form object, or turn the code into a role with a method
-modifier on BUILD.
+can create a base form object with a BUILD that applies the role, or turn the
+code into a role with a method modifier on BUILD.
 
 =head1 Select lists
 
@@ -305,21 +305,20 @@ Then pass it in when you process the form:
 
 If there is another database field that needs to be updated when a row is 
 created, add an attribute to the form, and then process it with 
-C< after 'update_model' >.
+C< before 'update_model' >.
 
 In the form:
 
-    has 'user_id' => ( isa => 'Int', is => 'ro' );
+    has 'hostname' => ( isa => 'Int', is => 'ro' );
 
-    after 'update_model' => sub {
+    before 'update_model' => sub {
        my $self = shift;
-       $self->item->user_id( $self->user_id )
-           unless $self->item->user_id;
+       $self->item->hostname( $self->hostname );
     };
 
 Then just use an additional parameter when you create/process your form:
 
-    $form->process( item => $item, params => $params, user_id => $c->user->user_id );
+    $form->process( item => $item, params => $params, hostname => $c->req->host );
 
 =head2 Record the user update 
 
