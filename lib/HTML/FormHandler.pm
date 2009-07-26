@@ -697,10 +697,9 @@ sub fif
    my %params;
    foreach my $field ( $node->fields )
    {
-      next if $field->inactive;
-      next if $field->password;
-      my $fif = $field->fif;    # need to force lazy build
-      next unless $field->has_fif && defined $fif;
+      next if ( $field->inactive || $field->password );
+      my $fif = $field->fif;
+      next unless defined $fif;
       if ( $field->DOES('HTML::FormHandler::Fields') )
       {
          my $next_params = $self->fif( $prefix . $field->name . '.', $field );

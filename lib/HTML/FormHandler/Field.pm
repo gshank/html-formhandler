@@ -478,9 +478,9 @@ the 'fif_from_value' flag on the field.
       deflation => sub { { year => $_->year, month => $_->month, day => $_->day } },
       fif_from_value => 1,
    );
-   has_field 'date_time_fif.year' => ( fif_from_value => 1 );
-   has_field 'date_time_fif.month';
-   has_field 'date_time_fif.day' => ( fif_from_value => 1 );
+   has_field 'my_date_time.year' => ( fif_from_value => 1 );
+   has_field 'my_date_time.month';
+   has_field 'my_date_time.day' => ( fif_from_value => 1 );
 
 =head1 Processing and validating the field
 
@@ -516,39 +516,33 @@ has 'input_without_param' => (
    is        => 'rw',
    predicate => 'has_input_without_param'
 );
-has 'fif' => (
-    is => 'rw',
-    clearer => 'clear_fif',
-    predicate => 'has_fif',
-    lazy_build => 1,
-);
+
 has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
-sub _build_fif {
+sub fif {
    my $self = shift;
 
    return if $self->inactive;
-   $self->form->processed(1) if $self->form;
-   return '' if( defined $self->password && $self->password == 1 );
-   if ( $self->has_input && !$self->fif_from_value )
+   return '' if $self->password; 
+   if ( ($self->has_input && !$self->fif_from_value) ||
+        ($self->fif_from_value && !defined $self->value) )
    {
       return defined $self->input ? $self->input : '';
    }
    my $parent = $self->parent;
    if ( defined $parent &&
       $parent->isa('HTML::FormHandler::Field') &&
-      $parent->has_deflation &&
-      ref $parent->fif eq 'HASH' &&
-      exists $parent->fif->{ $self->name } )
+      $parent->has_deflation )
    {
-      return $self->_apply_deflation( $parent->fif->{ $self->name } );
+      my $parent_fif = $parent->fif;
+      if( ref $parent_fif eq 'HASH' &&
+      exists $parent_fif->{ $self->name } )
+      {
+         return $self->_apply_deflation( $parent_fif->{ $self->name } );
+      }
    }
    if ( defined $self->value )
    {
       return $self->_apply_deflation( $self->value );
-   }
-   if ( $self->fif_from_value )
-   {
-      return defined $self->input ? $self->input : '';
    }
    return '';
 }
@@ -784,7 +778,7 @@ sub clear_data
    my $self = shift;
    $self->clear_input;
    $self->clear_value;
-   $self->clear_fif;
+#   $self->clear_fif;
    $self->clear_errors;
    $self->clear_init_value;
    $self->clear_other;

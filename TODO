@@ -1,3 +1,4 @@
+  Change $field->fif to a method
   Support rendering from field classes
   Default value for field (like 'set_init' but at field level)
   Unique support for non-top-level fields?
