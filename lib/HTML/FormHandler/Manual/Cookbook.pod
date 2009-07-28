@@ -54,14 +54,13 @@ attributes to L<HTML::FormHandler::Field> in your Form's BUILD subroutine.
    extends 'HTML::FormHandler';
    use HTML::FormHandler::Field;
 
-   sub BUILD 
-   {
-      my $self = shift;
+   # can't do this in BUILD because the base class BUILD fires before this one
+   after 'BUILDARGS' => sub {
       my $fmeta = HTML::FormHandler::Field->meta;
       $fmeta->make_mutable;
       Moose::Util::apply_all_roles( $fmeta, ('MyApp::Field::Role::Custom'));
       $fmeta->make_immutable;
-   }
+   };
    has_field 'bar';
    has_field 'foo';
    1;
