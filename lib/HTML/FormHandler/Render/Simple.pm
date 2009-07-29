@@ -170,10 +170,13 @@ sub render_end
 
 sub render_field {
     my( $self, $field ) = @_;
-    unless ( $field->isa('HTML::FormHandler::Field') )
+
+    if ( ref(\$field) eq 'SCALAR' ) 
     {
        $field = $self->field($field);
     }
+    die "must pass field to render_field"
+       unless( defined $field && $field->isa('HTML::FormHandler::Field') );
     return '' if $field->widget eq 'no_render';
     my $field_method = 'render_' . $field->widget;
     die "Widget method $field_method not implemented in H::F::Render::Simple"
