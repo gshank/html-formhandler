@@ -28,6 +28,10 @@ Builds on the Catalyst tutorial. Step-by-step guide.
 
 Cut-and-paste examples of templates to use with FormHandler
 
+=head2 L<HTML::FormHandler::Manual::Catalyst>
+
+Catalyst specific documentation
+
 =head1 SUPPORT
 
 IRC:
