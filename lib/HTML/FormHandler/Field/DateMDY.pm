@@ -7,6 +7,8 @@ use DateTime;
 has 'year_start' => ( isa => 'Int', is => 'rw', default => '2007' );
 has 'year_end' => ( isa => 'Int', is => 'rw', default => '2020' );
 
+has '+deflation' => ( default => sub { sub { shift->mdy('/') } } );
+
 apply ( [
    {  transform => sub {
          my( $month, $day, $year) = split /\//, $_[0];

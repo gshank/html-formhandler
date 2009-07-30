@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 188;
+use Test::More tests => 189;
 
 #
 # Boolean
@@ -504,5 +504,8 @@ is( $field->fif, $field->value->strftime("%m/%d/%Y", 'fif ok' ), 'fif ok');
 $field->clear_data;
 $field->input('07/07/09');
 ok( $field->validated, 'No errors 3' );
+$field->clear_data;
+$field->value( DateTime->new( year => 2008, month => 12, day => 31 ) );
+is( $field->fif, $field->value->strftime("%m/%d/%Y", 'fif ok' ), 'fif from value ok');
 
 
