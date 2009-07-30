@@ -763,6 +763,10 @@ sub _apply_deflation
    {
       $value = $self->deflation->($value);
    }
+   elsif( $self->can('deflate') )
+   {
+      $value = $self->deflate;
+   }
    return $value;
 }
 
