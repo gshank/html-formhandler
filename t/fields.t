@@ -510,9 +510,9 @@ is( $field->fif, $field->value->strftime("%m/%d/%Y", 'fif ok' ), 'fif from value
 
 
 #
-# Datepicker
+# Date
 #
-$class = 'HTML::FormHandler::Field::Datepicker';
+$class = 'HTML::FormHandler::Field::Date';
 use_ok($class);
 $field = $class->new( name => 'test_field', jformat => "mm/dd/yy" );
 ok( defined $field, 'new() called for DateMDY' );
