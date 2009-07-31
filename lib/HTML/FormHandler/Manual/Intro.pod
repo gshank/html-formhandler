@@ -46,6 +46,7 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     package MyApp:Form::User;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Model::DBIC';
+    with 'HTML::FormHandler::Render::Simple';
 
     # Associate this form with a DBIx::Class result class
     # Or 'item_class' can be passed in on 'new', or you
