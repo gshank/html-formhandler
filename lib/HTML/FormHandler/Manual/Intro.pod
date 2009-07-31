@@ -79,7 +79,7 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
         }
     );
 
-For many forms, if L<HTML::FormHandler::Render:Simple> is included as a form role,
+For many forms, if L<HTML::FormHandler::Render::Simple> is included as a form role,
 you can render a simple form for scaffolding:
 
     [% form.render %]
