@@ -64,10 +64,8 @@ this simple form the default types are adequate.
 
 Edit lib/MyApp/Controller/Books.pm.  Add use Moose:
 
-    BEGIN {
-       use Moose;
-       extends 'Catalyst::Controller';
-    }
+    use Moose;
+    BEGIN { extends 'Catalyst::Controller' }
     use MyApp::Form::Book;
 
 Create an attribute to hold your form:

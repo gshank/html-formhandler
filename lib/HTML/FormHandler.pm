@@ -59,10 +59,8 @@ An example of a Catalyst controller that uses an HTML::FormHandler form
 to update a 'Book' record:
 
    package MyApp::Controller::Book;
-   BEGIN {
-      use Moose;
-      extends 'Catalyst::Controller';
-   }
+   use Moose;
+   BEGIN { extends 'Catalyst::Controller' }
    use MyApp::Form::Book;
 
    sub book_base : Chained PathPart('book') CaptureArgs(0)
