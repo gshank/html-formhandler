@@ -35,9 +35,6 @@ You can execute the sample from a downloaded DBIC model distribution package wit
 
    perl -Ilib t/script/bookdb_server.pl
 
-Note that this script is part of the L<HTML::FormHandler::Model::DBIC> package,
-distributed separately.
-
 =head1 Basics
 
 To use HTML::FormHandler, you need to create a form class, call the
@@ -55,9 +52,6 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     # Or 'item_class' can be passed in on 'new', or you
     # you can always pass in a row object
     has '+item_class' => ( default => 'User' );
-
-    # Set the action url for the form
-    has action => ( is => 'rw', isa => 'Str', default => '/form/' );
 
     # Define the fields that this form will operate on
     # Field names are usually column, accessor, or relationship names in your
@@ -165,6 +159,12 @@ In a Catalyst controller:
 
 With the DBIC model the schema is set from the 'item' (row object)
 passed in, or from the primary key ('item_id') and schema. 
+You might also want to pass in the 'action' to which the form will
+be submitted if you're using FormHandler's renderer and if it's important 
+to pass XHTML validation:
+
+   $form->process( action => <valid url>, item => $row,
+        params => $c->req->params );
 
 The example above uses persistent forms in a Moose attribute. The
 'process' method will clear out non-persistent form values and
