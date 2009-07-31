@@ -94,7 +94,7 @@ Multiple select:
    </select>
 
 Warning: TT has problems with single element arrays. If you are likely
-to have single a element in a select list, you might want to use the
+to have a single element in a select list, you might want to use the
 rendering method instead or add an extra "choose" row. (If you come up
 with a good solution, please submit a doc patch.)
 
