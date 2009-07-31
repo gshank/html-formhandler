@@ -56,6 +56,9 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     # you can always pass in a row object
     has '+item_class' => ( default => 'User' );
 
+    # Set the action url for the form
+    has action => ( is => 'rw', isa => 'Str', default => '/form/' );
+
     # Define the fields that this form will operate on
     # Field names are usually column, accessor, or relationship names in your
     # DBIx::Class result class. You can also have fields that don't exist
