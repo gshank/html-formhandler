@@ -211,7 +211,11 @@ We'll add a couple of 'label' attribute to the fields:
 L<HTML::FormHandler> doesn't have built-in attributes for a submit button, but
 if you want to put one in your form to use in a template, go ahead.
 
-   has '+submit' => ( default => sub { { name => 'submit', value => 'Submit' }});
+   has_field 'submit' => (
+       type  => 'Submit',  # Case matters here.
+       name  => 'Save',
+       value => 'Save It!',
+   );
 
 In a template, you could then access this with:
 
