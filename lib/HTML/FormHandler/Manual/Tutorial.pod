@@ -69,9 +69,7 @@ this simple form the default types are adequate.
 Edit lib/MyApp/Controller/Books.pm.  Add use Moose:
 
     use Moose;
-    BEGIN {
-       extends 'Catalyst::Controller';
-    }
+    BEGIN { extends 'Catalyst::Controller' }
     use MyApp::Form::Book;
 
 Create an attribute to hold your form:
@@ -150,23 +148,19 @@ or copy the following:
      [% END %]
    [% END %]
 
-
    <form name="[% form.name %]" 
          action="[% c.uri_for('edit', form.item_id) %]" 
          method="post">
-
    <p>
    [% f = form.field('title') %]
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
    <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
    </p>
-
    <p>
    [% f = form.field('rating') %]
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
    <input type="text" name="[% f.name %]" id="[% f.name %]" %] value="[% f.fif %]">
    </p>
-
    <p>
    [% f = form.field('authors') %]
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
@@ -180,9 +174,7 @@ or copy the following:
      [% END %] 
    </select>
    </p>
-    
    <input class="button" name="submit" type="submit" value="Submit" />
-
    </form>
     
    <p><a href="[% c.uri_for('list') %]">Return to book list</a></p>
@@ -234,11 +226,6 @@ We'll add a couple of 'label' attribute to the fields:
    has_field 'rating' => ( type => 'Integer', label => 'Rating (1-5)' );
    has_field 'authors' => ( type => 'Multiple', label_column => 'last_name' );
 
-    
-If you want all your forms to have a submit button definition, you can put this
-in a base Form class. Or create a Moose::Role and group a number of similar
-functions together.
-
 If you want a new attribute in your fields, it's very easy to add it to your 
 custom Field classes.
 
@@ -252,6 +239,9 @@ custom Field classes.
 
 Now if your Field classes inherit from this, you can have a 'my_attribute' 
 attribute for all your fields. Or use a Moose role instead of inheritance. 
+
+You can also add attributes to the base FormHandler field class using Moose.
+This technique is described in L<HTML::FormHandler::Manual::Cookbook>.
 
 =head1 L<HTML::FormHandler> Validation 
 
@@ -285,9 +275,11 @@ custom validation on a per-field basis.
 This form doesn't really require any customized validation, 
 so we'll add a silly field constraint.  Add the following to the form:
 
-  apply [ { check => sub { shift !~ /Rainbows/ },
-            message => "The word \'Rainbows\' is not allowed in titles' }
-        ];
+   sub validate_title {
+      my ( $self, $field ) = @_;
+      $field->add_error("The word \'Rainbow\' is not allowed in titles")
+         if ( $field->value =~ /Rainbows/ );
+   }
 
 You can also apply Moose constraints and transforms. Validation can also
 be performed in a form 'validate_<field_name' method, in a 'validate_model'

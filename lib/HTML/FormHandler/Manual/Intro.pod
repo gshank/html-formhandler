@@ -35,6 +35,9 @@ You can execute the sample from a downloaded DBIC model distribution package wit
 
    perl -Ilib t/script/bookdb_server.pl
 
+Note that this script is part of the L<HTML::FormHandler::Model::DBIC> package,
+distributed separately.
+
 =head1 Basics
 
 To use HTML::FormHandler, you need to create a form class, call the
@@ -52,6 +55,9 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     # Or 'item_class' can be passed in on 'new', or you
     # you can always pass in a row object
     has '+item_class' => ( default => 'User' );
+
+    # Set the action url for the form
+    has action => ( is => 'rw', isa => 'Str', default => '/form/' );
 
     # Define the fields that this form will operate on
     # Field names are usually column, accessor, or relationship names in your
@@ -139,9 +145,7 @@ In a Catalyst controller:
 
     package MyApp::Controller::User;
     use Moose;
-    BEGIN {
-       extends 'Catalyst::Controller';
-    }
+    BEGIN { extends 'Catalyst::Controller' }
     has 'form' => ( isa => 'MyApp::Form::User', is => 'rw',
         lazy => 1, default => sub { MyApp::Form::User->new } );
 

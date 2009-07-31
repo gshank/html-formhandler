@@ -26,6 +26,7 @@ An example of a form class:
 
     package MyApp::Form::User;
 
+    use MooseX::Types;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Model::DBIC';
 
@@ -59,9 +60,7 @@ to update a 'Book' record:
 
    package MyApp::Controller::Book;
    use Moose;
-   BEGIN {
-      extends 'Catalyst::Controller';
-   }
+   BEGIN { extends 'Catalyst::Controller' }
    use MyApp::Form::Book;
 
    sub book_base : Chained PathPart('book') CaptureArgs(0)
