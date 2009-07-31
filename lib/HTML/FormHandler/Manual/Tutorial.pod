@@ -219,8 +219,26 @@ if you want to put one in your form to use in a template, go ahead.
 
 In a template, you could then access this with:
 
-   <input class="button" name="[% form.submit.name %]" 
-        type="[% form.submit.type %]" value="Submit" />
+   <input class="button"
+          type="[% form.field('Save').widget %]"
+          name="[% form.field('Save').name %]"
+          value="[% form.field('Save').value %]" />
+
+Note that as you need to know the name of the submit field in order to query
+the object and get it's value it may be easier to just say:
+
+   <input class="button"
+          type="submit"
+          name="Save"
+          value="[% form.field('Save').value %]" />
+
+Also, the HTML type (input type="text") is not the same as the field's type.
+The former (text, submit, button, checkbox, file, hidden, etc.) can be found by
+calling the form field's widget method.
+
+   <input type="[% form.field('Save').widget %]">
+
+For more information see L<HTML::FormHandler::Field>'s widget method.
 
 If you want all your forms to have a submit button definition, you can put this
 in a base Form class. Or create a Moose::Role and group a number of similar
