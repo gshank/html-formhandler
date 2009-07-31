@@ -35,6 +35,9 @@ You can execute the sample from a downloaded distribution package with:
 
    perl -Ilib t/script/bookdb_server.pl
 
+Note that this script is part of the L<HTML::FormHandler::Model::DBIC> package,
+distributed separately.
+
 =head1 Basics
 
 To use HTML::FormHandler, you need to create a form class, call the
