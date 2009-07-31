@@ -138,8 +138,8 @@ A multiple select list where 'hobbies' is a 'many_to_many' pseudo-relationship.
 In a Catalyst controller:
 
     package MyApp::Controller::User;
+    use Moose;
     BEGIN {
-       use Moose;
        extends 'Catalyst::Controller';
     }
     has 'form' => ( isa => 'MyApp::Form::User', is => 'rw',

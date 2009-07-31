@@ -64,8 +64,8 @@ this simple form the default types are adequate.
 
 Edit lib/MyApp/Controller/Books.pm.  Add use Moose:
 
+    use Moose;
     BEGIN {
-       use Moose;
        extends 'Catalyst::Controller';
     }
     use MyApp::Form::Book;
