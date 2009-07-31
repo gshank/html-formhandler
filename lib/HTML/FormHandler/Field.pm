@@ -539,7 +539,7 @@ sub fif {
    my $parent = $self->parent;
    if ( defined $parent &&
       $parent->isa('HTML::FormHandler::Field') &&
-      ( $parent->has_deflation || $parent->can('deflate') )
+      ( $parent->has_deflation || $parent->can('deflate') ) )
    {
       my $parent_fif = $parent->fif;
       if( ref $parent_fif eq 'HASH' &&
