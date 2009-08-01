@@ -47,7 +47,7 @@ Then you can mark them active or inactive using a Moose method modifier on
 
 If you want to add custom attributes to the FormHandler fields but don't want
 to subclass all the fields, you can apply a role containing the new
-attributes to L<HTML::FormHandler::Field> in your Form's BUILD subroutine.
+attributes to L<HTML::FormHandler::Field> in your form. 
 
    package MyApp::Form::Custom;
    use HTML::FormHandler::Moose;
@@ -71,8 +71,8 @@ attributes to L<HTML::FormHandler::Field> in your Form's BUILD subroutine.
    1; 
 
 If you want all your forms to use fields with the custom attributes, you
-can create a base form object with a BUILD that applies the role, or turn the
-code into a role with a method modifier on BUILD.
+can create a base form object that applies the role, or turn the
+code into a role and apply it in all of your forms.
 
 =head1 Select lists
 
