@@ -14,7 +14,7 @@ HTML::FormHandler::Field::Date - a date field with formats
 This field may be used with the jQuery Datepicker plugin.
 
 You can specify the format for the date using jQuery formatDate strings
-or DateTime strftime formats. (Default format is yy-mm-dd.)
+or DateTime strftime formats. (Default format is format => '%Y-%m-%d'.)
 
    d  - "%e" - day of month (no leading zero)
    dd - "%d" - day of month (two digit)
@@ -32,21 +32,20 @@ or DateTime strftime formats. (Default format is yy-mm-dd.)
 
 For example:  
 
-   has_field 'start_date' => ( type => 'Datepicker', jformat => "dd/mm/y" );
+   has_field 'start_date' => ( type => 'Datepicker', format => "dd/mm/y" );
 
 or
 
    has_field 'start_date' => ( type => 'Datepicker', format => "%d/%m/%y" );
 
 You can also set 'date_end' and 'date_start' attributes for validation
-of the date range. Use iso_8601 formats for these dates ("yy-mm-dd");
+of the date range. Use iso_8601 formats for these dates ("yyyy-mm-dd");
 
-   has_field 'start_date' => ( type => 'Datepicker', date_start => "09-12-25" );
+   has_field 'start_date' => ( type => 'Datepicker', date_start => "2009-12-25" );
 
 =cut
 
-has 'format' => ( is => 'rw', isa => 'Str' );
-has 'jformat' => ( is => 'rw', isa => 'Str', default => "yy-mm-dd" );
+has 'format' => ( is => 'rw', isa => 'Str', default => "%Y-%m-%d" );
 has 'locale' => ( is => 'rw', isa => 'Str' ); # TODO
 has 'time_zone' => ( is => 'rw' , isa => 'Str' ); # TODO
 has 'date_start' => ( is => 'rw', isa => 'Str', clearer => 'clear_date_start' );
@@ -115,8 +114,9 @@ sub get_strf_format
 {
    my $self = shift;
 
-   return $self->format if $self->format;
-   my $format = $self->jformat;
+   # if contains %, then it's a strftime format
+   return $self->format if $self->format =~ /\%/; 
+   my $format = $self->format;
    foreach my $dpf ( reverse sort keys %{$dp_to_dt} )
    {
       my $strf = $dp_to_dt->{$dpf};

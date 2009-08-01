@@ -1,3 +1,7 @@
+0.27002 Sat Aug 2, 2009
+    Fix missing dependency on DateTime::Format::Strptime
+    Doc tweaks
+
 0.27001 Fri July 31, 2009
     Doc fixes, fix Date field.
 
