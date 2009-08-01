@@ -236,7 +236,7 @@ calling the form field's widget method.
 
    <input type="[% form.field('Save').widget %]">
 
-For more information see L<HTML::FormHandler::Field>'s widget method.
+For more information see L<HTML::FormHandler::Field/widget>'s widget method.
 
 If you want all your forms to have a submit button definition, you can put this
 in a base Form class. Or create a Moose::Role and group a number of similar
