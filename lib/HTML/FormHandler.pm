@@ -375,22 +375,36 @@ of different places in which validation can be performed.
 
 =head3 Apply actions
 
-The 'actions' array contains a sequence of transformations, constraints
-(including Moose type constraints) which will be applied in order. The
-current value of the field is passed in to the subroutines, but it has
-no access to other field information.  This is probably the best place to
-put constraints and transforms if all that is needed is the current value.
-The L<HTML::FormHandler::Field::Compound> fields receive as value
-a hash containing values of their child fields - this may be used for
-easy creation of objects (like DateTime).
-See L<HTML::FormHandler::Field/apply> for more documentation.
+The 'apply' array contains a sequence of 'actions' which will be applied in
+order.  An 'action' is either a constraint or transformation.
 
-   has_field 'test' => ( apply => [ 'MyConstraint',
-                         { check => sub {... },
-                           message => '....' },
-                         { transform => sub { ... },
-                           message => '....' }
-                         ] );
+Constraints and transformations are a 'check' anonymous sub routine, and a
+'message'.  Contraints can alternatively be a Moose type that the field value
+must validate against.
+
+The current value of the field is passed to the subroutine but no other field
+information is available.  So this is probably the best place for constraints
+and transforms that require only the current field value.  If you need access
+to other field values, see the validate method below.
+
+The value passed to L<HTML::FormHandler::Field::Compound> fields is a hash
+containing values of their child fields - this may be used for easy creation of
+objects (like DateTime).  See L<HTML::FormHandler::Field/apply>.
+
+   has_field 'test' => ( apply => [
+      'MyConstraint', # A Moose type, such as 'Str' or 'Int'
+      {
+         check => sub {
+           return 1; # field is valid
+           return 0; # field is invalid
+         },
+         message => 'foo', # returned if the field is invalid
+      },
+      {
+         transform => sub { ... },
+         message => '....'
+      }
+   ] );
 
 =head3 Field class validate method
 
