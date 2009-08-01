@@ -7,7 +7,7 @@ use DateTime::Format::Strptime;
 
 =head1 NAME
 
-HTML::FormHandler::Date - a date field with formats 
+HTML::FormHandler::Field::Date - a date field with formats 
 
 =head1 SUMMARY
 
