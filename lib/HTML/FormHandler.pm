@@ -375,12 +375,16 @@ of different places in which validation can be performed.
 
 =head3 Apply actions
 
-The 'actions' array contains a sequence of transformations, constraints
-(including Moose type constraints) which will be applied in order. The
-current value of the field is passed in to the subroutines, but it has
-no access to other field information.  This is probably the best place to
-put constraints and transforms if all that is needed is the current value.
-The L<HTML::FormHandler::Field::Compound> fields receive as value
+The 'actions' array contains a sequence of transformations and constraints
+(including Moose type constraints) which will be applied in order. The 'apply'
+sugar is used to add to the actions array in field classes. In a field definition
+elements of the 'apply' array will added to the 'actions' array. 
+
+The current value of the field is passed in to the subroutines, but it has
+no access to other field information. If you need more information to
+perform validation, you should use one of the other validation methods.
+
+L<HTML::FormHandler::Field::Compound> fields receive as value
 a hash containing values of their child fields - this may be used for
 easy creation of objects (like DateTime).
 See L<HTML::FormHandler::Field/apply> for more documentation.
