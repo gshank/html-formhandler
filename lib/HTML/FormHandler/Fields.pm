@@ -161,14 +161,21 @@ sub _process_field_list
 
    if ( ref $flist eq 'ARRAY' )
    {
-      $self->_process_field_array( $self->_array_fields( $flist ) );
+      my @flist_copy = @{$flist};
+      $self->_process_field_array( $self->_array_fields( \@flist_copy ) );
       return;
    };
+   my %flist_copy = %{$flist};
+   $flist = \%flist_copy;
    # these should go away. not really necessary
-   $self->_process_field_array( $self->_hashref_fields( $flist->{'required'}, 1 ) )
-      if $flist->{'required'};
-   $self->_process_field_array( $self->_hashref_fields( $flist->{'optional'}, 0 ) )
-      if $flist->{'optional'};
+   if( $flist->{'required'} || $flist->{'optional'} )
+   {
+      warn "the required => {} and optional => {}  field_list syntax is deprecated. please remove.";
+      $self->_process_field_array( $self->_hashref_fields( $flist->{'required'}, 1 ) )
+         if $flist->{'required'};
+      $self->_process_field_array( $self->_hashref_fields( $flist->{'optional'}, 0 ) )
+         if $flist->{'optional'};
+   }
    # don't encourage use of these two. functionality too limited.
    $self->_process_field_array( $self->model_fields ) if $self->fields_from_model;
    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_required'}, 1 ) )
