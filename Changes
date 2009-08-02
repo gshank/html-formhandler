@@ -1,3 +1,6 @@
+0.27003 Sat Aug 2, 2009
+    Indexing failure missing version in Date
+
 0.27002 Sat Aug 2, 2009
     Fix missing dependency on DateTime::Format::Strptime
     Doc tweaks

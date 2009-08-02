@@ -4,6 +4,7 @@ use Moose;
 extends 'HTML::FormHandler::Field';
 use DateTime;
 use DateTime::Format::Strptime;
+our $VERSION = '0.02';
 
 =head1 NAME
 
