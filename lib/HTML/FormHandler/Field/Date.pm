@@ -32,16 +32,16 @@ or DateTime strftime formats. (Default format is yy-mm-dd.)
 
 For example:  
 
-   has_field 'start_date' => ( type => 'Datepicker', jformat => "dd/mm/y" );
+   has_field 'start_date' => ( type => 'Date', jformat => "dd/mm/y" );
 
 or
 
-   has_field 'start_date' => ( type => 'Datepicker', format => "%d/%m/%y" );
+   has_field 'start_date' => ( type => 'Date', format => "%d/%m/%y" );
 
 You can also set 'date_end' and 'date_start' attributes for validation
 of the date range. Use iso_8601 formats for these dates ("yy-mm-dd");
 
-   has_field 'start_date' => ( type => 'Datepicker', date_start => "09-12-25" );
+   has_field 'start_date' => ( type => 'Date', date_start => "09-12-25" );
 
 =cut
 
