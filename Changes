@@ -1,3 +1,13 @@
+0.27003 Sat Aug 2, 2009
+    Indexing failure missing version in Date
+
+0.27002 Sat Aug 2, 2009
+    Fix missing dependency on DateTime::Format::Strptime
+    Doc tweaks
+
+0.27001 Fri July 31, 2009
+    Doc fixes, fix Date field.
+
 0.27 Sat July 25, 2009
     Split HTML::FormHandler::Model::DBIC into separate distribution
     Add 'inactive' flag. Cleanup Makefile.PL. 'size' split into 'size' and

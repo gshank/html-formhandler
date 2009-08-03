@@ -31,7 +31,7 @@ and use them to perform field validation.
 
 The L<HTML::FormHandler::Model::DBIC> package includes a working 
 example using a SQLite database and a number of forms in the test directory.
-You can execute the sample from a downloaded distribution package with:
+You can execute the sample from a downloaded DBIC model distribution package with:
 
    perl -Ilib t/script/bookdb_server.pl
 
@@ -46,6 +46,7 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     package MyApp:Form::User;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Model::DBIC';
+    with 'HTML::FormHandler::Render::Simple'; # if you want to render the form
 
     # Associate this form with a DBIx::Class result class
     # Or 'item_class' can be passed in on 'new', or you
@@ -78,7 +79,7 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
         }
     );
 
-For many forms, if L<HTML::FormHandler::Render:Simple> is included as a form role,
+For many forms, if L<HTML::FormHandler::Render::Simple> is included as a form role,
 you can render a simple form for scaffolding:
 
     [% form.render %]
@@ -95,7 +96,7 @@ Using a template, for an input field:
    <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
    </p>
 
-The value can come from the hash returned by $form->fif, from the 'fif'
+The value can come from the hash returned by C<< $form->fif >>, from the 'fif'
 attribute of the field, or can be supplied by FillInForm and the
 L<Catalyst::View::FillInForm> role on your view class.
 Plain HTML works fine for a simple input field if you use FillInForm to
@@ -137,10 +138,8 @@ A multiple select list where 'hobbies' is a 'many_to_many' pseudo-relationship.
 In a Catalyst controller:
 
     package MyApp::Controller::User;
-    BEGIN {
-       use Moose;
-       extends 'Catalyst::Controller';
-    }
+    use Moose;
+    BEGIN { extends 'Catalyst::Controller' }
     has 'form' => ( isa => 'MyApp::Form::User', is => 'rw',
         lazy => 1, default => sub { MyApp::Form::User->new } );
 
@@ -160,6 +159,12 @@ In a Catalyst controller:
 
 With the DBIC model the schema is set from the 'item' (row object)
 passed in, or from the primary key ('item_id') and schema. 
+You might also want to pass in the 'action' to which the form will
+be submitted if you're using FormHandler's renderer and if it's important 
+to pass XHTML validation:
+
+   $form->process( action => <valid url>, item => $row,
+        params => $c->req->params );
 
 The example above uses persistent forms in a Moose attribute. The
 'process' method will clear out non-persistent form values and
@@ -522,6 +527,25 @@ If you need to access form attributes such as the schema, the 'set_validate'
 subroutine may be preferable, but most validations can be performed using
 either method.
 
+=head2 Inflation/deflation
+
+The most common object that needs inflation and deflation is a DateTime
+field, such as would come from a DBIC result class if you are using
+the InflateColumn plugin, but it could be any object, such as a Duration.
+
+Inflation can be done in one of the 'actions' that are applied to the field
+class or in any place that validation is done, though it is probably better
+to do it in a field class. Usually the form's validate_<field_name> methods
+should expect to get the already inflated value (unless inflation failed).
+
+Deflation is done to convert the object that is retrieved from the model to 
+a format that can be displayed in an HTML form. Deflation is always performed
+when retrieving from the initial object. If an input value exists for a field
+that value is usually used to re-display the field, and deflation is NOT
+performed, unless the 'fif_from_value' flag is set for the field. (See
+L<HTML::FormHandler::Field>). This might be desirable if you want to
+canonicalize the entered data into a standard form. 
+
 =head2 Creating custom fields
 
 Subclass a custom field from L<HTML::FormHandler::Field>, or one of the
@@ -535,8 +559,8 @@ L<HTML::FormHandler::Field::Email>, for example.
 
 If the field's value will be an object instead of a simple scalar, such
 as a DateTime and you want to use the transformed value to fill in the
-form, then you will also need a deflation to reformat
-the object into a form suitable for an HTML form field.
+form, then you will also need a deflation or field class 'deflate' method
+to reformat the object into a form suitable for an HTML form field.
 
 Some custom fields might only require setting certain attributes to
 defaults, such as the L<HTML::FormHandler::Field::Hour> field, which

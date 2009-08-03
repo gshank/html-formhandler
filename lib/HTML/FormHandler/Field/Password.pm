@@ -13,7 +13,7 @@ HTML::FormHandler::Field::Password - Input a password
 The password field has a default minimum length of 6, which can be
 easily changed:
 
-  has_field 'password' => ( type => 'Password', min_length => 7 );
+  has_field 'password' => ( type => 'Password', minlength => 7 );
 
 It does not come with additional default checks, since password
 requirements vary so widely. There are a few constraints in the
