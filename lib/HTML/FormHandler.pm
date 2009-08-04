@@ -27,7 +27,7 @@ An example of a form class:
     package MyApp::Form::User;
 
     use HTML::FormHandler::Moose;
-    extends 'HTML::FormHandler::Model::DBIC';
+    extends 'HTML::FormHandler';
 
     has '+item_class' => ( default => 'User' );
 
