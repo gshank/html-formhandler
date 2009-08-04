@@ -87,10 +87,10 @@ sub validate
    my $format = $self->get_strf_format;
    my $strp = DateTime::Format::Strptime->new( pattern => $format ); 
 
-   my $dt = $strp->parse_datetime($self->value);
+   my $dt = eval { $strp->parse_datetime($self->value) };
    unless ($dt)
    {
-      $self->add_error($strp->errmsg);
+      $self->add_error($strp->errmsg || $@);
       return;
    }
    $self->value($dt);
