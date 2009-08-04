@@ -464,13 +464,16 @@ transform.
 
 Trimming is performed before any other defined actions.
 
-=head2 deflation
+=head2 deflation, deflate
 
-A coderef that will convert from an inflated value back to a flat
-data representation suitable for displaying in an HTML field.
-Usually the fif string is taken straight from the input string if
-it exists, so if you want to use a deflated value instead, set
-the 'fif_from_value' flag on the field.
+A 'deflation' is a coderef that will convert from an inflated value back to a 
+flat data representation suitable for displaying in an HTML field.
+A deflation is automatically used for data that is taken from the database.
+For the fill-in-form value (fif) usually the fif string is taken straight from 
+the input string if it exists, so if you want to use a deflated value instead, set
+the 'fif_from_value' flag on the field. Normally you'd only need to do that if
+you want to 'canonicalize' the entered data, such as if a user enters '09' for
+the year and you want to re-display it as '2009'.
 
    has_field 'my_date_time' => (
       type => 'Compound',
@@ -481,6 +484,11 @@ the 'fif_from_value' flag on the field.
    has_field 'my_date_time.year' => ( fif_from_value => 1 );
    has_field 'my_date_time.month';
    has_field 'my_date_time.day' => ( fif_from_value => 1 );
+
+You can also use a 'deflate' method in a custom field class. See the Date field
+for an example. If the deflation requires data that may vary (such as a format)
+string and thus needs access to 'self', you would need to use the deflate method
+since the deflation coderef is only passed the current value of the field
 
 =head1 Processing and validating the field
 
@@ -531,7 +539,7 @@ sub fif {
    my $parent = $self->parent;
    if ( defined $parent &&
       $parent->isa('HTML::FormHandler::Field') &&
-      $parent->has_deflation )
+      ( $parent->has_deflation || $parent->can('deflate') ) )
    {
       my $parent_fif = $parent->fif;
       if( ref $parent_fif eq 'HASH' &&
@@ -762,6 +770,10 @@ sub _apply_deflation
    if( $self->has_deflation )
    {
       $value = $self->deflation->($value);
+   }
+   elsif( $self->can('deflate') )
+   {
+      $value = $self->deflate;
    }
    return $value;
 }

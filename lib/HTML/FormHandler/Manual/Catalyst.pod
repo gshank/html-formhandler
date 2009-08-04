@@ -27,9 +27,7 @@ by both the create and edit actions.
    package BookDB::Controller::Borrower;
 
    use Moose;
-   BEGIN {
-      extends 'Catalyst::Controller';
-   }
+   BEGIN { extends 'Catalyst::Controller' }
 
    sub borrower_base : Chained PathPart('borrower') CaptureArgs(0) { }
 

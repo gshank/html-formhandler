@@ -8,16 +8,11 @@
 .gitignore$
 ^*.tar.gz$
 ^HTML-FormHandler-*/
-^t/00create_db.t
 ^*.bak$
 ^.perltidyrc$
-^lib/DBIx*
 ^*.old$
 ^*.new$
-^NONE$
 ^dev_notes.txt$
 ^*.Captcha.pm$
 ^t/captcha.t$
-^Date.pm$
-^t/db/book.db$
-
+^*.File.pm$

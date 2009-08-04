@@ -11,7 +11,7 @@ HTML::FormHandler::Field::Submit - submit field
 
 Use this field to declare a submit field in your form.
 
-   has_field 'submit' => ( type => Submit', value => 'Save' );
+   has_field 'submit' => ( type => 'Submit', value => 'Save' );
 
 It will be used by L<HTML::FormHandler::Render::Simple> to construct
 a form with C<< $form->render >>.
