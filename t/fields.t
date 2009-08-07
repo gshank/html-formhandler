@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 177;
+use Test::More;
 
 #
 # Boolean
@@ -475,3 +475,4 @@ $field->input( 2100 );
 $field->validate_field;
 ok( $field->has_errors, '2100 makes the author really old' );
 
+done_testing;
