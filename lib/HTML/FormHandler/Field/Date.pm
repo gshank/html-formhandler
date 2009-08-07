@@ -33,16 +33,16 @@ or DateTime strftime formats. (Default format is format => '%Y-%m-%d'.)
 
 For example:  
 
-   has_field 'start_date' => ( type => 'Datepicker', format => "dd/mm/y" );
+   has_field 'start_date' => ( type => 'Date', format => "dd/mm/y" );
 
 or
 
-   has_field 'start_date' => ( type => 'Datepicker', format => "%d/%m/%y" );
+   has_field 'start_date' => ( type => 'Date', format => "%d/%m/%y" );
 
 You can also set 'date_end' and 'date_start' attributes for validation
 of the date range. Use iso_8601 formats for these dates ("yyyy-mm-dd");
 
-   has_field 'start_date' => ( type => 'Datepicker', date_start => "2009-12-25" );
+   has_field 'start_date' => ( type => 'Date', date_start => "2009-12-25" );
 
 =cut
 
@@ -87,10 +87,10 @@ sub validate
    my $format = $self->get_strf_format;
    my $strp = DateTime::Format::Strptime->new( pattern => $format ); 
 
-   my $dt = $strp->parse_datetime($self->value);
+   my $dt = eval { $strp->parse_datetime($self->value) };
    unless ($dt)
    {
-      $self->add_error($strp->errmsg);
+      $self->add_error($strp->errmsg || $@);
       return;
    }
    $self->value($dt);
