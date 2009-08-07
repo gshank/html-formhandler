@@ -57,7 +57,7 @@ sub render_end
 
 sub render_field_struct
 {
-   my ( $self, $field, $method, $class ) = @_;
+   my ( $self, $field, $rendered_field, $class ) = @_;
    my $output = qq{\n<tr$class>};
    my $l_type = defined $self->get_label_type( $field->widget ) ? $self->get_label_type( $field->widget ) : '';
    if( $l_type eq 'label' ){
@@ -69,7 +69,7 @@ sub render_field_struct
    if( $l_type ne 'legend' ){
        $output .= '<td>';
    }
-   $output .= $self->$method($field);
+   $output .= $rendered_field; 
    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
    if( $l_type ne 'legend' ){
        $output .= "</td></tr>\n";

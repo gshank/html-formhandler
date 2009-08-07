@@ -816,6 +816,17 @@ sub value_changed
 
 sub required_text { shift->required ? 'required' : 'optional' }
 
+sub render
+{
+   my $self = shift;
+   return "<p>No form available to field " . $self->name . "</p>"
+       unless $self->form;
+   my $form_render_method = "render_" . $self->widget;
+   return "<p>No render method available for field " . $self->name . "<p>"
+       unless $self->form->can($form_render_method); 
+   return $self->form->$form_render_method;
+}
+
 sub dump
 {
    my $self = shift;

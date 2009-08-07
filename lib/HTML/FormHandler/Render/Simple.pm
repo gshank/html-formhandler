@@ -178,22 +178,28 @@ sub render_field {
     die "must pass field to render_field"
        unless( defined $field && $field->isa('HTML::FormHandler::Field') );
     return '' if $field->widget eq 'no_render';
-    my $field_method = 'render_' . $field->widget;
-    die "Widget method $field_method not implemented in H::F::Render::Simple"
-      unless $self->can($field_method);
+    my $rendered_field;
+    if( $field->widget eq 'from_field' ) {
+        $rendered_field = $field->render;
+    }
+    else {
+       my $form_render = 'render_' . $field->widget;
+       die "Widget method $form_render not implemented in H::F::Render::Simple"
+         unless $self->can($form_render);
+       $rendered_field = $self->$form_render($field);
+    }
     my $class = '';
-    if( $field->css_class || $field->has_errors )
-    {
+    if( $field->css_class || $field->has_errors ) {
        $class .= ' class="';
        $class .= $field->css_class . ' ' if $field->css_class;
        $class .= ' error"' if $field->has_errors;
     }
-    return $self->render_field_struct($field, $field_method, $class);
+    return $self->render_field_struct($field, $rendered_field, $class);
 }
 
 sub render_field_struct
 {
-   my ( $self, $field, $method, $class ) = @_;
+   my ( $self, $field, $rendered_field, $class ) = @_;
    my $output = qq{\n<div$class>};
    my $l_type = defined $self->get_label_type( $field->widget ) ? $self->get_label_type( $field->widget ) : '';
    if( $l_type eq 'label' ){
@@ -203,7 +209,7 @@ sub render_field_struct
        $output .= '<fieldset class="' . $field->html_name . '">';
        $output .= '<legend>' . $field->label . '</legend>';
    }
-   $output .= $self->$method($field);
+   $output .= $rendered_field;
    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
    if( $l_type eq 'legend' ){
        $output .= '</fieldset>';
