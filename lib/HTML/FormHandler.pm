@@ -26,7 +26,6 @@ An example of a form class:
 
     package MyApp::Form::User;
 
-    use MooseX::Types;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
@@ -122,15 +121,15 @@ control of what, where, and how much is done automatically.
 You can split the pieces of your forms up into logical parts and compose
 complete forms from FormHandler classes, roles, fields, collections of
 validations, transformations and Moose type constraints.
-You can write custom methods to process forms, add any attribute you like, 
-use Moose method modifiers.  FormHandler forms are Perl classes, so there's 
+You can write custom methods to process forms, add any attribute you like,
+use Moose method modifiers.  FormHandler forms are Perl classes, so there's
 a lot of flexibility in what you can do.
 
 HTML::FormHandler does not (yet) provide a complex HTML generating facility,
 but a simple, straightforward rendering role is provided by
 L<HTML::FormHandler::Render::Simple>, which will output HTML formatted
 strings for a field or a form. L<HTML::FormHandler::Render::Table> will
-display the form using an HTML table layout.  There are also sample Template 
+display the form using an HTML table layout.  There are also sample Template
 Toolkit widget files, documented at L<HTML::FormHandler::Manual::Templates>.
 
 The typical application for FormHandler would be in a Catalyst, DBIx::Class,
@@ -187,7 +186,7 @@ Examples of creating a form object with new:
         ],
     );
 
-See the model class for more information about the 'item', 'item_id', 
+See the model class for more information about the 'item', 'item_id',
 'item_class', and schema (for the DBIC model).
 L<HTML::FormHandler::Model::DBIC>.
 
@@ -216,7 +215,7 @@ If it is a database form and the form validates, the database row
 will be updated.
 
 After the form has been processed, you can get a parameter hashref suitable
-for using to fill in the form from C<< $form->fif >>. 
+for using to fill in the form from C<< $form->fif >>.
 A hash of inflated values (that would be used to update the database for
 a database form) can be retrieved with C<< $form->value >>.
 
@@ -225,7 +224,7 @@ a database form) can be retrieved with C<< $form->value >>.
 Parameters are passed in or already set when you call 'process'.
 HFH gets data to validate and store in the database from the params hash.
 If the params hash is empty, no validation is done, so it is not necessary
-to check for POST before calling C<< $form->process >>. 
+to check for POST before calling C<< $form->process >>.
 
 Params can either be in the form of CGI/HTTP style params:
 
@@ -300,7 +299,7 @@ values hash will transform the fields with numbers to arrays.
 
 Fields are declared with a number of attributes which are defined in
 L<HTML::FormHandler::Field>. If you want additional attributes you can
-define your own field classes (or apply a role to a field class - see 
+define your own field classes (or apply a role to a field class - see
 L<HTML::FormHandler::Manual::Cookbook>). The field 'type' (used in field
 definitions) is the short class name of the field class.
 
@@ -333,13 +332,13 @@ add fields to the form depending on some other state.
    sub field_list {
       my $self = shift;
       my $fields = $self->schema->resultset('SomeTable')->
-                          search({user_id => $self->user_id, .... });    
+                          search({user_id => $self->user_id, .... });
       my @field_list;
       while ( my $field = $fields->next )
       {
          < create field list >
       }
-      return \@field_list; 
+      return \@field_list;
    }
 
 
@@ -378,7 +377,7 @@ of different places in which validation can be performed.
 The 'actions' array contains a sequence of transformations and constraints
 (including Moose type constraints) which will be applied in order. The 'apply'
 sugar is used to add to the actions array in field classes. In a field definition
-elements of the 'apply' array will added to the 'actions' array. 
+elements of the 'apply' array will added to the 'actions' array.
 
 The current value of the field is passed in to the subroutines, but it has
 no access to other field information. If you need more information to
@@ -399,14 +398,14 @@ See L<HTML::FormHandler::Field/apply> for more documentation.
 =head3 Field class validate method
 
 The 'validate' method can be used in custom field classes to perform additional
-validation.  It has access to the field ($self).  This method is called after the 
+validation.  It has access to the field ($self).  This method is called after the
 actions are performed.
 
 =head3 Form class validation for individual fields
 
 You can define a method in your form class to perform validation on a field.
 This method is the equivalent of the field class validate method except it is
-in the form class, so you might use this 
+in the form class, so you might use this
 validation method if you don't want to create a field subclass.
 
 It has access to the form ($self) and the field.
@@ -750,7 +749,7 @@ sub validate_form
    $self->_set_dependency;    # set required dependencies
    $self->input( $params );
    $self->process_node; # build and validate
-   $self->_apply_actions; 
+   $self->_apply_actions;
    $self->validate();
    # model specific validation
    $self->validate_model;
