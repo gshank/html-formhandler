@@ -2,7 +2,8 @@ package HTML::FormHandler;
 
 use Moose;
 use MooseX::AttributeHelpers;
-with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields', 'HTML::FormHandler::TransformAndCheck';
+with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
+   'HTML::FormHandler::TransformAndCheck';
 
 use Carp;
 use Locale::Maketext;
@@ -558,14 +559,19 @@ has 'name' => (
    default => sub { return 'form' . int( rand 1000 ) }
 );
 # for consistency in api with field nodes
-has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1,
-   lazy => 1, default => sub { shift });
+has 'form' => (
+   isa      => 'HTML::FormHandler',
+   is       => 'rw',
+   weak_ref => 1,
+   lazy     => 1,
+   default  => sub { shift }
+);
 has 'parent' => ( is => 'rw' );
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 # flags
 has [ 'ran_validation', 'validated', 'verbose', 'processed', 'did_init_obj' ] =>
-    ( isa => 'Bool', is => 'rw' );
+   ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
 # for Locale::MakeText
@@ -573,10 +579,10 @@ has 'language_handle' => (
    is      => 'rw',
    builder => 'build_language_handle'
 );
-has 'html_prefix' => ( isa => 'Bool', is => 'rw' );
-has 'active_column' => ( isa => 'Str', is => 'rw' );
-has 'http_method' => ( isa => 'Str', is => 'rw', default => 'post' );
-has 'enctype' => (is => 'rw', isa => 'Str', default => 'application/x-www-form-urlencoded');
+has 'html_prefix'   => ( isa => 'Bool', is => 'rw' );
+has 'active_column' => ( isa => 'Str',  is => 'rw' );
+has 'http_method'   => ( isa => 'Str',  is => 'rw', default => 'post' );
+has 'enctype' => ( is => 'rw', isa => 'Str', default => 'application/x-www-form-urlencoded' );
 has 'action' => ( is => 'rw' );
 has 'submit' => ( is => 'rw' );
 has 'params' => (
@@ -612,10 +618,9 @@ sub BUILDARGS
 {
    my $class = shift;
 
-   if ( @_ == 1 )
-   {
+   if ( @_ == 1 ) {
       my $id = $_[0];
-      return { item => $id, item_id => $id->id } if (blessed $id);
+      return { item => $id, item_id => $id->id } if ( blessed $id);
       return { item_id => $id };
    }
    return $class->SUPER::BUILDARGS(@_);
@@ -628,12 +633,10 @@ sub BUILD
    $self->_build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)
-   if( $self->init_object || $self->item )
-   {
+   if ( $self->init_object || $self->item ) {
       $self->_init_from_object( $self, $self->init_object || $self->item );
    }
-   else
-   {
+   else {
       $self->_init;
    }
    $self->dump_fields if $self->verbose;
@@ -642,9 +645,9 @@ sub BUILD
 
 sub build_language_handle
 {
-   my $lh = $ENV{LANGUAGE_HANDLE}
-      || HTML::FormHandler::I18N->get_handle
-      || die "Failed call to Locale::Maketext->get_handle";
+   my $lh = $ENV{LANGUAGE_HANDLE} ||
+      HTML::FormHandler::I18N->get_handle ||
+      die "Failed call to Locale::Maketext->get_handle";
    return $lh;
 }
 
@@ -656,8 +659,8 @@ sub process
    $self->clear if $self->processed;
    $self->setup_form(@_);
    $self->validate_form if $self->has_params;
-   $self->update_model if $self->validated;
-   $self->dump_fields if $self->verbose;
+   $self->update_model  if $self->validated;
+   $self->dump_fields   if $self->verbose;
    $self->processed(1);
    return $self->validated;
 }
@@ -665,8 +668,8 @@ sub process
 sub db_validate
 {
    my $self = shift;
-   my $fif = $self->fif;
-   $self->process( $fif );
+   my $fif  = $self->fif;
+   $self->process($fif);
    return $self->validated;
 }
 
@@ -694,26 +697,22 @@ sub fif
 {
    my ( $self, $prefix, $node ) = @_;
 
-   if ( !defined $node )
-   {
+   if ( !defined $node ) {
       $node   = $self;
       $prefix = '';
       $prefix = $self->name . "." if $self->html_prefix;
    }
    my %params;
-   foreach my $field ( $node->fields )
-   {
+   foreach my $field ( $node->fields ) {
       next if ( $field->inactive || $field->password );
       my $fif = $field->fif;
       next unless defined $fif;
-      if ( $field->DOES('HTML::FormHandler::Fields') )
-      {
+      if ( $field->DOES('HTML::FormHandler::Fields') ) {
          my $next_params = $self->fif( $prefix . $field->name . '.', $field );
          next unless $next_params;
          %params = ( %params, %{$next_params} );
       }
-      else
-      {
+      else {
          $params{ $prefix . $field->name } = $fif;
       }
    }
@@ -748,11 +747,11 @@ sub uuid
 
 sub validate_form
 {
-   my $self = shift;
+   my $self   = shift;
    my $params = $self->params;
    $self->_set_dependency;    # set required dependencies
-   $self->input( $params );
-   $self->process_node; # build and validate
+   $self->input($params);
+   $self->process_node;       # build and validate
    $self->_apply_actions;
    $self->validate();
    # model specific validation
@@ -760,7 +759,7 @@ sub validate_form
    $self->_clear_dependency;
    $self->get_error_fields;
    $self->ran_validation(1);
-   $self->validated( $self->num_errors == 0  );
+   $self->validated( $self->num_errors == 0 );
    $self->dump_validated if $self->verbose;
    return $self->validated;
 }
@@ -770,35 +769,28 @@ sub num_errors { shift->num_error_fields }
 
 sub setup_form
 {
-   my ($self, @args) = @_;
-   if( @args == 1 )
-   {
+   my ( $self, @args ) = @_;
+   if ( @args == 1 ) {
       $self->params( $args[0] );
    }
-   elsif ( @args > 1 )
-   {
+   elsif ( @args > 1 ) {
       my $hashref = {@args};
-      while ( my ($key, $value) = each %{$hashref} )
-      {
+      while ( my ( $key, $value ) = each %{$hashref} ) {
          $self->$key($value) if $self->can($key);
       }
    }
-   if( $self->item_id && !$self->item )
-   {
-      $self->item( $self->build_item);
+   if ( $self->item_id && !$self->item ) {
+      $self->item( $self->build_item );
    }
    # initialization of Repeatable fields and Select options
    # will be done in init_object when there's an initial object
    # in validation routines when there are params
    # and by _init for empty forms
-   if( !$self->did_init_obj )
-   {
-      if( $self->init_object || $self->item )
-      {
+   if ( !$self->did_init_obj ) {
+      if ( $self->init_object || $self->item ) {
          $self->_init_from_object( $self, $self->init_object || $self->item );
       }
-      elsif ( !$self->has_params )
-      {
+      elsif ( !$self->has_params ) {
          # no initial object. empty form form must be initialized
          $self->_init;
       }
@@ -813,39 +805,33 @@ sub _init_from_object
    return unless $item;
    warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
    my $my_value;
-   for my $field ( $node->fields )
-   {
+   for my $field ( $node->fields ) {
       next if $field->parent && $field->parent != $node;
       next if $field->writeonly;
       next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
       #      $value = $field->_apply_deflations( $value );
-      if ( $field->isa('HTML::FormHandler::Field::Repeatable') )
-      {
-         $field->_init_from_object( $value );
+      if ( $field->isa('HTML::FormHandler::Field::Repeatable') ) {
+         $field->_init_from_object($value);
       }
-      elsif ( $field->isa('HTML::FormHandler::Field::Compound') )
-      {
+      elsif ( $field->isa('HTML::FormHandler::Field::Compound') ) {
          $self->_init_from_object( $field, $value );
          $field->value($value);
       }
-      else
-      {
-         if ( my @values = $field->get_init_value )
-         {
+      else {
+         if ( my @values = $field->get_init_value ) {
             my $values_ref = @values > 1 ? \@values : shift @values;
             $field->init_value($values_ref) if defined $values_ref;
             $field->value($values_ref)      if defined $values_ref;
          }
-         else
-         {
+         else {
             $self->init_value( $field, $value );
          }
          $field->_load_options if $field->can('_load_options');
       }
-      $my_value->{$field->name} = $field->value;
+      $my_value->{ $field->name } = $field->value;
    }
-   $self->value( $my_value );
+   $self->value($my_value);
    $self->did_init_obj(1);
 }
 
@@ -854,16 +840,13 @@ sub _get_value
    my ( $self, $field, $item ) = @_;
    my $accessor = $field->accessor;
    my @values;
-   if ( blessed($item) && $item->can($accessor))
-   {
+   if ( blessed($item) && $item->can($accessor) ) {
       @values = $item->$accessor;
    }
-   elsif ( exists $item->{$accessor} )
-   {
+   elsif ( exists $item->{$accessor} ) {
       @values = $item->{$accessor};
    }
-   else
-   {
+   else {
       return;
    }
    my $value = @values > 1 ? \@values : shift @values;
@@ -883,12 +866,10 @@ sub _set_dependency
 
    my $depends = $self->dependency || return;
    my $params = $self->params;
-   for my $group (@$depends)
-   {
+   for my $group (@$depends) {
       next if @$group < 2;
       # process a group of fields
-      for my $name (@$group)
-      {
+      for my $name (@$group) {
          # is there a value?
          my $value = $params->{$name};
          next unless defined $value;
@@ -896,21 +877,18 @@ sub _set_dependency
          # This is to allow requiring a field when a boolean is true.
          my $field = $self->field($name);
          next if $self->field($name)->type eq 'Boolean' && $value == 0;
-         if ( ref $value )
-         {
+         if ( ref $value ) {
             # at least one value is non-blank
             next unless grep { /\S/ } @$value;
          }
-         else
-         {
+         else {
             next unless $value =~ /\S/;
          }
          # one field was found non-blank, so set all to required
-         for (@$group)
-         {
+         for (@$group) {
             my $field = $self->field($_);
             next unless $field && !$field->required;
-            $self->add_required($field);        # save for clearing later.
+            $self->add_required($field);    # save for clearing later.
             $field->required(1);
          }
          last;
@@ -930,10 +908,9 @@ sub _munge_params
 {
    my ( $self, $params, $attr ) = @_;
    my $_fix_params = HTML::FormHandler::Params->new;
-   my $new_params = $_fix_params->expand_hash($params);
-   if ( $self->html_prefix )
-   {
-      $new_params = $new_params->{$self->name};
+   my $new_params  = $_fix_params->expand_hash($params);
+   if ( $self->html_prefix ) {
+      $new_params = $new_params->{ $self->name };
    }
    $new_params = {} if !defined $new_params;
    $self->{params} = $new_params;

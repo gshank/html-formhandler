@@ -10,49 +10,49 @@ my $tidy;
 
 has '+widget' => ( default => 'textarea' );
 
-sub validate {
-    my $field = shift;
+sub validate
+{
+   my $field = shift;
 
-    return unless $field->SUPER::validate;
+   return unless $field->SUPER::validate;
 
-    $tidy ||= $field->tidy;
-    $tidy->clear_messages;
+   $tidy ||= $field->tidy;
+   $tidy->clear_messages;
 
+   # parse doesn't pass the config file in HTML::Tidy.
+   $tidy->clean( $field->input );
 
-    # parse doesn't pass the config file in HTML::Tidy.
-    $tidy->clean( $field->input );
+   my $ok = 1;
 
-    my $ok = 1;
+   for ( $tidy->messages ) {
+      $field->add_error( $_->as_string );
+      $ok = 0;
+   }
 
-    for ( $tidy->messages ) {
-        $field->add_error( $_->as_string );
-        $ok = 0;
-    }
-
-    return $ok;
+   return $ok;
 }
-
 
 # Parses config file.  Do it once.
 
 my $tidy_config;
-sub tidy {
-    my $field = shift;
-    $tidy_config ||= $field->init_tidy;
-    my $t = HTML::Tidy->new( { config_file => $tidy_config } );
 
+sub tidy
+{
+   my $field = shift;
+   $tidy_config ||= $field->init_tidy;
+   my $t = HTML::Tidy->new( { config_file => $tidy_config } );
 
-    $t->ignore( text => qr/DOCTYPE/ );
-    $t->ignore( text => qr/missing 'title'/ );
-    # $t->ignore( type => TIDY_WARNING );
+   $t->ignore( text => qr/DOCTYPE/ );
+   $t->ignore( text => qr/missing 'title'/ );
+   # $t->ignore( type => TIDY_WARNING );
 
-    return $t;
+   return $t;
 }
 
+sub init_tidy
+{
 
-sub init_tidy {
-
-    my $tidy_conf = <<EOF;
+   my $tidy_conf = <<EOF;
 char-encoding: utf8
 input-encoding: utf8
 output-xhtml: yes
@@ -62,17 +62,13 @@ show-body-only: yes
 wrap: 45
 EOF
 
+   my $tidy_file = File::Temp->new( UNLINK => 1 );
+   print $tidy_file $tidy_conf;
+   close $tidy_file;
 
-
-    my $tidy_file = File::Temp->new( UNLINK => 1 );
-    print $tidy_file $tidy_conf;
-    close $tidy_file;
-
-    return $tidy_file;
-
+   return $tidy_file;
 
 }
-
 
 =head1 NAME
 

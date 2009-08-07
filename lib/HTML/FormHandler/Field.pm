@@ -516,9 +516,9 @@ errors with C<< $field->add_error >>.
 
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
-has 'init_value' => ( is => 'rw', clearer  => 'clear_init_value');
-has 'parent' => ( is => 'rw', predicate => 'has_parent' );
-has 'errors_on_parent' => ( isa => 'Bool', is => 'rw' );
+has 'init_value'       => ( is  => 'rw',   clearer   => 'clear_init_value' );
+has 'parent'           => ( is  => 'rw',   predicate => 'has_parent' );
+has 'errors_on_parent' => ( isa => 'Bool', is        => 'rw' );
 sub has_fields { }
 has 'input_without_param' => (
    is        => 'rw',
@@ -526,13 +526,15 @@ has 'input_without_param' => (
 );
 
 has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
-sub fif {
+
+sub fif
+{
    my $self = shift;
 
    return if $self->inactive;
-   return '' if $self->password; 
-   if ( ($self->has_input && !$self->fif_from_value) ||
-        ($self->fif_from_value && !defined $self->value) )
+   return '' if $self->password;
+   if ( ( $self->has_input && !$self->fif_from_value ) ||
+      ( $self->fif_from_value && !defined $self->value ) )
    {
       return defined $self->input ? $self->input : '';
    }
@@ -542,14 +544,13 @@ sub fif {
       ( $parent->has_deflation || $parent->can('deflate') ) )
    {
       my $parent_fif = $parent->fif;
-      if( ref $parent_fif eq 'HASH' &&
-      exists $parent_fif->{ $self->name } )
+      if ( ref $parent_fif eq 'HASH' &&
+         exists $parent_fif->{ $self->name } )
       {
          return $self->_apply_deflation( $parent_fif->{ $self->name } );
       }
    }
-   if ( defined $self->value )
-   {
+   if ( defined $self->value ) {
       return $self->_apply_deflation( $self->value );
    }
    return '';
@@ -573,37 +574,37 @@ has 'label' => (
    lazy    => 1,
    default => sub { ucfirst( shift->name ) },
 );
-has 'title' => ( isa => 'Str', is => 'rw' );
-has 'style' => ( isa => 'Str', is => 'rw' );
-has 'css_class' => ( isa => 'Str', is => 'rw' );
-has 'form' => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
+has 'title'     => ( isa => 'Str',               is => 'rw' );
+has 'style'     => ( isa => 'Str',               is => 'rw' );
+has 'css_class' => ( isa => 'Str',               is => 'rw' );
+has 'form'      => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
 has 'html_name' => (
    isa     => 'Str',
    is      => 'rw',
    lazy    => 1,
    builder => 'build_html_name'
 );
+
 sub build_html_name
 {
    my $self = shift;
-   my $prefix = ($self->form && $self->form->html_prefix) ?
-                                 $self->form->name . "." : '';
+   my $prefix = ( $self->form && $self->form->html_prefix ) ? $self->form->name . "." : '';
    return $prefix . $self->full_name;
 }
-has 'widget' => ( isa => 'Str', is => 'rw' );
-has 'order' => ( isa => 'Int', is => 'rw', default => 0 );
-has 'inactive' => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
-has 'unique' => ( isa => 'Bool', is => 'rw' );
-has 'unique_message' => ( isa => 'Str', is => 'rw' );
-has 'id' => ( isa => 'Str', is => 'rw', lazy => 1, builder => 'build_id' );
+has 'widget'         => ( isa => 'Str',  is => 'rw' );
+has 'order'          => ( isa => 'Int',  is => 'rw', default => 0 );
+has 'inactive'       => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
+has 'unique'         => ( isa => 'Bool', is => 'rw' );
+has 'unique_message' => ( isa => 'Str',  is => 'rw' );
+has 'id'             => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id { shift->html_name }
-has 'javascript' => ( isa => 'Str', is => 'rw' );
-has 'password' => ( isa => 'Bool', is => 'rw' );
-has 'writeonly' => ( isa => 'Bool', is => 'rw' );
-has 'disabled' => ( isa => 'Bool', is => 'rw' );
-has 'readonly' => ( isa => 'Bool', is => 'rw' );
-has 'noupdate' => ( isa => 'Bool', is => 'rw' );
-has 'errors' => (
+has 'javascript' => ( isa => 'Str',  is => 'rw' );
+has 'password'   => ( isa => 'Bool', is => 'rw' );
+has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
+has 'disabled'   => ( isa => 'Bool', is => 'rw' );
+has 'readonly'   => ( isa => 'Bool', is => 'rw' );
+has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
+has 'errors'     => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef[Str]',
    is         => 'rw',
@@ -628,15 +629,17 @@ has 'set_validate' => (
       return 'validate_' . $name;
    }
 );
+
 sub _can_validate
 {
    my $self = shift;
    return
-      unless $self->form
-         && $self->set_validate
-         && $self->form->can( $self->set_validate );
+      unless $self->form &&
+         $self->set_validate &&
+         $self->form->can( $self->set_validate );
    return 1;
 }
+
 sub _validate
 {
    my $self = shift;
@@ -655,54 +658,57 @@ has 'set_init' => (
       return 'init_value_' . $name;
    }
 );
+
 sub _can_init_value
 {
    my $self = shift;
    return
-      unless $self->form
-         && $self->set_init
-         && $self->form->can( $self->set_init );
+      unless $self->form &&
+         $self->set_init &&
+         $self->form->can( $self->set_init );
    return 1;
 }
+
 sub get_init_value
 {
    my $self = shift;
    return unless $self->_can_init_value;
    my $meth = $self->set_init;
-   $self->form->$meth($self, $self->form->item);
+   $self->form->$meth( $self, $self->form->item );
 }
 has 'deflation' => (
-   is         => 'rw',
-   predicate  => 'has_deflation',
+   is        => 'rw',
+   predicate => 'has_deflation',
 );
-has 'trim' => ( isa => 'HashRef', is => 'rw',
-   default => sub {{
-      transform =>
-      sub {
-         my $value = shift;
-         return unless defined $value;
-         my @values = ref $value eq 'ARRAY' ? @$value : ($value);
-         for (@values)
-         {
-            next if ref $_;
-            s/^\s+//;
-            s/\s+$//;
-         }
-         return ref $value eq 'ARRAY' ? \@values : $values[0];
-      },
-   }}
+has 'trim' => (
+   isa     => 'HashRef',
+   is      => 'rw',
+   default => sub {
+      {
+         transform => sub {
+            my $value = shift;
+            return unless defined $value;
+            my @values = ref $value eq 'ARRAY' ? @$value : ($value);
+            for (@values) {
+               next if ref $_;
+               s/^\s+//;
+               s/\s+$//;
+            }
+            return ref $value eq 'ARRAY' ? \@values : $values[0];
+         },
+      };
+   }
 );
-
 
 sub BUILD
 {
    my ( $self, $params ) = @_;
 
-   $self->add_action($self->trim) if $self->trim;
+   $self->add_action( $self->trim ) if $self->trim;
    $self->_build_apply_list;
-   $self->add_action( @{$params->{apply}} ) if $params->{apply};
-   $self->set_validate; # to vivify
-   $self->set_init;     # to vivify
+   $self->add_action( @{ $params->{apply} } ) if $params->{apply};
+   $self->set_validate;    # to vivify
+   $self->set_init;        # to vivify
 
 }
 
@@ -712,8 +718,7 @@ sub _init
 {
    my $self = shift;
 
-   if ( my @values = $self->get_init_value )
-   {
+   if ( my @values = $self->get_init_value ) {
       my $value = @values > 1 ? \@values : shift @values;
       $self->init_value($value) if $value;
       $self->value($value)      if $value;
@@ -740,39 +745,34 @@ sub full_accessor
 
 sub add_error
 {
-   my ($self, @message) = @_;
+   my ( $self, @message ) = @_;
 
    my $lh;
-   unless( defined $message[0] )
-   {
+   unless ( defined $message[0] ) {
       @message = ('field is invalid');
    }
    # Running without a form object?
-   if ( $self->form )
-   {
+   if ( $self->form ) {
       $lh = $self->form->language_handle;
    }
-   else
-   {
-      $lh = $ENV{LANGUAGE_HANDLE}
-         || HTML::FormHandler::I18N->get_handle
-         || die "Failed call to Locale::Maketext->get_handle";
+   else {
+      $lh = $ENV{LANGUAGE_HANDLE} ||
+         HTML::FormHandler::I18N->get_handle ||
+         die "Failed call to Locale::Maketext->get_handle";
    }
    my $message = $lh->maketext(@message);
-   $self->push_errors( $message );
+   $self->push_errors($message);
    return;
 }
 
 sub _apply_deflation
 {
-   my ( $self, $value )  = @_;
+   my ( $self, $value ) = @_;
 
-   if( $self->has_deflation )
-   {
+   if ( $self->has_deflation ) {
       $value = $self->deflation->($value);
    }
-   elsif( $self->can('deflate') )
-   {
+   elsif ( $self->can('deflate') ) {
       $value = $self->deflate;
    }
    return $value;
@@ -782,7 +782,7 @@ sub _apply_deflation
 sub clone
 {
    my ( $self, %params ) = @_;
-   $self->meta->clone_object($self, %params);
+   $self->meta->clone_object( $self, %params );
 }
 
 sub clear_data
@@ -790,7 +790,7 @@ sub clear_data
    my $self = shift;
    $self->clear_input;
    $self->clear_value;
-#   $self->clear_fif;
+   #   $self->clear_fif;
    $self->clear_errors;
    $self->clear_init_value;
    $self->clear_other;
@@ -803,8 +803,7 @@ sub value_changed
    my ($self) = @_;
 
    my @cmp;
-   for ( 'init_value', 'value' )
-   {
+   for ( 'init_value', 'value' ) {
       my $val = $self->$_;
       $val = '' unless defined $val;
       push @cmp, join '|', sort
@@ -820,10 +819,10 @@ sub render
 {
    my $self = shift;
    return "<p>No form available to field " . $self->name . "</p>"
-       unless $self->form;
+      unless $self->form;
    my $form_render_method = "render_" . $self->widget;
    return "<p>No render method available for field " . $self->name . "<p>"
-       unless $self->form->can($form_render_method); 
+      unless $self->form->can($form_render_method);
    return $self->form->$form_render_method;
 }
 
@@ -846,8 +845,7 @@ sub dump
    my $fif = $self->fif;
    warn "HFH: fif: ", Data::Dumper::Dumper $fif if $fif;
 
-   if ( $self->can('options') )
-   {
+   if ( $self->can('options') ) {
       my $o = $self->options;
       warn "HFH: options: " . Data::Dumper::Dumper $o;
    }

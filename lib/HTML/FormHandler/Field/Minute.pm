@@ -4,10 +4,9 @@ use Moose;
 extends 'HTML::FormHandler::Field::IntRange';
 our $VERSION = '0.01';
 
-has '+range_start' => ( default => 0 );
-has '+range_end' => ( default => 59 );
+has '+range_start'  => ( default => 0 );
+has '+range_end'    => ( default => 59 );
 has '+label_format' => ( default => '%02d' );
-
 
 =head1 NAME
 
