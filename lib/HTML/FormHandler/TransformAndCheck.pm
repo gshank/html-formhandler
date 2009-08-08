@@ -34,7 +34,7 @@ has 'required_message' => (
 );
 has 'range_start' => ( isa => 'Int|Undef', is => 'rw', default => undef );
 has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
-has 'actions' => (
+has 'actions'     => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef',
    is         => 'rw',
@@ -60,25 +60,22 @@ sub test_ranges
    my $low  = $field->range_start;
    my $high = $field->range_end;
 
-   if ( defined $low && defined $high )
-   {
-      return $value >= $low && $value <= $high
-         ? 1
-         : $field->add_error( 'value must be between [_1] and [_2]', $low, $high );
+   if ( defined $low && defined $high ) {
+      return
+         $value >= $low && $value <= $high ? 1 :
+           $field->add_error( 'value must be between [_1] and [_2]', $low, $high );
    }
 
-   if ( defined $low )
-   {
-      return $value >= $low
-         ? 1
-         : $field->add_error( 'value must be greater than or equal to [_1]', $low );
+   if ( defined $low ) {
+      return
+         $value >= $low ? 1 :
+           $field->add_error( 'value must be greater than or equal to [_1]', $low );
    }
 
-   if ( defined $high )
-   {
-      return $value <= $high
-         ? 1
-         : $field->add_error( 'value must be less than or equal to [_1]', $high );
+   if ( defined $high ) {
+      return
+         $value <= $high ? 1 :
+           $field->add_error( 'value must be less than or equal to [_1]', $high );
    }
 
    return 1;
@@ -88,54 +85,47 @@ sub _build_apply_list
 {
    my $self = shift;
    my @apply_list;
-   foreach my $sc ( reverse $self->meta->linearized_isa )
-   {
+   foreach my $sc ( reverse $self->meta->linearized_isa ) {
       my $meta = $sc->meta;
-      if ( $meta->can('calculate_all_roles') )
-      {
-         foreach my $role ( $meta->calculate_all_roles )
-         {
-            if ( $role->can('apply_list') && $role->has_apply_list )
-            {
-               foreach my $apply_def ( @{ $role->apply_list} )
-               {
-                  my %new_apply = %{$apply_def}; # copy hashref
+      if ( $meta->can('calculate_all_roles') ) {
+         foreach my $role ( $meta->calculate_all_roles ) {
+            if ( $role->can('apply_list') && $role->has_apply_list ) {
+               foreach my $apply_def ( @{ $role->apply_list } ) {
+                  my %new_apply = %{$apply_def};    # copy hashref
                   push @apply_list, \%new_apply;
                }
             }
          }
       }
-      if ( $meta->can('apply_list') && $meta->has_apply_list )
-      {
-         foreach my $apply_def ( @{ $meta->apply_list} )
-         {
-            my %new_apply = %{$apply_def}; # copy hashref
+      if ( $meta->can('apply_list') && $meta->has_apply_list ) {
+         foreach my $apply_def ( @{ $meta->apply_list } ) {
+            my %new_apply = %{$apply_def};          # copy hashref
             push @apply_list, \%new_apply;
          }
       }
    }
-   $self->add_action( @apply_list );
+   $self->add_action(@apply_list);
 }
 
 sub has_some_value
 {
-    my $x = shift;
+   my $x = shift;
 
-    return unless defined $x;
-    return $x =~ /\S/ if ! ref $x;
-    if( ref $x eq 'ARRAY' ){
-        for my $elem ( @$x ){
-            return 1 if has_some_value( $elem );
-        }
-        return 0;
-    }
-    if( ref $x eq 'HASH' ){
-        for my $key ( keys %$x ){
-            return 1 if has_some_value( $x->{$key} );
-        }
-        return 0;
-    }
-    return blessed $x; # true if blessed, otherwise false
+   return unless defined $x;
+   return $x =~ /\S/ if !ref $x;
+   if ( ref $x eq 'ARRAY' ) {
+      for my $elem (@$x) {
+         return 1 if has_some_value($elem);
+      }
+      return 0;
+   }
+   if ( ref $x eq 'HASH' ) {
+      for my $key ( keys %$x ) {
+         return 1 if has_some_value( $x->{$key} );
+      }
+      return 0;
+   }
+   return blessed $x;    # true if blessed, otherwise false
 }
 
 sub input_defined
@@ -151,47 +141,43 @@ sub validate_field
 
    $field->clear_errors;
    # See if anything was submitted
-   if( $field->required && (!$field->has_input || !$field->input_defined) )
-   {
+   if ( $field->required && ( !$field->has_input || !$field->input_defined ) ) {
       $field->add_error( $field->required_message ) if ( $field->required );
-      $field->value(undef)                          if ( $field->has_input );
+      $field->value(undef) if ( $field->has_input );
       return;
    }
    elsif ( $field->DOES('HTML::FormHandler::Field::Repeatable') ) { }
-   elsif ( !$field->has_input )
-   {
+   elsif ( !$field->has_input ) {
       return;
    }
-   elsif( !$field->input_defined )
-   {
+   elsif ( !$field->input_defined ) {
       $field->value(undef);
       return;
    }
 
    # do building of node
-   if( $field->DOES('HTML::FormHandler::Fields') ){
-       $field->process_node;
+   if ( $field->DOES('HTML::FormHandler::Fields') ) {
+      $field->process_node;
    }
-   else
-   {
-       $field->value( $field->input );
+   else {
+      $field->value( $field->input );
    }
 
    $field->_inner_validate_field();
    $field->_apply_actions;
    $field->validate;
    $field->test_ranges;
-   $field->_validate($field) # form field validation method
-        if ($field->has_value && defined $field->value);
+   $field->_validate($field)    # form field validation method
+      if ( $field->has_value && defined $field->value );
 
    return !$field->has_errors;
 }
 
-sub _inner_validate_field {};
+sub _inner_validate_field { }
 
 sub _apply_actions
 {
-   my $self  = shift;
+   my $self = shift;
 
    my $error_message;
    local $SIG{__WARN__} = sub {
@@ -199,46 +185,36 @@ sub _apply_actions
       $error_message = $error;
       return 1;
    };
-   for my $action ( @{ $self->actions || [] } )
-   {
+   for my $action ( @{ $self->actions || [] } ) {
       $error_message = undef;
       # the first time through value == input
-      my $value = $self->value;
+      my $value     = $self->value;
       my $new_value = $value;
       # Moose constraints
-      if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' )
-      {
+      if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' ) {
          $action = { type => $action };
       }
-      if ( exists $action->{type} )
-      {
+      if ( exists $action->{type} ) {
          my $tobj;
-         if( ref $action->{type} eq 'MooseX::Types::TypeDecorator' )
-         {
+         if ( ref $action->{type} eq 'MooseX::Types::TypeDecorator' ) {
             $tobj = $action->{type};
          }
-         else
-         {
+         else {
             my $type = $action->{type};
-            $tobj = Moose::Util::TypeConstraints::find_type_constraint($type)
-               or die "Cannot find type constraint $type";
+            $tobj = Moose::Util::TypeConstraints::find_type_constraint($type) or
+               die "Cannot find type constraint $type";
          }
-         if ( $tobj->has_coercion && $tobj->validate($value) )
-         {
+         if ( $tobj->has_coercion && $tobj->validate($value) ) {
             eval { $new_value = $tobj->coerce($value) };
-            if ($@)
-            {
-               if ( $tobj->has_message )
-               {
+            if ($@) {
+               if ( $tobj->has_message ) {
                   $error_message = $tobj->message->($value);
                }
-               else
-               {
+               else {
                   $error_message = $@;
                }
             }
-            else
-            {
+            else {
                $self->value($new_value);
             }
 
@@ -247,59 +223,45 @@ sub _apply_actions
       }
       # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
       # actions in a hashref
-      elsif ( ref $action->{check} eq 'CODE' )
-      {
-         if ( !$action->{check}->($value) )
-         {
+      elsif ( ref $action->{check} eq 'CODE' ) {
+         if ( !$action->{check}->($value) ) {
             $error_message = 'Wrong value';
          }
       }
-      elsif ( ref $action->{check} eq 'Regexp' )
-      {
-         if ( $value !~ $action->{check} )
-         {
+      elsif ( ref $action->{check} eq 'Regexp' ) {
+         if ( $value !~ $action->{check} ) {
             $error_message = "\"$value\" does not match";
          }
       }
-      elsif ( ref $action->{check} eq 'ARRAY' )
-      {
-         if ( !grep { $value eq $_ } @{ $action->{check} } )
-         {
+      elsif ( ref $action->{check} eq 'ARRAY' ) {
+         if ( !grep { $value eq $_ } @{ $action->{check} } ) {
             $error_message = "\"$value\" not allowed";
          }
       }
-      elsif ( ref $action->{transform} eq 'CODE' )
-      {
+      elsif ( ref $action->{transform} eq 'CODE' ) {
          $new_value = eval {
             no warnings 'all';
             $action->{transform}->($value);
          };
-         if ($@)
-         {
+         if ($@) {
             $error_message = $@ || 'error occurred';
          }
-         else
-         {
+         else {
             $self->value($new_value);
          }
       }
-      if ( defined $error_message )
-      {
+      if ( defined $error_message ) {
          my @message = ($error_message);
-         if ( defined $action->{message} )
-         {
+         if ( defined $action->{message} ) {
             my $act_msg = $action->{message};
-            if ( ref $act_msg eq 'CODEREF' )
-            {
+            if ( ref $act_msg eq 'CODEREF' ) {
                $act_msg = $act_msg->($value);
             }
-            if ( ref $act_msg eq 'ARRAY' )
-            {
-               @message = @{ $act_msg };
+            if ( ref $act_msg eq 'ARRAY' ) {
+               @message = @{$act_msg};
             }
-            elsif ( ref \$act_msg eq 'SCALAR' )
-            {
-               @message = ( $act_msg );
+            elsif ( ref \$act_msg eq 'SCALAR' ) {
+               @message = ($act_msg);
             }
          }
          $self->add_error(@message);

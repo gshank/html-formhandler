@@ -25,16 +25,19 @@ has '+password'         => ( default => 1 );
 has '+required'         => ( default => 1 );
 has '+required_message' => ( default => 'Please enter a password confirmation' );
 has 'password_field'    => ( isa     => 'Str', is => 'rw', default => 'password' );
-has 'pass_conf_message' => ( isa     => 'Str', is => 'rw', default => 'The password confirmation does not match the password' );
+has 'pass_conf_message' => (
+   isa     => 'Str',
+   is      => 'rw',
+   default => 'The password confirmation does not match the password'
+);
 
 sub validate
 {
    my $self = shift;
 
-   my $value = $self->value;
+   my $value    = $self->value;
    my $password = $self->form->field( $self->password_field )->value;
-   if( $password ne $self->value )
-   {
+   if ( $password ne $self->value ) {
       $self->add_error( $self->pass_conf_message );
       return;
    }

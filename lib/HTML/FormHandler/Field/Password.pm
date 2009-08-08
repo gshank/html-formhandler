@@ -13,7 +13,7 @@ HTML::FormHandler::Field::Password - Input a password
 The password field has a default minimum length of 6, which can be
 easily changed:
 
-  has_field 'password' => ( type => 'Password', min_length => 7 );
+  has_field 'password' => ( type => 'Password', minlength => 7 );
 
 It does not come with additional default checks, since password
 requirements vary so widely. There are a few constraints in the
@@ -48,8 +48,7 @@ has 'ne_username'       => ( isa     => 'Str', is => 'rw' );
 after 'validate_field' => sub {
    my $self = shift;
 
-   if ( !$self->required && !( defined( $self->value ) && length( $self->value ) ) )
-   {
+   if ( !$self->required && !( defined( $self->value ) && length( $self->value ) ) ) {
       $self->noupdate(1);
       $self->clear_errors;
    }
@@ -63,8 +62,7 @@ sub validate
    return unless $self->SUPER::validate;
 
    my $value = $self->value;
-   if ( $self->form && $self->ne_username )
-   {
+   if ( $self->form && $self->ne_username ) {
       my $username = $self->form->get_param( $self->ne_username );
       return $self->add_error( 'Password must not match ' . $self->ne_username )
          if $username && $username eq $value;

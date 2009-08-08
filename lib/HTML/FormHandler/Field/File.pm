@@ -47,8 +47,7 @@ has maximum => ( is => 'rw', isa => 'Int', default => 1_048_576 );
 
 sub BUILD
 {
-   for my $form ( $_[0]->form )
-   {
+   for my $form ( $_[0]->form ) {
       $form->enctype('multipart/form-data');
       $form->http_method('post');
    }
@@ -99,8 +98,7 @@ sub validate
       $value->can('type') or
       return $self->add_error('This is not valid file upload data');
 
-   if ( $self->has_accept )
-   {
+   if ( $self->has_accept ) {
       my $type = $value->type;
       any { $type eq $_ } $self->accept_list or
          return $self->add_error( 'Invalid content-type "[_1]"', $type );

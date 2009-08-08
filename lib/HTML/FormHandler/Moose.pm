@@ -5,7 +5,6 @@ use Moose::Exporter;
 use Moose::Util::MetaRole;
 use HTML::FormHandler::Meta::Role;
 
-
 =head1 NAME
 
 HTML::FormHandler::Moose - to add FormHandler sugar
@@ -32,13 +31,14 @@ Moose::Exporter->setup_import_methods(
    also        => 'Moose',
 );
 
-sub init_meta {
+sub init_meta
+{
    my $class = shift;
 
    my %options = @_;
-   Moose->init_meta( %options );
+   Moose->init_meta(%options);
    my $meta = Moose::Util::MetaRole::apply_metaclass_roles(
-      for_class   => $options{for_class},
+      for_class       => $options{for_class},
       metaclass_roles => ['HTML::FormHandler::Meta::Role'],
    );
    return $meta;
@@ -48,7 +48,7 @@ sub has_field
 {
    my ( $class, $name, %options ) = @_;
 
-   $class->meta->add_to_field_list( {name => $name, %options} );
+   $class->meta->add_to_field_list( { name => $name, %options } );
 }
 
 sub apply

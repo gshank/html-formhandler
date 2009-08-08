@@ -29,7 +29,7 @@ requires 'MooseX::Types::Common' => 0;
 requires 'aliased';
 
 # things the tests need
-test_requires 'Test::More'      => '0.77';
+test_requires 'Test::More'      => '0.88';
 
 tests();
 author_tests('t/xt');

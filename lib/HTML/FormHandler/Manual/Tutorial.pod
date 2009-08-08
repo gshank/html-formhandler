@@ -36,6 +36,7 @@ create the file Book.pm.
    has_field 'title' => ( type => 'Text' );
    has_field 'rating' => ( type => 'Integer' );
    has_field 'authors' => ( type => 'Multiple', label_column => 'last_name' );
+   has_field 'submit' => ( type => 'Submit', value => 'Submit' );
 
    no HTML::FormHandler::Moose;
    1;
@@ -56,6 +57,9 @@ The 'Multiple' type will allow you to easily create a multiple select
 list from the 'authors' relationship.  The 'label_column' attribute
 must be defined because the column in the 'authors' table which is used 
 to create the select list does not have the default column name ('name').
+
+The 'submit' field is necessary if you are going to use FormHandler to
+render your form. It wouldn't be necessary for hand-built templates or HTML.
 
 Eventually you will want to create your own field classes, but for 
 this simple form the default types are adequate.
@@ -100,17 +104,40 @@ a new book from your form. If you pass in a DBIx::Class row
 object instead of a primary key, you don't need to specify the
 schema. 
 
+=head2 Render the form
 
-=head2 Create a Template for the form 
+To use simple rendering, add a line to your form class:
 
-L<HTML::FormHandler> provides only a simple sample 'render' routine to 
-automatically create the HTML for your forms that you could use as
-a model for creating your own rendering routines.
+   with 'HTML::FormHandler::Render::Simple';
+
+Then save a copy of C<root/src/books/edit.tt2> and create a new file that
+contains only: 
+
+   [% form.render %] 
+
+=head2 Alternative hand-built Template for the form (optional)
+
+Although L<HTML::FormHandler::Render::Simple> works well for scaffolding and may
+be adequate for simple forms, sometimes it's necessary to hand build
+HTML. This section contains an example of a Template Toolkit template
+that may be used to display a FormHandler form.
+
+In some cases, you might want to use the rendering for just the field
+and build custom divs or tables or whatever around it:
+
+  <div class="mycustomclass">
+  [% form.render_field('book') %]
+  </div> 
+
+If you don't want to play with HTML at this point, you can skip ahead
+to the next section.
+
 You could also use TT macros to do pretty sophisticated
 template generation. But for now, we'll stick to a straightforward TT
 template:
 
-Open C<root/src/books/edit.tt2> in your editor and enter or copy the following:
+Delete the single statement in C<root/src/books/edit.tt2>, and enter 
+or copy the following:
 
    [% META title = 'Book Form' %]
 
@@ -121,23 +148,19 @@ Open C<root/src/books/edit.tt2> in your editor and enter or copy the following:
      [% END %]
    [% END %]
 
-
    <form name="[% form.name %]" 
          action="[% c.uri_for('edit', form.item_id) %]" 
          method="post">
-
    <p>
    [% f = form.field('title') %]
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
    <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
    </p>
-
    <p>
    [% f = form.field('rating') %]
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
    <input type="text" name="[% f.name %]" id="[% f.name %]" %] value="[% f.fif %]">
    </p>
-
    <p>
    [% f = form.field('authors') %]
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
@@ -151,9 +174,7 @@ Open C<root/src/books/edit.tt2> in your editor and enter or copy the following:
      [% END %] 
    </select>
    </p>
-    
-   <input class="button" name="commit" type="submit" value="Submit" />
-
+   <input class="button" name="submit" type="submit" value="Submit" />
    </form>
     
    <p><a href="[% c.uri_for('list') %]">Return to book list</a></p>
@@ -205,43 +226,6 @@ We'll add a couple of 'label' attribute to the fields:
    has_field 'rating' => ( type => 'Integer', label => 'Rating (1-5)' );
    has_field 'authors' => ( type => 'Multiple', label_column => 'last_name' );
 
-    
-L<HTML::FormHandler> doesn't have built-in attributes for a submit button, but
-if you want to put one in your form to use in a template, go ahead.
-
-   has_field 'submit' => (
-       type  => 'Submit',  # Case matters here.
-       name  => 'Save',
-       value => 'Save It!',
-   );
-
-In a template, you could then access this with:
-
-   <input class="button"
-          type="[% form.field('Save').widget %]"
-          name="[% form.field('Save').name %]"
-          value="[% form.field('Save').value %]" />
-
-Note that as you need to know the name of the submit field in order to query
-the object and get it's value it may be easier to just say:
-
-   <input class="button"
-          type="submit"
-          name="Save"
-          value="[% form.field('Save').value %]" />
-
-Also, the HTML type (input type="text") is not the same as the field's type.
-The former (text, submit, button, checkbox, file, hidden, etc.) can be found by
-calling the form field's widget method.
-
-   <input type="[% form.field('Save').widget %]">
-
-For more information see L<HTML::FormHandler::Field/widget>'s widget method.
-
-If you want all your forms to have a submit button definition, you can put this
-in a base Form class. Or create a Moose::Role and group a number of similar
-functions together.
-
 If you want a new attribute in your fields, it's very easy to add it to your 
 custom Field classes.
 
@@ -256,15 +240,18 @@ custom Field classes.
 Now if your Field classes inherit from this, you can have a 'my_attribute' 
 attribute for all your fields. Or use a Moose role instead of inheritance. 
 
+You can also add attributes to the base FormHandler field class using Moose.
+This technique is described in L<HTML::FormHandler::Manual::Cookbook>.
+
 =head1 L<HTML::FormHandler> Validation 
 
 Now we'll add more validation to ensure that users
 are entering correct data. 
 
-Update the fields form file:
+Update the fields in the form file:
 
    has_field 'title' => ( type => 'Text', label => 'Title of a Book',
-      required => 1, size => 40, min_length => 5 );
+      required => 1, size => 40, minlength => 5 );
    has_field 'rating' => ( type => 'Integer', label => 'Rating (1-5)',
       required => 1, required_message => 'You must rate the book',
       range_start => 1, range_end => 5 );
@@ -272,7 +259,7 @@ Update the fields form file:
       required => 1 );
 
 We've made all the fields required.
-We added 'size' and 'min_length' attributes to the 'title' field. These 
+We added 'size' and 'minlength' attributes to the 'title' field. These 
 are attributes of the 'Text' Field, which will use them to validate.
 We've added 'range_start' and 'range_end' attributes to the 'rating' field.
 Numbers entered in the form will be checked to make sure they fall within
@@ -288,9 +275,11 @@ custom validation on a per-field basis.
 This form doesn't really require any customized validation, 
 so we'll add a silly field constraint.  Add the following to the form:
 
-  apply [ { check => sub { shift !~ /Rainbows/ },
-            message => "The word \'Rainbows\' is not allowed in titles' }
-        ];
+   sub validate_title {
+      my ( $self, $field ) = @_;
+      $field->add_error("The word \'Rainbows\' is not allowed in titles")
+         if ( $field->value =~ /Rainbows/ );
+   }
 
 You can also apply Moose constraints and transforms. Validation can also
 be performed in a form 'validate_<field_name' method, in a 'validate_model'

@@ -15,8 +15,7 @@ sub options
 
    # This places the currently selected options at the top of the list
    # Makes the drop down lists a bit nicer
-   if ( @options && defined $value )
-   {
+   if ( @options && defined $value ) {
       my %selected = map { $_ => 1 } ref($value) eq 'ARRAY' ? @$value : ($value);
 
       my @out = grep { $selected{ $_->{value} } } @options;

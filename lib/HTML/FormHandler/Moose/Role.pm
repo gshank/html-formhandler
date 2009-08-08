@@ -28,13 +28,14 @@ Moose::Exporter->setup_import_methods(
    also        => 'Moose::Role',
 );
 
-sub init_meta {
+sub init_meta
+{
    my $class = shift;
 
    my %options = @_;
-   Moose::Role->init_meta( %options );
+   Moose::Role->init_meta(%options);
    my $meta = Moose::Util::MetaRole::apply_metaclass_roles(
-      for_class   => $options{for_class},
+      for_class       => $options{for_class},
       metaclass_roles => ['HTML::FormHandler::Meta::Role'],
    );
    return $meta;
@@ -63,6 +64,5 @@ This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
-
 
 1;

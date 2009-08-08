@@ -5,8 +5,7 @@ extends 'HTML::FormHandler::Field::IntRange';
 our $VERSION = '0.03';
 
 has '+range_start' => ( default => 0 );
-has '+range_end' => ( default => 23 );
-
+has '+range_end'   => ( default => 23 );
 
 =head1 NAME
 
