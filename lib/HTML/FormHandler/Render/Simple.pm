@@ -35,7 +35,7 @@ In a template:
 
 or for individual fields:
 
-   [% form.field_render( 'title' ) %]
+   [% form.render_field( 'title' ) %]
 
 
 =head1 DESCRIPTION
