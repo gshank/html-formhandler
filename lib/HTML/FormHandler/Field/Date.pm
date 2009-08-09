@@ -1,10 +1,10 @@
 package HTML::FormHandler::Field::Date;
 
 use Moose;
-extends 'HTML::FormHandler::Field';
+extends 'HTML::FormHandler::Field::Text';
 use DateTime;
 use DateTime::Format::Strptime;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -51,7 +51,6 @@ has 'locale'     => ( is => 'rw', isa => 'Str' );                               
 has 'time_zone'  => ( is => 'rw', isa => 'Str' );                                  # TODO
 has 'date_start' => ( is => 'rw', isa => 'Str', clearer => 'clear_date_start' );
 has 'date_end'   => ( is => 'rw', isa => 'Str', clearer => 'clear_date_end' );
-has '+widget' => ( default => 'text' );
 
 # translator for Datepicker formats to DateTime strftime formats
 my $dp_to_dt = {
