@@ -1,3 +1,10 @@
+0.27005 Tues Aug 11, 2009
+    Date inherits from Text. Fix loading compound fields from related.
+    Call load_options for forms with no init_obj & params
+
+0.27004 Sun Aug3, 2009
+    Missing version on Date.pm
+
 0.27003 Sat Aug 2, 2009
     Indexing failure missing version in Date
 
