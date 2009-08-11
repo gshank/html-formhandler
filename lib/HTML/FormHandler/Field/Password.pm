@@ -48,8 +48,7 @@ has 'ne_username'       => ( isa     => 'Str', is => 'rw' );
 after 'validate_field' => sub {
    my $self = shift;
 
-   if ( !$self->required && !( defined( $self->value ) && length( $self->value ) ) )
-   {
+   if ( !$self->required && !( defined( $self->value ) && length( $self->value ) ) ) {
       $self->noupdate(1);
       $self->clear_errors;
    }
@@ -63,8 +62,7 @@ sub validate
    return unless $self->SUPER::validate;
 
    my $value = $self->value;
-   if ( $self->form && $self->ne_username )
-   {
+   if ( $self->form && $self->ne_username ) {
       my $username = $self->form->get_param( $self->ne_username );
       return $self->add_error( 'Password must not match ' . $self->ne_username )
          if $username && $username eq $value;

@@ -3,7 +3,7 @@ package HTML::FormHandler::Render::Table;
 use Moose::Role;
 
 with 'HTML::FormHandler::Render::Simple' =>
-      { excludes => [ 'render', 'render_field_struct', 'render_end', 'render_start' ] };
+   { excludes => [ 'render', 'render_field_struct', 'render_end', 'render_start' ] };
 
 =head1 NAME
 
@@ -27,8 +27,7 @@ sub render
    my $self = shift;
 
    my $output = $self->render_start;
-   foreach my $field ( $self->sorted_fields )
-   {
+   foreach my $field ( $self->sorted_fields ) {
       $output .= $self->render_field($field);
    }
    $output .= $self->render_end;
@@ -37,16 +36,17 @@ sub render
 
 sub render_start
 {
-   my $self = shift;
+   my $self   = shift;
    my $output = '<form ';
-   $output .= 'action="' . $self->action . '" ' if $self->action;
-   $output .= 'id="' . $self->name . '" ' if $self->name;
-   $output .= 'name="' . $self->name . '" ' if $self->name;
+   $output .= 'action="' . $self->action . '" '     if $self->action;
+   $output .= 'id="' . $self->name . '" '           if $self->name;
+   $output .= 'name="' . $self->name . '" '         if $self->name;
    $output .= 'method="' . $self->http_method . '"' if $self->http_method;
    $output .= '>' . "\n";
    $output .= "<table>\n";
    return $output;
 }
+
 sub render_end
 {
    my $self = shift;
@@ -57,22 +57,25 @@ sub render_end
 
 sub render_field_struct
 {
-   my ( $self, $field, $method, $class ) = @_;
+   my ( $self, $field, $rendered_field, $class ) = @_;
    my $output = qq{\n<tr$class>};
-   my $l_type = defined $self->get_label_type( $field->widget ) ? $self->get_label_type( $field->widget ) : '';
-   if( $l_type eq 'label' ){
-       $output .= '<td>' . $self->_label( $field ) . '</td>';
+   my $l_type =
+      defined $self->get_label_type( $field->widget ) ?
+      $self->get_label_type( $field->widget ) :
+      '';
+   if ( $l_type eq 'label' ) {
+      $output .= '<td>' . $self->_label($field) . '</td>';
    }
-   elsif( $l_type eq 'legend' ){
-       $output .= '<td>' . $self->_label( $field ) . '</td></tr>';
+   elsif ( $l_type eq 'legend' ) {
+      $output .= '<td>' . $self->_label($field) . '</td></tr>';
    }
-   if( $l_type ne 'legend' ){
-       $output .= '<td>';
+   if ( $l_type ne 'legend' ) {
+      $output .= '<td>';
    }
-   $output .= $self->$method($field);
+   $output .= $rendered_field;
    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
-   if( $l_type ne 'legend' ){
-       $output .= "</td></tr>\n";
+   if ( $l_type ne 'legend' ) {
+      $output .= "</td></tr>\n";
    }
    return $output;
 }
@@ -90,5 +93,4 @@ the same terms as Perl itself.
 
 no Moose::Role;
 1;
-
 

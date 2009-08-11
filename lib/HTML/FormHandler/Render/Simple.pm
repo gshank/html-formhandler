@@ -115,30 +115,32 @@ Renders field with 'submit' widget
 
 =cut
 
-
 has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', default => 1 );
 has 'label_types' => (
-   metaclass  => 'Collection::Hash',
-   isa        => 'HashRef[Str]',
-   is         => 'rw',
-   default    => sub { {
-           text => 'label', password => 'label', 'select' => 'label',  checkbox => 'label', textarea => 'label',
-           radio_group => 'label', compound => 'legend'
-       }
+   metaclass => 'Collection::Hash',
+   isa       => 'HashRef[Str]',
+   is        => 'rw',
+   default   => sub {
+      {
+         text        => 'label',
+         password    => 'label',
+         'select'    => 'label',
+         checkbox    => 'label',
+         textarea    => 'label',
+         radio_group => 'label',
+         compound    => 'legend'
+      };
    },
    auto_deref => 1,
-   provides   => {
-       get       => 'get_label_type',
-   },
+   provides   => { get => 'get_label_type', },
 );
 
 sub render
 {
-   my $self = shift;
+   my $self   = shift;
    my $output = $self->render_start;
 
-   foreach my $field ( $self->sorted_fields )
-   {
+   foreach my $field ( $self->sorted_fields ) {
       $output .= $self->render_field($field);
    }
 
@@ -148,13 +150,13 @@ sub render
 
 sub render_start
 {
-   my $self = shift;
+   my $self   = shift;
    my $output = '<form ';
-   $output .= 'action="' . $self->action . '" ' if $self->action;
-   $output .= 'id="' . $self->name . '" ' if $self->name;
+   $output .= 'action="' . $self->action . '" '     if $self->action;
+   $output .= 'id="' . $self->name . '" '           if $self->name;
    $output .= 'method="' . $self->http_method . '"' if $self->http_method;
    $output .= '>' . "\n";
-   $output .= '<fieldset class="main_fieldset">' if $self->auto_fieldset;
+   $output .= '<fieldset class="main_fieldset">'    if $self->auto_fieldset;
    return $output;
 }
 
@@ -167,46 +169,54 @@ sub render_end
    return $output;
 }
 
+sub render_field
+{
+   my ( $self, $field ) = @_;
 
-sub render_field {
-    my( $self, $field ) = @_;
-
-    if ( ref(\$field) eq 'SCALAR' ) 
-    {
-       $field = $self->field($field);
-    }
-    die "must pass field to render_field"
-       unless( defined $field && $field->isa('HTML::FormHandler::Field') );
-    return '' if $field->widget eq 'no_render';
-    my $field_method = 'render_' . $field->widget;
-    die "Widget method $field_method not implemented in H::F::Render::Simple"
-      unless $self->can($field_method);
-    my $class = '';
-    if( $field->css_class || $field->has_errors )
-    {
-       $class .= ' class="';
-       $class .= $field->css_class . ' ' if $field->css_class;
-       $class .= ' error"' if $field->has_errors;
-    }
-    return $self->render_field_struct($field, $field_method, $class);
+   if ( ref( \$field ) eq 'SCALAR' ) {
+      $field = $self->field($field);
+   }
+   die "must pass field to render_field"
+      unless ( defined $field && $field->isa('HTML::FormHandler::Field') );
+   return '' if $field->widget eq 'no_render';
+   my $rendered_field;
+   if ( $field->widget eq 'from_field' ) {
+      $rendered_field = $field->render;
+   }
+   else {
+      my $form_render = 'render_' . $field->widget;
+      die "Widget method $form_render not implemented in H::F::Render::Simple"
+         unless $self->can($form_render);
+      $rendered_field = $self->$form_render($field);
+   }
+   my $class = '';
+   if ( $field->css_class || $field->has_errors ) {
+      $class .= ' class="';
+      $class .= $field->css_class . ' ' if $field->css_class;
+      $class .= ' error"' if $field->has_errors;
+   }
+   return $self->render_field_struct( $field, $rendered_field, $class );
 }
 
 sub render_field_struct
 {
-   my ( $self, $field, $method, $class ) = @_;
+   my ( $self, $field, $rendered_field, $class ) = @_;
    my $output = qq{\n<div$class>};
-   my $l_type = defined $self->get_label_type( $field->widget ) ? $self->get_label_type( $field->widget ) : '';
-   if( $l_type eq 'label' ){
-       $output .= $self->_label( $field );
+   my $l_type =
+      defined $self->get_label_type( $field->widget ) ?
+      $self->get_label_type( $field->widget ) :
+      '';
+   if ( $l_type eq 'label' ) {
+      $output .= $self->_label($field);
    }
-   elsif( $l_type eq 'legend' ){
-       $output .= '<fieldset class="' . $field->html_name . '">';
-       $output .= '<legend>' . $field->label . '</legend>';
+   elsif ( $l_type eq 'legend' ) {
+      $output .= '<fieldset class="' . $field->html_name . '">';
+      $output .= '<legend>' . $field->label . '</legend>';
    }
-   $output .= $self->$method($field);
+   $output .= $rendered_field;
    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
-   if( $l_type eq 'legend' ){
-       $output .= '</fieldset>';
+   if ( $l_type eq 'legend' ) {
+      $output .= '</fieldset>';
    }
    $output .= "</div>\n";
    return $output;
@@ -219,7 +229,7 @@ sub render_text
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
    $output .= ' size="' . $field->size . '"' if $field->size;
-   $output .= ' maxlength="' . $field->maxlength. '"' if $field->maxlength;
+   $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
    $output .= ' value="' . $field->fif . '" />';
    return $output;
 }
@@ -231,7 +241,7 @@ sub render_password
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
    $output .= ' size="' . $field->size . '"' if $field->size;
-   $output .= ' maxlength="' . $field->maxlength. '"' if $field->maxlength;
+   $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
    $output .= ' value="' . $field->fif . '" />';
    return $output;
 }
@@ -256,29 +266,24 @@ sub render_select
    $output .= ' size="' . $field->size . '"' if $field->size;
    $output .= '>';
    my $index = 0;
-   foreach my $option ( $field->options )
-   {
+   foreach my $option ( $field->options ) {
       $output .= '<option value="' . $option->{value} . '" ';
       $output .= 'id="' . $field->id . ".$index\" ";
-      if ($field->fif)
-      {
-         if ( $field->multiple == 1 )
-         {
+      if ( $field->fif ) {
+         if ( $field->multiple == 1 ) {
             my @fif;
-            if( ref  $field->fif ){
-                @fif = @{ $field->fif };
+            if ( ref $field->fif ) {
+               @fif = @{ $field->fif };
             }
-            else{
-                @fif = ( $field->fif );
+            else {
+               @fif = ( $field->fif );
             }
-            foreach my $optval ( @fif )
-            {
+            foreach my $optval (@fif) {
                $output .= 'selected="selected"'
                   if $optval == $option->{value};
             }
          }
-         else
-         {
+         else {
             $output .= 'selected="selected"'
                if $option->{value} eq $field->fif;
          }
@@ -295,21 +300,20 @@ sub render_checkbox
    my ( $self, $field ) = @_;
 
    my $output = '<input type="checkbox" name="';
-   $output .= $field->html_name . '" id="' . $field->id . '" value="' . $field->checkbox_value . '"';
+   $output .=
+      $field->html_name . '" id="' . $field->id . '" value="' . $field->checkbox_value . '"';
    $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
    $output .= ' />';
    return $output;
 }
-
 
 sub render_radio_group
 {
    my ( $self, $field ) = @_;
 
    my $output = " <br />";
-   my $index = 0;
-   foreach my $option ( $field->options )
-   {
+   my $index  = 0;
+   foreach my $option ( $field->options ) {
       $output .= '<input type="radio" value="' . $option->{value} . '"';
       $output .= ' name="' . $field->html_name . '" id="' . $field->id . ".$index\"";
       $output .= ' checked="checked"' if $option->{value} eq $self->fif;
@@ -323,14 +327,14 @@ sub render_radio_group
 sub render_textarea
 {
    my ( $self, $field ) = @_;
-   my $fif   = $field->fif || '';
-   my $id    = $field->id;
-   my $cols  = $field->cols || 10;
-   my $rows  = $field->rows || 5;
-   my $name  = $field->html_name;
+   my $fif  = $field->fif || '';
+   my $id   = $field->id;
+   my $cols = $field->cols || 10;
+   my $rows = $field->rows || 5;
+   my $name = $field->html_name;
 
-   my $output = qq(<textarea name="$name" id="$id" )
-      . qq(rows="$rows" cols="$cols">$fif</textarea>);
+   my $output =
+      qq(<textarea name="$name" id="$id" ) . qq(rows="$rows" cols="$cols">$fif</textarea>);
 
    return $output;
 }
@@ -338,11 +342,7 @@ sub render_textarea
 sub _label
 {
    my ( $self, $field ) = @_;
-   return '<label class="label" for="'
-   . $field->id
-   . '">'
-   . $field->label
-   . ': </label>'
+   return '<label class="label" for="' . $field->id . '">' . $field->label . ': </label>';
 }
 
 sub render_compound
@@ -350,8 +350,7 @@ sub render_compound
    my ( $self, $field ) = @_;
 
    my $output = '';
-   foreach my $subfield ($field->sorted_fields)
-   {
+   foreach my $subfield ( $field->sorted_fields ) {
       $output .= $self->render_field($subfield);
    }
    return $output;
@@ -381,5 +380,4 @@ the same terms as Perl itself.
 
 no Moose::Role;
 1;
-
 

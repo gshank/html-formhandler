@@ -39,24 +39,23 @@ set 'inactive' to 1 instead.
 
 =cut
 
-has '+widget' => ( default => 'checkbox' );
-has 'checkbox_value' => ( is => 'rw', default => 1 );
+has '+widget'              => ( default => 'checkbox' );
+has 'checkbox_value'       => ( is      => 'rw', default => 1 );
 has '+input_without_param' => ( default => 0 );
 
 sub value
 {
-    my $field = shift;
-    return $field->SUPER::value( @_ ) if @_;
-    my $v = $field->SUPER::value;
-    return defined $v ? $v : 0;
+   my $field = shift;
+   return $field->SUPER::value(@_) if @_;
+   my $v = $field->SUPER::value;
+   return defined $v ? $v : 0;
 }
 
 sub validate
 {
    my $self = shift;
-   $self->add_error( $self->required_message) if( $self->required && !$self->value );
+   $self->add_error( $self->required_message ) if ( $self->required && !$self->value );
 }
-
 
 =head1 AUTHORS
 

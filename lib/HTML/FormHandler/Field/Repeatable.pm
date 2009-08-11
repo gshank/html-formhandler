@@ -87,26 +87,26 @@ Will create an 'id' field automatically
 
 =cut
 
-has 'contains' => ( isa => 'HTML::FormHandler::Field', is => 'rw',
-     predicate => 'has_contains');
+has 'contains' => (
+   isa       => 'HTML::FormHandler::Field',
+   is        => 'rw',
+   predicate => 'has_contains'
+);
 
-has 'num_when_empty' => ( isa => 'Int', is => 'rw', default => 1 );
-has 'index' => ( isa => 'Int', is => 'rw', default => 0 );
-has 'auto_id' => ( isa => 'Bool', is => 'rw', default => 0 );
+has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
+has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
+has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 
 sub clear_other
 {
    my $self = shift;
 
    # must clear out instances built last time
-   unless ( $self->has_contains )
-   {
-      if( $self->num_fields == 1 && $self->field('contains') )
-      {
+   unless ( $self->has_contains ) {
+      if ( $self->num_fields == 1 && $self->field('contains') ) {
          $self->contains( $self->field('contains') );
       }
-      else
-      {
+      else {
          $self->contains( $self->create_element );
       }
    }
@@ -116,18 +116,18 @@ sub clear_other
 
 sub create_element
 {
-   my ( $self ) = @_;
-   my $instance = Instance->new( name => 'contains', parent => $self,
-      form => $self->form );
+   my ($self) = @_;
+   my $instance = Instance->new(
+      name   => 'contains',
+      parent => $self,
+      form   => $self->form
+   );
    # copy the fields from this field into the instance
    $instance->add_field( $self->fields );
-   if( $self->auto_id )
-   {
-      unless( grep $_->can('is_primary_key') && $_->is_primary_key,
-                                                  @{$instance->fields})
-      {
+   if ( $self->auto_id ) {
+      unless ( grep $_->can('is_primary_key') && $_->is_primary_key, @{ $instance->fields } ) {
          $instance->add_field(
-            HTML::FormHandler::Field->new(type => 'PrimaryKey', name => 'id' ));
+            HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' ) );
       }
    }
    $_->parent($instance) for $instance->fields;
@@ -141,9 +141,8 @@ sub clone_element
    my $field = $self->contains->clone( errors => [], error_fields => [] );
    $field->name($index);
    $field->parent($self);
-   if( $field->has_fields )
-   {
-      $self->clone_fields($field, [$field->fields]);
+   if ( $field->has_fields ) {
+      $self->clone_fields( $field, [ $field->fields ] );
    }
    return $field;
 }
@@ -152,19 +151,16 @@ sub clone_fields
 {
    my ( $self, $parent, $fields ) = @_;
    my @field_array;
-   foreach my $field ( @{$fields} )
-   {
+   foreach my $field ( @{$fields} ) {
       my $new_field = $field->clone( errors => [], error_fields => [] );
-      if( $new_field->has_fields )
-      {
-         $self->clone_fields( $new_field, [$new_field->fields] );
+      if ( $new_field->has_fields ) {
+         $self->clone_fields( $new_field, [ $new_field->fields ] );
       }
       $new_field->parent($parent);
       push @field_array, $new_field;
    }
-   $parent->fields(\@field_array);
+   $parent->fields( \@field_array );
 }
-
 
 # this is called by Field->process when params exist and validation is done.
 # The input will already have # been set there, now percolate the input down
@@ -177,12 +173,10 @@ sub process_node
    $self->clear_other;
    # if Repeatable has array input, need to build instances
    my @fields;
-   if ( ref $input eq 'ARRAY' )
-   {
-     # build appropriate instance array
+   if ( ref $input eq 'ARRAY' ) {
+      # build appropriate instance array
       my $index = 0;
-      foreach my $element ( @{$input} )
-      {
+      foreach my $element ( @{$input} ) {
          next unless $element;
          my $field = $self->clone_element($index);
          $field->input($element);
@@ -190,52 +184,48 @@ sub process_node
          $index++;
       }
       $self->index($index);
-      $self->fields(\@fields);
+      $self->fields( \@fields );
    }
    # call fields_validate to loop through array of fields created
    $self->_fields_validate;
    # now that values have been filled in via fields_validate,
    # create combined value for Repeatable
    my @value_array;
-   for my $field ( $self->fields )
-   {
+   for my $field ( $self->fields ) {
       push @value_array, $field->value;
    }
    $self->value( \@value_array );
-};
+}
 
 # this is called when there is an init_object or an db item with values
 sub _init_from_object
 {
-   my ($self, $values) = @_;
+   my ( $self, $values ) = @_;
 
    $self->clear_other;
    # Create field instances and fill with values
    my $index = 0;
    my @fields;
    my @new_values;
-   $values = [$values] if ( $values && ref $values ne 'ARRAY');
-   foreach my $element ( @{$values} )
-   {
+   $values = [$values] if ( $values && ref $values ne 'ARRAY' );
+   foreach my $element ( @{$values} ) {
       next unless $element;
       my $field = $self->clone_element($index);
-      if( $field->has_fields )
-      {
-         $self->form->_init_from_object($field, $element);
-         my $ele_value = $self->make_values([$field->fields]);
+      if ( $field->has_fields ) {
+         $self->form->_init_from_object( $field, $element );
+         my $ele_value = $self->make_values( [ $field->fields ] );
          $field->value($ele_value);
          push @new_values, $ele_value;
       }
-      else
-      {
+      else {
          $field->value($element);
       }
       push @fields, $field;
       $index++;
    }
    $self->index($index);
-   $self->fields(\@fields);
-   $self->value(\@new_values) if scalar @new_values;
+   $self->fields( \@fields );
+   $self->value( \@new_values ) if scalar @new_values;
    $self->value($values) unless scalar @new_values;
 }
 
@@ -244,9 +234,8 @@ sub make_values
    my ( $self, $fields ) = @_;
 
    my $values;
-   foreach my $field ( @{$fields} )
-   {
-      $values->{$field->accessor} = $field->value;
+   foreach my $field ( @{$fields} ) {
+      $values->{ $field->accessor } = $field->value;
    }
    return $values;
 }
@@ -262,15 +251,14 @@ sub _init
    my $index = 0;
    # build empty instance
    my @fields;
-   while( $count > 0 )
-   {
+   while ( $count > 0 ) {
       my $field = $self->clone_element($index);
       push @fields, $field;
       $index++;
       $count--;
    }
    $self->index($index);
-   $self->fields(\@fields);
+   $self->fields( \@fields );
 }
 
 __PACKAGE__->meta->make_immutable;

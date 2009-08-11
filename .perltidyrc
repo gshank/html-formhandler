@@ -1,4 +1,4 @@
---opening-brace-on-new-line
+--opening-sub-brace-on-new-line
 --continuation-indentation=3
 --indent-columns=3
 --maximum-line-length=96

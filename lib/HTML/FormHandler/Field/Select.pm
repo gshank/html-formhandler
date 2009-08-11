@@ -248,8 +248,7 @@ sub as_label
    my $value = $field->value;
    return unless defined $value;
 
-   for ( $field->options )
-   {
+   for ( $field->options ) {
       return $_->{label} if $_->{value} eq $value;
    }
    return;
@@ -271,18 +270,15 @@ sub _inner_validate_field
       $self->add_error('This field does not take multiple values');
       return;
    }
-   elsif ( ref $value ne 'ARRAY' && $self->multiple )
-   {
+   elsif ( ref $value ne 'ARRAY' && $self->multiple ) {
       $value = [$value];
       $self->value($value);
    }
 
    # create a lookup hash
    my %options = map { $_->{value} => 1 } $self->options;
-   for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) )
-   {
-      unless ( $options{$value} )
-      {
+   for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) ) {
+      unless ( $options{$value} ) {
          $self->add_error("'$value' is not a valid value");
          return;
       }
@@ -305,13 +301,11 @@ sub _load_options
 
    return if $self->options_from eq 'build';
    my @options;
-   if ( $self->_can_options )
-   {
+   if ( $self->_can_options ) {
       @options = $self->_options;
       $self->options_from('method');
    }
-   elsif ( $self->form )
-   {
+   elsif ( $self->form ) {
       my $full_accessor;
       $full_accessor = $self->parent->full_accessor if $self->parent;
       @options = $self->form->lookup_options( $self, $full_accessor );

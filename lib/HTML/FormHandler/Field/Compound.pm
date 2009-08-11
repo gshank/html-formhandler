@@ -54,13 +54,15 @@ Widget type is 'compound'
 
 has '+widget' => ( default => 'compound' );
 
-has '+field_name_space' => ( default => sub {
+has '+field_name_space' => (
+   default => sub {
       my $self = shift;
       return $self->form->field_name_space
-           if $self->form && $self->form->field_name_space;
+         if $self->form && $self->form->field_name_space;
       return '';
    },
 );
+
 sub BUILD
 {
    my $self = shift;

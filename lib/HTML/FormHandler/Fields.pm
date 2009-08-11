@@ -49,7 +49,6 @@ value. Non-sorted fields are retrieved with 'fields'.
 
 =cut
 
-
 has 'fields' => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef[HTML::FormHandler::Field]',
@@ -79,7 +78,6 @@ has 'error_fields' => (
    }
 );
 
-
 has 'fields_from_model' => ( isa => 'Bool', is => 'rw' );
 
 sub add_field
@@ -95,17 +93,16 @@ has 'field_name_space' => (
 );
 
 has 'field_list' => ( isa => 'HashRef|ArrayRef', is => 'rw', default => sub { {} } );
+
 sub has_field_list
 {
    my ( $self, $field_list ) = @_;
    $field_list ||= $self->field_list;
-   if( ref $field_list eq 'HASH' )
-   {
-      return $field_list if( scalar keys %{$field_list} );
+   if ( ref $field_list eq 'HASH' ) {
+      return $field_list if ( scalar keys %{$field_list} );
    }
-   elsif( ref $field_list eq 'ARRAY' )
-   {
-      return $field_list if( scalar @{$field_list} );
+   elsif ( ref $field_list eq 'ARRAY' ) {
+      return $field_list if ( scalar @{$field_list} );
    }
    return;
 }
@@ -127,7 +124,7 @@ sub _build_fields
    my $meta_flist = $self->_build_meta_field_list;
    $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
    my $flist = $self->has_field_list;
-   $self->_process_field_list( $flist ) if $flist;
+   $self->_process_field_list($flist) if $flist;
    return unless $self->has_fields;
 
    # order the fields
@@ -139,19 +136,16 @@ sub _build_fields
 
    # get highest order number
    my $order = 0;
-   foreach my $field ( $self->fields )
-   {
+   foreach my $field ( $self->fields ) {
       $order++ if $field->order > $order;
    }
    $order++;
    # number all unordered fields
-   foreach my $field ( $self->fields )
-   {
+   foreach my $field ( $self->fields ) {
       $field->order($order) unless $field->order;
       $order++;
    }
 }
-
 
 # process all the stupidly many different formats for field_list
 # remove undocumented syntaxes after a while
@@ -159,18 +153,17 @@ sub _process_field_list
 {
    my ( $self, $flist ) = @_;
 
-   if ( ref $flist eq 'ARRAY' )
-   {
+   if ( ref $flist eq 'ARRAY' ) {
       my @flist_copy = @{$flist};
       $self->_process_field_array( $self->_array_fields( \@flist_copy ) );
       return;
-   };
+   }
    my %flist_copy = %{$flist};
    $flist = \%flist_copy;
    # these should go away. not really necessary
-   if( $flist->{'required'} || $flist->{'optional'} )
-   {
-      warn "the required => {} and optional => {}  field_list syntax is deprecated. please remove.";
+   if ( $flist->{'required'} || $flist->{'optional'} ) {
+      warn
+         "the required => {} and optional => {}  field_list syntax is deprecated. please remove.";
       $self->_process_field_array( $self->_hashref_fields( $flist->{'required'}, 1 ) )
          if $flist->{'required'};
       $self->_process_field_array( $self->_hashref_fields( $flist->{'optional'}, 0 ) )
@@ -191,28 +184,21 @@ sub _build_meta_field_list
    my $self = shift;
    my @field_list;
 
-   foreach my $sc ( reverse $self->meta->linearized_isa )
-   {
+   foreach my $sc ( reverse $self->meta->linearized_isa ) {
       my $meta = $sc->meta;
-      if ( $meta->can('calculate_all_roles') )
-      {
-         foreach my $role ( reverse $meta->calculate_all_roles )
-         {
-            if ( $role->can('field_list') && $role->has_field_list )
-            {
-               foreach my $fld_def ( @{ $role->field_list} )
-               {
-                  my %new_fld = %{$fld_def}; # copy hashref
+      if ( $meta->can('calculate_all_roles') ) {
+         foreach my $role ( reverse $meta->calculate_all_roles ) {
+            if ( $role->can('field_list') && $role->has_field_list ) {
+               foreach my $fld_def ( @{ $role->field_list } ) {
+                  my %new_fld = %{$fld_def};    # copy hashref
                   push @field_list, \%new_fld;
                }
             }
          }
       }
-      if ( $meta->can('field_list') && $meta->has_field_list )
-      {
-         foreach my $fld_def ( @{$meta->field_list} )
-         {
-            my %new_fld = %{$fld_def}; # copy hashref
+      if ( $meta->can('field_list') && $meta->has_field_list ) {
+         foreach my $fld_def ( @{ $meta->field_list } ) {
+            my %new_fld = %{$fld_def};          # copy hashref
             push @field_list, \%new_fld;
          }
       }
@@ -226,8 +212,7 @@ sub _auto_fields
    my ( $self, $fields, $required ) = @_;
 
    my @new_fields;
-   foreach my $name (@$fields)
-   {
+   foreach my $name (@$fields) {
       push @new_fields,
          {
          name     => $name,
@@ -243,14 +228,11 @@ sub _hashref_fields
 {
    my ( $self, $fields, $required ) = @_;
    my @new_fields;
-   while ( my ( $key, $value ) = each %{$fields} )
-   {
-      unless ( ref $value eq 'HASH' )
-      {
+   while ( my ( $key, $value ) = each %{$fields} ) {
+      unless ( ref $value eq 'HASH' ) {
          $value = { type => $value };
       }
-      if ( defined $required )
-      {
+      if ( defined $required ) {
          $value->{required} = $required;
       }
       push @new_fields, { name => $key, %$value };
@@ -264,12 +246,10 @@ sub _array_fields
    my ( $self, $fields ) = @_;
 
    my @new_fields;
-   while (@$fields)
-   {
+   while (@$fields) {
       my $name = shift @$fields;
       my $attr = shift @$fields;
-      unless ( ref $attr eq 'HASH' )
-      {
+      unless ( ref $attr eq 'HASH' ) {
          $attr = { type => $attr };
       }
       push @new_fields, { name => $name, %$attr };
@@ -288,10 +268,8 @@ sub _process_field_array
    my $num_fields   = scalar @$fields;
    my $num_dots     = 0;
    my $count_fields = 0;
-   while ( $count_fields < $num_fields )
-   {
-      foreach my $field (@$fields)
-      {
+   while ( $count_fields < $num_fields ) {
+      foreach my $field (@$fields) {
          my $count = ( $field->{name} =~ tr/\.// );
          next unless $count == $num_dots;
          $self->_make_field($field);
@@ -315,47 +293,42 @@ sub _make_field
    return unless $name;
 
    my $do_update;
-   if( $name =~ /^\+(.*)/ )
-   {
+   if ( $name =~ /^\+(.*)/ ) {
       $field_attr->{name} = $name = $1;
       $do_update = 1;
    }
 
    my $class =
-        $type =~ s/^\+//
-      ? $self->field_name_space
-         ? $self->field_name_space . "::" . $type
-         : $type
-      : 'HTML::FormHandler::Field::' . $type;
+      $type =~ s/^\+// ?
+      $self->field_name_space ?
+      $self->field_name_space . "::" . $type :
+         $type :
+      'HTML::FormHandler::Field::' . $type;
 
-    Class::MOP::load_class($class)
-      or die "Could not load field class '$type' $class for field '$name'";
+   Class::MOP::load_class($class) or
+      die "Could not load field class '$type' $class for field '$name'";
 
    $field_attr->{form} = $self->form if $self->form;
    # parent and name correction for names with dots
-   if ( $field_attr->{name} =~ /\./ )
-   {
+   if ( $field_attr->{name} =~ /\./ ) {
       my @names       = split /\./, $field_attr->{name};
       my $simple_name = pop @names;
       my $parent_name = join '.', @names;
       my $parent      = $self->field($parent_name);
-      if ($parent)
-      {
+      if ($parent) {
          die "The parent of field " . $field_attr->{name} . " is not a Compound Field"
             unless $parent->isa('HTML::FormHandler::Field::Compound');
          $field_attr->{parent} = $parent;
          $field_attr->{name}   = $simple_name;
       }
    }
-   elsif ( !($self->form && $self == $self->form ) )
-   {
+   elsif ( !( $self->form && $self == $self->form ) ) {
       # set parent
       $field_attr->{parent} = $self;
    }
    $self->_update_or_create( $field_attr->{parent} || $self->form,
-                          $field_attr, $class, $do_update );
+      $field_attr, $class, $do_update );
 }
-
 
 # update, replace, or create field
 sub _update_or_create
@@ -364,27 +337,25 @@ sub _update_or_create
 
    my $index = $parent->field_index( $field_attr->{name} );
    my $field;
-   if ( defined $index )
-   {
-      if( $do_update ) # this field started with '+'. Update.
+   if ( defined $index ) {
+      if ($do_update)    # this field started with '+'. Update.
       {
-         $field = $parent->field($field_attr->{name});
+         $field = $parent->field( $field_attr->{name} );
          die "Field to update for " . $field_attr->{name} . " not found"
             unless $field;
          delete $field_attr->{name};
-         foreach my $key ( keys %{$field_attr} )
-         {
+         foreach my $key ( keys %{$field_attr} ) {
             $field->$key( $field_attr->{$key} )
                if $field->can($key);
          }
       }
-      else # replace existing field
+      else               # replace existing field
       {
          $field = $class->new( %{$field_attr} );
          $parent->set_field_at( $index, $field );
       }
    }
-   else # new field
+   else                  # new field
    {
       $field = $class->new( %{$field_attr} );
       $parent->add_field($field);
@@ -395,8 +366,7 @@ sub field_index
 {
    my ( $self, $name ) = @_;
    my $index = 0;
-   for my $field ( $self->fields )
-   {
+   for my $field ( $self->fields ) {
       return $index if $field->name eq $name;
       $index++;
    }
@@ -410,21 +380,18 @@ sub field
    my $index;
    # if this is a full_name for a compound field
    # walk through the fields to get to it
-   if( $name =~ /\./ )
-   {
+   if ( $name =~ /\./ ) {
       my @names = split /\./, $name;
       my $f = $self->form || $self;
-      foreach my $fname (@names)
-      {
+      foreach my $fname (@names) {
          $f = $f->field($fname);
          return unless $f;
       }
       return $f;
    }
-   else # not a compound name
+   else    # not a compound name
    {
-      for my $field ( $self->fields )
-      {
+      for my $field ( $self->fields ) {
          return $field if ( $field->name eq $name );
       }
    }
@@ -447,16 +414,14 @@ sub _fields_validate
 {
    my $self = shift;
    # validate all fields
-   foreach my $field ( $self->fields )
-   {
+   foreach my $field ( $self->fields ) {
       next if ( $field->inactive );
       # Validate each field and "inflate" input -> value.
-      $field->validate_field;   # this calls the field's 'validate' routine
+      $field->validate_field;    # this calls the field's 'validate' routine
    }
 }
 
-after clear_data => sub
-{
+after clear_data => sub {
    my $self = shift;
    $self->clear_error_fields;
    $_->clear_data for $self->fields;
@@ -466,10 +431,8 @@ sub get_error_fields
 {
    my $self = shift;
    my @error_fields;
-   foreach my $field ($self->sorted_fields)
-   {
-      if( $field->has_fields )
-      {
+   foreach my $field ( $self->sorted_fields ) {
+      if ( $field->has_fields ) {
          $field->get_error_fields;
          push @error_fields, $field->error_fields if $field->has_error_fields;
       }
@@ -478,14 +441,14 @@ sub get_error_fields
    $self->add_error_field(@error_fields) if scalar @error_fields;
 }
 
-sub dump_fields { shift->dump( @_) }
+sub dump_fields { shift->dump(@_) }
+
 sub dump
 {
    my $self = shift;
 
    warn "HFH: ------- fields for ", $self->name, "-------\n";
-   for my $field ( $self->sorted_fields )
-   {
+   for my $field ( $self->sorted_fields ) {
       $field->dump;
    }
    warn "HFH: ------- end fields -------\n";
@@ -495,11 +458,10 @@ sub dump_validated
 {
    my $self = shift;
    warn "HFH: fields validated:\n";
-   foreach my $field ( $self->fields )
-   {
+   foreach my $field ( $self->fields ) {
       $field->dump_validated if $field->can('dump_validated');
       warn "HFH: ", $field->name, ": ",
-      ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";
+         ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";
    }
 }
 
@@ -511,30 +473,24 @@ sub process_node
    my $input = $self->input;
    # transfer the input values to the input attributes of the
    # subfields
-   if( ref $input eq 'HASH' )
-   {
-      foreach my $field ( $self->fields )
-      {
+   if ( ref $input eq 'HASH' ) {
+      foreach my $field ( $self->fields ) {
          my $field_name = $field->name;
          # Trim values and move to "input" slot
-         if ( exists $input->{$field_name} )
-         {
-            $field->input( $input->{$field_name} )
+         if ( exists $input->{$field_name} ) {
+            $field->input( $input->{$field_name} );
          }
-         elsif( $field->DOES('HTML::FormHandler::Field::Repeatable') )
-         {
+         elsif ( $field->DOES('HTML::FormHandler::Field::Repeatable') ) {
             $field->clear_other;
          }
-         elsif ( $field->has_input_without_param && !$field->inactive )
-         {
+         elsif ( $field->has_input_without_param && !$field->inactive ) {
             $field->input( $field->input_without_param );
          }
       }
    }
    $self->_fields_validate;
    my %value_hash;
-   for my $field ( $self->fields )
-   {
+   for my $field ( $self->fields ) {
       next if ( $field->noupdate || $field->inactive );
       $value_hash{ $field->accessor } = $field->value if $field->has_value;
    }
@@ -551,7 +507,6 @@ This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
-
 
 no Moose::Role;
 1;

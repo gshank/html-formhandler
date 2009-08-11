@@ -39,7 +39,7 @@ has 'width'    => ( isa => 'Int', is => 'rw', default => '80' );
 has 'scramble' => ( isa => 'Int', is => 'rw', default => '0' );
 has 'lines'    => ( isa => 'Int', is => 'rw', default => '2' );
 has 'gd_font'  => ( isa => 'Str', is => 'rw', default => 'Large' );
-has 'image'    => ( is => 'rw' );
+has 'image'    => ( is  => 'rw' );
 has '+css_class' => ( default => 'captcha' );
 
 has '+noupdate' => ( default => 1 );
@@ -49,22 +49,18 @@ sub get_init_value
    my $self = shift;
 
    my $captcha = $self->form->get_captcha;
-   if( $captcha )
-   {
-      if( $captcha->{validated} )
-      {
+   if ($captcha) {
+      if ( $captcha->{validated} ) {
          $self->required(0);
          $self->widget('no-display');
       }
-      else
-      {
+      else {
          $self->required(1);
          $self->widget('captcha');
-         $self->image($captcha->{image});
+         $self->image( $captcha->{image} );
       }
    }
-   else
-   {
+   else {
       $self->required(1);
       $self->widget('captcha');
       $self->gen_captcha;
@@ -77,13 +73,11 @@ sub validate
    my $self = shift;
 
    my $captcha = $self->form->get_captcha;
-   unless ($captcha->{rnd} eq $self->value)
-   {
-      $self->add_error( "Verification incorrect. Try again.");
+   unless ( $captcha->{rnd} eq $self->value ) {
+      $self->add_error("Verification incorrect. Try again.");
       $self->gen_captcha;
    }
-   else
-   {
+   else {
       $captcha->{validated} = 1;
    }
    $self->clear_value;
@@ -103,15 +97,14 @@ sub gen_captcha
       gd_font  => $self->gd_font,
    )->random->create->out;
    my $captcha = {
-      image => $image,
-      type  => $type,
-      rnd   => $rnd,
+      image     => $image,
+      type      => $type,
+      rnd       => $rnd,
       validated => 0,
    };
    $self->image($image);
    $self->form->set_captcha($captcha);
 }
-
 
 __PACKAGE__->meta->make_immutable;
 no Moose;

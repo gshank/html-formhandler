@@ -44,10 +44,11 @@ has 'item' => (
    clearer => 'clear_item',
    trigger => sub { shift->set_item(@_) }
 );
-sub build_item  { return }
+sub build_item { return }
+
 sub set_item
 {
-   my ( $self, $item) = @_;
+   my ( $self, $item ) = @_;
    $self->item_class( ref $item );
 }
 
@@ -59,8 +60,11 @@ fetch the object from the item_class for this id.
 
 =cut
 
-has 'item_id' => ( is => 'rw', clearer => 'clear_item_id',
-   trigger => sub { shift->set_item_id(@_)} );
+has 'item_id' => (
+   is      => 'rw',
+   clearer => 'clear_item_id',
+   trigger => sub { shift->set_item_id(@_) }
+);
 
 sub set_item_id { }
 
@@ -88,8 +92,8 @@ A builder for 'item_class' might be to return the class of the 'item'.
 =cut
 
 has 'item_class' => (
-   isa     => 'Str',
-   is      => 'rw',
+   isa => 'Str',
+   is  => 'rw',
 );
 
 =head2 guess_field_type
@@ -165,7 +169,7 @@ Update the model with validated fields
 
 sub update_model { }
 
-sub compute_model_stuff {}
+sub compute_model_stuff { }
 
 =head1 AUTHORS
 
