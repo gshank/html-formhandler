@@ -569,6 +569,7 @@ has 'form' => (
 has 'parent' => ( is => 'rw' );
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
+has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 # flags
 has [ 'ran_validation', 'validated', 'verbose', 'processed', 'did_init_obj' ] =>
    ( isa => 'Bool', is => 'rw' );
@@ -660,6 +661,7 @@ sub process
    $self->setup_form(@_);
    $self->validate_form if $self->has_params;
    $self->update_model  if $self->validated;
+   $self->after_update_model if $self->validated;
    $self->dump_fields   if $self->verbose;
    $self->processed(1);
    return $self->validated;
@@ -766,6 +768,23 @@ sub validate_form
 
 sub has_errors { shift->has_error_fields }
 sub num_errors { shift->num_error_fields }
+
+=pod
+
+after 'update_model' => sub {
+   my $self = shift;
+   $self->_init_from_object( $self, $self->item )
+      if ( $self->reload_after_update && $self->item );
+};
+
+=cut
+
+sub after_update_model 
+{
+   my $self = shift;
+   $self->_init_from_object( $self, $self->item )
+      if ( $self->reload_after_update && $self->item );
+}
 
 sub setup_form
 {

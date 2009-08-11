@@ -96,6 +96,7 @@ has 'contains' => (
 has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
 has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
+has '+reload_after_update' => ( default => 1 );
 
 sub clear_other
 {
