@@ -90,6 +90,7 @@ has 'options' => (
 );
 sub build_options { [] }
 has 'options_from' => ( isa => 'Str', is => 'rw', default => 'none' );
+has 'loaded_options' => ( isa => 'Bool', is => 'rw', default => 0 );
 
 =head2 set_options
 
@@ -258,9 +259,6 @@ sub _inner_validate_field
 {
    my ($self) = @_;
 
-   # load options because this is params validation
-   $self->_load_options;
-
    my $value = $self->value;
    return 1 unless defined $value;    # nothing to check
 
@@ -292,7 +290,20 @@ sub _init
 
    $self->SUPER::_init;
    # load options when no input and no value (empty form )
-   $self->_load_options;
+   $self->_load_options unless $self->loaded_options;
+}
+
+# load options for no init_obj && params
+# not in '_inner_validate_field' because that isn't called
+# for fields with no input
+before 'validate_field' => sub {
+   my $self = shift;
+   $self->_load_options unless $self->loaded_options;
+};
+
+sub clear_other
+{
+   shift->loaded_options(0);
 }
 
 sub _load_options
@@ -321,6 +332,7 @@ sub _load_options
    my @opts;
    push @opts, { value => shift @options, label => shift @options } while @options;
    $self->options( \@opts ) if @opts;
+   $self->loaded_options(1);
 }
 
 =head1 AUTHORS
