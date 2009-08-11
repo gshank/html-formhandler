@@ -12,7 +12,7 @@ use HTML::FormHandler::Params;
 
 use 5.008;
 
-our $VERSION = '0.27003';
+our $VERSION = '0.27004';
 
 =head1 NAME
 
