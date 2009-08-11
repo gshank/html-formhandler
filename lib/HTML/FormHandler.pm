@@ -794,7 +794,7 @@ sub setup_form
       {
          $self->_init_from_object( $self, $self->init_object || $self->item );
       }
-      elsif ( !$self->has_params )
+      else
       {
          # no initial object. empty form form must be initialized
          $self->_init;

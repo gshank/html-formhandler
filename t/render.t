@@ -1,4 +1,4 @@
-use Test::More tests => 15;
+use Test::More tests => 16;
 
 use HTML::FormHandler::Field::Text;
 
@@ -31,6 +31,7 @@ use HTML::FormHandler::Field::Text;
        range_end => 31 );
    has_field 'start_date.year' => ( type => 'Integer', range_start => 2000,
        range_end => 2020 );
+   has_field 'end_date' => ( type => 'Date' );
 
    has_field 'two_errors' => (
        apply => [
@@ -166,6 +167,10 @@ is( $output10, '
 my $output11 = $form->render_start;
 is( $output11,'<form id="testform" method="post">
 <fieldset class="main_fieldset">', 'Form start OK' );
+
+my $output12 = $form->render_field( $form->field('end_date') );
+ok( $output12, 'date field rendered' );
+
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
 
