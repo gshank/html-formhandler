@@ -811,13 +811,11 @@ sub _init_from_object
       next if $field->writeonly;
       next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
-      #      $value = $field->_apply_deflations( $value );
       if ( $field->isa('HTML::FormHandler::Field::Repeatable') ) {
          $field->_init_from_object($value);
       }
       elsif ( $field->isa('HTML::FormHandler::Field::Compound') ) {
          $self->_init_from_object( $field, $value );
-         $field->value($value);
       }
       else {
          if ( my @values = $field->get_init_value ) {
@@ -832,7 +830,7 @@ sub _init_from_object
       }
       $my_value->{ $field->name } = $field->value;
    }
-   $self->value($my_value);
+   $node->value($my_value);
    $self->did_init_obj(1);
 }
 
