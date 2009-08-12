@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 16;
+use Test::More;
 
 use_ok( 'HTML::FormHandler' );
 
@@ -127,4 +127,4 @@ $form->process( $init_object );
 ok( !$form->validated, 'form did not validate' );
 is( $form->num_errors, 2, 'form has two errors' );
 
-
+done_testing;

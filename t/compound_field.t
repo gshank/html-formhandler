@@ -1,4 +1,4 @@
-use Test::More tests => 20;
+use Test::More;
 
 use lib 't/lib';
 
@@ -108,4 +108,4 @@ is_deeply( $form->fif, $params, 'get fif from compound field' );
 $form->process( params => { 'compound.aaa' => undef } );
 ok( !$form->field( 'compound' )->has_errors, 'Not required copound with empty sub values is not checked');
 
-
+done_testing;

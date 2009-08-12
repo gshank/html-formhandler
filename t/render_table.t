@@ -1,4 +1,6 @@
-use Test::More tests => 2;
+use strict;
+use warnings;
+use Test::More;
 
 use HTML::FormHandler::Field::Text;
 
@@ -68,4 +70,4 @@ ok( $form, 'create form');
 
 ok( $form->render, 'get table rendered output from form');
 
-
+done_testing;

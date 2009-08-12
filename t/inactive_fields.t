@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More;
 
 {
    package Test::Form;
@@ -31,4 +31,4 @@ is_deeply( $form->fif, $fif, 'fif is correct' );
 is_deeply( $form->value, $fif, 'value is correct' );
 
 
-
+done_testing;

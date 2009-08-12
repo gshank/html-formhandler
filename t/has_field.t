@@ -1,4 +1,4 @@
-use Test::More tests => 20;
+use Test::More;
 
 use lib 't/lib';
 
@@ -32,3 +32,5 @@ $form = Form::MultipleRole->new;
 ok( $form, 'get form with roles' );
 ok( $form->field('street'), 'field from Address role' );
 ok( $form->field('email'), 'field from Person role' );
+
+done_testing;

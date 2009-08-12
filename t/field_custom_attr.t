@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More;
 
 use lib ('t/lib');
 
@@ -36,3 +36,4 @@ is( $form->field('bar')->foo_attr, 'xxx', 'attribute set ok' );
 ok( $form->field('bar')->foo_attr('test'), 'has extra attribute' );
 is( $form->field('bar')->foo_attr, 'test', 'attribute was set' );
 
+done_testing;

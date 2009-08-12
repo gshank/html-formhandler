@@ -1,8 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 34;
-plan tests => $tests;
 
 use_ok('HTML::FormHandler');
 
@@ -131,3 +129,5 @@ if ( !$form->process( params => { bar => 1, } ) )
       fail("error messages match");
    }
 }
+
+done_testing;
