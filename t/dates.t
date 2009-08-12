@@ -6,7 +6,6 @@ use Test::More;
 BEGIN {
    eval "use DateTime::Format::Strptime";
    plan skip_all => 'DateTime::Format::Strptime required' if $@;
-   plan tests => 26;
 }
 
 #
@@ -86,3 +85,17 @@ $field->value( DateTime->new( year => 2008, month => 12, day => 31 ) );
 is( $field->fif, $field->value->strftime("%d-%m-%Y", 'fif ok' ), 'fif from value ok');
 
 
+{
+   package Test::Date;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+   with 'HTML::FormHandler::Render::Simple';
+
+   has_field 'end_date' => ( type => 'Date' );
+}
+
+my $form = Test::Date->new;
+ok( $form, 'form with date created' );
+ok( $form->render_field('end_date'), 'date field renders' );
+
+done_testing;

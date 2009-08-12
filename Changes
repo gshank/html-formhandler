@@ -1,3 +1,6 @@
+0.27005 Wed Aug 12, 2009
+    DateTime::Format::Strptime dep again
+
 0.27004 Tues Aug 11, 2009
     Date inherits from Text. Fix loading compound fields from related.
     Call load_options for forms with no init_obj & params
