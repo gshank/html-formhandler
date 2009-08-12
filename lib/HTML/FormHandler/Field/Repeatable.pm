@@ -63,6 +63,24 @@ or using the shortcut form:
    $form->field('tags.0')
    $form->field('addresses.0.city')
 
+The array of elements will be in C<< $form->field('addresses')->fields >>.
+The subfields of the elements will be in a fields array in each element.
+
+   foreach my $element ( $form->field('addresses')->fields )
+   {
+      foreach my $field ( $element->fields )
+      {
+         # do something
+      }
+   }
+
+Every field that has a 'fields' array will also have an 'error_fields' array
+containing references to the fields that contain errors.
+
+Note that after updates to the database the fields will be reloaded. This means
+that the array indexes ( the '3' in C<< $form->field('addresses.3') >> ) may
+not be the same if there have been changes since the fields were initially 
+loaded.
 
 =head1 ATTRIBUTES
 
