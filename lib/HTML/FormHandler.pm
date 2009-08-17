@@ -6,9 +6,9 @@ with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
    'HTML::FormHandler::TransformAndCheck';
 
 use Carp;
+use Class::MOP;
 use Locale::Maketext;
 use HTML::FormHandler::I18N;
-use HTML::FormHandler::Params;
 
 use 5.008;
 
@@ -615,6 +615,24 @@ has '_required' => (
    }
 );
 
+{
+    use Moose::Util::TypeConstraints;
+
+    my $tc = subtype as 'ClassName';
+    coerce $tc, from 'Str', via { Class::MOP::load_class($_); $_ };
+
+    has 'params_class' => (
+        is      => 'ro',
+        isa     => $tc,
+        coerce  => 1,
+        default => 'HTML::FormHandler::Params',
+    );
+
+    no Moose::Util::TypeConstraints;
+}
+
+has 'params_args' => (is => 'ro', isa => 'ArrayRef');
+
 sub BUILDARGS
 {
    my $class = shift;
@@ -925,7 +943,7 @@ sub _clear_dependency
 sub _munge_params
 {
    my ( $self, $params, $attr ) = @_;
-   my $_fix_params = HTML::FormHandler::Params->new;
+   my $_fix_params = $self->params_class->new(@{ $self->params_args || [] });
    my $new_params  = $_fix_params->expand_hash($params);
    if ( $self->html_prefix ) {
       $new_params = $new_params->{ $self->name };
