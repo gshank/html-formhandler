@@ -5,7 +5,7 @@ use Moose;
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 
 # do we need 'accessor' ?
-# do we need 'parent' ?
+has 'parent' => ( is =>'rw' );
 
 has 'input' => (
    is        => 'rw',

@@ -5,7 +5,6 @@ use MooseX::AttributeHelpers;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
 use HTML::FormHandler::FieldData;
 
-with 'HTML::FormHandler::Data';
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
 
