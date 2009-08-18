@@ -3,7 +3,7 @@ package HTML::FormHandler;
 use Moose;
 use MooseX::AttributeHelpers;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
-   'HTML::FormHandler::TransformAndCheck';
+   'HTML::FormHandler::Validate::Actions';
 
 use Carp;
 use Class::MOP;
@@ -567,6 +567,17 @@ has 'form' => (
    default  => sub { shift }
 );
 has 'parent' => ( is => 'rw' );
+has 'input' => (
+   is        => 'rw',
+   clearer   => 'clear_input',
+   predicate => 'has_input',
+);
+has 'value' => (
+   is        => 'rw',
+   clearer   => 'clear_value',
+   predicate => 'has_value',
+);
+
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
@@ -783,6 +794,8 @@ sub validate_form
    $self->dump_validated if $self->verbose;
    return $self->validated;
 }
+
+sub validate { 1 }
 
 sub has_errors { shift->has_error_fields }
 sub num_errors { shift->num_error_fields }

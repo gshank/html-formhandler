@@ -172,6 +172,7 @@ sub clone_fields
    my @field_array;
    foreach my $field ( @{$fields} ) {
       my $new_field = $field->clone( errors => [], error_fields => [] );
+      $new_field->data($new_field->build_data);
       if ( $new_field->has_fields ) {
          $self->clone_fields( $new_field, [ $new_field->fields ] );
       }

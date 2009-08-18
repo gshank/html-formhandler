@@ -3,8 +3,11 @@ package HTML::FormHandler::Field;
 use HTML::FormHandler::Moose;
 use MooseX::AttributeHelpers;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
+use HTML::FormHandler::FieldData;
 
-with 'HTML::FormHandler::TransformAndCheck';
+with 'HTML::FormHandler::Data';
+with 'HTML::FormHandler::Validate';
+with 'HTML::FormHandler::Validate::Actions';
 
 our $VERSION = '0.02';
 
@@ -516,7 +519,6 @@ errors with C<< $field->add_error >>.
 
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
-has 'init_value'       => ( is  => 'rw',   clearer   => 'clear_init_value' );
 has 'parent'           => ( is  => 'rw',   predicate => 'has_parent' );
 has 'errors_on_parent' => ( isa => 'Bool', is        => 'rw' );
 sub has_fields { }
@@ -524,6 +526,15 @@ has 'input_without_param' => (
    is        => 'rw',
    predicate => 'has_input_without_param'
 );
+has 'data' => ( isa => 'HTML::FormHandler::FieldData', is => 'rw',
+   builder => 'build_data',
+   handles => [ 'input', 'clear_input', 'has_input',
+                'value', 'clear_value', 'has_value',
+                'init_value', 'clear_init_value',
+                'errors', 'push_errors', 'num_errors', 'has_errors', 'clear_errors', 'validated',
+              ],
+);
+sub build_data { HTML::FormHandler::FieldData->new( name => shift->name ) }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 
 has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
@@ -605,20 +616,6 @@ has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
 has 'disabled'   => ( isa => 'Bool', is => 'rw' );
 has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
-has 'errors'     => (
-   metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef[Str]',
-   is         => 'rw',
-   auto_deref => 1,
-   default    => sub { [] },
-   provides   => {
-      'push'  => 'push_errors',
-      'count' => 'num_errors',
-      'empty' => 'has_errors',
-      'clear' => 'clear_errors',
-   }
-);
-sub validated { !shift->has_errors }
 has 'set_validate' => (
    isa     => 'Str',
    is      => 'rw',
@@ -827,6 +824,33 @@ sub render
    return $self->form->$form_render_method;
 }
 
+sub has_some_value
+{
+   my $x = shift;
+
+   return unless defined $x;
+   return $x =~ /\S/ if !ref $x;
+   if ( ref $x eq 'ARRAY' ) {
+      for my $elem (@$x) {
+         return 1 if has_some_value($elem);
+      }
+      return 0;
+   }
+   if ( ref $x eq 'HASH' ) {
+      for my $key ( keys %$x ) {
+         return 1 if has_some_value( $x->{$key} );
+      }
+      return 0;
+   }
+   return blessed $x;    # true if blessed, otherwise false
+}
+
+sub input_defined
+{
+   my ($self) = @_;
+   return unless $self->has_input;
+   return has_some_value( $self->input );
+}
 sub dump
 {
    my $self = shift;
