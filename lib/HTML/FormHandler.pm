@@ -569,12 +569,27 @@ has 'form' => (
 );
 has 'parent' => ( is => 'rw' );
 has 'state' => ( isa => 'HTML::FormHandler::State', is => 'rw',
+   clearer => 'clear_state',
    lazy => 1, builder => 'build_state',
    handles => [ 'input', 'clear_input', 'has_input',
                 'value', 'clear_value', 'has_value',
               ],
 );
-sub build_state { HTML::FormHandler::State->new( name => shift->name ) }
+sub build_state { 
+   my $self = shift;
+   return HTML::FormHandler::State->new( name => $self->name );
+}
+sub fill_state 
+{
+   my $self = shift;
+   my $state = $self->state;
+$DB::single=1;
+   foreach my $field ($self->fields)
+   {
+      $state->add_child($field->state) if $field->state;
+   }
+   return $state;
+}
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
@@ -689,9 +704,21 @@ sub process
    $self->update_model  if $self->validated;
    $self->after_update_model if $self->validated;
    $self->dump_fields   if $self->verbose;
+   $self->fill_state;
    $self->processed(1);
    return $self->validated;
 }
+
+sub result
+{
+   my $self = shift;
+   $self->process( @_ );
+   my $state = $self->state;
+   $self->clear;
+   return $state;
+}
+
+
 
 sub db_validate
 {
@@ -714,12 +741,7 @@ sub clear
    $self->did_init_obj(0);
 }
 
-sub clear_data
-{
-   my $self = shift;
-   $self->clear_value;
-   $self->clear_input;
-}
+sub clear_data { shift->clear_state }
 
 sub fif
 {

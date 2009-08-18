@@ -33,6 +33,19 @@ has 'errors'     => (
    }
 );
 
+has 'children'     => (
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef[HTML::FormHandler::State]',
+   is         => 'rw',
+   auto_deref => 1,
+   default    => sub { [] },
+   provides   => {
+      'push'  => 'add_child',
+      'count' => 'num_children',
+      'empty' => 'has_children',
+      'clear' => 'clear_children',
+   }
+);
 sub validated { !shift->has_errors }
 
 has 'init_value'       => ( is  => 'rw',   clearer   => 'clear_init_value' );

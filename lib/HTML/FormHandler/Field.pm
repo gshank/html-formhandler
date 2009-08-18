@@ -533,7 +533,12 @@ has 'state' => ( isa => 'HTML::FormHandler::State', is => 'rw',
                 'errors', 'push_errors', 'num_errors', 'has_errors', 'clear_errors', 'validated',
               ],
 );
-sub build_state { HTML::FormHandler::State->new( name => shift->name ) }
+sub build_state { 
+   my $self = shift;
+$DB::single=1;
+   my @parent = ('parent', $self->parent->state) if $self->parent;
+   return HTML::FormHandler::State->new( name => $self->name, @parent  );
+}
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 
 has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
