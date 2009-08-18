@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More;
 
 
 my $struct = {
@@ -125,3 +125,5 @@ $form->process( $fif );
 ok( $form->validated, 'form processed from fif' );
 
 is_deeply( $form->values, $struct, 'values round-tripped from fif');
+
+done_testing;

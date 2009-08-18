@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More  tests => 22;
+use Test::More;
 use lib 't/lib';
 
 use_ok( 'HTML::FormHandler::Field::Text' );
@@ -125,3 +125,4 @@ ok( $form->field('_password')->has_errors, 'Password confirmation has errors' );
 $form->process( params => { password => 'aaaaaa', _password => 'aaaaaa' } );
 ok( $form->validated, 'password confirmation validated' );
 
+done_testing;

@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More;
 
 use_ok('HTML::FormHandler::Field::Repeatable');
 
@@ -36,3 +36,4 @@ is_deeply( $form->fif, $fif, 'fif is correct' );
 
 is_deeply( $form->values, $params, 'values are correct' );
 
+done_testing;

@@ -7,11 +7,6 @@ use lib 't/lib';
 use DateTime;
 use Scalar::Util qw(blessed);
 
-BEGIN
-{
-   plan tests => 12;
-}
-
 {
    package My::Form;
    use HTML::FormHandler::Moose;
@@ -127,4 +122,4 @@ $params->{'date_time_fif.year'} = 1000;
 $params->{'date_time_fif.day'} = 1;
 is_deeply( $form->fif, $params, 'fif is correct' );
 
-
+done_testing;

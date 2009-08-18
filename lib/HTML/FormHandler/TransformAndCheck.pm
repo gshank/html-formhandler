@@ -19,7 +19,7 @@ has 'input' => (
    clearer   => 'clear_input',
    predicate => 'has_input',
 );
-
+   
 has 'value' => (
    is        => 'rw',
    clearer   => 'clear_value',

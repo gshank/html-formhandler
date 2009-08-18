@@ -6,13 +6,13 @@ with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
    'HTML::FormHandler::TransformAndCheck';
 
 use Carp;
+use Class::MOP;
 use Locale::Maketext;
 use HTML::FormHandler::I18N;
-use HTML::FormHandler::Params;
 
 use 5.008;
 
-our $VERSION = '0.27003';
+our $VERSION = '0.27006';
 
 =head1 NAME
 
@@ -569,6 +569,7 @@ has 'form' => (
 has 'parent' => ( is => 'rw' );
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
+has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 # flags
 has [ 'ran_validation', 'validated', 'verbose', 'processed', 'did_init_obj' ] =>
    ( isa => 'Bool', is => 'rw' );
@@ -613,6 +614,24 @@ has '_required' => (
       push  => 'add_required'
    }
 );
+
+{
+    use Moose::Util::TypeConstraints;
+
+    my $tc = subtype as 'ClassName';
+    coerce $tc, from 'Str', via { Class::MOP::load_class($_); $_ };
+
+    has 'params_class' => (
+        is      => 'ro',
+        isa     => $tc,
+        coerce  => 1,
+        default => 'HTML::FormHandler::Params',
+    );
+
+    no Moose::Util::TypeConstraints;
+}
+
+has 'params_args' => (is => 'ro', isa => 'ArrayRef');
 
 sub BUILDARGS
 {
@@ -660,6 +679,7 @@ sub process
    $self->setup_form(@_);
    $self->validate_form if $self->has_params;
    $self->update_model  if $self->validated;
+   $self->after_update_model if $self->validated;
    $self->dump_fields   if $self->verbose;
    $self->processed(1);
    return $self->validated;
@@ -767,6 +787,23 @@ sub validate_form
 sub has_errors { shift->has_error_fields }
 sub num_errors { shift->num_error_fields }
 
+=pod
+
+after 'update_model' => sub {
+   my $self = shift;
+   $self->_init_from_object( $self, $self->item )
+      if ( $self->reload_after_update && $self->item );
+};
+
+=cut
+
+sub after_update_model 
+{
+   my $self = shift;
+   $self->_init_from_object( $self, $self->item )
+      if ( $self->reload_after_update && $self->item );
+}
+
 sub setup_form
 {
    my ( $self, @args ) = @_;
@@ -790,7 +827,8 @@ sub setup_form
       if ( $self->init_object || $self->item ) {
          $self->_init_from_object( $self, $self->init_object || $self->item );
       }
-      elsif ( !$self->has_params ) {
+      elsif( !$self->has_params )
+      {
          # no initial object. empty form form must be initialized
          $self->_init;
       }
@@ -810,13 +848,11 @@ sub _init_from_object
       next if $field->writeonly;
       next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
-      #      $value = $field->_apply_deflations( $value );
       if ( $field->isa('HTML::FormHandler::Field::Repeatable') ) {
          $field->_init_from_object($value);
       }
       elsif ( $field->isa('HTML::FormHandler::Field::Compound') ) {
          $self->_init_from_object( $field, $value );
-         $field->value($value);
       }
       else {
          if ( my @values = $field->get_init_value ) {
@@ -831,7 +867,7 @@ sub _init_from_object
       }
       $my_value->{ $field->name } = $field->value;
    }
-   $self->value($my_value);
+   $node->value($my_value);
    $self->did_init_obj(1);
 }
 
@@ -907,7 +943,7 @@ sub _clear_dependency
 sub _munge_params
 {
    my ( $self, $params, $attr ) = @_;
-   my $_fix_params = HTML::FormHandler::Params->new;
+   my $_fix_params = $self->params_class->new(@{ $self->params_args || [] });
    my $new_params  = $_fix_params->expand_hash($params);
    if ( $self->html_prefix ) {
       $new_params = $new_params->{ $self->name };

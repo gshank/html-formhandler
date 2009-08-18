@@ -1,4 +1,4 @@
-use Test::More tests => 7;
+use Test::More;
 
 use_ok( 'HTML::FormHandler::Model' );
 use_ok( 'HTML::FormHandler' );
@@ -9,4 +9,4 @@ use_ok( 'HTML::FormHandler::Field::Repeatable' );
 
 use_ok( 'HTML::FormHandler::Model::CDBI' );
 
-
+done_testing;

@@ -1,8 +1,6 @@
-#! /usr/bin/perl -w
-
 use strict;
 use warnings;
-use Test::More tests => 21;
+use Test::More;
 use Test::Exception;
 
 use HTML::FormHandler::Types (':all');
@@ -90,5 +88,4 @@ $field->validate_field;
 is( $field->errors->[0], 'Not a valid IP address', 'error from IPAddress' );
 
 
-
-
+done_testing;

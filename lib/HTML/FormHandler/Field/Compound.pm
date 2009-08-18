@@ -27,6 +27,11 @@ If all validation is performed in the parent class so that no
 validation is necessary in the child classes, then the field class
 'Nested' may be used.
 
+The array of subfields is available in the 'fields' array in
+the compound field:
+
+   $form->field('birthdate')->fields
+
 Error messages will be available in the field on which the error
 occurred. You can access 'error_fields' on the form or on Compound
 fields (and subclasses, like Repeatable).

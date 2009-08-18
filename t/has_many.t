@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 21;
+use Test::More;
 
 use_ok( 'HTML::FormHandler::Field::Repeatable' );
 use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
@@ -142,3 +142,4 @@ $form->clear_init_object;
 $form->process( { my_test => 'test' } );
 is_deeply( $form->value()->{addresses}, [], 'Addresses deleted' );
 
+done_testing;

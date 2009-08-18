@@ -524,6 +524,7 @@ has 'input_without_param' => (
    is        => 'rw',
    predicate => 'has_input_without_param'
 );
+has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 
 has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 

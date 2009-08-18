@@ -1,5 +1,6 @@
-use Test::More tests => 9;
-
+use strict;
+use warnings;
+use Test::More;
 use HTML::FormHandler::Field::Text;
 
 
@@ -76,3 +77,4 @@ is_deeply( $form->field('vegetables')->value, [2,4], 'vegetables value is correc
 is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], test_field => '' }, 'fif is correct');
 is_deeply( $form->values, { fruit => 2, vegetables => [2, 4] }, 'values are correct');
 
+done_testing;

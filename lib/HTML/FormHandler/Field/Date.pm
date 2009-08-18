@@ -50,7 +50,8 @@ has 'format' => ( is => 'rw', isa => 'Str', default => "%Y-%m-%d" );
 has 'locale'     => ( is => 'rw', isa => 'Str' );                                  # TODO
 has 'time_zone'  => ( is => 'rw', isa => 'Str' );                                  # TODO
 has 'date_start' => ( is => 'rw', isa => 'Str', clearer => 'clear_date_start' );
-has 'date_end'   => ( is => 'rw', isa => 'Str', clearer => 'clear_date_end' );
+has 'date_end' => ( is => 'rw', isa => 'Str', clearer => 'clear_date_end' );
+has '+size' => ( default => '10' );
 
 # translator for Datepicker formats to DateTime strftime formats
 my $dp_to_dt = {

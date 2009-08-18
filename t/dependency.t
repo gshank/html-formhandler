@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More;
 
 use DateTime;
 
@@ -49,4 +49,4 @@ foreach my $field (@error_fields)
    is( $field->errors->[0], $field->label . ' field is required', "required field: $name");
 }
 
-
+done_testing;

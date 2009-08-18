@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More;
 use lib 't/lib';
 
 {
@@ -106,3 +106,5 @@ is( $message, "This number (10) is not less than ten!", 'type constraint - error
 ok( !$form->field('less_than_ten_pass')->has_errors,     'type constraint - pass' );
 #warn Dumper( $form ); use Data::Dumper;
 is_deeply( $form->fif, $params, 'fif is correct');
+
+done_testing;

@@ -1,3 +1,13 @@
+0.27006 Mon Aug 17, 2009
+    Add ability to set params class and arguments
+
+0.27005 Wed Aug 12, 2009
+    DateTime::Format::Strptime dep again
+
+0.27004 Tues Aug 11, 2009
+    Date inherits from Text. Fix loading compound fields from related.
+    Call load_options for forms with no init_obj & params
+
 0.27003 Sat Aug 2, 2009
     Indexing failure missing version in Date
 

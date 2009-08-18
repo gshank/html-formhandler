@@ -65,13 +65,17 @@ sub expand_hash
          else {
             s/\\(.)/$1/g if $sep;    # remove escaping
             $$box_ref = {} unless defined $$box_ref;
+            $$box_ref = { '' => $$box_ref } if( ! ref $$box_ref );
             croak "HFH: param clash for $name=$_"
                unless ref $$box_ref eq 'HASH';
             $box_ref = \( $$box_ref->{$_} );
          }
       }
-      croak "HFH: param clash for $name value $flat->{$name}"
-         if defined $$box_ref;
+      if( defined $$box_ref ){
+         croak "HFH: param clash for $name value $flat->{$name}"
+            if ref $$box_ref ne 'HASH';
+         $box_ref = \( $$box_ref->{''} );
+      }
       $$box_ref = $flat->{$name};
    }
    return $deep;

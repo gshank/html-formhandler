@@ -1,4 +1,6 @@
-use Test::More tests => 15;
+use strict;
+use warnings;
+use Test::More;
 
 use HTML::FormHandler::Field::Text;
 
@@ -166,7 +168,10 @@ is( $output10, '
 my $output11 = $form->render_start;
 is( $output11,'<form id="testform" method="post">
 <fieldset class="main_fieldset">', 'Form start OK' );
+
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
 
 is( $form->render_field( $form->field('no_render')), '', 'no_render' );
+
+done_testing;

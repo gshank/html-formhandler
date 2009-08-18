@@ -1,8 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-my $tests = 34;
-plan tests => $tests;
 
 use_ok('HTML::FormHandler');
 
@@ -131,3 +129,11 @@ if ( !$form->process( params => { bar => 1, } ) )
       fail("error messages match");
    }
 }
+
+# 'image' input produces { foo => bar, 'foo.x' => 42, 'foo.y' => 23 }
+$form = HTML::FormHandler->new( name => 'baz', html_prefix => 1, field_list => [ 'foo' ] );
+eval{  $form->process( params => {  'baz.foo' => 'bar', 'baz.foo.x' => 42, 'baz.foo.y' => 23  } ) };
+ok( !$@, 'image field processed' ) or diag $@;
+is_deeply( $form->field( 'foo' )->value, { '' => 'bar', x => 42, y => 23 } );
+
+done_testing;
