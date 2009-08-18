@@ -158,6 +158,7 @@ sub clone_element
    my ( $self, $index ) = @_;
 
    my $field = $self->contains->clone( errors => [], error_fields => [] );
+   $field->state($field->build_state);
    $field->name($index);
    $field->parent($self);
    if ( $field->has_fields ) {
@@ -172,7 +173,7 @@ sub clone_fields
    my @field_array;
    foreach my $field ( @{$fields} ) {
       my $new_field = $field->clone( errors => [], error_fields => [] );
-      $new_field->data($new_field->build_data);
+      $new_field->state($new_field->build_state);
       if ( $new_field->has_fields ) {
          $self->clone_fields( $new_field, [ $new_field->fields ] );
       }

@@ -9,6 +9,7 @@ use Carp;
 use Class::MOP;
 use Locale::Maketext;
 use HTML::FormHandler::I18N;
+use HTML::FormHandler::State;
 
 use 5.008;
 
@@ -567,17 +568,13 @@ has 'form' => (
    default  => sub { shift }
 );
 has 'parent' => ( is => 'rw' );
-has 'input' => (
-   is        => 'rw',
-   clearer   => 'clear_input',
-   predicate => 'has_input',
+has 'state' => ( isa => 'HTML::FormHandler::State', is => 'rw',
+   lazy => 1, builder => 'build_state',
+   handles => [ 'input', 'clear_input', 'has_input',
+                'value', 'clear_value', 'has_value',
+              ],
 );
-has 'value' => (
-   is        => 'rw',
-   clearer   => 'clear_value',
-   predicate => 'has_value',
-);
-
+sub build_state { HTML::FormHandler::State->new( name => shift->name ) }
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );

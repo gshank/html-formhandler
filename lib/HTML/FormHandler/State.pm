@@ -1,4 +1,4 @@
-package HTML::FormHandler::FieldData;
+package HTML::FormHandler::State;
 
 use Moose;
 
