@@ -535,7 +535,6 @@ has 'state' => ( isa => 'HTML::FormHandler::State', is => 'rw',
 );
 sub build_state { 
    my $self = shift;
-$DB::single=1;
    my @parent = ('parent', $self->parent->state) if $self->parent;
    return HTML::FormHandler::State->new( name => $self->name, @parent  );
 }

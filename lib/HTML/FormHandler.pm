@@ -583,10 +583,10 @@ sub fill_state
 {
    my $self = shift;
    my $state = $self->state;
-$DB::single=1;
    foreach my $field ($self->fields)
    {
       $state->add_child($field->state) if $field->state;
+      $state->push_errors($field->errors) if $field->has_errors;
    }
    return $state;
 }
@@ -709,11 +709,12 @@ sub process
    return $self->validated;
 }
 
-sub result
+sub get_result
 {
    my $self = shift;
    $self->process( @_ );
    my $state = $self->state;
+   $state->validated($self->validated);
    $self->clear;
    return $state;
 }

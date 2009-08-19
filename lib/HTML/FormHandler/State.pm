@@ -46,8 +46,35 @@ has 'children'     => (
       'clear' => 'clear_children',
    }
 );
-sub validated { !shift->has_errors }
+sub validated { !$_[0]->has_errors && $_[0]->ran_validation  }
+sub ran_validation { shift->has_input }
 
 has 'init_value'       => ( is  => 'rw',   clearer   => 'clear_init_value' );
+
+sub field
+{
+   my ( $self, $name, $die ) = @_;
+
+   my $index;
+   # if this is a full_name for a compound field
+   # walk through the fields to get to it
+   if ( $name =~ /\./ ) {
+      my @names = split /\./, $name;
+      my $f = $self;
+      foreach my $fname (@names) {
+         $f = $f->field($fname);
+         return unless $f;
+      }
+      return $f;
+   }
+   else    # not a compound name
+   {
+      for my $field ( $self->children ) {
+         return $field if ( $field->name eq $name );
+      }
+   }
+   return unless $die;
+   die "Field '$name' not found in '$self'";
+}
 
 1;
