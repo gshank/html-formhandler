@@ -571,8 +571,8 @@ has 'parent' => ( is => 'rw' );
 has 'state' => ( isa => 'HTML::FormHandler::State', is => 'rw',
    clearer => 'clear_state',
    lazy => 1, builder => 'build_state',
-   handles => [ 'input', 'clear_input', 'has_input',
-                'value', 'clear_value', 'has_value',
+   handles => [ 'input', '_set_input',  '_clear_input', 'has_input',
+                'value', '_set_value', '_clear_value', 'has_value',
               ],
 );
 sub build_state { 
@@ -800,7 +800,7 @@ sub validate_form
    my $self   = shift;
    my $params = $self->params;
    $self->_set_dependency;    # set required dependencies
-   $self->input($params);
+   $self->_set_input($params);
    $self->process_node;       # build and validate
    $self->_apply_actions;
    $self->validate();
@@ -890,7 +890,8 @@ sub _init_from_object
          if ( my @values = $field->get_init_value ) {
             my $values_ref = @values > 1 ? \@values : shift @values;
             $field->init_value($values_ref) if defined $values_ref;
-            $field->value($values_ref)      if defined $values_ref;
+            $field->_set_value($values_ref)      if defined $values_ref;
+            $field->state->parent($field->parent->state) if $field->parent;
          }
          else {
             $self->init_value( $field, $value );
@@ -899,7 +900,8 @@ sub _init_from_object
       }
       $my_value->{ $field->name } = $field->value;
    }
-   $node->value($my_value);
+   $node->_set_value($my_value);
+   $node->state->parent($node->parent->state) if $node->parent;
    $self->did_init_obj(1);
 }
 
@@ -925,7 +927,7 @@ sub init_value
 {
    my ( $self, $field, $value ) = @_;
    $field->init_value($value);
-   $field->value($value);
+   $field->_set_value($value);
 }
 
 sub _set_dependency

@@ -130,7 +130,7 @@ sub clear_other
       }
    }
    $self->clear_fields;
-   $self->clear_value;
+   $self->_clear_value;
 }
 
 sub create_element
@@ -145,8 +145,8 @@ sub create_element
    $instance->add_field( $self->fields );
    if ( $self->auto_id ) {
       unless ( grep $_->can('is_primary_key') && $_->is_primary_key, @{ $instance->fields } ) {
-         $instance->add_field(
-            HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' ) );
+         my $field = HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' );
+         $instance->add_field( $field );
       }
    }
    $_->parent($instance) for $instance->fields;
@@ -158,7 +158,7 @@ sub clone_element
    my ( $self, $index ) = @_;
 
    my $field = $self->contains->clone( errors => [], error_fields => [] );
-   $field->state($field->build_state);
+   $field->_set_state($field->build_state);
    $field->name($index);
    $field->parent($self);
    if ( $field->has_fields ) {
@@ -173,11 +173,11 @@ sub clone_fields
    my @field_array;
    foreach my $field ( @{$fields} ) {
       my $new_field = $field->clone( errors => [], error_fields => [] );
-      $new_field->state($new_field->build_state);
       if ( $new_field->has_fields ) {
          $self->clone_fields( $new_field, [ $new_field->fields ] );
       }
       $new_field->parent($parent);
+      $new_field->_set_state($new_field->build_state);
       push @field_array, $new_field;
    }
    $parent->fields( \@field_array );
@@ -200,7 +200,8 @@ sub process_node
       foreach my $element ( @{$input} ) {
          next unless $element;
          my $field = $self->clone_element($index);
-         $field->input($element);
+         $field->_set_input($element);
+         $self->state->add_child($field->state);
          push @fields, $field;
          $index++;
       }
@@ -215,7 +216,7 @@ sub process_node
    for my $field ( $self->fields ) {
       push @value_array, $field->value;
    }
-   $self->value( \@value_array );
+   $self->_set_value( \@value_array );
 }
 
 # this is called when there is an init_object or an db item with values
@@ -235,19 +236,20 @@ sub _init_from_object
       if ( $field->has_fields ) {
          $self->form->_init_from_object( $field, $element );
          my $ele_value = $self->make_values( [ $field->fields ] );
-         $field->value($ele_value);
+         $field->_set_value($ele_value);
          push @new_values, $ele_value;
       }
       else {
-         $field->value($element);
+         $field->_set_value($element);
       }
       push @fields, $field;
+      $self->state->add_child($field->state);
       $index++;
    }
    $self->index($index);
    $self->fields( \@fields );
-   $self->value( \@new_values ) if scalar @new_values;
-   $self->value($values) unless scalar @new_values;
+   $values = \@new_values if scalar @new_values;
+   $self->_set_value( $values );
 }
 
 sub make_values

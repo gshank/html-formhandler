@@ -93,7 +93,7 @@ sub validate
       $self->add_error( $strp->errmsg || $@ );
       return;
    }
-   $self->value($dt);
+   $self->_set_value($dt);
    my $val_strp = DateTime::Format::Strptime->new( pattern => "%Y-%m-%d" );
    if ( $self->date_start ) {
       my $date_start = $val_strp->parse_datetime( $self->date_start );

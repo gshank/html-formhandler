@@ -480,13 +480,18 @@ sub process_node
          my $field_name = $field->name;
          # Trim values and move to "input" slot
          if ( exists $input->{$field_name} ) {
-            $field->input( $input->{$field_name} );
+            $field->_set_input( $input->{$field_name} );
          }
          elsif ( $field->DOES('HTML::FormHandler::Field::Repeatable') ) {
             $field->clear_other;
          }
          elsif ( $field->has_input_without_param && !$field->inactive ) {
-            $field->input( $field->input_without_param );
+            $field->_set_input( $field->input_without_param );
+         }
+         if( $field->has_input && $field->parent )
+         {
+            $field->state->parent($field->parent->state);
+            $self->state->add_child($field->state);
          }
       }
    }
@@ -496,7 +501,7 @@ sub process_node
       next if ( $field->noupdate || $field->inactive );
       $value_hash{ $field->accessor } = $field->value if $field->has_value;
    }
-   $self->value( \%value_hash );
+   $self->_set_value( \%value_hash );
 }
 
 =head1 AUTHORS

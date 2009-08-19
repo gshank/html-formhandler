@@ -270,7 +270,7 @@ sub _inner_validate_field
    }
    elsif ( ref $value ne 'ARRAY' && $self->multiple ) {
       $value = [$value];
-      $self->value($value);
+      $self->_set_value($value);
    }
 
    # create a lookup hash

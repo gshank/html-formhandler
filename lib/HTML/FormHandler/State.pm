@@ -9,13 +9,15 @@ has 'parent' => ( is =>'rw' );
 
 has 'input' => (
    is        => 'rw',
-   clearer   => 'clear_input',
+   clearer   => '_clear_input',
+   writer    => '_set_input',
    predicate => 'has_input',
 );
    
 has 'value' => (
    is        => 'rw',
-   clearer   => 'clear_value',
+   writer    => '_set_value',
+   clearer   => '_clear_value',
    predicate => 'has_value',
 );
 

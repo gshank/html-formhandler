@@ -14,7 +14,7 @@ my $field = HTML::FormHandler::Field::Text->new(
 
 is( $field->password, 1, 'password is set');
 
-$field->value('abcdef');
+$field->_set_value('abcdef');
 is( $field->value, 'abcdef', 'set and get value' );
 
 is( $field->fif, '', 'no fif for password');
@@ -27,7 +27,7 @@ $field = HTML::FormHandler::Field::Text->new(
 
 is( $field->password, undef, 'password is not set');
 
-$field->value('abcdef');
+$field->_set_value('abcdef');
 is( $field->value, 'abcdef', 'set and get value' );
 
 is( $field->fif, 'abcdef', 'get fif');
@@ -68,25 +68,25 @@ $form->process( $params );
 
 ok( $field,  'got password field' );
 
-$field->input( '2192ab201def' );
+$field->_set_input( '2192ab201def' );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );
 
-$field->input( 'ab1' );
+$field->_set_input( 'ab1' );
 $field->validate_field;
 ok( $field->has_errors, 'too short' );
 
-$field->input( 'my4username' );
+$field->_set_input( 'my4username' );
 $field->validate_field;
 ok( $field->has_errors, 'matches username' );
 
-$field->input( '' );
+$field->_set_input( '' );
 $field->validate_field;
 ok( !$field->has_errors, 'empty password accepted' );
 is($field->noupdate, 1, 'noupdate has been set on password field' );
 
 my $pass = 'my4user5name';
-$field->input( $pass );
+$field->_set_input( $pass );
 $field->validate_field;
 ok( !$field->has_errors, 'just right' );
 is ( $field->value, $pass, 'Input and value match' );

@@ -58,7 +58,7 @@ sub validate
 
    # set the value
    my $dt = DateTime->new(@dt_parms);
-   $self->value($dt);
+   $self->_set_value($dt);
 }
 
 __PACKAGE__->meta->make_immutable;

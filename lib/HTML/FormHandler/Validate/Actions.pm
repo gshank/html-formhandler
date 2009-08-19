@@ -82,7 +82,7 @@ sub _apply_actions
                }
             }
             else {
-               $self->value($new_value);
+               $self->_set_value($new_value);
             }
 
          }
@@ -114,7 +114,7 @@ sub _apply_actions
             $error_message = $@ || 'error occurred';
          }
          else {
-            $self->value($new_value);
+            $self->_set_value($new_value);
          }
       }
       if ( defined $error_message ) {

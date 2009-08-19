@@ -525,10 +525,12 @@ has 'input_without_param' => (
    is        => 'rw',
    predicate => 'has_input_without_param'
 );
-has 'state' => ( isa => 'HTML::FormHandler::State', is => 'rw',
+has 'state' => ( isa => 'HTML::FormHandler::State', is => 'ro',
+   clearer => 'clear_state',
    lazy => 1, builder => 'build_state',
-   handles => [ 'input', 'clear_input', 'has_input',
-                'value', 'clear_value', 'has_value',
+   writer => '_set_state',
+   handles => [ 'input', '_set_input', '_clear_input', 'has_input',
+                'value', '_set_value', '_clear_value', 'has_value',
                 'init_value', 'clear_init_value',
                 'errors', 'push_errors', 'num_errors', 'has_errors', 'clear_errors', 'validated',
               ],
@@ -722,7 +724,8 @@ sub _init
    if ( my @values = $self->get_init_value ) {
       my $value = @values > 1 ? \@values : shift @values;
       $self->init_value($value) if $value;
-      $self->value($value)      if $value;
+      $self->_set_value($value)      if $value;
+      $self->state->parent($self->state);
    }
 }
 
@@ -789,7 +792,7 @@ sub clone
 sub clear_data
 {
    my $self = shift;
-   $self->state($self->build_state);
+   $self->clear_state;
    $self->clear_other;
 }
 # clear_other used in Repeatable

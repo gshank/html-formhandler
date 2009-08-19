@@ -61,29 +61,29 @@ ok( !$form->field('state')->has_errors, 'no errors on state' );
 # State
 my $field = HTML::FormHandler::Field->new( name => 'Test1', apply => [ State ] );
 ok( $field, 'created field with type' );
-$field->input('GG');
+$field->_set_input('GG');
 ok( !$field->validate_field, 'field did not validate');
 is( $field->errors->[0], 'Not a valid state', 'correct error message for State' );
-$field->input('NY');
+$field->_set_input('NY');
 ok( $field->validate_field, 'state field validated');
 # Email
 SKIP: {
    eval { require Email::Valid };
    skip "Email::Valid not installed", 3 if $@;
    $field = HTML::FormHandler::Field->new( name => 'Test', apply => [ Email ] );
-   $field->input('gail@gmail.com');
+   $field->_set_input('gail@gmail.com');
    ok( $field->validate_field, 'email field validated' );
    ok( !$field->has_errors, 'email field is valid');
-   $field->input('not_an_email');
+   $field->_set_input('not_an_email');
    $field->validate_field;
    is( $field->errors->[0], 'Email is not valid', 'error from Email' );
 }
 # IPAddress
 $field = HTML::FormHandler::Field->new( name => 'Test', apply => [ IPAddress ] );
-$field->input('198.168.0.101');
+$field->_set_input('198.168.0.101');
 ok( $field->validate_field, 'IPAddress validated' );
 ok( !$field->has_errors, 'email field is valid');
-$field->input('198.300.0.101');
+$field->_set_input('198.300.0.101');
 $field->validate_field;
 is( $field->errors->[0], 'Not a valid IP address', 'error from IPAddress' );
 
