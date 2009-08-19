@@ -46,7 +46,7 @@ has 'children'     => (
       'clear' => 'clear_children',
    }
 );
-sub validated { !$_[0]->has_errors && $_[0]->ran_validation  }
+sub validated { !$_[0]->has_errors && $_[0]->has_input  }
 sub ran_validation { shift->has_input }
 
 has 'init_value'       => ( is  => 'rw',   clearer   => 'clear_init_value' );

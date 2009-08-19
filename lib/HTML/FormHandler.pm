@@ -714,7 +714,6 @@ sub get_result
    my $self = shift;
    $self->process( @_ );
    my $state = $self->state;
-   $state->validated($self->validated);
    $self->clear;
    return $state;
 }
