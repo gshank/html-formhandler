@@ -33,6 +33,8 @@ my $form = My::Form->new;
 is( $form->field('optname')->temp, 'Second', 'got second optname field' );
 
 ok( !$form->process, 'Empty data' );
+ok( $form->result, 'result exists' );
+ok( $form->field('optname'), 'result field exists' );
 
 my $good = {
    reqname     => 'hello',
@@ -56,6 +58,9 @@ is( $result->num_errors, $num_errors, 'number of errors is correct');
 
 is( $result->field('somename')->value, undef, 'no value for somename' );
 ok( !$result->field('somename')->has_value, 'predicate no value' );
+
+done_testing;
+exit;
 
 $good->{somename} = 'testing';
 $result = $form->get_result($good);

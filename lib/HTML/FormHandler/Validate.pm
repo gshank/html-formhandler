@@ -62,7 +62,7 @@ sub validate_field
 {
    my $field = shift;
 
-   $field->clear_errors;
+   $field->clear_errors; # this is only here for testing convenience
    # See if anything was submitted
    if ( $field->required && ( !$field->has_input || !$field->input_defined ) ) {
       $field->add_error( $field->required_message ) if ( $field->required );
@@ -80,7 +80,7 @@ sub validate_field
 
    # do building of node
    if ( $field->DOES('HTML::FormHandler::Fields') ) {
-      $field->process_node;
+      $field->_fields_validate;
    }
    else {
       $field->_set_value( $field->input );

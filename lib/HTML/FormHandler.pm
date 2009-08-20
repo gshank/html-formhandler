@@ -4,12 +4,13 @@ use Moose;
 use MooseX::AttributeHelpers;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
    'HTML::FormHandler::Validate::Actions';
+with 'HTML::FormHandler::InitResult';
 
 use Carp;
 use Class::MOP;
 use Locale::Maketext;
 use HTML::FormHandler::I18N;
-use HTML::FormHandler::Field::Result;
+use HTML::FormHandler::Result;
 
 use 5.008;
 
@@ -568,28 +569,36 @@ has 'form' => (
    default  => sub { shift }
 );
 has 'parent' => ( is => 'rw' );
-has 'result' => ( isa => 'HTML::FormHandler::Field::Result', is => 'rw',
+has 'result' => ( isa => 'HTML::FormHandler::Result', is => 'rw',
    clearer => 'clear_result',
    lazy => 1, builder => 'build_result',
+   predicate => 'has_result',
    handles => [ 'input', '_set_input',  '_clear_input', 'has_input',
                 'value', '_set_value', '_clear_value', 'has_value',
+                'add_result', 'results'
               ],
 );
 sub build_result { 
    my $self = shift;
-   return HTML::FormHandler::Field::Result->new( name => $self->name );
+   return HTML::FormHandler::Result->new( name => $self->name );
 }
+
+=pod
+
 sub fill_result 
 {
    my $self = shift;
    my $result = $self->result;
    foreach my $field ($self->fields)
    {
-      $result->add_child($field->result) if $field->result;
+      $result->add_result($field->result) if $field->result;
       $result->push_errors($field->errors) if $field->has_errors;
    }
    return $result;
 }
+
+=cut
+
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
@@ -679,7 +688,7 @@ sub BUILD
       $self->_init_from_object( $self, $self->init_object || $self->item );
    }
    else {
-      $self->_init;
+      $self->_result_from_fields;
    }
    $self->dump_fields if $self->verbose;
    return;
@@ -704,7 +713,7 @@ sub process
    $self->update_model  if $self->validated;
    $self->after_update_model if $self->validated;
    $self->dump_fields   if $self->verbose;
-   $self->fill_result;
+#   $self->fill_result;
    $self->processed(1);
    return $self->validated;
 }
@@ -800,10 +809,9 @@ sub validate_form
    my $self   = shift;
    my $params = $self->params;
    $self->_set_dependency;    # set required dependencies
-   $self->_set_input($params);
-   $self->process_node;       # build and validate
+   $self->_fields_validate;    
    $self->_apply_actions;
-   $self->validate();
+   $self->validate(); # empty method for users
    # model specific validation
    $self->validate_model;
    $self->_clear_dependency;
@@ -862,9 +870,10 @@ sub setup_form
       elsif( !$self->has_params )
       {
          # no initial object. empty form form must be initialized
-         $self->_init;
+         $self->_result_from_fields;
       }
    }
+   $self->_result_from_input( $self->{params}, 1 ) if ( $self->has_params );
 }
 
 sub _init_from_object

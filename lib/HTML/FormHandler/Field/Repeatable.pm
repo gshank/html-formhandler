@@ -116,6 +116,14 @@ has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 has '+reload_after_update' => ( default => 1 );
 
+has 'is_repeatable' => ( is => 'ro', default => 1 );
+
+sub build_result { 
+   my $self = shift;
+   my @parent = ('parent', $self->parent->result) if $self->parent;
+   return HTML::FormHandler::Field::Result->new( name => $self->name, input => [],  @parent   );
+}
+
 sub clear_other
 {
    my $self = shift;
@@ -158,9 +166,10 @@ sub clone_element
    my ( $self, $index ) = @_;
 
    my $field = $self->contains->clone( errors => [], error_fields => [] );
-   $field->_set_result($field->build_result);
+   $field->clear_result;
    $field->name($index);
    $field->parent($self);
+   $field->_set_result($field->build_result);
    if ( $field->has_fields ) {
       $self->clone_fields( $field, [ $field->fields ] );
    }
@@ -186,34 +195,42 @@ sub clone_fields
 # this is called by Field->process when params exist and validation is done.
 # The input will already have # been set there, now percolate the input down
 # the tree and build instances
-sub process_node
+sub _result_from_input
 {
-   my $self = shift;
+   my ( $self, $input )  = @_;
 
-   my $input = $self->input;
+   $self->clear_result;
+   $self->result->_set_input($input);
    $self->clear_other;
    # if Repeatable has array input, need to build instances
    my @fields;
+$DB::single=1;
    if ( ref $input eq 'ARRAY' ) {
       # build appropriate instance array
       my $index = 0;
       foreach my $element ( @{$input} ) {
          next unless $element;
          my $field = $self->clone_element($index);
-         $field->_set_input($element);
-         $self->result->add_child($field->result);
+         my $result = $field->_result_from_input($element, 1);
+         $self->result->add_result($result);
          push @fields, $field;
          $index++;
       }
       $self->index($index);
       $self->fields( \@fields );
    }
-   # call fields_validate to loop through array of fields created
-   $self->_fields_validate;
-   # now that values have been filled in via fields_validate,
-   # create combined value for Repeatable
+   return $self->result;
+}
+
+sub _fields_validate
+{
+   my $self = shift;
+   # loop through array of fields and validate 
    my @value_array;
-   for my $field ( $self->fields ) {
+   foreach my $field ( $self->fields ) {
+      next if ( $field->inactive || $field->inactive );
+      # Validate each field and "inflate" input -> value.
+      $field->validate_field;    # this calls the field's 'validate' routine
       push @value_array, $field->value;
    }
    $self->_set_value( \@value_array );
@@ -243,7 +260,7 @@ sub _init_from_object
          $field->_set_value($element);
       }
       push @fields, $field;
-      $self->result->add_child($field->result);
+      $self->result->add_result($field->result);
       $index++;
    }
    $self->index($index);
@@ -265,6 +282,9 @@ sub make_values
 
 # this is called when there are no params and no initial object
 # because we need to build empty instances, and load select lists
+
+=pod
+
 sub _init
 {
    my $self = shift;
@@ -282,6 +302,30 @@ sub _init
    }
    $self->index($index);
    $self->fields( \@fields );
+}
+
+=cut
+
+sub _result_from_fields
+{
+   my $self = shift;
+
+   my $result = $self->result;
+   $self->clear_other;
+   my $count = $self->num_when_empty;
+   my $index = 0;
+   # build empty instance
+   my @fields;
+   while ( $count > 0 ) {
+      my $field = $self->clone_element($index);
+      $result->add_result( $field->result );
+      push @fields, $field;
+      $index++;
+      $count--;
+   }
+   $self->index($index);
+   $self->fields( \@fields );
+   return $result;
 }
 
 __PACKAGE__->meta->make_immutable;

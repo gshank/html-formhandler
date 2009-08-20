@@ -284,22 +284,24 @@ sub _inner_validate_field
    return 1;
 }
 
-sub _init
+sub _result_from_fields
 {
    my $self = shift;
-
-   $self->SUPER::_init;
-   # load options when no input and no value (empty form )
    $self->_load_options unless $self->loaded_options;
+   $self->SUPER::_result_from_fields;
+   return $self->result;
 }
 
-# load options for no init_obj && params
-# not in '_inner_validate_field' because that isn't called
-# for fields with no input
-before 'validate_field' => sub {
-   my $self = shift;
+sub _result_from_input
+{
+   my ( $self, $input, $exists ) = @_;
+
    $self->_load_options unless $self->loaded_options;
-};
+   return unless $exists;
+   my $result = $self->result;
+   $result->_set_input($input);
+   return $result;
+}
 
 sub clear_other
 {

@@ -527,6 +527,7 @@ has 'input_without_param' => (
 );
 has 'result' => ( isa => 'HTML::FormHandler::Field::Result', is => 'ro',
    clearer => 'clear_result',
+   predicate => 'has_result',
    lazy => 1, builder => 'build_result',
    writer => '_set_result',
    handles => [ 'input', '_set_input', '_clear_input', 'has_input',
@@ -540,6 +541,7 @@ sub build_result {
    my @parent = ('parent', $self->parent->result) if $self->parent;
    return HTML::FormHandler::Field::Result->new( name => $self->name, @parent  );
 }
+sub is_repeatable { }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 
 has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
@@ -727,6 +729,33 @@ sub _init
       $self->_set_value($value)      if $value;
       $self->result->parent($self->result);
    }
+}
+
+sub _result_from_fields
+{
+   my $self = shift;
+
+   my $result = $self->result;
+   if ( my @values = $self->get_init_value ) {
+      my $value = @values > 1 ? \@values : shift @values;
+      $result->init_value($value) if $value;
+      $result->_set_value($value)      if $value;
+   }
+   return $result;
+}
+
+sub _result_from_input
+{
+   my ( $self, $input, $exists ) = @_;
+
+   my $result = $self->result;
+   if( $exists ) {
+      $result->_set_input($input);
+   }
+   elsif ( $self->has_input_without_param ) {
+      $result->_set_input($self->input_without_param);
+   }
+   return $result;
 }
 
 sub full_name
