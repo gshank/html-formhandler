@@ -1,4 +1,4 @@
-package HTML::FormHandler::State;
+package HTML::FormHandler::Field::Result;
 
 use Moose;
 
@@ -37,7 +37,7 @@ has 'errors'     => (
 
 has 'children'     => (
    metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef[HTML::FormHandler::State]',
+   isa        => 'ArrayRef[HTML::FormHandler::Field::Result]',
    is         => 'rw',
    auto_deref => 1,
    default    => sub { [] },

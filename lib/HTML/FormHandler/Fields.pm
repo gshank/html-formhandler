@@ -490,8 +490,8 @@ sub process_node
          }
          if( $field->has_input && $field->parent )
          {
-            $field->state->parent($field->parent->state);
-            $self->state->add_child($field->state);
+            $field->result->parent($field->parent->result);
+            $self->result->add_child($field->result);
          }
       }
    }

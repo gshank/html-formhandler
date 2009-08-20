@@ -43,15 +43,15 @@ my $good = {
 
 $form->process($good);
 ok( $form->validated, 'Good data' );
-my $result = $form->state;
-ok( $result, 'got state object' );
+my $result = $form->result;
+ok( $result, 'got result object' );
 ok( $result->validated, 'result validated');
 ok( $result->has_input, 'result still has input');
 my $num_errors = $form->num_errors;
 
 $result = $form->get_result($good);
 ok( !$form->validated, 'form has been cleared' );
-ok( $result->validated, 'result still has state' );
+ok( $result->validated, 'result still has result' );
 is( $result->num_errors, $num_errors, 'number of errors is correct');
 
 is( $result->field('somename')->value, undef, 'no value for somename' );

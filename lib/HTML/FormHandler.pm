@@ -9,7 +9,7 @@ use Carp;
 use Class::MOP;
 use Locale::Maketext;
 use HTML::FormHandler::I18N;
-use HTML::FormHandler::State;
+use HTML::FormHandler::Field::Result;
 
 use 5.008;
 
@@ -568,27 +568,27 @@ has 'form' => (
    default  => sub { shift }
 );
 has 'parent' => ( is => 'rw' );
-has 'state' => ( isa => 'HTML::FormHandler::State', is => 'rw',
-   clearer => 'clear_state',
-   lazy => 1, builder => 'build_state',
+has 'result' => ( isa => 'HTML::FormHandler::Field::Result', is => 'rw',
+   clearer => 'clear_result',
+   lazy => 1, builder => 'build_result',
    handles => [ 'input', '_set_input',  '_clear_input', 'has_input',
                 'value', '_set_value', '_clear_value', 'has_value',
               ],
 );
-sub build_state { 
+sub build_result { 
    my $self = shift;
-   return HTML::FormHandler::State->new( name => $self->name );
+   return HTML::FormHandler::Field::Result->new( name => $self->name );
 }
-sub fill_state 
+sub fill_result 
 {
    my $self = shift;
-   my $state = $self->state;
+   my $result = $self->result;
    foreach my $field ($self->fields)
    {
-      $state->add_child($field->state) if $field->state;
-      $state->push_errors($field->errors) if $field->has_errors;
+      $result->add_child($field->result) if $field->result;
+      $result->push_errors($field->errors) if $field->has_errors;
    }
-   return $state;
+   return $result;
 }
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
@@ -704,7 +704,7 @@ sub process
    $self->update_model  if $self->validated;
    $self->after_update_model if $self->validated;
    $self->dump_fields   if $self->verbose;
-   $self->fill_state;
+   $self->fill_result;
    $self->processed(1);
    return $self->validated;
 }
@@ -713,9 +713,9 @@ sub get_result
 {
    my $self = shift;
    $self->process( @_ );
-   my $state = $self->state;
+   my $result = $self->result;
    $self->clear;
-   return $state;
+   return $result;
 }
 
 
@@ -741,7 +741,7 @@ sub clear
    $self->did_init_obj(0);
 }
 
-sub clear_data { shift->clear_state }
+sub clear_data { shift->clear_result }
 
 sub fif
 {
@@ -891,7 +891,7 @@ sub _init_from_object
             my $values_ref = @values > 1 ? \@values : shift @values;
             $field->init_value($values_ref) if defined $values_ref;
             $field->_set_value($values_ref)      if defined $values_ref;
-            $field->state->parent($field->parent->state) if $field->parent;
+            $field->result->parent($field->parent->result) if $field->parent;
          }
          else {
             $self->init_value( $field, $value );
@@ -901,7 +901,7 @@ sub _init_from_object
       $my_value->{ $field->name } = $field->value;
    }
    $node->_set_value($my_value);
-   $node->state->parent($node->parent->state) if $node->parent;
+   $node->result->parent($node->parent->result) if $node->parent;
    $self->did_init_obj(1);
 }
 

@@ -3,7 +3,7 @@ package HTML::FormHandler::Field;
 use HTML::FormHandler::Moose;
 use MooseX::AttributeHelpers;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
-use HTML::FormHandler::State;
+use HTML::FormHandler::Field::Result;
 
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
@@ -525,20 +525,20 @@ has 'input_without_param' => (
    is        => 'rw',
    predicate => 'has_input_without_param'
 );
-has 'state' => ( isa => 'HTML::FormHandler::State', is => 'ro',
-   clearer => 'clear_state',
-   lazy => 1, builder => 'build_state',
-   writer => '_set_state',
+has 'result' => ( isa => 'HTML::FormHandler::Field::Result', is => 'ro',
+   clearer => 'clear_result',
+   lazy => 1, builder => 'build_result',
+   writer => '_set_result',
    handles => [ 'input', '_set_input', '_clear_input', 'has_input',
                 'value', '_set_value', '_clear_value', 'has_value',
                 'init_value', 'clear_init_value',
                 'errors', 'push_errors', 'num_errors', 'has_errors', 'clear_errors', 'validated',
               ],
 );
-sub build_state { 
+sub build_result { 
    my $self = shift;
-   my @parent = ('parent', $self->parent->state) if $self->parent;
-   return HTML::FormHandler::State->new( name => $self->name, @parent  );
+   my @parent = ('parent', $self->parent->result) if $self->parent;
+   return HTML::FormHandler::Field::Result->new( name => $self->name, @parent  );
 }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 
@@ -725,7 +725,7 @@ sub _init
       my $value = @values > 1 ? \@values : shift @values;
       $self->init_value($value) if $value;
       $self->_set_value($value)      if $value;
-      $self->state->parent($self->state);
+      $self->result->parent($self->result);
    }
 }
 
@@ -792,7 +792,7 @@ sub clone
 sub clear_data
 {
    my $self = shift;
-   $self->clear_state;
+   $self->clear_result;
    $self->clear_other;
 }
 # clear_other used in Repeatable

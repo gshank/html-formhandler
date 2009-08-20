@@ -36,11 +36,11 @@ ok( $form->validated, 'form validated');
 
 is_deeply( $form->field('tags')->value, ['Perl', 'programming', 'Moose' ],
    'list field tags has right values' );
-my $result = $form->state;
+my $result = $form->result;
 
 my $first_tag = $result->field('tags')->children->[0];
-is( ref $first_tag, 'HTML::FormHandler::State', 'get state object from result');
-is( $first_tag->value, 'Perl', 'state has right value' );
+is( ref $first_tag, 'HTML::FormHandler::Field::Result', 'get result object');
+is( $first_tag->value, 'Perl', 'result has right value' );
 is( $first_tag->parent, $result->field('tags'), 'correct parent for ');
 
 my $employer = $result->field('employer');

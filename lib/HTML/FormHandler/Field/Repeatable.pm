@@ -158,7 +158,7 @@ sub clone_element
    my ( $self, $index ) = @_;
 
    my $field = $self->contains->clone( errors => [], error_fields => [] );
-   $field->_set_state($field->build_state);
+   $field->_set_result($field->build_result);
    $field->name($index);
    $field->parent($self);
    if ( $field->has_fields ) {
@@ -177,7 +177,7 @@ sub clone_fields
          $self->clone_fields( $new_field, [ $new_field->fields ] );
       }
       $new_field->parent($parent);
-      $new_field->_set_state($new_field->build_state);
+      $new_field->_set_result($new_field->build_result);
       push @field_array, $new_field;
    }
    $parent->fields( \@field_array );
@@ -201,7 +201,7 @@ sub process_node
          next unless $element;
          my $field = $self->clone_element($index);
          $field->_set_input($element);
-         $self->state->add_child($field->state);
+         $self->result->add_child($field->result);
          push @fields, $field;
          $index++;
       }
@@ -243,7 +243,7 @@ sub _init_from_object
          $field->_set_value($element);
       }
       push @fields, $field;
-      $self->state->add_child($field->state);
+      $self->result->add_child($field->result);
       $index++;
    }
    $self->index($index);
