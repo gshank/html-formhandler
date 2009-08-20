@@ -758,6 +758,25 @@ sub _result_from_input
    return $result;
 }
 
+sub _result_from_object
+{
+   my ( $self, $value ) = @_;
+
+   my $result = $self->result;
+   if ( my @values = $self->get_init_value ) {
+      my $values_ref = @values > 1 ? \@values : shift @values;
+      if ( defined $values_ref ) {
+         $result->init_value($value);
+         $result->_set_value($value);
+      }
+   }
+   else {
+      $result->init_value($value);
+      $result->_set_value($value);
+   }
+   return $result;
+}
+
 sub full_name
 {
    my $field = shift;

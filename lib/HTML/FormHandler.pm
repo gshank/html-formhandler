@@ -583,21 +583,6 @@ sub build_result {
    return HTML::FormHandler::Result->new( name => $self->name );
 }
 
-=pod
-
-sub fill_result 
-{
-   my $self = shift;
-   my $result = $self->result;
-   foreach my $field ($self->fields)
-   {
-      $result->add_result($field->result) if $field->result;
-      $result->push_errors($field->errors) if $field->has_errors;
-   }
-   return $result;
-}
-
-=cut
 
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
@@ -685,7 +670,7 @@ sub BUILD
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)
    if ( $self->init_object || $self->item ) {
-      $self->_init_from_object( $self, $self->init_object || $self->item );
+      $self->_result_from_object( $self->init_object || $self->item );
    }
    else {
       $self->_result_from_fields;
@@ -827,16 +812,6 @@ sub validate { 1 }
 sub has_errors { shift->has_error_fields }
 sub num_errors { shift->num_error_fields }
 
-=pod
-
-after 'update_model' => sub {
-   my $self = shift;
-   $self->_init_from_object( $self, $self->item )
-      if ( $self->reload_after_update && $self->item );
-};
-
-=cut
-
 sub after_update_model 
 {
    my $self = shift;
@@ -865,7 +840,7 @@ sub setup_form
    # and by _init for empty forms
    if ( !$self->did_init_obj ) {
       if ( $self->init_object || $self->item ) {
-         $self->_init_from_object( $self, $self->init_object || $self->item );
+         $self->_result_from_object( $self->init_object || $self->item );
       }
       elsif( !$self->has_params )
       {
@@ -875,6 +850,8 @@ sub setup_form
    }
    $self->_result_from_input( $self->{params}, 1 ) if ( $self->has_params );
 }
+
+=pod
 
 sub _init_from_object
 {
@@ -913,6 +890,8 @@ sub _init_from_object
    $node->result->parent($node->parent->result) if $node->parent;
    $self->did_init_obj(1);
 }
+
+=cut
 
 sub _get_value
 {

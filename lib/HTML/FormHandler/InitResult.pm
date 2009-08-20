@@ -49,7 +49,6 @@ sub _result_from_input
    return $self_result;
 }
 
-=pod
 
 # building fields from model object or init_obj hash
 # formerly _init_from_object
@@ -58,24 +57,28 @@ sub _result_from_object
    my ( $self, $item ) = @_;
 
    return unless $item;
-   warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
+   warn "HFH: result_from_object ", $self->name, "\n" if $self->verbose;
+   $self->clear_result if $self->has_result;
+   my $self_result = $self->result;
    my $my_value;
-   for my $field_def ( $self->field_defs ) {
-      next if $field_def->parent && $field_def->parent != $self;
-      next if $field_def->writeonly;
-      next if ref $item eq 'HASH' && !exists $item->{ $field_def->accessor };
-      my $value = $self->_get_value( $field_def, $item );
-      my $field = $field_def->_fields_from_object( $value );
+   for my $field ( $self->fields ) {
+      next if $field->parent && $field->parent != $self;
+#      next if $field->writeonly;
+      next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
+      my $value = $self->_get_value( $field, $item );
+$DB::single=1;
+      my $result = $field->_result_from_object( $value );
+      $self_result->add_result($result);
       $my_value->{ $field->name } = $field->value;
    }
-   $self->_set_value($my_value);
-   $self->state->parent($self->parent->state) if $self->parent;
+   $self_result->_set_value($my_value);
+   return $self_result;
 }
 
 sub _get_value
 {
-   my ( $self, $field_def, $item ) = @_;
-   my $accessor = $field_def->accessor;
+   my ( $self, $field, $item ) = @_;
+   my $accessor = $field->accessor;
    my @values;
    if ( blessed($item) && $item->can($accessor) ) {
       @values = $item->$accessor;

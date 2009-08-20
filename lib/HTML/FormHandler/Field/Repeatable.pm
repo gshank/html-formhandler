@@ -203,8 +203,7 @@ sub _result_from_input
    $self->result->_set_input($input);
    $self->clear_other;
    # if Repeatable has array input, need to build instances
-   my @fields;
-$DB::single=1;
+   $self->fields([]);
    if ( ref $input eq 'ARRAY' ) {
       # build appropriate instance array
       my $index = 0;
@@ -213,11 +212,10 @@ $DB::single=1;
          my $field = $self->clone_element($index);
          my $result = $field->_result_from_input($element, 1);
          $self->result->add_result($result);
-         push @fields, $field;
+         $self->add_field($field);
          $index++;
       }
       $self->index($index);
-      $self->fields( \@fields );
    }
    return $self->result;
 }
@@ -237,21 +235,24 @@ sub _fields_validate
 }
 
 # this is called when there is an init_object or an db item with values
-sub _init_from_object
+sub _result_from_object
 {
    my ( $self, $values ) = @_;
 
    $self->clear_other;
+   $self->clear_result if $self->has_result;
+   my $self_result = $self->result;
    # Create field instances and fill with values
    my $index = 0;
-   my @fields;
    my @new_values;
+   $self->fields([]);
    $values = [$values] if ( $values && ref $values ne 'ARRAY' );
    foreach my $element ( @{$values} ) {
       next unless $element;
       my $field = $self->clone_element($index);
+      my $result;
       if ( $field->has_fields ) {
-         $self->form->_init_from_object( $field, $element );
+         $result = $field->_result_from_object( $element );
          my $ele_value = $self->make_values( [ $field->fields ] );
          $field->_set_value($ele_value);
          push @new_values, $ele_value;
@@ -259,12 +260,11 @@ sub _init_from_object
       else {
          $field->_set_value($element);
       }
-      push @fields, $field;
+      $self->add_field($field);
       $self->result->add_result($field->result);
       $index++;
    }
    $self->index($index);
-   $self->fields( \@fields );
    $values = \@new_values if scalar @new_values;
    $self->_set_value( $values );
 }
@@ -280,32 +280,6 @@ sub make_values
    return $values;
 }
 
-# this is called when there are no params and no initial object
-# because we need to build empty instances, and load select lists
-
-=pod
-
-sub _init
-{
-   my $self = shift;
-
-   $self->clear_other;
-   my $count = $self->num_when_empty;
-   my $index = 0;
-   # build empty instance
-   my @fields;
-   while ( $count > 0 ) {
-      my $field = $self->clone_element($index);
-      push @fields, $field;
-      $index++;
-      $count--;
-   }
-   $self->index($index);
-   $self->fields( \@fields );
-}
-
-=cut
-
 sub _result_from_fields
 {
    my $self = shift;
@@ -316,15 +290,15 @@ sub _result_from_fields
    my $index = 0;
    # build empty instance
    my @fields;
+   $self->fields([]);
    while ( $count > 0 ) {
       my $field = $self->clone_element($index);
       $result->add_result( $field->result );
-      push @fields, $field;
+      $self->add_field($field);
       $index++;
       $count--;
    }
    $self->index($index);
-   $self->fields( \@fields );
    return $result;
 }
 
