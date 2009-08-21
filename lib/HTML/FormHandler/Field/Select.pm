@@ -255,38 +255,6 @@ sub as_label
    return;
 }
 
-
-sub _result_from_object
-{
-   my ( $self, $item )  = @_;
-$DB::single=1;
-   $self->clear_result if $self->has_result;
-   my $result = $self->result; 
-   my $value = $self->_get_value($item);
-   $result->_set_value($value);
-   return $result;
-}
-
-
-sub _get_value
-{
-   my ( $self, $item ) = @_;
-$DB::single=1;
-   my $accessor = $self->accessor;
-   my @values;
-   if ( blessed($item) && $item->can($accessor) ) {
-      @values = $item->$accessor;
-   }
-   elsif ( exists $item->{$accessor} ) {
-      @values = $item->{$accessor};
-   }
-   else {
-      return;
-   }
-   my $value = @values > 1 ? \@values : shift @values;
-   return $value;
-}
-
 sub _inner_validate_field
 {
    my ($self) = @_;
@@ -314,6 +282,14 @@ sub _inner_validate_field
       }
    }
    return 1;
+}
+
+sub _result_from_object
+{
+   my ( $self, $item )  = @_;
+
+   $self->_load_options unless $self->loaded_options;
+   return $self->SUPER::_result_from_object($item);
 }
 
 sub _result_from_fields

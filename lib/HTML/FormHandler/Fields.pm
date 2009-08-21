@@ -422,7 +422,8 @@ sub _fields_validate
       next if ( $field->inactive );
       # Validate each field and "inflate" input -> value.
       $field->validate_field;    # this calls the field's 'validate' routine
-      $value_hash{ $field->accessor } = $field->value if $field->has_value;
+      $value_hash{ $field->accessor } = $field->value 
+          if ( $field->has_value && !$field->noupdate );
    }
    $self->_set_value( \%value_hash );
 }

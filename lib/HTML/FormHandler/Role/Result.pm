@@ -2,6 +2,17 @@ package HTML::FormHandler::Role::Result;
 
 use Moose::Role;
 
+=head1 NAME
+
+HTML::FormHandler::Role::Result
+
+=head1 SYNOPSIS
+
+Role to hold common result attributes for L<HTML::FormHandler::Result>
+and L<HTML::FormHandler::Result::Field>.
+
+=cut
+
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 
 # do we need 'accessor' ?
@@ -77,6 +88,19 @@ sub field
    return unless $die;
    die "Field '$name' not found in '$self'";
 }
+
+=head1 AUTHORS
+
+HTML::FormHandler Contributors; see HTML::FormHandler
+
+Initially based on the original source code of L<Form::Processor::Field> by Bill Moseley
+
+=head1 COPYRIGHT
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut
 
 no Moose::Role;
 1;

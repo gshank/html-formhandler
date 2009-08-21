@@ -530,12 +530,25 @@ has 'result' => ( isa => 'HTML::FormHandler::Field::Result', is => 'ro',
    predicate => 'has_result',
    lazy => 1, builder => 'build_result',
    writer => '_set_result',
-   handles => [ 'input', '_set_input', '_clear_input', 'has_input',
-                'value', '_set_value', '_clear_value', 'has_value',
+   handles => [ '_set_input', '_clear_input', 'has_input',
+                '_set_value', '_clear_value', 'has_value',
                 'init_value', 'clear_init_value',
                 'errors', 'push_errors', 'num_errors', 'has_errors', 'clear_errors', 'validated',
               ],
 );
+sub input
+{
+   my $self = shift;
+   return $self->_set_input(@_) if @_;
+   return $self->result->input;
+}
+sub value
+{
+   my $self = shift;
+   return $self->_set_value(@_) if @_;
+   return $self->result->value;
+}
+
 sub build_result { 
    my $self = shift;
    my @parent = ('parent', $self->parent->result) if $self->parent;
@@ -719,18 +732,6 @@ sub BUILD
 
 # this is the recursive routine that is used
 # to initial fields if there is no initial object and no params
-sub _init
-{
-   my $self = shift;
-
-   if ( my @values = $self->get_init_value ) {
-      my $value = @values > 1 ? \@values : shift @values;
-      $self->init_value($value) if $value;
-      $self->_set_value($value)      if $value;
-      $self->result->parent($self->result);
-   }
-}
-
 sub _result_from_fields
 {
    my $self = shift;
@@ -766,16 +767,21 @@ sub _result_from_object
    if ( my @values = $self->get_init_value ) {
       my $values_ref = @values > 1 ? \@values : shift @values;
       if ( defined $values_ref ) {
-         $result->init_value($value);
-         $result->_set_value($value);
+         $result->init_value($values_ref);
+         $result->_set_value($values_ref);
       }
+   }
+   elsif ($self->form) {
+      $self->form->init_value($self, $value);
    }
    else {
       $result->init_value($value);
       $result->_set_value($value);
    }
+   $result->_set_value(undef) if $self->writeonly;
    return $result;
 }
+
 
 sub full_name
 {

@@ -2,6 +2,16 @@ package HTML::FormHandler::InitResult;
 
 use Moose::Role;
 
+=head1 NAME
+
+HTML::FormHandler::InitResult
+
+=head1 SYNOPSIS
+
+Internal class for initializing the result objects.
+
+=cut
+
 # _init is for building fields when 
 # there is no initial object and no params
 # formerly _init
@@ -57,18 +67,15 @@ sub _result_from_object
    my ( $self, $item ) = @_;
 
    return unless $item;
-   warn "HFH: result_from_object ", $self->name, "\n" if $self->verbose;
    $self->clear_result if $self->has_result;
    my $self_result = $self->result;
    my $my_value;
    for my $field ( $self->fields ) {
       next if $field->parent && $field->parent != $self;
-#      next if $field->writeonly;
       next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       my $value = $self->_get_value( $field, $item );
-$DB::single=1;
       my $result = $field->_result_from_object( $value );
-      $self_result->add_result($result);
+      $self_result->add_result($result) if $result;
       $my_value->{ $field->name } = $field->value;
    }
    $self_result->_set_value($my_value);
@@ -93,34 +100,18 @@ sub _get_value
    return $value;
 }
 
-=pod
+=head1 AUTHORS
 
-   my $input = $self->input;
-   # transfer the input values to the input attributes of the
-   # subfields
-   if ( ref $input eq 'HASH' ) {
-      foreach my $field ( $self->fields ) {
-         my $field_name = $field->name;
-         # Trim values and move to "input" slot
-         if ( exists $input->{$field_name} ) {
-            $field->_set_input( $input->{$field_name} );
-         }
-         elsif ( $field->DOES('HTML::FormHandler::Field::Repeatable') ) {
-            $field->clear_other;
-         }
-         elsif ( $field->has_input_without_param && !$field->inactive ) {
-            $field->_set_input( $field->input_without_param );
-         }
-         if( $field->has_input && $field->parent )
-         {
-            $field->state->parent($field->parent->state);
-            $self->state->add_child($field->state);
-         }
-      }
-   }
+HTML::FormHandler Contributors; see HTML::FormHandler
+
+Initially based on the original source code of L<Form::Processor::Field> by Bill Moseley
+
+=head1 COPYRIGHT
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
 
 =cut
 
-
-
+no Moose::Role;
 1;

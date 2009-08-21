@@ -2,6 +2,17 @@ package HTML::FormHandler::Validate::Actions;
 
 use Moose::Role;
 
+=head1 NAME
+
+FormHandler::Validate::Actions
+
+=head1 SYNOPSIS
+
+Role applies 'actions' (Moose types, coderefs, callbacks) to
+L<HTML::FormHandler::Field> and L<HTML::FormHandler>.
+
+=cut
+
 has 'actions'     => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef',
@@ -135,6 +146,19 @@ sub _apply_actions
       }
    }
 }
+
+=head1 AUTHORS
+
+HTML::FormHandler Contributors; see HTML::FormHandler
+
+Initially based on the original source code of L<Form::Processor::Field> by Bill Moseley
+
+=head1 COPYRIGHT
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut
 
 no Moose::Role;
 1;

@@ -815,7 +815,7 @@ sub num_errors { shift->num_error_fields }
 sub after_update_model 
 {
    my $self = shift;
-   $self->_init_from_object( $self, $self->item )
+   $self->_result_from_object( $self->item )
       if ( $self->reload_after_update && $self->item );
 }
 

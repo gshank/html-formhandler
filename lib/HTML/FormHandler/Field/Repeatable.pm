@@ -267,6 +267,7 @@ sub _result_from_object
    $self->index($index);
    $values = \@new_values if scalar @new_values;
    $self->_set_value( $values );
+   return $self_result;
 }
 
 sub make_values
