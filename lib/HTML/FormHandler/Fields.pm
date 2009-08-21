@@ -424,6 +424,7 @@ sub _fields_validate
       $field->validate_field;    # this calls the field's 'validate' routine
       $value_hash{ $field->accessor } = $field->value 
           if ( $field->has_value && !$field->noupdate );
+      $self->result->push_errors($field->errors) if $field->has_errors;
    }
    $self->_set_value( \%value_hash );
 }

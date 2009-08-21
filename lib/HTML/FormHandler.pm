@@ -581,7 +581,7 @@ has 'result' => ( isa => 'HTML::FormHandler::Result', is => 'ro',
 );
 sub build_result { 
    my $self = shift;
-   return HTML::FormHandler::Result->new( name => $self->name );
+   return HTML::FormHandler::Result->new( name => $self->name, form => $self );
 }
 
 
@@ -850,7 +850,8 @@ sub setup_form
          $self->_result_from_fields( $self->result );
       }
    }
-   $self->_result_from_input( $self->result, $self->{params}, 1 ) if ( $self->has_params );
+   my %params = (%{$self->params});
+   $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
 }
 
 =pod
