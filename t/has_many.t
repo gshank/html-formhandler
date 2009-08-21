@@ -55,13 +55,15 @@ my $init_object = {
 $form = Repeatable::Form->new( init_object => $init_object );
 ok( $form, 'created form from initial object' );
 
+# added in weak_ref revision
+$init_object->{my_test} = undef;
 is_deeply( $form->values, $init_object, 'get values back out' );
+delete $init_object->{my_test};
 is_deeply( $form->field('addresses')->value, $init_object->{addresses}, 'hasmany field value');
 is_deeply( $form->field('addresses')->field('0')->value, $init_object->{addresses}->[0],
     'instance field value' );
 is( $form->field('addresses')->field('0')->field('city')->value, 'Prime City',
     'compound subfield value');
-
 
 my $fif = {
    'addresses.0.street' => 'First Street',
@@ -83,7 +85,6 @@ is_deeply( $form->fif, $fif, 'get fill in form');
 $fif->{'addresses.0.city'} = 'Primary City';
 $fif->{'addresses.2.country'} = 'Grand Fenwick';
 delete $fif->{my_test};
-
 $form->clear;
 $form->process($fif);
 $fif->{my_test} = '';

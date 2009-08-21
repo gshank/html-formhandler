@@ -419,7 +419,7 @@ sub _fields_validate
    # validate all fields
    my %value_hash;
    foreach my $field ( $self->fields ) {
-      next if ( $field->inactive );
+      next if ( $field->inactive  || !$field->has_result );
       # Validate each field and "inflate" input -> value.
       $field->validate_field;    # this calls the field's 'validate' routine
       $value_hash{ $field->accessor } = $field->value 
@@ -439,6 +439,7 @@ sub get_error_fields
    my $self = shift;
    my @error_fields;
    foreach my $field ( $self->sorted_fields ) {
+      next unless $field->has_result;
       if ( $field->has_fields ) {
          $field->get_error_fields;
          push @error_fields, $field->error_fields if $field->has_error_fields;

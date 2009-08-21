@@ -569,7 +569,8 @@ has 'form' => (
    default  => sub { shift }
 );
 has 'parent' => ( is => 'rw' );
-has 'result' => ( isa => 'HTML::FormHandler::Result', is => 'rw',
+has 'result' => ( isa => 'HTML::FormHandler::Result', is => 'ro',
+   writer => '_set_result',
    clearer => 'clear_result',
    lazy => 1, builder => 'build_result',
    predicate => 'has_result',
@@ -670,10 +671,10 @@ sub BUILD
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)
    if ( $self->init_object || $self->item ) {
-      $self->_result_from_object( $self->init_object || $self->item );
+      $self->_result_from_object( $self->result, $self->init_object || $self->item );
    }
    else {
-      $self->_result_from_fields;
+      $self->_result_from_fields( $self->result );
    }
    $self->dump_fields if $self->verbose;
    return;
@@ -815,7 +816,7 @@ sub num_errors { shift->num_error_fields }
 sub after_update_model 
 {
    my $self = shift;
-   $self->_result_from_object( $self->item )
+   $self->_result_from_object( $self->result, $self->item )
       if ( $self->reload_after_update && $self->item );
 }
 
@@ -838,17 +839,18 @@ sub setup_form
    # will be done in init_object when there's an initial object
    # in validation routines when there are params
    # and by _init for empty forms
+   $self->clear_result;
    if ( !$self->did_init_obj ) {
       if ( $self->init_object || $self->item ) {
-         $self->_result_from_object( $self->init_object || $self->item );
+         $self->_result_from_object( $self->result, $self->init_object || $self->item );
       }
       elsif( !$self->has_params )
       {
          # no initial object. empty form form must be initialized
-         $self->_result_from_fields;
+         $self->_result_from_fields( $self->result );
       }
    }
-   $self->_result_from_input( $self->{params}, 1 ) if ( $self->has_params );
+   $self->_result_from_input( $self->result, $self->{params}, 1 ) if ( $self->has_params );
 }
 
 =pod

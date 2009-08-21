@@ -118,10 +118,18 @@ has '+reload_after_update' => ( default => 1 );
 
 has 'is_repeatable' => ( is => 'ro', default => 1 );
 
-sub build_result { 
+sub _fields_validate
+{
    my $self = shift;
-   my @parent = ('parent', $self->parent->result) if $self->parent;
-   return HTML::FormHandler::Field::Result->new( name => $self->name, input => [],  @parent   );
+   # loop through array of fields and validate 
+   my @value_array;
+   foreach my $field ( $self->fields ) {
+      next if ( $field->inactive || $field->inactive );
+      # Validate each field and "inflate" input -> value.
+      $field->validate_field;    # this calls the field's 'validate' routine
+      push @value_array, $field->value;
+   }
+   $self->_set_value( \@value_array );
 }
 
 sub clear_other
@@ -138,7 +146,7 @@ sub clear_other
       }
    }
    $self->clear_fields;
-   $self->_clear_value;
+#   $self->_clear_value;
 }
 
 sub create_element
@@ -163,45 +171,45 @@ sub create_element
 
 sub clone_element
 {
-   my ( $self, $index ) = @_;
+   my ( $self, $result, $index ) = @_;
 
    my $field = $self->contains->clone( errors => [], error_fields => [] );
-   $field->clear_result;
    $field->name($index);
    $field->parent($self);
-   $field->_set_result($field->build_result);
+   $field->_set_result($result);
    if ( $field->has_fields ) {
-      $self->clone_fields( $field, [ $field->fields ] );
+      $self->clone_fields( $result, $field, [ $field->fields ] );
    }
    return $field;
 }
 
 sub clone_fields
 {
-   my ( $self, $parent, $fields ) = @_;
+   my ( $self, $parent_result, $parent, $fields ) = @_;
    my @field_array;
+   $parent->fields([]);
    foreach my $field ( @{$fields} ) {
+      my $result = HTML::FormHandler::Field::Result->new(
+         name => $field->name, parent => $parent_result );
       my $new_field = $field->clone( errors => [], error_fields => [] );
       if ( $new_field->has_fields ) {
-         $self->clone_fields( $new_field, [ $new_field->fields ] );
+         $self->clone_fields( $result, $new_field, [ $new_field->fields ] );
       }
       $new_field->parent($parent);
-      $new_field->_set_result($new_field->build_result);
-      push @field_array, $new_field;
+      $new_field->_set_result($result);
+      $parent_result->add_result($result);
+      $parent->add_field( $new_field );
    }
-   $parent->fields( \@field_array );
 }
 
-# this is called by Field->process when params exist and validation is done.
-# The input will already have # been set there, now percolate the input down
-# the tree and build instances
+# params exist and validation will be performed (later)
 sub _result_from_input
 {
-   my ( $self, $input )  = @_;
+   my ( $self, $result, $input )  = @_;
 
-   $self->clear_result;
-   $self->result->_set_input($input);
    $self->clear_other;
+   $result->_set_input($input); 
+   $self->_set_result($result);
    # if Repeatable has array input, need to build instances
    $self->fields([]);
    if ( ref $input eq 'ARRAY' ) {
@@ -209,8 +217,10 @@ sub _result_from_input
       my $index = 0;
       foreach my $element ( @{$input} ) {
          next unless $element;
-         my $field = $self->clone_element($index);
-         my $result = $field->_result_from_input($element, 1);
+         my $result = HTML::FormHandler::Field::Result->new(
+            name => $index, parent => $self->result );
+         my $field = $self->clone_element($result, $index);
+         $result = $field->_result_from_input($result, $element, 1);
          $self->result->add_result($result);
          $self->add_field($field);
          $index++;
@@ -220,28 +230,13 @@ sub _result_from_input
    return $self->result;
 }
 
-sub _fields_validate
-{
-   my $self = shift;
-   # loop through array of fields and validate 
-   my @value_array;
-   foreach my $field ( $self->fields ) {
-      next if ( $field->inactive || $field->inactive );
-      # Validate each field and "inflate" input -> value.
-      $field->validate_field;    # this calls the field's 'validate' routine
-      push @value_array, $field->value;
-   }
-   $self->_set_value( \@value_array );
-}
-
 # this is called when there is an init_object or an db item with values
 sub _result_from_object
 {
-   my ( $self, $values ) = @_;
+   my ( $self, $result, $values ) = @_;
 
    $self->clear_other;
-   $self->clear_result if $self->has_result;
-   my $self_result = $self->result;
+   $self->_set_result($result);
    # Create field instances and fill with values
    my $index = 0;
    my @new_values;
@@ -249,17 +244,11 @@ sub _result_from_object
    $values = [$values] if ( $values && ref $values ne 'ARRAY' );
    foreach my $element ( @{$values} ) {
       next unless $element;
-      my $field = $self->clone_element($index);
-      my $result;
-      if ( $field->has_fields ) {
-         $result = $field->_result_from_object( $element );
-         my $ele_value = $self->make_values( [ $field->fields ] );
-         $field->_set_value($ele_value);
-         push @new_values, $ele_value;
-      }
-      else {
-         $field->_set_value($element);
-      }
+      my $result = HTML::FormHandler::Field::Result->new(
+         name => $index, parent => $self->result );
+      my $field = $self->clone_element($result, $index);
+      $result = $field->_result_from_object($result, $element );
+      push @new_values, $result->value;
       $self->add_field($field);
       $self->result->add_result($field->result);
       $index++;
@@ -267,33 +256,24 @@ sub _result_from_object
    $self->index($index);
    $values = \@new_values if scalar @new_values;
    $self->_set_value( $values );
-   return $self_result;
+   return $self->result;
 }
 
-sub make_values
-{
-   my ( $self, $fields ) = @_;
-
-   my $values;
-   foreach my $field ( @{$fields} ) {
-      $values->{ $field->accessor } = $field->value;
-   }
-   return $values;
-}
-
+# create an empty form
 sub _result_from_fields
 {
-   my $self = shift;
+   my ( $self, $result ) = @_;
 
-   my $result = $self->result;
    $self->clear_other;
+   $self->_set_result($result);
    my $count = $self->num_when_empty;
    my $index = 0;
    # build empty instance
-   my @fields;
    $self->fields([]);
    while ( $count > 0 ) {
-      my $field = $self->clone_element($index);
+      my $result = HTML::FormHandler::Field::Result->new(
+         name => $index, parent => $self->result );
+      my $field = $self->clone_element($result, $index);
       $result->add_result( $field->result );
       $self->add_field($field);
       $index++;

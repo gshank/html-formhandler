@@ -286,28 +286,28 @@ sub _inner_validate_field
 
 sub _result_from_object
 {
-   my ( $self, $item )  = @_;
+   my ( $self, $result,  $item )  = @_;
 
+   $result = $self->SUPER::_result_from_object($result, $item);
    $self->_load_options unless $self->loaded_options;
-   return $self->SUPER::_result_from_object($item);
+   return $result;
 }
 
 sub _result_from_fields
 {
-   my $self = shift;
+   my ( $self, $result ) = @_;
+
+   $result = $self->SUPER::_result_from_fields( $result );
    $self->_load_options unless $self->loaded_options;
-   $self->SUPER::_result_from_fields;
-   return $self->result;
+   return $result;
 }
 
 sub _result_from_input
 {
-   my ( $self, $input, $exists ) = @_;
+   my ( $self, $result, $input, $exists ) = @_;
 
+   $result = $self->SUPER::_result_from_input( $result, $input, $exists );
    $self->_load_options unless $self->loaded_options;
-   return unless $exists;
-   my $result = $self->result;
-   $result->_set_input($input);
    return $result;
 }
 

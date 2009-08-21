@@ -37,6 +37,7 @@ ok( $form->validated, 'form validated');
 is_deeply( $form->field('tags')->value, ['Perl', 'programming', 'Moose' ],
    'list field tags has right values' );
 my $result = $form->result;
+is( $result->num_results, 4, 'right number of results');
 
 my $first_tag = $result->field('tags.0');
 is( ref $first_tag, 'HTML::FormHandler::Field::Result', 'get result object');

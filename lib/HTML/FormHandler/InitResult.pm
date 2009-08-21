@@ -17,16 +17,16 @@ Internal class for initializing the result objects.
 # formerly _init
 sub _result_from_fields
 {
-   my $self = shift;
-   $self->clear_result if $self->has_result;
-   my $self_result = $self->result;
+   my ( $self, $self_result ) = @_;
    for my $field ( $self->fields )
    {
       next if $field->inactive;
-      my $result = $field->_result_from_fields;
-      $result->parent($self_result);
+      my $result = HTML::FormHandler::Field::Result->new(
+         name => $field->name, parent => $self_result );
+      $result = $field->_result_from_fields( $result );
       $self_result->add_result($result);
    }
+   $self->_set_result($self_result);
    return $self_result;
 }
 
@@ -34,28 +34,24 @@ sub _result_from_fields
 # formerly done in validate_field
 sub _result_from_input
 {
-   my ( $self, $input, $exists ) = @_;
+   my ( $self, $self_result, $input, $exists ) = @_;
 
    # transfer the input values to the input attributes of the
    # subfields
-   $self->clear_result if $self->has_result;
    return unless ( defined $input || $exists );
-   my $self_result = $self->result;
    $self_result->_set_input($input);
    if ( ref $input eq 'HASH' ) {
       foreach my $field ( $self->fields ) {
          next if $field->inactive;
-         my $result;
          my $field_name = $field->name;
+         my $result = HTML::FormHandler::Field::Result->new(
+            name => $field_name, parent => $self_result );
          # Trim values and move to "input" slot
-         $result = $field->_result_from_input( $input->{$field_name}, exists $input->{$field_name} );
-         if( $result )
-         {
-            $result->parent($self_result);
-            $self_result->add_result($result);
-         }
+         $result = $field->_result_from_input( $result, $input->{$field_name}, exists $input->{$field_name} );
+         $self_result->add_result($result) if $result;
       }
    }
+   $self->_set_result($self_result);
    return $self_result;
 }
 
@@ -64,21 +60,28 @@ sub _result_from_input
 # formerly _init_from_object
 sub _result_from_object
 {
-   my ( $self, $item ) = @_;
+   my ( $self, $self_result, $item ) = @_;
 
    return unless $item;
-   $self->clear_result if $self->has_result;
-   my $self_result = $self->result;
    my $my_value;
    for my $field ( $self->fields ) {
-      next if $field->parent && $field->parent != $self;
-      next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
-      my $value = $self->_get_value( $field, $item );
-      my $result = $field->_result_from_object( $value );
+#      next if $field->parent && $field->parent != $self;
+#      next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
+      next if $field->inactive;
+      my $result = HTML::FormHandler::Field::Result->new(
+         name => $field->name, parent => $self_result );
+      if( ref $item eq 'HASH' && !exists $item->{ $field->accessor } ) {
+         $result = $field->_result_from_fields( $result );
+      }
+      else {
+         my $value = $self->_get_value( $field, $item );
+         $result = $field->_result_from_object( $result, $value );
+      }
       $self_result->add_result($result) if $result;
       $my_value->{ $field->name } = $field->value;
    }
    $self_result->_set_value($my_value);
+   $self->_set_result($self_result);
    return $self_result;
 }
 

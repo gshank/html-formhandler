@@ -82,11 +82,27 @@ my $init_object = {
    reqname => 'Starting Perl',
    optname => 'Over Again'
 };
+
 $form = My::Form->new( init_object => $init_object );
 is( $form->field('optname')->value, 'Over Again', 'value with int_obj' );
 $form->process( params => {} );
 ok( !$form->validated, 'form validated' );
-is_deeply( $form->value, $init_object, 'value with empty params' );
+
+# it's not crystal clear what the behavior should be here, but I think
+# this is more correct than the previous behavior
+# it fills in the missing fields, which is what always happened for an 
+# initial object (as opposed to hash), but it used to behave
+# differently for a hash, which seems wrong
+# TODO verify behavior is correct
+my $init_obj_plus_defaults = {
+   'fruit' => undef,
+   'must_select' => 0,
+   'my_selected' => 0,
+   'optname' => 'Over Again',
+   'reqname' => 'Starting Perl',
+   'somename' => undef,
+};
+is_deeply( $form->value, $init_obj_plus_defaults, 'value with empty params' );
 $init_object->{my_selected} = 0;    # checkboxes must be forced to 0
 my %fif = %$init_object;
 $fif{somename}    = '';

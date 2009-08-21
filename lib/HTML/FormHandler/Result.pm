@@ -14,7 +14,9 @@ This is the Result object that maps to the Form.
 
 =cut
 
-has 'form' => ( isa => 'HTML::FormHandler', is => 'ro' );
+has 'form' => ( isa => 'HTML::FormHandler', is => 'ro',
+  handles => ['render' ]
+);
 
 
 =head1 AUTHORS

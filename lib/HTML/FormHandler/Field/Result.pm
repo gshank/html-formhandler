@@ -13,7 +13,8 @@ Result class for L<HTML::FormHandler::Field>
 
 =cut
 
-has 'init_value'       => ( is  => 'rw',   clearer   => 'clear_init_value' );
+has 'field_def' => ( is => 'ro', isa => 'HTML::FormHandler::Field',
+   handles => [ 'render' ] );
 
 =head1 AUTHORS
 

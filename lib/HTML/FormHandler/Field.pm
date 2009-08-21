@@ -525,17 +525,27 @@ has 'input_without_param' => (
    is        => 'rw',
    predicate => 'has_input_without_param'
 );
+has 'init_value'       => ( is  => 'rw',   clearer   => 'clear_init_value' );
 has 'result' => ( isa => 'HTML::FormHandler::Field::Result', is => 'ro',
+   weak_ref => 1,
+   lazy => 1, builder => 'build_result',
    clearer => 'clear_result',
    predicate => 'has_result',
-   lazy => 1, builder => 'build_result',
    writer => '_set_result',
    handles => [ '_set_input', '_clear_input', 'has_input',
                 '_set_value', '_clear_value', 'has_value',
-                'init_value', 'clear_init_value',
                 'errors', 'push_errors', 'num_errors', 'has_errors', 'clear_errors', 'validated',
               ],
 );
+
+sub build_result
+{
+   my $self = shift;
+   my @parent = ( 'parent' => $self->parent->result )
+         if ( $self->parent && $self->parent->result );
+   return HTML::FormHandler::Field::Result->new( name => $self->name, @parent );
+}
+
 sub input
 {
    my $self = shift;
@@ -549,11 +559,16 @@ sub value
    return $self->result->value;
 }
 
+=pod
+
 sub build_result { 
    my $self = shift;
    my @parent = ('parent', $self->parent->result) if $self->parent;
    return HTML::FormHandler::Field::Result->new( name => $self->name, @parent  );
 }
+
+=cut
+
 sub is_repeatable { }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 
@@ -565,6 +580,7 @@ sub fif
 
    return if $self->inactive;
    return '' if $self->password;
+   return unless $self->has_result;
    if ( ( $self->has_input && !$self->fif_from_value ) ||
       ( $self->fif_from_value && !defined $self->value ) )
    {
@@ -734,40 +750,40 @@ sub BUILD
 # to initial fields if there is no initial object and no params
 sub _result_from_fields
 {
-   my $self = shift;
+   my ( $self, $result ) = @_;
 
-   my $result = $self->result;
    if ( my @values = $self->get_init_value ) {
       my $value = @values > 1 ? \@values : shift @values;
-      $result->init_value($value) if $value;
+      $self->init_value($value) if $value;
       $result->_set_value($value)      if $value;
    }
+   $self->_set_result($result);
    return $result;
 }
 
 sub _result_from_input
 {
-   my ( $self, $input, $exists ) = @_;
+   my ( $self, $result, $input, $exists ) = @_;
 
-   my $result = $self->result;
    if( $exists ) {
       $result->_set_input($input);
    }
    elsif ( $self->has_input_without_param ) {
       $result->_set_input($self->input_without_param);
    }
+   $self->_set_result($result);
    return $result;
 }
 
 sub _result_from_object
 {
-   my ( $self, $value ) = @_;
+   my ( $self, $result, $value ) = @_;
 
-   my $result = $self->result;
+   $self->_set_result($result);
    if ( my @values = $self->get_init_value ) {
       my $values_ref = @values > 1 ? \@values : shift @values;
       if ( defined $values_ref ) {
-         $result->init_value($values_ref);
+         $self->init_value($values_ref);
          $result->_set_value($values_ref);
       }
    }
@@ -775,7 +791,7 @@ sub _result_from_object
       $self->form->init_value($self, $value);
    }
    else {
-      $result->init_value($value);
+      $self->init_value($value);
       $result->_set_value($value);
    }
    $result->_set_value(undef) if $self->writeonly;

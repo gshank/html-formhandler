@@ -62,6 +62,7 @@ sub validate_field
 {
    my $field = shift;
 
+   return unless $field->has_result;
    $field->clear_errors; # this is only here for testing convenience
    # See if anything was submitted
    if ( $field->required && ( !$field->has_input || !$field->input_defined ) ) {
