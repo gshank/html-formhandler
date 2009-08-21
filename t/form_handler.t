@@ -83,10 +83,10 @@ my $init_object = {
    optname => 'Over Again'
 };
 $form = My::Form->new( init_object => $init_object );
-is( $form->field('optname')->value, 'Over Again', 'get right value from form' );
+is( $form->field('optname')->value, 'Over Again', 'value with int_obj' );
 $form->process( params => {} );
 ok( !$form->validated, 'form validated' );
-is_deeply( $form->values, $init_object, 'get right values from form' );
+is_deeply( $form->value, $init_object, 'value with empty params' );
 $init_object->{my_selected} = 0;    # checkboxes must be forced to 0
 my %fif = %$init_object;
 $fif{somename}    = '';
@@ -97,7 +97,9 @@ is_deeply( $form->fif, \%fif, 'get right fif with init_object' );
 $init_object->{must_select} = 1;
 $fif{must_select} = 1;
 ok( $form->process($init_object), 'form validates with params' );
-is_deeply( $form->values, $init_object, 'get right values from form' );
+#my %init_obj_value = (%$init_object, fruit => undef );
+#is_deeply( $form->value, \%init_obj_value, 'value init obj' );
+is_deeply( $form->value, $init_object, 'value init obj' );
 is_deeply( $form->fif, \%fif, 'get right fif with init_object' );
 
 $form->clear;

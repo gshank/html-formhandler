@@ -13,7 +13,7 @@ my $input = {
       minutes => 2,
 };
 
-$field->input($input);
+$field->_set_input($input);
 
 is_deeply( $field->input, $input, 'field input is correct');
 

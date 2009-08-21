@@ -116,6 +116,14 @@ has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 has '+reload_after_update' => ( default => 1 );
 
+has 'is_repeatable' => ( is => 'ro', default => 1 );
+
+sub build_result { 
+   my $self = shift;
+   my @parent = ('parent', $self->parent->result) if $self->parent;
+   return HTML::FormHandler::Field::Result->new( name => $self->name, input => [],  @parent   );
+}
+
 sub clear_other
 {
    my $self = shift;
@@ -130,7 +138,7 @@ sub clear_other
       }
    }
    $self->clear_fields;
-   $self->clear_value;
+   $self->_clear_value;
 }
 
 sub create_element
@@ -145,8 +153,8 @@ sub create_element
    $instance->add_field( $self->fields );
    if ( $self->auto_id ) {
       unless ( grep $_->can('is_primary_key') && $_->is_primary_key, @{ $instance->fields } ) {
-         $instance->add_field(
-            HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' ) );
+         my $field = HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' );
+         $instance->add_field( $field );
       }
    }
    $_->parent($instance) for $instance->fields;
@@ -158,8 +166,10 @@ sub clone_element
    my ( $self, $index ) = @_;
 
    my $field = $self->contains->clone( errors => [], error_fields => [] );
+   $field->clear_result;
    $field->name($index);
    $field->parent($self);
+   $field->_set_result($field->build_result);
    if ( $field->has_fields ) {
       $self->clone_fields( $field, [ $field->fields ] );
    }
@@ -176,6 +186,7 @@ sub clone_fields
          $self->clone_fields( $new_field, [ $new_field->fields ] );
       }
       $new_field->parent($parent);
+      $new_field->_set_result($new_field->build_result);
       push @field_array, $new_field;
    }
    $parent->fields( \@field_array );
@@ -184,68 +195,79 @@ sub clone_fields
 # this is called by Field->process when params exist and validation is done.
 # The input will already have # been set there, now percolate the input down
 # the tree and build instances
-sub process_node
+sub _result_from_input
 {
-   my $self = shift;
+   my ( $self, $input )  = @_;
 
-   my $input = $self->input;
+   $self->clear_result;
+   $self->result->_set_input($input);
    $self->clear_other;
    # if Repeatable has array input, need to build instances
-   my @fields;
+   $self->fields([]);
    if ( ref $input eq 'ARRAY' ) {
       # build appropriate instance array
       my $index = 0;
       foreach my $element ( @{$input} ) {
          next unless $element;
          my $field = $self->clone_element($index);
-         $field->input($element);
-         push @fields, $field;
+         my $result = $field->_result_from_input($element, 1);
+         $self->result->add_result($result);
+         $self->add_field($field);
          $index++;
       }
       $self->index($index);
-      $self->fields( \@fields );
    }
-   # call fields_validate to loop through array of fields created
-   $self->_fields_validate;
-   # now that values have been filled in via fields_validate,
-   # create combined value for Repeatable
+   return $self->result;
+}
+
+sub _fields_validate
+{
+   my $self = shift;
+   # loop through array of fields and validate 
    my @value_array;
-   for my $field ( $self->fields ) {
+   foreach my $field ( $self->fields ) {
+      next if ( $field->inactive || $field->inactive );
+      # Validate each field and "inflate" input -> value.
+      $field->validate_field;    # this calls the field's 'validate' routine
       push @value_array, $field->value;
    }
-   $self->value( \@value_array );
+   $self->_set_value( \@value_array );
 }
 
 # this is called when there is an init_object or an db item with values
-sub _init_from_object
+sub _result_from_object
 {
    my ( $self, $values ) = @_;
 
    $self->clear_other;
+   $self->clear_result if $self->has_result;
+   my $self_result = $self->result;
    # Create field instances and fill with values
    my $index = 0;
-   my @fields;
    my @new_values;
+   $self->fields([]);
    $values = [$values] if ( $values && ref $values ne 'ARRAY' );
    foreach my $element ( @{$values} ) {
       next unless $element;
       my $field = $self->clone_element($index);
+      my $result;
       if ( $field->has_fields ) {
-         $self->form->_init_from_object( $field, $element );
+         $result = $field->_result_from_object( $element );
          my $ele_value = $self->make_values( [ $field->fields ] );
-         $field->value($ele_value);
+         $field->_set_value($ele_value);
          push @new_values, $ele_value;
       }
       else {
-         $field->value($element);
+         $field->_set_value($element);
       }
-      push @fields, $field;
+      $self->add_field($field);
+      $self->result->add_result($field->result);
       $index++;
    }
    $self->index($index);
-   $self->fields( \@fields );
-   $self->value( \@new_values ) if scalar @new_values;
-   $self->value($values) unless scalar @new_values;
+   $values = \@new_values if scalar @new_values;
+   $self->_set_value( $values );
+   return $self_result;
 }
 
 sub make_values
@@ -259,25 +281,26 @@ sub make_values
    return $values;
 }
 
-# this is called when there are no params and no initial object
-# because we need to build empty instances, and load select lists
-sub _init
+sub _result_from_fields
 {
    my $self = shift;
 
+   my $result = $self->result;
    $self->clear_other;
    my $count = $self->num_when_empty;
    my $index = 0;
    # build empty instance
    my @fields;
+   $self->fields([]);
    while ( $count > 0 ) {
       my $field = $self->clone_element($index);
-      push @fields, $field;
+      $result->add_result( $field->result );
+      $self->add_field($field);
       $index++;
       $count--;
    }
    $self->index($index);
-   $self->fields( \@fields );
+   return $result;
 }
 
 __PACKAGE__->meta->make_immutable;

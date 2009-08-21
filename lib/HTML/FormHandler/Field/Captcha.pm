@@ -80,8 +80,7 @@ sub validate
    else {
       $captcha->{validated} = 1;
    }
-   $self->clear_value;
-   $self->clear_input;
+   $self->clear_result;
    return !$self->has_errors;
 }
 

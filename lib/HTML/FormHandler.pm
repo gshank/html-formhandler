@@ -3,12 +3,14 @@ package HTML::FormHandler;
 use Moose;
 use MooseX::AttributeHelpers;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
-   'HTML::FormHandler::TransformAndCheck';
+   'HTML::FormHandler::Validate::Actions';
+with 'HTML::FormHandler::InitResult';
 
 use Carp;
 use Class::MOP;
 use Locale::Maketext;
 use HTML::FormHandler::I18N;
+use HTML::FormHandler::Result;
 
 use 5.008;
 
@@ -567,6 +569,21 @@ has 'form' => (
    default  => sub { shift }
 );
 has 'parent' => ( is => 'rw' );
+has 'result' => ( isa => 'HTML::FormHandler::Result', is => 'rw',
+   clearer => 'clear_result',
+   lazy => 1, builder => 'build_result',
+   predicate => 'has_result',
+   handles => [ 'input', '_set_input',  '_clear_input', 'has_input',
+                'value', '_set_value', '_clear_value', 'has_value',
+                'add_result', 'results'
+              ],
+);
+sub build_result { 
+   my $self = shift;
+   return HTML::FormHandler::Result->new( name => $self->name );
+}
+
+
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
@@ -653,10 +670,10 @@ sub BUILD
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)
    if ( $self->init_object || $self->item ) {
-      $self->_init_from_object( $self, $self->init_object || $self->item );
+      $self->_result_from_object( $self->init_object || $self->item );
    }
    else {
-      $self->_init;
+      $self->_result_from_fields;
    }
    $self->dump_fields if $self->verbose;
    return;
@@ -681,9 +698,21 @@ sub process
    $self->update_model  if $self->validated;
    $self->after_update_model if $self->validated;
    $self->dump_fields   if $self->verbose;
+#   $self->fill_result;
    $self->processed(1);
    return $self->validated;
 }
+
+sub get_result
+{
+   my $self = shift;
+   $self->process( @_ );
+   my $result = $self->result;
+   $self->clear;
+   return $result;
+}
+
+
 
 sub db_validate
 {
@@ -706,12 +735,7 @@ sub clear
    $self->did_init_obj(0);
 }
 
-sub clear_data
-{
-   my $self = shift;
-   $self->clear_value;
-   $self->clear_input;
-}
+sub clear_data { shift->clear_result }
 
 sub fif
 {
@@ -770,10 +794,9 @@ sub validate_form
    my $self   = shift;
    my $params = $self->params;
    $self->_set_dependency;    # set required dependencies
-   $self->input($params);
-   $self->process_node;       # build and validate
+   $self->_fields_validate;    
    $self->_apply_actions;
-   $self->validate();
+   $self->validate(); # empty method for users
    # model specific validation
    $self->validate_model;
    $self->_clear_dependency;
@@ -784,23 +807,15 @@ sub validate_form
    return $self->validated;
 }
 
+sub validate { 1 }
+
 sub has_errors { shift->has_error_fields }
 sub num_errors { shift->num_error_fields }
-
-=pod
-
-after 'update_model' => sub {
-   my $self = shift;
-   $self->_init_from_object( $self, $self->item )
-      if ( $self->reload_after_update && $self->item );
-};
-
-=cut
 
 sub after_update_model 
 {
    my $self = shift;
-   $self->_init_from_object( $self, $self->item )
+   $self->_result_from_object( $self->item )
       if ( $self->reload_after_update && $self->item );
 }
 
@@ -825,15 +840,18 @@ sub setup_form
    # and by _init for empty forms
    if ( !$self->did_init_obj ) {
       if ( $self->init_object || $self->item ) {
-         $self->_init_from_object( $self, $self->init_object || $self->item );
+         $self->_result_from_object( $self->init_object || $self->item );
       }
       elsif( !$self->has_params )
       {
          # no initial object. empty form form must be initialized
-         $self->_init;
+         $self->_result_from_fields;
       }
    }
+   $self->_result_from_input( $self->{params}, 1 ) if ( $self->has_params );
 }
+
+=pod
 
 sub _init_from_object
 {
@@ -858,7 +876,8 @@ sub _init_from_object
          if ( my @values = $field->get_init_value ) {
             my $values_ref = @values > 1 ? \@values : shift @values;
             $field->init_value($values_ref) if defined $values_ref;
-            $field->value($values_ref)      if defined $values_ref;
+            $field->_set_value($values_ref)      if defined $values_ref;
+            $field->result->parent($field->parent->result) if $field->parent;
          }
          else {
             $self->init_value( $field, $value );
@@ -867,9 +886,12 @@ sub _init_from_object
       }
       $my_value->{ $field->name } = $field->value;
    }
-   $node->value($my_value);
+   $node->_set_value($my_value);
+   $node->result->parent($node->parent->result) if $node->parent;
    $self->did_init_obj(1);
 }
+
+=cut
 
 sub _get_value
 {
@@ -893,7 +915,7 @@ sub init_value
 {
    my ( $self, $field, $value ) = @_;
    $field->init_value($value);
-   $field->value($value);
+   $field->_set_value($value);
 }
 
 sub _set_dependency

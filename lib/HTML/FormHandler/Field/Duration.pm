@@ -42,7 +42,7 @@ sub validate
 
    # set the value
    my $duration = DateTime::Duration->new(@dur_parms);
-   $self->value($duration);
+   $self->_set_value($duration);
 }
 
 __PACKAGE__->meta->make_immutable;

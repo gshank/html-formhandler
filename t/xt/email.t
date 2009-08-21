@@ -14,12 +14,12 @@ use_ok($class);
 my $field = $class->new( name => 'test_field', );
 ok( defined $field, 'new() called' );
 
-$field->input('foo@bar.com');
+$field->_set_input('foo@bar.com');
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );
 is( $field->value, 'foo@bar.com', 'value returned' );
 
-$field->input('foo@bar');
+$field->_set_input('foo@bar');
 $field->validate_field;
 ok( $field->has_errors, 'Test for errors 2' );
 is(
@@ -28,7 +28,7 @@ is(
    'Test error message'
 );
 
-$field->input('someuser@example.com');
+$field->_set_input('someuser@example.com');
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 3' );
 

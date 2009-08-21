@@ -415,12 +415,17 @@ sub sorted_fields
 sub _fields_validate
 {
    my $self = shift;
+   return unless $self->has_fields;
    # validate all fields
+   my %value_hash;
    foreach my $field ( $self->fields ) {
       next if ( $field->inactive );
       # Validate each field and "inflate" input -> value.
       $field->validate_field;    # this calls the field's 'validate' routine
+      $value_hash{ $field->accessor } = $field->value 
+          if ( $field->has_value && !$field->noupdate );
    }
+   $self->_set_value( \%value_hash );
 }
 
 after clear_data => sub {
@@ -467,36 +472,20 @@ sub dump_validated
    }
 }
 
+=pod
+
 sub process_node
 {
    my $self = shift;
 
    return unless $self->has_fields;
-   my $input = $self->input;
-   # transfer the input values to the input attributes of the
-   # subfields
-   if ( ref $input eq 'HASH' ) {
-      foreach my $field ( $self->fields ) {
-         my $field_name = $field->name;
-         # Trim values and move to "input" slot
-         if ( exists $input->{$field_name} ) {
-            $field->input( $input->{$field_name} );
-         }
-         elsif ( $field->DOES('HTML::FormHandler::Field::Repeatable') ) {
-            $field->clear_other;
-         }
-         elsif ( $field->has_input_without_param && !$field->inactive ) {
-            $field->input( $field->input_without_param );
-         }
-      }
-   }
    $self->_fields_validate;
    my %value_hash;
    for my $field ( $self->fields ) {
       next if ( $field->noupdate || $field->inactive );
       $value_hash{ $field->accessor } = $field->value if $field->has_value;
    }
-   $self->value( \%value_hash );
+   $self->_set_value( \%value_hash );
 }
 
 =head1 AUTHORS
