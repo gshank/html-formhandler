@@ -577,29 +577,35 @@ has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 
 sub fif
 {
-   my $self = shift;
+   my ( $self, $result ) = @_;
 
    return if $self->inactive;
    return '' if $self->password;
-   return unless $self->has_result;
+   return unless $result || $self->has_result;
+   my $lresult = $result || $self->result;
    if ( ( $self->has_input && !$self->fif_from_value ) ||
-      ( $self->fif_from_value && !defined $self->value ) )
+      ( $self->fif_from_value && !defined $lresult->value ) )
    {
-      return defined $self->input ? $self->input : '';
+      return defined $lresult->input ? $lresult->input : '';
    }
    my $parent = $self->parent;
    if ( defined $parent &&
       $parent->isa('HTML::FormHandler::Field') &&
       ( $parent->has_deflation || $parent->can('deflate') ) )
    {
-      my $parent_fif = $parent->fif;
+      my $parent_fif = $result ? $parent->fif($result->parent) : $parent->fif;
       if ( ref $parent_fif eq 'HASH' &&
          exists $parent_fif->{ $self->name } )
       {
          return $self->_apply_deflation( $parent_fif->{ $self->name } );
       }
    }
-   if ( defined $self->value ) {
+   if ( defined $lresult->value ) {
+      return $self->_apply_deflation( $lresult->value );
+   }
+   elsif ( defined $self->value ) {
+      # this is because checkboxes and submit buttons have their own 'value'
+      # needs to be fixed in some better way
       return $self->_apply_deflation( $self->value );
    }
    return '';
