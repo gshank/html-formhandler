@@ -2,6 +2,7 @@ package HTML::FormHandler::Result;
 
 use Moose;
 with 'HTML::FormHandler::Role::Result';
+with 'HTML::FormHandler::Render::Result';
 # this will be the form result object.
 
 =head1 NAME
@@ -15,7 +16,7 @@ This is the Result object that maps to the Form.
 =cut
 
 has 'form' => ( isa => 'HTML::FormHandler', is => 'ro',
-  handles => ['render' ]
+#  handles => ['render' ]
 );
 
 

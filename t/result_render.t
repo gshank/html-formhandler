@@ -1,7 +1,10 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Differences;
+use IO::All;
 
+use_ok('HTML::FormHandler::Result');
 
 {
    package Test::Form;
@@ -86,14 +89,18 @@ $form->process( $params );
 
 my $outputf = $form->render;
 ok( $outputf, 'get rendered output from form');
+$outputf > io('form_render.txt');
 
 my $result = $form->result;
 ok( $result, 'get result' );
 
 my $outputr = $result->render;
 ok( $outputr, 'get render from result');
+$outputr > io('result_render.txt');
 
-# now we need a new result rendering routine to render using result data
+my $diff = `diff form_render.txt result_render.txt`;
+
+ok( !$diff, 'no diff' );
 
 
 done_testing;

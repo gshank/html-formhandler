@@ -17,6 +17,12 @@ has 'field_def' => ( is => 'ro', isa => 'HTML::FormHandler::Field',
    writer => '_set_field_def',
    handles => [ 'render' ] );
 
+sub fif
+{
+   my $self = shift;
+   return $self->field_def->fif( $self );
+}
+
 =head1 AUTHORS
 
 HTML::FormHandler Contributors; see HTML::FormHandler

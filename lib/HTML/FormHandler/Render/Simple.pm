@@ -316,7 +316,7 @@ sub render_radio_group
    foreach my $option ( $field->options ) {
       $output .= '<input type="radio" value="' . $option->{value} . '"';
       $output .= ' name="' . $field->html_name . '" id="' . $field->id . ".$index\"";
-      $output .= ' checked="checked"' if $option->{value} eq $self->fif;
+      $output .= ' checked="checked"' if $option->{value} eq $field->fif;
       $output .= ' />';
       $output .= $option->{label} . '<br />';
       $index++;
@@ -359,11 +359,11 @@ sub render_compound
 sub render_submit
 {
    my ( $self, $field ) = @_;
-   my $fif = $field->fif || '';
+
    my $output = '<input type="submit" name="';
    $output .= $field->html_name . '"';
    $output .= ' id="' . $field->id . '"';
-   $output .= ' value="' . $fif . '" />';
+   $output .= ' value="' . $field->value . '" />';
    return $output;
 }
 
