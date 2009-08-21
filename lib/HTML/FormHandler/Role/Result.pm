@@ -19,14 +19,14 @@ has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 has 'parent' => ( is =>'rw' );
 
 has 'input' => (
-   is        => 'rw',
+   is        => 'ro',
    clearer   => '_clear_input',
    writer    => '_set_input',
    predicate => 'has_input',
 );
    
 has 'value' => (
-   is        => 'rw',
+   is        => 'ro',
    writer    => '_set_value',
    clearer   => '_clear_value',
    predicate => 'has_value',
