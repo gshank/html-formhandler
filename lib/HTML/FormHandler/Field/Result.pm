@@ -14,6 +14,7 @@ Result class for L<HTML::FormHandler::Field>
 =cut
 
 has 'field_def' => ( is => 'ro', isa => 'HTML::FormHandler::Field',
+   writer => '_set_field_def',
    handles => [ 'render' ] );
 
 =head1 AUTHORS

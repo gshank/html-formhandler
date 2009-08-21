@@ -543,7 +543,8 @@ sub build_result
    my $self = shift;
    my @parent = ( 'parent' => $self->parent->result )
          if ( $self->parent && $self->parent->result );
-   return HTML::FormHandler::Field::Result->new( name => $self->name, @parent );
+   return HTML::FormHandler::Field::Result->new( name => $self->name, 
+      field_def => $self, @parent );
 }
 
 sub input
@@ -758,6 +759,7 @@ sub _result_from_fields
       $result->_set_value($value)      if $value;
    }
    $self->_set_result($result);
+   $result->_set_field_def($self);
    return $result;
 }
 
@@ -772,6 +774,7 @@ sub _result_from_input
       $result->_set_input($self->input_without_param);
    }
    $self->_set_result($result);
+   $result->_set_field_def($self);
    return $result;
 }
 
@@ -795,6 +798,7 @@ sub _result_from_object
       $result->_set_value($value);
    }
    $result->_set_value(undef) if $self->writeonly;
+   $result->_set_field_def($self);
    return $result;
 }
 

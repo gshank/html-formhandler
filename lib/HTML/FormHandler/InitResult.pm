@@ -27,6 +27,7 @@ sub _result_from_fields
       $self_result->add_result($result);
    }
    $self->_set_result($self_result);
+   $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');
    return $self_result;
 }
 
@@ -52,6 +53,7 @@ sub _result_from_input
       }
    }
    $self->_set_result($self_result);
+   $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');
    return $self_result;
 }
 
@@ -82,6 +84,7 @@ sub _result_from_object
    }
    $self_result->_set_value($my_value);
    $self->_set_result($self_result);
+   $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');
    return $self_result;
 }
 

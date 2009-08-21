@@ -177,6 +177,7 @@ sub clone_element
    $field->name($index);
    $field->parent($self);
    $field->_set_result($result);
+   $field->result->_set_field_def($field);
    if ( $field->has_fields ) {
       $self->clone_fields( $result, $field, [ $field->fields ] );
    }
@@ -197,6 +198,7 @@ sub clone_fields
       }
       $new_field->parent($parent);
       $new_field->_set_result($result);
+      $new_field->result->_set_field_def($new_field);
       $parent_result->add_result($result);
       $parent->add_field( $new_field );
    }
@@ -227,6 +229,7 @@ sub _result_from_input
       }
       $self->index($index);
    }
+   $self->result->_set_field_def($self);
    return $self->result;
 }
 
@@ -256,6 +259,7 @@ sub _result_from_object
    $self->index($index);
    $values = \@new_values if scalar @new_values;
    $self->_set_value( $values );
+   $self->result->_set_field_def($self);
    return $self->result;
 }
 
@@ -280,6 +284,7 @@ sub _result_from_fields
       $count--;
    }
    $self->index($index);
+   $self->result->_set_field_def($self);
    return $result;
 }
 
