@@ -69,7 +69,7 @@ my $form = Test::Form->new;
 ok( $form, 'create form');
 
 
-my $params = {
+my $params1 = {
    test_field => 'something',
    number => 0,
    fruit => 2,
@@ -85,16 +85,16 @@ my $params = {
    opt_in => 0,
 };
 
-$form->process( $params );
+$form->process( $params1 );
 
 my $outputf = $form->render;
 ok( $outputf, 'get rendered output from form');
 $outputf > io('form_render.txt');
 
-my $result = $form->result;
-ok( $result, 'get result' );
+my $result1 = $form->result;
+ok( $result1, 'get result' );
 
-my $outputr = $result->render;
+my $outputr = $result1->render;
 ok( $outputr, 'get render from result');
 $outputr > io('result_render.txt');
 
@@ -102,5 +102,31 @@ my $diff = `diff form_render.txt result_render.txt`;
 
 ok( !$diff, 'no diff' );
 
+my $params2 = {
+   test_field => 'anything',
+   number => 2,
+   fruit => 3,
+   vegetables => [2,4],
+   active => 'now',
+   comments => 'Four centuries and seven years ago...',
+   hidden => '5678',
+   selected => '0',
+   'start_date.month' => '9',
+   'start_date.day' => '14',
+   'start_date.year' => '2008',
+   two_errors => 'aaa',
+   opt_in => 1,
+};
+
+TODO: {
+   local $TODO = 'options list doesn\'t stay the same';
+   my $result2 = $form->get_result($params2);
+
+   my $outputr2 = $result1->render;
+   $outputr2 > io('render_again.txt');
+
+   $diff = `diff result_render.txt render_again.txt`;
+   ok( !$diff, 'renders the same the second time');
+};
 
 done_testing;
