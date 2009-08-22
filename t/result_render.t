@@ -89,18 +89,23 @@ $form->process( $params1 );
 
 my $outputf = $form->render;
 ok( $outputf, 'get rendered output from form');
-$outputf > io('form_render.txt');
 
 my $result1 = $form->result;
 ok( $result1, 'get result' );
 
 my $outputr = $result1->render;
 ok( $outputr, 'get render from result');
+
+eq_or_diff( $outputf, $outputr, 'no diff form and result');
+
+=pod
+
+$outputf > io('form_render.txt');
 $outputr > io('result_render.txt');
-
 my $diff = `diff form_render.txt result_render.txt`;
-
 ok( !$diff, 'no diff' );
+
+=cut
 
 my $params2 = {
    test_field => 'anything',
@@ -118,15 +123,10 @@ my $params2 = {
    opt_in => 1,
 };
 
-TODO: {
-   local $TODO = 'options list doesn\'t stay the same';
-   my $result2 = $form->get_result($params2);
+my $result2 = $form->get_result($params2);
 
-   my $outputr2 = $result1->render;
-   $outputr2 > io('render_again.txt');
+my $outputr2 = $result1->render;
 
-   $diff = `diff result_render.txt render_again.txt`;
-   ok( !$diff, 'renders the same the second time');
-};
+eq_or_diff( $outputr, $outputr2, 'no diff second execution');
 
 done_testing;

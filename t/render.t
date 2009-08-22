@@ -110,9 +110,9 @@ is( $output2,
 my $output3 = $form->render_field( $form->field('vegetables') );
 is( $output3,
    '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="2" id="vegetables.0" selected="selected">broccoli</option><option value="4" id="vegetables.1" selected="selected">peas</option><option value="1" id="vegetables.2" >lettuce</option><option value="3" id="vegetables.3" >carrots</option></select></div>
+<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0" >lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2" >carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
 ',
-   'output from select multiple field');
+'output from select multiple field');
 
 my $output4 = $form->render_field( $form->field('active') );
 is( $output4,

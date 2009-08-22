@@ -77,7 +77,7 @@ Each has must have a label and value keys.
 =cut
 
 has 'options' => (
-   isa        => 'ArrayRef[HashRef]',
+   isa        => 'ArrayRef',
    is         => 'rw',
    metaclass  => 'Collection::Array',
    auto_deref => 1,

@@ -173,7 +173,7 @@ sub render_select
    $output .= ' size="' . $field_def->size . '"' if $field_def->size;
    $output .= '>';
    my $index = 0;
-   foreach my $option ( $field_def->options ) {
+   foreach my $option ( @{$field_def->{options}} ) {
       $output .= '<option value="' . $option->{value} . '" ';
       $output .= 'id="' . $field_def->id . ".$index\" ";
       if ( my $ffif = $field->fif ) {
