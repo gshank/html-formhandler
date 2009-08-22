@@ -16,7 +16,7 @@ and L<HTML::FormHandler::Result::Field>.
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 
 # do we need 'accessor' ?
-has 'parent' => ( is =>'rw' );
+has 'parent' => ( is =>'rw', weak_ref => 1 );
 
 has 'input' => (
    is        => 'ro',
