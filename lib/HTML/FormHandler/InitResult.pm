@@ -24,7 +24,7 @@ sub _result_from_fields
       my $result = HTML::FormHandler::Field::Result->new(
          name => $field->name, parent => $self_result );
       $result = $field->_result_from_fields( $result );
-      $self_result->add_result($result);
+      $self_result->add_result($result) if $result;
    }
    $self->_set_result($self_result);
    $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');

@@ -20,17 +20,22 @@ Uses the 'submit' widget.
 
 =cut
 
+has 'has_static_value' => ( is => 'ro', default => 1 );
 has 'value' => (
    is        => 'ro',
    predicate => 'has_value',
-   default   => 'Save'
+   default   => 'Save',
+   init_arg  => 'value',
 );
+sub _result_from_object {  }
+sub _result_from_fields {  }
+sub _result_from_input {  }
 sub build_result
 {
    my $self = shift;
-   HTML::FormHandler::Field::Result->new( name => $self->name, value => $self->value );
+   return HTML::FormHandler::Field::Result->new( name => $self->name, 
+      field_def => $self );
 }
-sub _result_from_object { shift->result }
 
 has '+widget'    => ( default => 'submit' );
 has '+writeonly' => ( default => 1 );

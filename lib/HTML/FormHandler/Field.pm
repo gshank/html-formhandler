@@ -560,15 +560,6 @@ sub value
    return $self->result->value;
 }
 
-=pod
-
-sub build_result { 
-   my $self = shift;
-   my @parent = ('parent', $self->parent->result) if $self->parent;
-   return HTML::FormHandler::Field::Result->new( name => $self->name, @parent  );
-}
-
-=cut
 
 sub is_repeatable { }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
@@ -659,6 +650,7 @@ has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
 has 'disabled'   => ( isa => 'Bool', is => 'rw' );
 has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
+sub has_static_value { }
 has 'set_validate' => (
    isa     => 'Str',
    is      => 'rw',

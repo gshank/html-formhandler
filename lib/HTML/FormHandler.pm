@@ -854,48 +854,6 @@ sub setup_form
    $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
 }
 
-=pod
-
-sub _init_from_object
-{
-   my ( $self, $node, $item ) = @_;
-
-   $node ||= $self;
-   return unless $item;
-   warn "HFH: init_from_object ", $self->name, "\n" if $self->verbose;
-   my $my_value;
-   for my $field ( $node->fields ) {
-      next if $field->parent && $field->parent != $node;
-      next if $field->writeonly;
-      next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
-      my $value = $self->_get_value( $field, $item );
-      if ( $field->isa('HTML::FormHandler::Field::Repeatable') ) {
-         $field->_init_from_object($value);
-      }
-      elsif ( $field->isa('HTML::FormHandler::Field::Compound') ) {
-         $self->_init_from_object( $field, $value );
-      }
-      else {
-         if ( my @values = $field->get_init_value ) {
-            my $values_ref = @values > 1 ? \@values : shift @values;
-            $field->init_value($values_ref) if defined $values_ref;
-            $field->_set_value($values_ref)      if defined $values_ref;
-            $field->result->parent($field->parent->result) if $field->parent;
-         }
-         else {
-            $self->init_value( $field, $value );
-         }
-         $field->_load_options if $field->can('_load_options');
-      }
-      $my_value->{ $field->name } = $field->value;
-   }
-   $node->_set_value($my_value);
-   $node->result->parent($node->parent->result) if $node->parent;
-   $self->did_init_obj(1);
-}
-
-=cut
-
 sub _get_value
 {
    my ( $self, $field, $item ) = @_;
