@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Differences;
-use IO::All;
 
 use_ok('HTML::FormHandler::Result');
 
@@ -97,15 +96,6 @@ my $outputr = $result1->render;
 ok( $outputr, 'get render from result');
 
 eq_or_diff( $outputf, $outputr, 'no diff form and result');
-
-=pod
-
-$outputf > io('form_render.txt');
-$outputr > io('result_render.txt');
-my $diff = `diff form_render.txt result_render.txt`;
-ok( !$diff, 'no diff' );
-
-=cut
 
 my $params2 = {
    test_field => 'anything',

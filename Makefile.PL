@@ -30,6 +30,7 @@ requires 'aliased';
 
 # things the tests need
 test_requires 'Test::More'      => '0.88';
+test_requires 'Test::Differences';
 
 tests();
 author_tests('t/xt');
