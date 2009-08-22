@@ -5,6 +5,7 @@
     specify rendering role for result class
     api for result
     auto_deref for options bug
+    put back empty related fields for fif (to allow filling in if empty)
   Default value for field (like 'set_init' but at field level)
   Unique support for non-top-level fields?
   Create multibox widget & rendering for checkbox group for multiple select
