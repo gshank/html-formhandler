@@ -573,7 +573,7 @@ has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 sub fif
 {
    my ( $self, $result ) = @_;
-$DB::single=1;
+
    return if $self->inactive;
    return '' if $self->password;
    return unless $result || $self->has_result || $self->has_static_value;

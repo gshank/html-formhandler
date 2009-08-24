@@ -318,7 +318,7 @@ sub _load_options
    my $opts;
    # if options_<field_name> is returning an already constructed array of hashrefs
    if( ref $options[0] eq 'HASH' ) {
-      $opts = $options[0];
+      $opts = \@options;
    }
    else {
       croak "Options array must contain an even number of elements for field " . $self->name
