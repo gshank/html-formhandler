@@ -58,7 +58,7 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     # DBIx::Class result class. You can also have fields that don't exist
     # in your result class.
 
-    has_field 'name'    => ( type => 'Text', label => 'Username, required => 1,
+    has_field 'name'    => ( type => 'Text', label => 'Username', required => 1,
        required_message => 'You must enter a username', unique => 1,
        unique_message => 'That username is already taken' );
     # the css_class, title, and widget attributes are for use in templates
@@ -66,7 +66,7 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
        title => 'User age in years', widget => 'age_text', range_start => 18 ); 
     has_field 'sex'     => ( type => 'Select', label => 'Gender', required => 1 );
     # a customized field class
-    has_field 'birthdate => ( type => '+MyApp::Field::Date' );
+    has_field 'birthdate' => ( type => '+MyApp::Field::Date' );
     has_field 'hobbies' => ( type => 'Multiple', size => 5 );
     has_field 'address' => ( type => 'Text' );
     has_field 'city'    => ( type => 'Text' );
@@ -78,6 +78,9 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
             ],
         }
     );
+
+    no HTML::FormHandler::Moose;
+    1;
 
 For many forms, if L<HTML::FormHandler::Render::Simple> is included as a form role,
 you can render a simple form for scaffolding:
@@ -140,6 +143,8 @@ In a Catalyst controller:
     package MyApp::Controller::User;
     use Moose;
     BEGIN { extends 'Catalyst::Controller' }
+    use MyApp::Form::User
+
     has 'form' => ( isa => 'MyApp::Form::User', is => 'rw',
         lazy => 1, default => sub { MyApp::Form::User->new } );
 
@@ -152,10 +157,11 @@ In a Catalyst controller:
            schema => $c->model('DB')->schema );
 
         # Form validated.
-        $c->stash( user => $form->item );
+        $c->stash( user => $self->form->item );
         $c->res->redirect($c->uri_for('profile'));
     }
-    ...
+    
+    1;
 
 With the DBIC model the schema is set from the 'item' (row object)
 passed in, or from the primary key ('item_id') and schema. 
