@@ -30,12 +30,6 @@ has 'value' => (
 sub _result_from_object {  }
 sub _result_from_fields {  }
 sub _result_from_input {  }
-sub build_result
-{
-   my $self = shift;
-   return HTML::FormHandler::Field::Result->new( name => $self->name, 
-      field_def => $self );
-}
 
 has '+widget'    => ( default => 'submit' );
 has '+writeonly' => ( default => 1 );
