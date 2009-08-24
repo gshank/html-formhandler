@@ -266,7 +266,7 @@ sub render_select
    $output .= ' size="' . $field->size . '"' if $field->size;
    $output .= '>';
    my $index = 0;
-   foreach my $option ( @{$field->{options}} ) {
+   foreach my $option ( @{$field->options} ) {
       $output .= '<option value="' . $option->{value} . '" ';
       $output .= 'id="' . $field->id . ".$index\" ";
       if ( $field->fif ) {
@@ -313,7 +313,7 @@ sub render_radio_group
 
    my $output = " <br />";
    my $index  = 0;
-   foreach my $option ( $field->options ) {
+   foreach my $option ( @{$field->options} ) {
       $output .= '<input type="radio" value="' . $option->{value} . '"';
       $output .= ' name="' . $field->html_name . '" id="' . $field->id . ".$index\"";
       $output .= ' checked="checked"' if $option->{value} eq $field->fif;

@@ -75,6 +75,18 @@ sub BUILD
    $self->_build_fields;
 }
 
+around '_result_from_input' => sub {
+   my $orig = shift;
+   my $self = shift;
+   my ( $self_result, $input, $exists ) = @_;
+   if( !$input && !$exists ) {
+      return $self->_result_from_fields($self_result);
+   }
+   else {
+      return $self->$orig(@_);
+   }
+};
+
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;

@@ -74,13 +74,82 @@ See also L<HTML::FormHandler::Model::DBIC>, the 'lookup_options' method.
 This is an array of hashes for this field.
 Each has must have a label and value keys.
 
+=head2 set_options
+
+Name of form method that sets options
+
+=head2 multiple
+
+If true allows multiple input values
+
+=head2 size
+
+This can be used to store how many items should be offered in the UI
+at a given time.  Defaults to 0.
+
+=head2 label_column
+
+Sets or returns the name of the method to call on the foreign class
+to fetch the text to use for the select list.
+
+Refers to the method (or column) name to use in a related
+object class for the label for select lists.
+
+Defaults to "name"
+
+=head2 active_column
+
+Sets or returns the name of a boolean column that is used as a flag to indicate that
+a row is active or not.  Rows that are not active are ignored.
+
+The default is "active".
+
+If this column exists on the class then the list of options will included only
+rows that are marked "active".
+
+The exception is any columns that are marked inactive, but are also part of the
+input data will be included with brackets around the label.  This allows
+updating records that might have data that is now considered inactive.
+
+=head2 auto_widget_size
+
+This is a way to provide a hint as to when to automatically
+select the widget to display for fields with a small number of options.
+For example, this can be used to decided to display a radio select for
+select lists smaller than the size specified.
+
+See L<select_widget> below.
+
+=head2 sort_column
+
+Sets or returns the column used in the foreign class for sorting the
+options labels.  Default is undefined.
+
+If this column exists in the foreign table then labels returned will be sorted
+by this column.
+
+If not defined or the column is not found as a method on the foreign class then
+the label_column is used as the sort condition.
+
+=head2 select_widget
+
+If the widget is 'select' for the field then will look if the field
+also has a L<auto_widget_size>.  If the options list is less than or equal
+to the L<auto_widget_size> then will return C<radio> if L<multiple> is false,
+otherwise will return C<checkbox>.
+
+=head2 as_label
+
+Returns the option label for the option value that matches the field's current value.
+Can be helpful for displaying information about the field in a more friendly format.
+This does a string compare.
+
 =cut
 
 has 'options' => (
    isa        => 'ArrayRef',
    is         => 'rw',
    metaclass  => 'Collection::Array',
-   auto_deref => 1,
    provides   => {
       clear => 'reset_options',
       empty => 'has_options',
@@ -88,16 +157,10 @@ has 'options' => (
    lazy    => 1,
    builder => 'build_options'
 );
+
 sub build_options { [] }
 has 'options_from' => ( isa => 'Str', is => 'rw', default => 'none' );
 has 'loaded_options' => ( isa => 'Bool', is => 'rw', default => 0 );
-
-=head2 set_options
-
-Name of form method that sets options
-
-=cut
-
 sub BUILD
 {
    my $self = shift;
@@ -117,7 +180,7 @@ has 'set_options' => (
    }
 );
 
-sub _can_options
+sub _can_form_options
 {
    my $self = shift;
    return
@@ -127,101 +190,21 @@ sub _can_options
    return 1;
 }
 
-sub _options
+sub _form_options
 {
    my $self = shift;
-   return unless $self->_can_options;
+   return unless $self->_can_form_options;
    my $meth = $self->set_options;
    return $self->form->$meth($self);
 }
 
-=head2 multiple
-
-If true allows multiple input values
-
-=cut
-
 has 'multiple' => ( isa => 'Bool', is => 'rw', default => '0' );
-
-=head2 size
-
-This can be used to store how many items should be offered in the UI
-at a given time.  Defaults to 0.
-
-=cut
-
 has 'size' => ( isa => 'Int|Undef', is => 'rw' );
-
-=head2 label_column
-
-Sets or returns the name of the method to call on the foreign class
-to fetch the text to use for the select list.
-
-Refers to the method (or column) name to use in a related
-object class for the label for select lists.
-
-Defaults to "name"
-
-=cut
-
 has 'label_column' => ( isa => 'Str', is => 'rw', default => 'name' );
-
-=head2 active_column
-
-Sets or returns the name of a boolean column that is used as a flag to indicate that
-a row is active or not.  Rows that are not active are ignored.
-
-The default is "active".
-
-If this column exists on the class then the list of options will included only
-rows that are marked "active".
-
-The exception is any columns that are marked inactive, but are also part of the
-input data will be included with brackets around the label.  This allows
-updating records that might have data that is now considered inactive.
-
-=cut
-
 has 'active_column' => ( isa => 'Str', is => 'rw', default => 'active' );
-
-=head2 auto_widget_size
-
-This is a way to provide a hint as to when to automatically
-select the widget to display for fields with a small number of options.
-For example, this can be used to decided to display a radio select for
-select lists smaller than the size specified.
-
-See L<select_widget> below.
-
-=cut
-
 has 'auto_widget_size' => ( isa => 'Int', is => 'rw', default => '0' );
-
-=head2 sort_column
-
-Sets or returns the column used in the foreign class for sorting the
-options labels.  Default is undefined.
-
-If this column exists in the foreign table then labels returned will be sorted
-by this column.
-
-If not defined or the column is not found as a method on the foreign class then
-the label_column is used as the sort condition.
-
-=cut
-
 has 'sort_column' => ( isa => 'Str', is => 'rw' );
-
 has '+widget' => ( default => 'select' );
-
-=head2 select_widget
-
-If the widget is 'select' for the field then will look if the field
-also has a L<auto_widget_size>.  If the options list is less than or equal
-to the L<auto_widget_size> then will return C<radio> if L<multiple> is false,
-otherwise will return C<checkbox>.
-
-=cut
 
 sub select_widget
 {
@@ -233,14 +216,6 @@ sub select_widget
    return 'select' if @$options > $size;
    return $field->multiple ? 'checkbox' : 'radio';
 }
-
-=head2 as_label
-
-Returns the option label for the option value that matches the field's current value.
-Can be helpful for displaying information about the field in a more friendly format.
-This does a string compare.
-
-=cut
 
 sub as_label
 {
@@ -274,7 +249,8 @@ sub _inner_validate_field
    }
 
    # create a lookup hash
-   my %options = map { $_->{value} => 1 } $self->options;
+   
+   my %options = map { $_->{value} => 1 } @{$self->options};
    for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) ) {
       unless ( $options{$value} ) {
          $self->add_error("'$value' is not a valid value");
@@ -322,8 +298,8 @@ sub _load_options
 
    return if $self->options_from eq 'build';
    my @options;
-   if ( $self->_can_options ) {
-      @options = $self->_options;
+   if ( $self->_can_form_options ) {
+      @options = $self->_form_options;
       $self->options_from('method');
    }
    elsif ( $self->form ) {
@@ -335,15 +311,28 @@ sub _load_options
    return unless @options;    # so if there isn't an options method and no options
                               # from a table, already set options attributes stays put
 
-   @options = @{ $options[0] } if ref $options[0];
-   croak "Options array must contain an even number of elements for field " . $self->name
-      if @options % 2;
+   if( ref $options[0] eq 'ARRAY' ) {
+      @options = @{ $options[0] } if ref $options[0];
+   }
 
-   my @opts;
-   push @opts, { value => shift @options, label => shift @options } while @options;
-   $self->options( \@opts ) if @opts;
+   my $opts;
+   # if options_<field_name> is returning an already constructed array of hashrefs
+   if( ref $options[0] eq 'HASH' ) {
+      $opts = $options[0];
+   }
+   else {
+      croak "Options array must contain an even number of elements for field " . $self->name
+         if @options % 2;
+      push @{$opts}, { value => shift @options, label => shift @options } while @options;
+   }
+   if( @$opts ) {
+      my $opts = $self->sort_options($opts); # allow sorting options
+      $self->options( $opts );
+   }
    $self->loaded_options(1);
 }
+
+sub sort_options { shift; return shift; }
 
 =head1 AUTHORS
 

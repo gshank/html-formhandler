@@ -43,17 +43,17 @@ use HTML::FormHandler::Field::Text;
 my $form = Test::Form->new;
 ok( $form, 'create form');
 
-is_deeply( [$form->field('vegetables')->options],
-   [ {'label' => 'lettuce',
+my $veg_options =   [ {'label' => 'lettuce',
       'value' => 1 },
      {'label' => 'broccoli',
       'value' => 2 },
      {'label' => 'carrots',
       'value' => 3 },
      {'label' => 'peas',
-      'value' => 4 } ],
+      'value' => 4 } ];
+is_deeply( $form->field('vegetables')->options, $veg_options,
    'get options for vegetables' );
-is_deeply( [$form->field('fruit')->options],
+is_deeply( $form->field('fruit')->options,
     [ {'label' => 'apples',
        'value' => 1 },
       {'label' => 'oranges',
