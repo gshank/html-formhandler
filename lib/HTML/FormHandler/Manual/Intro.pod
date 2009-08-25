@@ -152,7 +152,11 @@ In a Catalyst controller:
     sub edit : Local {
         my ( $self, $c, $user_id ) = @_;
 
-        $c->stash( template => 'user/edit.tt' ); 
+        $c->stash( 
+          form => $self->form,
+          template => 'user/edit.tt' ); 
+
+
         return unless $self->form->process( item_id => $user_id,
            schema => $c->model('DB')->schema );
 
