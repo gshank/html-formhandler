@@ -278,7 +278,8 @@ sub _result_from_fields
       my $result = HTML::FormHandler::Field::Result->new(
          name => $index, parent => $self->result );
       my $field = $self->clone_element($result, $index);
-      $result->add_result( $field->result );
+      $result = $field->_result_from_fields($result);
+      $result->add_result( $field->result ) if $result;
       $self->add_field($field);
       $index++;
       $count--;

@@ -153,6 +153,7 @@ has 'options' => (
    provides   => {
       clear => 'reset_options',
       empty => 'has_options',
+      count => 'num_options',
    },
    lazy    => 1,
    builder => 'build_options'
