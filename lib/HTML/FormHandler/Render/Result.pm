@@ -99,8 +99,9 @@ sub render_result
    my $class = '';
    if ( $field_def->css_class || $result->has_errors ) {
       $class .= ' class="';
-      $class .= $field_def->css_class . ' ' if $field_def->css_class;
-      $class .= ' error"' if $result->has_errors;
+      $class .= $field_def->css_class if $field_def->css_class;
+      $class .= 'error' if $result->has_errors;
+      $class .= '"';
    }
    return $self->render_result_struct( $result, $rendered_field, $class );
 }
