@@ -6,7 +6,7 @@ HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
 
 Collection of use recipes for L<HTML::FormHandler>
 
-=head1 Dynamically change the active fields 
+=head2 Dynamically change the active fields 
 
 A common use case is for forms with some fields that should be displayed in
 some circumstances and not in others. There are a number of ways to do this.
@@ -43,7 +43,7 @@ Then you can mark them active or inactive using a Moose method modifier on
       }
    }
    
-=head1 Add custom attributes to FormHandler fields
+=head2 Add custom attributes to FormHandler fields
 
 If you want to add custom attributes to the FormHandler fields but don't want
 to subclass all the fields, you can apply a role containing the new
@@ -74,7 +74,7 @@ If you want all your forms to use fields with the custom attributes, you
 can create a base form object that applies the role, or turn the
 code into a role and apply it in all of your forms.
 
-=head1 Select lists
+=head2 Select lists
 
 If you want to set the initial value of a select field to 0 (or some other
 default):
@@ -110,7 +110,7 @@ Or customize the select list in an 'options_' method:
       return [ map { $_->digraph, $_->country_name } @rows ];
    }
 
-=head1 The database and FormHandler forms 
+=head2 The database and FormHandler forms 
 
 If you have to process the input data before saving to the database, and
 this is something that would be useful in other places besides your form,
@@ -141,7 +141,7 @@ If you want to enter fields from an additional table that is related to
 this one in a 'single' relationship, you can use the DBIx::Class 'proxy'
 feature to create accessors for those fields.
 
-=head1 Set up form base classes or roles for your application
+=head2 Set up form base classes or roles for your application
 
 You can add whatever attributes you want to your form classes. Maybe you
 want to save a title, or a particular navigation widget. You could even

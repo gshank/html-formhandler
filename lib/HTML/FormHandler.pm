@@ -31,7 +31,7 @@ An example of a form class:
 
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    with 'HTML::FormHandler::Renderer::Simple';
+    with 'HTML::FormHandler::Render::Simple';
 
     has '+item_class' => ( default => 'User' );
 
