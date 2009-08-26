@@ -3,7 +3,7 @@ package HTML::FormHandler::Field::Select;
 use Moose;
 extends 'HTML::FormHandler::Field';
 use Carp;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -32,7 +32,7 @@ In a custom field class:
 
    sub build_options {
        my $i = 0;
-       my @days = ('Sunday', 'Monday', 'Tuesda', 'Wednesday',
+       my @days = ('Sunday', 'Monday', 'Tuesday', 'Wednesday',
            'Thursday', 'Friday', 'Saturday' );
        return [
            map {
@@ -51,9 +51,26 @@ In a form:
        );
    }
 
-Notice that, as a convenience, the required format for the options array is 
-simpler in the 'options_field_name' method. The hashrefs with 'value' and
-'label' keys will be constructed for you by FormHandler.
+Notice that, as a convenience, you can return a simple array (or arrayref) 
+for the options array in the 'options_field_name' method. The hashrefs with 
+'value' and 'label' keys will be constructed for you by FormHandler. The
+arrayref of hashrefs format can be useful if you want to add another key
+to the hashes that you can use in creating the HTML:
+
+   sub options_license
+   {
+      my $self = shift;
+      return unless $self->schema;
+      my $licenses = $self->schema->resultset('License')->search({active => 1}, 
+           {order_by => 'sequence'});
+      my @selections;
+      while ( my $license = $licenses->next ) {
+         push @selections, { value => $license->id, label => $license->label, 
+              note => $license->note };
+      }
+      return @selections; 
+   }
+
 
 The final source of the options array is a database when the name of the 
 accessor is a relation to the table holding the information used to construct 
@@ -66,8 +83,17 @@ the select list.  The primary key is used as the value. The other columns used a
 
 See also L<HTML::FormHandler::Model::DBIC>, the 'lookup_options' method.
 
+If the options come from the options_<fieldname> method or the database, they
+will be reloaded every time the form is reloaded because the available options
+may have changed. To prevent this from happening when the available options are
+known to be static, set the 'do_not_reload' flag, and the options will not be 
+reloaded after the first time
 
-=head1 METHODS
+The sorting of the options may be changed using a 'sort_options' method in a
+custom field class. The 'Multiple' field uses this method to put the already
+selected options at the top of the list.
+
+=head1 Attributes and Methods
 
 =head2 options
 
@@ -161,7 +187,7 @@ has 'options' => (
 
 sub build_options { [] }
 has 'options_from' => ( isa => 'Str', is => 'rw', default => 'none' );
-has 'loaded_options' => ( isa => 'Bool', is => 'rw', default => 0 );
+has 'do_not_reload' => ( isa => 'Bool', is => 'ro' );
 sub BUILD
 {
    my $self = shift;
@@ -250,7 +276,6 @@ sub _inner_validate_field
    }
 
    # create a lookup hash
-   
    my %options = map { $_->{value} => 1 } @{$self->options};
    for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) ) {
       unless ( $options{$value} ) {
@@ -266,7 +291,7 @@ sub _result_from_object
    my ( $self, $result,  $item )  = @_;
 
    $result = $self->SUPER::_result_from_object($result, $item);
-   $self->_load_options unless $self->loaded_options;
+   $self->_load_options;
    return $result;
 }
 
@@ -275,7 +300,7 @@ sub _result_from_fields
    my ( $self, $result ) = @_;
 
    $result = $self->SUPER::_result_from_fields( $result );
-   $self->_load_options unless $self->loaded_options;
+   $self->_load_options;
    return $result;
 }
 
@@ -284,20 +309,16 @@ sub _result_from_input
    my ( $self, $result, $input, $exists ) = @_;
 
    $result = $self->SUPER::_result_from_input( $result, $input, $exists );
-   $self->_load_options unless $self->loaded_options;
+   $self->_load_options;
    return $result;
-}
-
-sub clear_other
-{
-   shift->loaded_options(0);
 }
 
 sub _load_options
 {
    my $self = shift;
 
-   return if $self->options_from eq 'build';
+   return if ( $self->options_from eq 'build' ||
+      ($self->has_options && $self->do_not_reload ) );
    my @options;
    if ( $self->_can_form_options ) {
       @options = $self->_form_options;
@@ -312,6 +333,7 @@ sub _load_options
    return unless @options;    # so if there isn't an options method and no options
                               # from a table, already set options attributes stays put
 
+   # allow returning arrayref
    if( ref $options[0] eq 'ARRAY' ) {
       @options = @{ $options[0] } if ref $options[0];
    }
@@ -330,7 +352,6 @@ sub _load_options
       my $opts = $self->sort_options($opts); # allow sorting options
       $self->options( $opts );
    }
-   $self->loaded_options(1);
 }
 
 sub sort_options { shift; return shift; }
