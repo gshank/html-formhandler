@@ -51,5 +51,5 @@ ok( $form->validated, 'form validated' );
 
 my $render = $form->render_field('captcha');
 is( $render, '
-<div class="captcha ><label class="label" for="captcha">Verification: </label><img src="/captcha/test"/><input id="captcha" name="captcha"></div>
+<div class="captcha"><label class="label" for="captcha">Verification: </label><img src="/captcha/test"/><input id="captcha" name="captcha"></div>
 ', 'captcha renders ok' );
