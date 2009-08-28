@@ -64,7 +64,7 @@ sub _result_from_object
 {
    my ( $self, $self_result, $item ) = @_;
 
-   return unless $item;
+   return unless ($item || $self->has_fields); # empty fields for compounds
    my $my_value;
    for my $field ( $self->fields ) {
 #      next if $field->parent && $field->parent != $self;
