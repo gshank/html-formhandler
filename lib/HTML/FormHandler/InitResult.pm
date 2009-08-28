@@ -39,7 +39,7 @@ sub _result_from_input
 
    # transfer the input values to the input attributes of the
    # subfields
-   return unless ( defined $input || $exists || $self->DOES('HTML::FormHandler::Field::Compound') );
+   return unless ( defined $input || $exists || $self->has_fields );
    $self_result->_set_input($input);
    if ( ref $input eq 'HASH' ) {
       foreach my $field ( $self->fields ) {
