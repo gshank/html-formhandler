@@ -34,12 +34,15 @@ of them 'inactive';
 Then you can mark them active or inactive using a Moose method modifier on
 'setup_form'.
 
-   after 'setup_form' => sub {
+   before 'setup_form' => sub {
       my $self = shift;
-      if( <some condition> ) 
-      {
+      if( <some condition> ) {
          $self->field('foo')->inactive(1);
-         $self->field('bar')->clear_inactive;
+         $self->field('bar')->inactive(0);
+      }
+      else {
+         $self->field('foo')->inactive(0);
+         $self->field('bar')->inactive(1);
       }
    }
    
