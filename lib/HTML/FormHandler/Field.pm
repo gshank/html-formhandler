@@ -578,9 +578,9 @@ sub fif
 
    return if $self->inactive;
    return '' if $self->password;
-   return unless $result || $self->has_result || $self->has_static_value;
+   return unless $result || $self->has_result;
    my $lresult = $result || $self->result;
-   if ( ( $self->has_input && !$self->fif_from_value ) ||
+   if ( ( $self->has_result && $self->has_input && !$self->fif_from_value ) ||
       ( $self->fif_from_value && !defined $lresult->value ) )
    {
       return defined $lresult->input ? $lresult->input : '';
