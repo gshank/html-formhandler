@@ -563,7 +563,9 @@ sub value
    return $self->_set_value(@_) if @_;
    return $self->result->value;
 }
-
+# for compatibility. deprecate and remove at some point
+sub clear_input { shift->_clear_input } 
+sub clear_value { shift->_clear_value }
 
 sub is_repeatable { }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
