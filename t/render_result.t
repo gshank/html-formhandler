@@ -9,8 +9,9 @@ use_ok('HTML::FormHandler::Result');
    package Test::Form;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
-   with 'HTML::FormHandler::Render::Simple';
+#   with 'HTML::FormHandler::Render::Simple';
 
+   has '+widget_form' => ( default => 'Div' );
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
                size => 20,

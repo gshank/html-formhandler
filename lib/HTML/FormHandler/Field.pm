@@ -7,6 +7,7 @@ use HTML::FormHandler::Field::Result;
 
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
+with 'HTML::FormHandler::Widget::ApplyRole';
 
 our $VERSION = '0.02';
 
@@ -554,12 +555,14 @@ sub build_result
 sub input
 {
    my $self = shift;
+   return unless $self->has_result;
    return $self->_set_input(@_) if @_;
    return $self->result->input;
 }
 sub value
 {
    my $self = shift;
+   return unless $self->has_result;
    return $self->_set_value(@_) if @_;
    return $self->result->value;
 }
@@ -621,6 +624,13 @@ has 'accessor' => (
    }
 );
 has 'temp' => ( is => 'rw' );
+sub has_flag
+{
+   my ($self, $flag_name) = @_;
+   return unless $self->can($flag_name);
+   return $self->$flag_name;
+}
+                                                                        
 has 'label' => (
    isa     => 'Str',
    is      => 'rw',
@@ -645,6 +655,8 @@ sub build_html_name
    return $prefix . $self->full_name;
 }
 has 'widget'         => ( isa => 'Str',  is => 'rw' );
+has 'widget_wrapper' => ( isa => 'Str',  is => 'rw', default => 'div' );
+has 'widget_name_space' => ( isa => 'Str', is => 'rw' );
 has 'order'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'inactive'       => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
 has 'unique'         => ( isa => 'Bool', is => 'rw' );
@@ -744,6 +756,7 @@ sub BUILD
 {
    my ( $self, $params ) = @_;
 
+   $self->apply_rendering_widgets;
    $self->add_action( $self->trim ) if $self->trim;
    $self->_build_apply_list;
    $self->add_action( @{ $params->{apply} } ) if $params->{apply};
@@ -935,6 +948,18 @@ sub dump
       my $o = $self->options;
       warn "HFH: options: " . Data::Dumper::Dumper $o;
    }
+}
+
+sub apply_rendering_widgets
+{
+   my $self = shift;
+
+   return unless $self->widget;
+   $self->apply_widget_role( $self, $self->widget, 'Field' );
+   return unless $self->widget_wrapper;
+   $self->apply_widget_role( $self, $self->widget_wrapper, 'Wrapper' );
+   return;
+
 }
 
 =head1 AUTHORS

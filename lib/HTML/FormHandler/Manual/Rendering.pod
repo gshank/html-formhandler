@@ -1,0 +1,59 @@
+=head1 NAME
+
+HTML::FormHandler::Manual::Rendering
+
+=head1 SYNOPSIS
+
+HFH has a number of different rendering methods.
+
+   1. Handcoded html with no assist from HFH at al
+   2. Use templates and the field 'widget' to determine the template snippet
+   3. Use a rendering role in your form class, like Render::Simple
+
+and now:
+
+   4. Automatically installed rendering using a combination of rendering roles,
+      which can easily be customized by the user.
+
+=head1 New rendering
+
+Default widget roles are installed into HTML::FormHandler::Widget. They include
+widgets for the fields in the distribution. Each field can render itself with
+C<< $field->render >>. The widget rendering roles are applied at build time in 
+each field object. 
+
+The name space used to look for the widget roles can be specified on a form or
+field basis by setting 'widget_name_space' to a scalar name space, like:
+
+   has '+widget_name_space' => ( default => 'MyApp::Form::Widget' );
+
+or to an arrayref of name spaces:
+
+   has '+widget_name_space' => ( default => sub { ['MyApp::Form::Submit',
+       'MyApp::Form::Widget' ]);
+
+The HTML::FormHandler::Widget name space is always searched as the last name space.
+This means that you can set up an application or form specific set of widgets.
+
+The form's rendering role is looked for in the widget name space plus 'Form'. The
+default form rendering roles are in HTML::FormHandler::Widget::Form. The 'wrapper'
+for field rendering can also be specified with 'widget_wrapper'. This can be used
+to wrap the basic form input field with a div or a table (the defaults that are
+provided), or whatever you want.
+
+Can be set in the form:
+
+   widget_name_space
+   widget_wrapper
+   widget_form
+
+Can be set in the field:
+
+   widget_name_space
+   widget_wrapper
+   widget
+
+The widget_name_space and widget_wrapper will be copied into the fields from the
+form if they are not already defined.
+
+=cut

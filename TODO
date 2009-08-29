@@ -1,8 +1,6 @@
   result refactoring tasks
     Handle dynamic selection lists in result rendering
     Clean up non-result 'value' in field classes (Checkbox, Submit)
-    Support rendering from field classes using result (apply a method)
-    specify rendering role for result class
     api for result
     auto_deref for options bug
     put back empty related fields for fif (to allow filling in if empty)

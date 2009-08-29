@@ -5,6 +5,7 @@ use MooseX::AttributeHelpers;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
    'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::InitResult';
+with 'HTML::FormHandler::Widget::ApplyRole';
 
 use Carp;
 use Class::MOP;
@@ -582,8 +583,15 @@ has 'result' => ( isa => 'HTML::FormHandler::Result', is => 'ro',
 );
 sub build_result { 
    my $self = shift;
-   return HTML::FormHandler::Result->new( name => $self->name, form => $self );
+   my $result = HTML::FormHandler::Result->new( name => $self->name, form => $self );
+   if( $self->widget_form ) {
+      $self->apply_widget_role( $result, $self->widget_form, 'Form' );
+   }
+   return $result;
 }
+has 'widget_name_space' => ( is => 'ro', isa => 'Str|ArrayRef[Str]' );
+has 'widget_form' => ( is => 'ro', isa => 'Str', default => 'div' );
+has 'widget_wrapper' => ( is => 'ro', isa => 'Str', default => 'div' );
 
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
@@ -667,6 +675,8 @@ sub BUILD
 {
    my $self = shift;
 
+   $self->apply_widget_role( $self, $self->widget_form, 'Form' )
+      if $self->widget_form;
    $self->_build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)

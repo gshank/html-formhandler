@@ -180,15 +180,10 @@ sub render_field
       unless ( defined $field && $field->isa('HTML::FormHandler::Field') );
    return '' if $field->widget eq 'no_render';
    my $rendered_field;
-   if ( $field->widget eq 'from_field' ) {
-      $rendered_field = $field->render;
-   }
-   else {
-      my $form_render = 'render_' . $field->widget;
-      die "Widget method $form_render not implemented in H::F::Render::Simple"
-         unless $self->can($form_render);
-      $rendered_field = $self->$form_render($field);
-   }
+   my $form_render = 'render_' . $field->widget;
+   die "Widget method $form_render not implemented in H::F::Render::Simple"
+      unless $self->can($form_render);
+   $rendered_field = $self->$form_render($field);
    my $class = '';
    if ( $field->css_class || $field->has_errors ) {
       $class .= ' class="';

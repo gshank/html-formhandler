@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::Nested;
 
 use Moose;
-extends 'HTML::FormHandler::Field';
+extends 'HTML::FormHandler::Field::Text';
 
 =head1 NAME
 

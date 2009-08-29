@@ -2,8 +2,7 @@ package HTML::FormHandler::Result;
 
 use Moose;
 with 'HTML::FormHandler::Result::Role';
-with 'HTML::FormHandler::Render::Result';
-# this will be the form result object.
+with 'HTML::FormHandler::Widget::Form::Div';
 
 =head1 NAME
 

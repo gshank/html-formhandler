@@ -27,6 +27,7 @@ requires 'MooseX::Getopt' => '0.16';
 requires 'MooseX::Types' => 0;
 requires 'MooseX::Types::Common' => 0;
 requires 'aliased';
+requires 'File::Spec';
 
 # things the tests need
 test_requires 'Test::More'      => '0.88';
