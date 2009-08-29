@@ -63,8 +63,9 @@ sub render_start
    my $self   = shift;
    my $output = '<form ';
    $output .= 'action="' . $self->form->action . '" '     if $self->form->action;
-   $output .= 'id="' . $self->name . '" '           if $self->name;
+   $output .= 'id="' . $self->name . '" '                 if $self->name;
    $output .= 'method="' . $self->form->http_method . '"' if $self->form->http_method;
+   $output .= 'enctype="' . $self->form->enctype . '"'    if $self->form->enctype;
    $output .= '>' . "\n";
    $output .= '<fieldset class="main_fieldset">'    if $self->form->auto_fieldset;
    return $output;
