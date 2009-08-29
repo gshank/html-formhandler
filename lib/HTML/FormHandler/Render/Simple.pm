@@ -364,10 +364,12 @@ sub render_submit
 {
    my ( $self, $field ) = @_;
 
-   my $output = '<input type="submit" name="';
-   $output .= $field->html_name . '"';
-   $output .= ' id="' . $field->id . '"';
-   $output .= ' value="' . $field->value . '" />';
+   my $output = '<input';
+   $output .= ' type="'  . lc($field->type)  . '"';
+   $output .= ' name="'  . $field->html_name . '"';
+   $output .= ' id="'    . $field->id        . '"';
+   $output .= ' value="' . $field->value     . '"';
+   $output .= '/>';
    return $output;
 }
 

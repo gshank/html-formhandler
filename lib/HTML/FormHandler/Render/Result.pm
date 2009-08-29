@@ -292,10 +292,12 @@ sub render_submit
    my ( $self, $result ) = @_;
 
    my $field_def = $result->field_def;
-   my $output = '<input type="submit" name="';
-   $output .= $field_def->html_name . '"';
-   $output .= ' id="' . $field_def->id . '"';
-   $output .= ' value="' . $field_def->value . '" />';
+   my $output = '<input';
+   $output .= ' type="'  . lc($field_def->type)  . '"';
+   $output .= ' name="'  . $field_def->html_name . '"';
+   $output .= ' id="'    . $field_def->id        . '"';
+   $output .= ' value="' . $field_def->value     . '"';
+   $output .= '/>';
    return $output;
 }
 
