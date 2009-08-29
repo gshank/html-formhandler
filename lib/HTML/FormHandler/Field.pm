@@ -211,16 +211,17 @@ Compound fields will have an array of errors from the subfields.
 
 =head2 Attributes for creating HTML
 
-   label - Text label for this field. Defaults to ucfirst field name.
-   title - Place to put title for field.
-   style - Place to put field style string
-   css_class - For a css class name
-   id    - Useful for javascript (default is form_name + field_name)
-   disabled - for the HTML flag
-   readonly - for the HTML flag
-   javascript - for a Javascript string
-   order - Used for sorting errors and fields. Built automatically,
-           but may also be explicity set
+   label       - Text label for this field. Defaults to ucfirst field name.
+   title       - Place to put title for field.
+   style       - Place to put field style string
+   css_class   - For a css class name (string; could be several classes,
+                 separated by spaces or commas)
+   id          - Useful for javascript (default is form_name + field_name)
+   disabled    - for the HTML flag
+   readonly    - for the HTML flag
+   javascript  - for a Javascript string
+   order       - Used for sorting errors and fields. Built automatically,
+                 but may also be explicity set
 
 =head2 widget
 
