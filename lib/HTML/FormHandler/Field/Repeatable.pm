@@ -132,7 +132,7 @@ sub _fields_validate
    $self->_set_value( \@value_array );
 }
 
-sub clear_other
+sub init_state
 {
    my $self = shift;
 
@@ -146,7 +146,6 @@ sub clear_other
       }
    }
    $self->clear_fields;
-#   $self->_clear_value;
 }
 
 sub create_element
@@ -209,7 +208,7 @@ sub _result_from_input
 {
    my ( $self, $result, $input )  = @_;
 
-   $self->clear_other;
+   $self->init_state;
    $result->_set_input($input); 
    $self->_set_result($result);
    # if Repeatable has array input, need to build instances
@@ -238,7 +237,7 @@ sub _result_from_object
 {
    my ( $self, $result, $values ) = @_;
 
-   $self->clear_other;
+   $self->init_state;
    $self->_set_result($result);
    # Create field instances and fill with values
    my $index = 0;
@@ -268,7 +267,7 @@ sub _result_from_fields
 {
    my ( $self, $result ) = @_;
 
-   $self->clear_other;
+   $self->init_state;
    $self->_set_result($result);
    my $count = $self->num_when_empty;
    my $index = 0;

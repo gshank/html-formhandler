@@ -428,10 +428,12 @@ sub _fields_validate
    $self->_set_value( \%value_hash );
 }
 
-after clear_data => sub {
+sub clear_data 
+{ 
    my $self = shift;
-   $_->clear_data for $self->fields;
-};
+   $self->clear_result;
+   $_->clear_data for $self->fields; 
+}
 
 sub get_error_fields
 {

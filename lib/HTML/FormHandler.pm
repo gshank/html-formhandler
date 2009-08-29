@@ -693,7 +693,7 @@ sub process
    my $self = shift;
 
    warn "HFH: process ", $self->name, "\n" if $self->verbose;
-   $self->clear if $self->processed;
+   $self->clear_state if $self->processed;
    $self->setup_form(@_);
    $self->validate_form if $self->has_params;
    $self->update_model  if $self->validated;
@@ -709,7 +709,8 @@ sub get_result
    my $self = shift;
    $self->process( @_ );
    my $result = $self->result;
-   $self->clear;
+   $self->clear_state;
+   $self->clear_result;
    return $result;
 }
 
@@ -726,8 +727,13 @@ sub db_validate
 sub clear
 {
    my $self = shift;
-   warn "HFH: clear ", $self->name, "\n" if $self->verbose;
-   $self->clear_result;
+   $self->clear_data;
+   $self->clear_state;
+}
+
+sub clear_state
+{
+   my $self = shift;
    $self->ran_validation(0);
    $self->clear_params;
    $self->clear_ctx;
@@ -735,12 +741,11 @@ sub clear
    $self->did_init_obj(0);
 }
 
-sub clear_data { shift->clear_result }
-
 sub fif
 {
    my ( $self, $prefix, $node ) = @_;
 
+   return unless $self->has_result;
    if ( !defined $node ) {
       $node   = $self;
       $prefix = '';
@@ -749,6 +754,8 @@ sub fif
    my %params;
    foreach my $field ( $node->fields ) {
       next if ( $field->inactive || $field->password );
+      # result might be undef if garbage collected
+      next unless $field->has_result && $field->result;
       my $fif = $field->fif;
       next unless defined $fif;
       if ( $field->DOES('HTML::FormHandler::Fields') ) {

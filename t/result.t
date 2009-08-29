@@ -52,12 +52,18 @@ ok( $result->has_input, 'result still has input');
 my $num_errors = $form->num_errors;
 
 $result = $form->get_result($good);
+ok( !$form->has_result, 'has result after been cleared');
 ok( !$form->validated, 'form has been cleared' );
+
+# field still points to existing result
+ok( $form->field('reqname')->input, 'has input for field');
 ok( $result->validated, 'result still has result' );
 is( $result->num_errors, $num_errors, 'number of errors is correct');
-
 is( $result->field('somename')->value, undef, 'no value for somename' );
 ok( !$result->field('somename')->has_value, 'predicate no value' );
+
+$form->process({});
+ok( !$form->field('reqname')->input, 'no input for field');
 
 done_testing;
 exit;

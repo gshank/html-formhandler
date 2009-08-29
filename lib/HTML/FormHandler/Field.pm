@@ -566,6 +566,7 @@ sub value
 # for compatibility. deprecate and remove at some point
 sub clear_input { shift->_clear_input } 
 sub clear_value { shift->_clear_value }
+sub clear_data { shift->clear_result }
 
 sub is_repeatable { }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
@@ -866,15 +867,6 @@ sub clone
    my ( $self, %params ) = @_;
    $self->meta->clone_object( $self, %params );
 }
-
-sub clear_data
-{
-   my $self = shift;
-   $self->clear_result;
-   $self->clear_other;
-}
-# clear_other used in Repeatable
-sub clear_other { }
 
 sub value_changed
 {
