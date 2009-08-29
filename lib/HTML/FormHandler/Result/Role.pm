@@ -74,7 +74,7 @@ has 'errors'     => (
 );
 
 sub validated { !$_[0]->has_error_results && $_[0]->has_input  }
-sub ran_validation { shift->has_input }
+# sub ran_validation { shift->has_input }
 
 sub field
 {

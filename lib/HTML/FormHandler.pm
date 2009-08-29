@@ -576,7 +576,8 @@ has 'result' => ( isa => 'HTML::FormHandler::Result', is => 'ro',
    predicate => 'has_result',
    handles => [ 'input', '_set_input',  '_clear_input', 'has_input',
                 'value', '_set_value', '_clear_value', 'has_value',
-                'add_result', 'results'
+                'add_result', 'results',
+                'validated', 'ran_validation'
               ],
 );
 sub build_result { 
@@ -588,7 +589,7 @@ sub build_result {
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 # flags
-has [ 'ran_validation', 'validated', 'verbose', 'processed', 'did_init_obj' ] =>
+has [ 'verbose', 'processed', 'did_init_obj' ] =>
    ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
@@ -726,8 +727,7 @@ sub clear
 {
    my $self = shift;
    warn "HFH: clear ", $self->name, "\n" if $self->verbose;
-   $self->clear_data;
-   $self->validated(0);
+   $self->clear_result;
    $self->ran_validation(0);
    $self->clear_params;
    $self->clear_ctx;
@@ -802,7 +802,7 @@ sub validate_form
    $self->_clear_dependency;
    $self->get_error_fields;
    $self->ran_validation(1);
-   $self->validated( $self->num_errors == 0 );
+#   $self->validated( $self->num_errors == 0 );
    $self->dump_validated if $self->verbose;
    return $self->validated;
 }
