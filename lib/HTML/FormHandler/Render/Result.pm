@@ -99,9 +99,11 @@ sub render_result
    }
    my $class = '';
    if ( $field_def->css_class || $result->has_errors ) {
+      my @css_class;
+      push(@css_class, split( /[ ,]+/, $field->css_class )) if $field->css_class;
+      push(@css_class, 'error')                             if $field->has_errors;
       $class .= ' class="';
-      $class .= $field_def->css_class if $field_def->css_class;
-      $class .= 'error' if $result->has_errors;
+      $class .= join(' ' => @css_class);
       $class .= '"';
    }
    return $self->render_result_struct( $result, $rendered_field, $class );
