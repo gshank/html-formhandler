@@ -1,4 +1,4 @@
-package HTML::FormHandler::Role::Result;
+package HTML::FormHandler::Result::Role;
 
 use Moose::Role;
 
@@ -46,6 +46,19 @@ has 'results'     => (
    }
 );
 
+has 'error_results' => (
+   metaclass  => 'Collection::Array',
+   isa        => 'ArrayRef', # for HFH::Result and HFH::Field::Result
+   is         => 'rw',
+   default    => sub { [] },
+   provides   => {
+      empty => 'has_error_results',
+      clear => 'clear_error_results',
+      push  => 'add_error_result',
+      count => 'num_error_results'
+   }
+);
+
 has 'errors'     => (
    metaclass  => 'Collection::Array',
    isa        => 'ArrayRef[Str]',
@@ -60,7 +73,7 @@ has 'errors'     => (
    }
 );
 
-sub validated { !$_[0]->has_errors && $_[0]->has_input  }
+sub validated { !$_[0]->has_error_results && $_[0]->has_input  }
 sub ran_validation { shift->has_input }
 
 sub field

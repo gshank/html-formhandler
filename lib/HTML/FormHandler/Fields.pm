@@ -64,19 +64,20 @@ has 'fields' => (
       set   => 'set_field_at',
    }
 );
-has 'error_fields' => (
-   metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef[HTML::FormHandler::Field]',
-   is         => 'rw',
-   default    => sub { [] },
-   auto_deref => 1,
-   provides   => {
-      empty => 'has_error_fields',
-      clear => 'clear_error_fields',
-      push  => 'add_error_field',
-      count => 'num_error_fields'
-   }
-);
+
+# compatibility wrappers for result errors
+sub error_fields
+{
+   my $self = shift;
+   return map { $_->field_def } @{$self->result->error_results};
+}
+sub has_error_fields { shift->result->has_error_results }
+sub add_error_field 
+{
+   my ($self, $field) = @_;
+   $self->result->add_error_result($field->result);
+}
+sub num_error_fields { shift->result->num_error_results }
 
 has 'fields_from_model' => ( isa => 'Bool', is => 'rw' );
 
@@ -411,7 +412,6 @@ sub sorted_fields
 }
 
 #  the routine for looping through and processing each field
-#  Called in process_node
 sub _fields_validate
 {
    my $self = shift;
@@ -424,30 +424,30 @@ sub _fields_validate
       $field->validate_field;    # this calls the field's 'validate' routine
       $value_hash{ $field->accessor } = $field->value 
           if ( $field->has_value && !$field->noupdate );
-#      $self->result->push_errors($field->errors) if $field->has_errors;
    }
    $self->_set_value( \%value_hash );
 }
 
 after clear_data => sub {
    my $self = shift;
-   $self->clear_error_fields;
    $_->clear_data for $self->fields;
 };
 
 sub get_error_fields
 {
    my $self = shift;
-   my @error_fields;
+
+   my @error_results;
    foreach my $field ( $self->sorted_fields ) {
       next unless $field->has_result;
       if ( $field->has_fields ) {
          $field->get_error_fields;
-         push @error_fields, $field->error_fields if $field->has_error_fields;
+         push @error_results, @{$field->result->error_results} 
+              if $field->result->has_error_results;
       }
-      push @error_fields, $field if $field->has_errors;
+      push @error_results, $field->result if $field->result->has_errors;
    }
-   $self->add_error_field(@error_fields) if scalar @error_fields;
+   $self->result->add_error_result(@error_results) if scalar @error_results;
 }
 
 sub dump_fields { shift->dump(@_) }
@@ -472,22 +472,6 @@ sub dump_validated
       warn "HFH: ", $field->name, ": ",
          ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";
    }
-}
-
-=pod
-
-sub process_node
-{
-   my $self = shift;
-
-   return unless $self->has_fields;
-   $self->_fields_validate;
-   my %value_hash;
-   for my $field ( $self->fields ) {
-      next if ( $field->noupdate || $field->inactive );
-      $value_hash{ $field->accessor } = $field->value if $field->has_value;
-   }
-   $self->_set_value( \%value_hash );
 }
 
 =head1 AUTHORS

@@ -1,7 +1,7 @@
 package HTML::FormHandler::Result;
 
 use Moose;
-with 'HTML::FormHandler::Role::Result';
+with 'HTML::FormHandler::Result::Role';
 with 'HTML::FormHandler::Render::Result';
 # this will be the form result object.
 

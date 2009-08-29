@@ -584,7 +584,6 @@ sub build_result {
    return HTML::FormHandler::Result->new( name => $self->name, form => $self );
 }
 
-
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );

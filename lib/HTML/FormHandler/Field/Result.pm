@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::Result;
 
 use Moose;
-with 'HTML::FormHandler::Role::Result';
+with 'HTML::FormHandler::Result::Role';
 
 =head1 NAME
 
