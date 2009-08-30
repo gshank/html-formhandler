@@ -13,7 +13,7 @@ sub render
       next unless $subresult;
       $output .= $subfield->render($subresult);
    }
-   return $self->render_field($result, $output);
+   return $self->wrap_field($result, $output);
 }
 
 1;

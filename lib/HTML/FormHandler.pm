@@ -590,8 +590,8 @@ sub build_result {
    return $result;
 }
 has 'widget_name_space' => ( is => 'ro', isa => 'Str|ArrayRef[Str]' );
-has 'widget_form' => ( is => 'ro', isa => 'Str', default => 'div' );
-has 'widget_wrapper' => ( is => 'ro', isa => 'Str', default => 'div' );
+has 'widget_form' => ( is => 'ro', isa => 'Str', default => 'Simple' );
+has 'widget_wrapper' => ( is => 'ro', isa => 'Str', default => 'Div' );
 
 # object with which to initialize
 has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );

@@ -16,7 +16,7 @@ sub render
    my $output =
       qq(<textarea name="$name" id="$id" ) . qq(rows="$rows" cols="$cols">$fif</textarea>);
 
-   return $self->render_field($result, $output);
+   return $self->wrap_field($result, $output);
 }
 
 1;

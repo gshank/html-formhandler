@@ -13,7 +13,7 @@ sub render
    $output .= ' size="' . $self->size . '"' if $self->size;
    $output .= ' maxlength="' . $self->maxlength . '"' if $self->maxlength;
    $output .= ' value="' . $self->fif($result) . '" />';
-   return $self->render_field($result, $output);
+   return $self->wrap_field($result, $output);
 }
 
 no Moose::Role;

@@ -39,7 +39,7 @@ sub render
       $index++;
    }
    $output .= '</select>';
-   return $self->render_field($result, $output);
+   return $self->wrap_field($result, $output);
 }
 
 1;

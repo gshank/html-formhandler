@@ -1,38 +1,24 @@
-package HTML::FormHandler::Render::Table;
+package HTML::FormHandler::Widget::Form::Table;
 
 use Moose::Role;
-
-with 'HTML::FormHandler::Render::Simple' =>
-   { excludes => [ 'render', 'render_field_struct', 'render_end', 'render_start' ] };
+with 'HTML::FormHandler::Widget::Form::Simple' => 
+   { excludes => [ 'render_start', 'render_end' ] };
 
 =head1 NAME
 
-HTML::FormHandler::Render::Table - render a form with a table layout
+HTML::FormHandler::Widget::Form::Table - render a form with a table layout
 
 =head1 SYNOPSIS
 
-Include this role in a form:
+Set in your form:
 
-   package MyApp::Form::User;
-   with 'HTML::FormHandler::Render::Table
+   has '+widget_form' => ( default => 'Table' );
 
 Use in a template:
 
    [% form.render %]
 
 =cut
-
-sub render
-{
-   my $self = shift;
-
-   my $output = $self->render_start;
-   foreach my $field ( $self->sorted_fields ) {
-      $output .= $self->render_field($field);
-   }
-   $output .= $self->render_end;
-   return $output;
-}
 
 sub render_start
 {
@@ -55,30 +41,6 @@ sub render_end
    return $output;
 }
 
-sub render_field_struct
-{
-   my ( $self, $field, $rendered_field, $class ) = @_;
-   my $output = qq{\n<tr$class>};
-   my $l_type =
-      defined $self->get_label_type( $field->widget ) ?
-      $self->get_label_type( $field->widget ) :
-      '';
-   if ( $l_type eq 'label' ) {
-      $output .= '<td>' . $self->_label($field) . '</td>';
-   }
-   elsif ( $l_type eq 'legend' ) {
-      $output .= '<td>' . $self->_label($field) . '</td></tr>';
-   }
-   if ( $l_type ne 'legend' ) {
-      $output .= '<td>';
-   }
-   $output .= $rendered_field;
-   $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
-   if ( $l_type ne 'legend' ) {
-      $output .= "</td></tr>\n";
-   }
-   return $output;
-}
 
 =head1 AUTHORS
 

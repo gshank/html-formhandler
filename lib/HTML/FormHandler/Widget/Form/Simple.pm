@@ -1,4 +1,4 @@
-package HTML::FormHandler::Widget::Form::Div;
+package HTML::FormHandler::Widget::Form::Simple;
 
 use Moose::Role;
 use HTML::Entities;
@@ -8,11 +8,13 @@ our $VERSION = 0.01;
 
 =head1 NAME
 
-HTML::FormHandler::Widget::Form::Div
+HTML::FormHandler::Widget::Form::Simple
 
 =head1 SYNOPSIS
 
-Role to apply to form objects to 
+Role to apply to form objects to allow rendering. In your form:
+
+   has '+widget_form' => ( default => 'Simple' );
 
 =cut
 

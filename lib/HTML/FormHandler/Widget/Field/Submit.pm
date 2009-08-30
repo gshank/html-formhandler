@@ -13,7 +13,7 @@ sub render
    $output .= $self->html_name . '"';
    $output .= ' id="' . $self->id . '"';
    $output .= ' value="' . $self->value . '" />';
-   return $self->render_field($result, $output);
+   return $self->wrap_field($result, $output);
 }
 
 1;

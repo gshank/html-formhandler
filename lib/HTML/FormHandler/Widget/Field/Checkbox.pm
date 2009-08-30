@@ -13,7 +13,7 @@ sub render
       $self->html_name . '" id="' . $self->id . '" value="' . $self->checkbox_value . '"';
    $output .= ' checked="checked"' if $fif eq $self->checkbox_value;
    $output .= ' />';
-   return $self->render_field($result, $output);
+   return $self->wrap_field($result, $output);
 }
 
 1;
