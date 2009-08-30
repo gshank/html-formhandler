@@ -366,6 +366,17 @@ sub render_submit
    return $output;
 }
 
+sub render_reset
+{
+   my ( $self, $field ) = @_;
+
+   my $output = '<input type="reset" name="';
+   $output .= $field->html_name . '"';
+   $output .= ' id="' . $field->id . '"';
+   $output .= ' value="' . $field->value . '" />';
+   return $output;
+}
+
 =head1 AUTHORS
 
 See CONTRIBUTORS in L<HTML::FormHandler>
