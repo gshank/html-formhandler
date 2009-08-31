@@ -835,7 +835,9 @@ sub setup_form
    elsif ( @args > 1 ) {
       my $hashref = {@args};
       while ( my ( $key, $value ) = each %{$hashref} ) {
-         $self->$key($value) if $self->can($key);
+         confess "invalid attribute '$key' passed to setup_form"
+            unless $self->can($key);
+         $self->$key($value);
       }
    }
    if ( $self->item_id && !$self->item ) {
