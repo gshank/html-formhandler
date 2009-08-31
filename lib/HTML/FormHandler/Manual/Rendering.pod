@@ -12,11 +12,12 @@ HFH has a number of different rendering methods.
 
 and now:
 
-   4. Automatically installed rendering using a combination of rendering roles,
-      which can easily be customized by the user.
+   4. Automatically installed rendering widgets using a combination of 
+      rendering roles, which can easily be customized by the user.
 
-=head1 New rendering
+=head1 Rendering with Widgets
 
+All FormHandler widgets are Moose roles.
 Default widget roles are installed into HTML::FormHandler::Widget. They include
 widgets for the fields in the distribution. Each field can render itself with
 C<< $field->render >>. The widget rendering roles are applied at build time in 
@@ -35,11 +36,33 @@ or to an arrayref of name spaces:
 The HTML::FormHandler::Widget name space is always searched as the last name space.
 This means that you can set up an application or form specific set of widgets.
 
+Widgets in a widget directory (specified in widget_name_space) are located in either
+a 'Field', 'Wrapper', or 'Form' subdirectory.
+
 The form's rendering role is looked for in the widget name space plus 'Form'. The
-default form rendering roles are in HTML::FormHandler::Widget::Form. The 'wrapper'
-for field rendering can also be specified with 'widget_wrapper'. This can be used
-to wrap the basic form input field with a div or a table (the defaults that are
-provided), or whatever you want.
+default form rendering roles are in HTML::FormHandler::Widget::Form. The form
+widget is specified in the form with 'widget_form'.
+
+   package MyApp::Form;
+   ....
+   has '+widget_form' => ( widget_form => 'Simple' ); 
+   ...
+
+The 'wrapper' for field rendering can also be specified with 'widget_wrapper'. 
+The widget specified will be looked for in the widget directories' 'Wrapper'
+subdirectory. It contains a 'wrap_field' method which is called from the Field
+widgets.  The wrap_field method takes the basic rendered field (passed from the
+field widget) and wraps it with HTML. The defaults provided are 'Div' and 'Table'.
+You can specify a wrapper class for all the fields in the form by setting 
+'widget_wrapper' in the form class, or you can set them individually by setting
+'widget_wrapper' on individual fields.
+
+   has 'some_field' => ( widget_wrapper => 'MyWrapper' );
+ 
+The 'widget' attribute is set to a default in FormHandler fields, or you can 
+set it to a different widget in your field declarations.
+
+   has 'another_field' => ( widget => 'MyWidget', widget_wrapper => 'MyWrapper' ); 
 
 Can be set in the form:
 
@@ -55,5 +78,55 @@ Can be set in the field:
 
 The widget_name_space and widget_wrapper will be copied into the fields from the
 form if they are not already defined.
+
+=head1 Customized Widgets
+
+You can create custom widgets for your complete application or on a per-form basis.
+One possible layout for your widgets;
+
+   lib/MyApp/Form
+   lib/MyApp/Form/Widget   (contains MyWidget.pm)
+   lib/MyApp/Form/Widget/Form
+   lib/MyApp/Form/Widget/Field
+   lib/MyApp/Form/Widget/Wrapper
+
+Create custom widgets and put them in the respective directories, and then specify your
+widget name space:
+
+   MyApp::Form::User:
+   ...
+   has '+widget_name_space' => ( default => 'MyApp::Form::Widget' );
+   ..
+   has 'some_field' => ( widget => 'MyWidget' );
+
+Your rendering widgets will be applied into your field classes.
+
+=head1 Creating Widgets
+
+The new widgets are designed to be used with either the original FormHandler 
+form objects or the new L<HTML::FormHandler::Result> objects. For that reason,
+you should use C<< $field->result >> to access the current value and pass a
+result object to 'fif' (fill-in-form) in field widgets, so that they will work 
+for both form and result rendering.
+
+The basic template for a field widget:
+
+   package MyApp::Form::Widget::Field::MyWidget;
+   use Moose::Role;
+
+   sub render
+   {
+      my ( $self, $result ) = @_;
+
+      $result ||= $self->result;
+      my $output;
+      < create rendered field >
+      my $fif = $self->fif($result);
+      my $value = $result->value;
+      < done creating rendered field )
+      return $self->wrap_field($result, $output);
+   }
+   no Moose::Role;
+   1;
 
 =cut
