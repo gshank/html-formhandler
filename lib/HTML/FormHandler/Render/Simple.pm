@@ -182,16 +182,22 @@ sub render_field
    return '' if $field->widget eq 'no_render';
    my $rendered_field;
    my $form_render = 'render_' . $field->widget;
-   die "Widget method $form_render not implemented in H::F::Render::Simple"
-      unless $self->can($form_render);
-   $rendered_field = $self->$form_render($field);
+   if ( $self->can($form_render) ) {
+      $rendered_field = $self->$form_render($field);
+   }
+   elsif ( $field->can('render') ) {
+      $rendered_field = $field->render;
+   }
+   else {
+      die "No widget method found for '" . $field->widget . "' in H::F::Render::Simple";
+   }
    my $class = '';
    if ( $field->css_class || $field->has_errors ) {
       my @css_class;
-      push(@css_class, split( /[ ,]+/, $field->css_class )) if $field->css_class;
-      push(@css_class, 'error')                             if $field->has_errors;
+      push( @css_class, split( /[ ,]+/, $field->css_class ) ) if $field->css_class;
+      push( @css_class, 'error' ) if $field->has_errors;
       $class .= ' class="';
-      $class .= join(' ' => @css_class);
+      $class .= join( ' ' => @css_class );
       $class .= '"';
    }
    return $self->render_field_struct( $field, $rendered_field, $class );
@@ -265,7 +271,7 @@ sub render_select
    $output .= ' size="' . $field->size . '"' if $field->size;
    $output .= '>';
    my $index = 0;
-   foreach my $option ( @{$field->options} ) {
+   foreach my $option ( @{ $field->options } ) {
       $output .= '<option value="' . $option->{value} . '" ';
       $output .= 'id="' . $field->id . ".$index\" ";
       if ( $field->fif ) {
@@ -312,7 +318,7 @@ sub render_radio_group
 
    my $output = " <br />";
    my $index  = 0;
-   foreach my $option ( @{$field->options} ) {
+   foreach my $option ( @{ $field->options } ) {
       $output .= '<input type="radio" value="' . $option->{value} . '"';
       $output .= ' name="' . $field->html_name . '" id="' . $field->id . ".$index\"";
       $output .= ' checked="checked"' if $option->{value} eq $field->fif;
