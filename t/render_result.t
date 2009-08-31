@@ -11,7 +11,7 @@ use_ok('HTML::FormHandler::Result');
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   has '+widget_form' => ( default => 'Div' );
+   has '+widget_form' => ( default => 'Simple' );
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
                size => 20,

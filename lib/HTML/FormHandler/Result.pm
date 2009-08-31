@@ -2,7 +2,6 @@ package HTML::FormHandler::Result;
 
 use Moose;
 with 'HTML::FormHandler::Result::Role';
-with 'HTML::FormHandler::Widget::Form::Simple';
 
 =head1 NAME
 

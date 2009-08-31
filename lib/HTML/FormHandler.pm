@@ -6,7 +6,6 @@ with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
    'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
-with 'HTML::FormHandler::Widget::Form::Simple';
 
 use Carp;
 use Class::MOP;
