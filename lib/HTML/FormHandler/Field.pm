@@ -954,7 +954,7 @@ sub dump
 sub apply_rendering_widgets
 {
    my $self = shift;
-$DB::single=1;
+
    return unless $self->widget;
    $self->apply_widget_role( $self, $self->widget, 'Field' );
    return unless $self->widget_wrapper;

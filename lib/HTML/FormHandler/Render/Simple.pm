@@ -211,7 +211,7 @@ sub render_field_struct
       defined $self->get_label_type( $field->widget ) ?
       $self->get_label_type( $field->widget ) :
       '';
-   if ( $l_type eq 'label' ) {
+   if ( $l_type eq 'label' && $field->label ) {
       $output .= $self->_label($field);
    }
    elsif ( $l_type eq 'legend' ) {

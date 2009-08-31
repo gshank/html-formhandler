@@ -59,6 +59,7 @@ Widget type is 'compound'
 =cut
 
 has '+widget' => ( default => 'compound' );
+has 'is_compound' => ( is => 'ro', isa => 'Bool', default => 1 );
 
 has '+field_name_space' => (
    default => sub {

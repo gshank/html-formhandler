@@ -18,7 +18,7 @@ Role to apply to form objects to allow rendering. In your form:
 
 =cut
 
-has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', default => 1 );
+has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', lazy => 1, default => 1 );
 
 sub render
 {
