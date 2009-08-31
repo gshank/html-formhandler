@@ -734,7 +734,6 @@ sub clear
 {
    my $self = shift;
    $self->clear_data;
-   $self->ran_validation(0);
    $self->clear_params;
    $self->clear_ctx;
    $self->processed(0);
