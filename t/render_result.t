@@ -115,7 +115,7 @@ my $params2 = {
 };
 
 
-my $result2 = $form->get_result($params2);
+my $result2 = $form->run($params2);
 my $outputr2 = $result1->render;
 eq_or_diff( $outputr, $outputr2, 'no diff second execution');
 

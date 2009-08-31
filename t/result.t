@@ -51,7 +51,7 @@ ok( $result->validated, 'result validated');
 ok( $result->has_input, 'result still has input');
 my $num_errors = $form->num_errors;
 
-$result = $form->get_result($good);
+$result = $form->run($good);
 ok( !$form->has_result, 'has result after been cleared');
 ok( !$form->validated, 'form has been cleared' );
 
@@ -67,11 +67,11 @@ $form->process({});
 ok( !$form->field('reqname')->input, 'no input for field');
 
 $good->{somename} = 'testing';
-$result = $form->get_result($good);
+$result = $form->run($good);
 is( $result->field('somename')->value,    'testing', 'use input for extra data' );
 is( $result->field('my_selected')->value, 0,         'correct value for unselected checkbox' );
 
-$result = $form->get_result( {} );
+$result = $form->run( {} );
 
 ok( !$result->validated, 'form doesn\'t validate with empty params' );
 is( $result->num_errors, 0, 'form doesn\'t have errors with empty params' );
@@ -83,14 +83,14 @@ my $bad_1 = {
    fruit   => 4,
 };
 
-$result = $form->get_result($bad_1);
+$result = $form->run($bad_1);
 ok( !$result->validated,                 'bad 1' );
 ok( $result->field('fruit')->has_errors,       'fruit has error' );
 ok( $result->field('reqname')->has_errors,     'reqname has error' );
 ok( $result->field('must_select')->has_errors, 'must_select has error' );
 ok( !$result->field('optname')->has_errors,    'optname has no error' );
 
-$result = $form->get_result;
+$result = $form->run;
 ok( !$result->validated, 'no leftover params' );
 is( $result->num_errors, 0, 'no leftover errors' );
 ok( !$result->field('reqname')->has_errors, 'no leftover error in field' );
@@ -102,7 +102,7 @@ my $init_object = {
 };
 $form = My::Form->new( init_object => $init_object );
 is( $form->field('optname')->value, 'Over Again', 'get right value from form' );
-$result = $form->get_result( params => {} );
+$result = $form->run( params => {} );
 ok( !$result->validated, 'form did not validate' );
 my $values = {
    'fruit' => undef,
@@ -116,7 +116,7 @@ is_deeply( $result->value, $values, 'get right values from form' );
 
 $init_object->{my_selected} = 0;
 $init_object->{must_select} = 1;
-$result = $form->get_result($init_object);
+$result = $form->run($init_object);
 ok( $result->validated, 'form validates with params' );
 is_deeply( $result->value, $init_object, 'get right values from result' );
 
@@ -127,7 +127,7 @@ $form = HTML::FormHandler->new( field_list => [ foo => { type => 'Text', require
 
 # 'image' input produces { foo => bar, 'foo.x' => 42, 'foo.y' => 23 }
 $form = HTML::FormHandler->new( name => 'baz', html_prefix => 1, field_list => [ 'foo' ] );
-eval{ $result =  $form->get_result( params => {  'baz.foo' => 'bar', 'baz.foo.x' => 42, 'baz.foo.y' => 23  } ) };
+eval{ $result =  $form->run( params => {  'baz.foo' => 'bar', 'baz.foo.x' => 42, 'baz.foo.y' => 23  } ) };
 ok( !$@, 'image field processed' ) or diag $@;
 is_deeply( $result->field( 'foo' )->value, { '' => 'bar', x => 42, y => 23 }, 'image input value correct' );
 
