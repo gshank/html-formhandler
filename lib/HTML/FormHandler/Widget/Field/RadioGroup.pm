@@ -12,7 +12,7 @@ sub render
    foreach my $option ( @{$self->options} ) {
       $output .= '<input type="radio" value="' . $option->{value} . '"';
       $output .= ' name="' . $self->html_name . '" id="' . $self->id . ".$index\"";
-      $output .= ' checked="checked"' if $option->{value} eq $self->fif($result);
+      $output .= ' checked="checked"' if $option->{value} eq $result->fif;
       $output .= ' />';
       $output .= $option->{label} . '<br />';
       $index++;

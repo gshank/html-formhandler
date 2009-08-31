@@ -12,7 +12,7 @@ sub render
    $output .= ' id="' . $self->id . '"';
    $output .= ' size="' . $self->size . '"' if $self->size;
    $output .= ' maxlength="' . $self->maxlength . '"' if $self->maxlength;
-   $output .= ' value="' . $self->fif($result) . '" />';
+   $output .= ' value="' . $result->fif . '" />';
    return $self->wrap_field($result, $output);
 }
 

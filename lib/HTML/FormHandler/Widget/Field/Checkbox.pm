@@ -7,7 +7,7 @@ sub render
    my ( $self, $result ) = @_;
 
    $result ||= $self->result;
-   my $fif = $result->fif($result);
+   my $fif = $result->fif;
    my $output = '<input type="checkbox" name="';
    $output .=
       $self->html_name . '" id="' . $self->id . '" value="' . $self->checkbox_value . '"';

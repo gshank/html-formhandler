@@ -11,7 +11,7 @@ sub render
    $output .= '<input type="hidden" name="';
    $output .= $self->html_name . '"';
    $output .= ' id="' . $self->id . '"';
-   $output .= ' value="' . $self->fif($result) . '" />';
+   $output .= ' value="' . $result->fif . '" />';
    $output .= "\n";
 
    return $output;

@@ -17,7 +17,7 @@ sub render_class
    if ( $self->css_class || $result->has_errors ) {
       my @css_class;
       push( @css_class, split( /[ ,]+/, $self->css_class ) ) if $self->css_class;
-      push( @css_class, 'error' ) if $self->has_errors;
+      push( @css_class, 'error' ) if $result->has_errors;
       $class .= ' class="';
       $class .= join( ' ' => @css_class );
       $class .= '"';

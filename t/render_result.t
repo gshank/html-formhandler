@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Differences;
+#use IO::All;
 
 use_ok('HTML::FormHandler::Result');
 
@@ -9,7 +10,6 @@ use_ok('HTML::FormHandler::Result');
    package Test::Form;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
-#   with 'HTML::FormHandler::Render::Simple';
 
    has '+widget_form' => ( default => 'Div' );
    has '+name' => ( default => 'testform' );
@@ -114,10 +114,31 @@ my $params2 = {
    opt_in => 1,
 };
 
+
 my $result2 = $form->get_result($params2);
-
 my $outputr2 = $result1->render;
-
 eq_or_diff( $outputr, $outputr2, 'no diff second execution');
+
+#$outputr > io('first_result.txt');
+#$outputr2 > io('second_result.txt');
+#my $diff = `diff first_result.txt second_result.txt`;
+#diag( $diff );
+
+$form->process($params1);
+
+eq_or_diff( $result1->field('test_field')->render, $form->field('test_field')->render, 'no diff test_field' );
+eq_or_diff( $result1->field('number')->render, $form->field('number')->render, 'no diff number' );
+eq_or_diff( $result1->field('fruit')->render, $form->field('fruit')->render, 'no diff fruit' );
+eq_or_diff( $result1->field('vegetables')->render, $form->field('vegetables')->render, 'no diff vegetables' );
+eq_or_diff( $result1->field('active')->render, $form->field('active')->render, 'no diff active' );
+eq_or_diff( $result1->field('comments')->render, $form->field('comments')->render, 'no diff comments' );
+eq_or_diff( $result1->field('hidden')->render, $form->field('hidden')->render, 'no diff hidden' );
+eq_or_diff( $result1->field('selected')->render, $form->field('selected')->render, 'no diff selected' );
+eq_or_diff( $result1->field('start_date.month')->render, $form->field('start_date.month')->render, 'no diff start_date.month' );
+eq_or_diff( $result1->field('start_date.day')->render, $form->field('start_date.day')->render, 'no diff start_date.day' );
+eq_or_diff( $result1->field('start_date.year')->render, $form->field('start_date.year')->render, 'no diff start_date.year' );
+eq_or_diff( $result1->field('two_errors')->render, $form->field('two_errors')->render, 'no diff two_errors' );
+eq_or_diff( $result1->field('opt_in')->render, $form->field('opt_in')->render, 'no diff opt_in' );
+
 
 done_testing;

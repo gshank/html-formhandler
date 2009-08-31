@@ -56,7 +56,8 @@ ok( !$form->has_result, 'has result after been cleared');
 ok( !$form->validated, 'form has been cleared' );
 
 # field still points to existing result
-ok( $form->field('reqname')->input, 'has input for field');
+ok( !$form->field('reqname')->input, 'no input for field');
+ok( !$form->field('reqname')->value, 'no value for field');
 ok( $result->validated, 'result still has result' );
 is( $result->num_errors, $num_errors, 'number of errors is correct');
 is( $result->field('somename')->value, undef, 'no value for somename' );

@@ -105,8 +105,8 @@ Your rendering widgets will be applied into your field classes.
 
 The new widgets are designed to be used with either the original FormHandler 
 form objects or the new L<HTML::FormHandler::Result> objects. For that reason,
-you should use C<< $field->result >> to access the current value and pass a
-result object to 'fif' (fill-in-form) in field widgets, so that they will work 
+you should use C<< $field->result >> to access the current value, errors and 
+'fif' (fill-in-form) in field widgets, so that they will work 
 for both form and result rendering.
 
 The basic template for a field widget:
@@ -121,8 +121,9 @@ The basic template for a field widget:
       $result ||= $self->result;
       my $output;
       < create rendered field >
-      my $fif = $self->fif($result);
+      my $fif = $result->fif;
       my $value = $result->value;
+      my $errors = $result->errors;
       < done creating rendered field )
       return $self->wrap_field($result, $output);
    }

@@ -534,12 +534,24 @@ has 'result' => ( isa => 'HTML::FormHandler::Field::Result', is => 'ro',
    clearer => 'clear_result',
    predicate => 'has_result',
    writer => '_set_result',
-   handles => [ '_set_input', '_clear_input', 'has_input',
-                '_set_value', '_clear_value', 'has_value',
+   handles => [ '_set_input', '_clear_input', 
+                '_set_value', '_clear_value',
                 'errors', 'push_errors', 'num_errors', 'has_errors', 'clear_errors', 'validated',
               ],
 );
 has '_pin_result' => ( is => 'ro', reader => '_get_pin_result', writer => '_set_pin_result' );
+sub has_input
+{
+   my $self = shift;
+   return unless $self->has_result;
+   return $self->result->has_input;
+}
+sub has_value
+{
+   my $self = shift;
+   return unless $self->has_result;
+   return $self->result->has_value;
+}
 
 # this should normally only be called for field tests
 sub build_result

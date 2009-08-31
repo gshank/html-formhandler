@@ -703,13 +703,12 @@ sub process
    my $self = shift;
 
    warn "HFH: process ", $self->name, "\n" if $self->verbose;
-   $self->clear_state if $self->processed;
+   $self->clear if $self->processed;
    $self->setup_form(@_);
    $self->validate_form if $self->has_params;
    $self->update_model  if $self->validated;
    $self->after_update_model if $self->validated;
    $self->dump_fields   if $self->verbose;
-#   $self->fill_result;
    $self->processed(1);
    return $self->validated;
 }
@@ -719,12 +718,9 @@ sub get_result
    my $self = shift;
    $self->process( @_ );
    my $result = $self->result;
-   $self->clear_state;
-   $self->clear_result;
+   $self->clear;
    return $result;
 }
-
-
 
 sub db_validate
 {
@@ -738,17 +734,12 @@ sub clear
 {
    my $self = shift;
    $self->clear_data;
-   $self->clear_state;
-}
-
-sub clear_state
-{
-   my $self = shift;
    $self->ran_validation(0);
    $self->clear_params;
    $self->clear_ctx;
    $self->processed(0);
    $self->did_init_obj(0);
+   $self->clear_result;
 }
 
 sub fif
