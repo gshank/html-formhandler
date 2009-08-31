@@ -66,9 +66,6 @@ ok( !$result->field('somename')->has_value, 'predicate no value' );
 $form->process({});
 ok( !$form->field('reqname')->input, 'no input for field');
 
-done_testing;
-exit;
-
 $good->{somename} = 'testing';
 $result = $form->get_result($good);
 is( $result->field('somename')->value,    'testing', 'use input for extra data' );
@@ -107,10 +104,17 @@ $form = My::Form->new( init_object => $init_object );
 is( $form->field('optname')->value, 'Over Again', 'get right value from form' );
 $result = $form->get_result( params => {} );
 ok( !$result->validated, 'form did not validate' );
-is_deeply( $result->value, $init_object, 'get right values from form' );
+my $values = {
+   'fruit' => undef,
+   'must_select' => 0,
+   'my_selected' => 0,
+   'optname' => 'Over Again',
+   'reqname' => 'Starting Perl',
+   'somename' => undef
+};
+is_deeply( $result->value, $values, 'get right values from form' );
 
-$init_object->{my_selected} = 0;    # checkboxes must be forced to 0
-# make sure that checkbox is 0 in values
+$init_object->{my_selected} = 0;
 $init_object->{must_select} = 1;
 $result = $form->get_result($init_object);
 ok( $result->validated, 'form validates with params' );
