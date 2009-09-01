@@ -30,7 +30,7 @@ $form->process( { some_field => 'test', submit => 'Submit' } );
 is( $form->field('submit')->input, 'Submit', 'input for submit field');
 my $rendered = $form->render;
 is( $rendered,
-   '<form id="test_submit" method="post">
+   '<form id="test_submit" method="post" >
 <fieldset class="main_fieldset">
 <div><label class="label" for="some_field">Some_field: </label><input type="text" name="some_field" id="some_field" value="test" /></div>
 

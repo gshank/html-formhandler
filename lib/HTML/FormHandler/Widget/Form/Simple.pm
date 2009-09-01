@@ -49,11 +49,12 @@ sub render_start
 {
    my $self   = shift;
    my $output = '<form ';
-   $output .= 'action="' . $self->action . '" '     if $self->action;
-   $output .= 'id="' . $self->name . '" '           if $self->name;
-   $output .= 'method="' . $self->http_method . '"' if $self->http_method;
+   $output .= 'action="' . $self->action . '" '      if $self->action;
+   $output .= 'id="' . $self->name . '" '            if $self->name;
+   $output .= 'method="' . $self->http_method . '" ' if $self->http_method;
+   $output .= 'enctype="' . $self->enctype . '" '    if $self->enctype;
    $output .= '>' . "\n";
-   $output .= '<fieldset class="main_fieldset">'    if $self->form->auto_fieldset;
+   $output .= '<fieldset class="main_fieldset">'     if $self->form->auto_fieldset;
    return $output;
 }
 
