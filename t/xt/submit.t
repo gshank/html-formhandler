@@ -24,7 +24,7 @@ ok( $form, 'get form');
 my $params = { some_field => 'test' };
 $form->process($params);
 my $result = $form->result;
-is( $result->num_results, 1, 'two results');
+is( $result->num_results, 2, 'two results');
 is( $form->field('submit')->input, undef, 'no input for submit field');
 $form->process( { some_field => 'test', submit => 'Submit' } );
 is( $form->field('submit')->input, 'Submit', 'input for submit field');

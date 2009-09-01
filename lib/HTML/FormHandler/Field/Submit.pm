@@ -22,25 +22,14 @@ Uses the 'submit' widget.
 
 has '+value' => ( default => 'Save' );
 has '+widget' => ( default => 'submit' );
-has 'store_in_result' => ( is => 'ro', isa => 'Bool' );
 
 sub _result_from_input 
 {
    my ( $self, $result, $input, $exists ) = @_;
-
-   # normally we don't want the submit field stored in the result
-   # since it is static. but if people have multiple submit fields
-   # and want to check the result, maybe it should be stored...
-   if( $self->store_in_result ) {
-      $result->_set_input($input);
-      $self->_set_result($result);
-      $result->_set_field_def($self);
-      return $result;
-   }
-   else {
-      $self->result->_set_input($input);
-   }
-   return;
+   $self->_set_result($result);
+   $result->_set_input( $input );
+   $result->_set_field_def($self);
+   return $result;
 }
 
 __PACKAGE__->meta->make_immutable;

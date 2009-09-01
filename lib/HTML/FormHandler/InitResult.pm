@@ -67,8 +67,6 @@ sub _result_from_object
    return unless ($item || $self->has_fields); # empty fields for compounds
    my $my_value;
    for my $field ( $self->sorted_fields ) {
-#      next if $field->parent && $field->parent != $self;
-#      next if ref $item eq 'HASH' && !exists $item->{ $field->accessor };
       next if $field->inactive;
       my $result = HTML::FormHandler::Field::Result->new(
          name => $field->name, parent => $self_result );
