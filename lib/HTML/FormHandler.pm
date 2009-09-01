@@ -716,7 +716,10 @@ sub process
 sub run
 {
    my $self = shift;
-   $self->process( @_ );
+   $self->setup_form(@_);
+   $self->validate_form if $self->has_params;
+   $self->update_model  if $self->validated;
+   $self->after_update_model if $self->validated;
    my $result = $self->result;
    $self->clear;
    return $result;
