@@ -676,7 +676,7 @@ sub BUILD
    my $self = shift;
 
    $self->apply_widget_role( $self, $self->widget_form, 'Form' )
-      if $self->widget_form;
+      if ( $self->widget_form && !$self->can('render') );
    $self->_build_fields;    # create the form fields
    return if defined $self->item_id && !$self->item;
    # load values from object (if any)
@@ -812,7 +812,6 @@ sub validate_form
    $self->_clear_dependency;
    $self->get_error_fields;
    $self->ran_validation(1);
-#   $self->validated( $self->num_errors == 0 );
    $self->dump_validated if $self->verbose;
    return $self->validated;
 }

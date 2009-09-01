@@ -64,7 +64,6 @@ use HTML::FormHandler::Field::Text;
    }
 }
 
-
 my $form = Test::Form->new;
 ok( $form, 'create form');
 

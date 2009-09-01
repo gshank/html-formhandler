@@ -10,14 +10,17 @@ sub wrap_field
    my $class = $self->render_class( $result );
    my $output = "\n<tr$class>";
    if ( $self->has_flag('is_compound' ) ) {
-      $output .= '<legend>' . $self->label . '</legend>';
+      $output .= '<td>' . $self->render_label . '</td></tr>';
    }
    elsif ( !$self->has_flag('no_render_label') && $self->label ) {
-      $output .= '<td>' . $self->_label($field) . '</td>';
+      $output .= '<td>' . $self->render_label . '</td>';
+   }
+   if( !$self->has_flag('is_compound') ) {
+      $output .= '<td>';
    }
    $output .= $rendered_widget;
    $output .= qq{\n<span class="error_message">$_</span>} for $result->errors;
-   if ( $self->has_flag( 'is_compound' ) ) {
+   if ( !$self->has_flag( 'is_compound' ) ) {
       $output .= "</td></tr>\n";
    }
    return $output;

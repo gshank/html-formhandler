@@ -12,7 +12,6 @@ use HTML::FormHandler::Field::Text;
    package Test::Form;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
-#   with 'HTML::FormHandler::Render::Simple';
 
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
@@ -204,5 +203,11 @@ is( $form->field('omega')->render, '<h1>You got here!</h1>', 'omega rendered ok'
 }
 dies_ok( sub { Test::NoWidget->new }, 'dies on no widget');
 throws_ok( sub { Test::NoWidget->new }, qr/not found in/, 'no widget throws message');
+
+$form = Test::Form->new( widget_form => 'Table', widget_wrapper => 'Table' );
+ok( $form->can('render'), 'form has table widget');
+$form->process( $params );
+my $outputT = $form->render;
+ok( $outputT, 'output from table rendering');
 
 done_testing;

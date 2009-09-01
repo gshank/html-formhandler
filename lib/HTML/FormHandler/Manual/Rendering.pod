@@ -79,6 +79,15 @@ Can be set in the field:
 The widget_name_space and widget_wrapper will be copied into the fields from the
 form if they are not already defined.
 
+By default, a form will use the Form::Simple and Wrapper::Div widgets. If you
+want to use the table format you can change the 'widget_form' and 'widget_wrapper'
+attributes in the form, or do it on new:
+
+   my $form = MyApp::Form->new( widget_form => 'Table', widget_wrapper => 'Table' );
+
+The form widgets will not be applied if a 'render' method already exists in the form,
+such as is the case when you've done a 'with' for L<HTML::FormHandler::Render::Simple>.
+
 =head1 Customized Widgets
 
 You can create custom widgets for your complete application or on a per-form basis.
