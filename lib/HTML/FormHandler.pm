@@ -609,7 +609,7 @@ has 'language_handle' => (
 has 'html_prefix'   => ( isa => 'Bool', is => 'rw' );
 has 'active_column' => ( isa => 'Str',  is => 'rw' );
 has 'http_method'   => ( isa => 'Str',  is => 'rw', default => 'post' );
-has 'enctype' => ( is => 'rw', isa => 'Str', default => 'application/x-www-form-urlencoded' );
+has 'enctype' => ( is => 'rw', isa => 'Str' );
 has 'action' => ( is => 'rw' );
 has 'submit' => ( is => 'rw' );
 has 'params' => (
