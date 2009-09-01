@@ -15,12 +15,18 @@ Result class for L<HTML::FormHandler::Field>
 
 has 'field_def' => ( is => 'ro', isa => 'HTML::FormHandler::Field',
    writer => '_set_field_def',
-   handles => [ 'render' ] );
+);
 
 sub fif
 {
    my $self = shift;
    return $self->field_def->fif( $self );
+}
+
+sub render
+{
+   my $self = shift;
+   return $self->field_def->render( $self );
 }
 
 =head1 AUTHORS

@@ -36,16 +36,9 @@ sub render
    }
    my $output = $form->render_start;
 
-   foreach my $field ( $form->sorted_fields ) {
-      my $fld_result;
-      if( $field->has_flag('has_static_value') ) {
-         $fld_result = $field->result;
-      }
-      else {
-         $fld_result = $result->field($field->name);
-      }
-      die "no result for " . $field->name unless $fld_result;
-      $output .= $field->render($fld_result);
+   foreach my $fld_result ( $result->results ) {
+      die "no field in result for " . $fld_result->name unless $fld_result->field_def;
+      $output .= $fld_result->render;
    }
 
    $output .= $self->render_end;
