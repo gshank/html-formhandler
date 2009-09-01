@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Exception;
 
 use lib 't/lib';
 
@@ -192,5 +193,16 @@ $form = Test::Widgets->new;
 ok( $form, 'get form with custom widgets' );
 is( $form->field('alpha')->render, '<p>The test succeeded.</p>', 'alpha rendered ok');
 is( $form->field('omega')->render, '<h1>You got here!</h1>', 'omega rendered ok' );
+
+{ 
+   package Test::NoWidget;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   has '+widget_name_space' => ( default => 'Widget' );
+   has_field 'no_widget' => ( widget => 'no_widget' );
+}
+dies_ok( sub { Test::NoWidget->new }, 'dies on no widget');
+throws_ok( sub { Test::NoWidget->new }, qr/not found in/, 'no widget throws message');
 
 done_testing;
