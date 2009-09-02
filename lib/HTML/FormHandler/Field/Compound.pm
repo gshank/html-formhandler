@@ -4,6 +4,7 @@ use Moose;
 use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Field';
 with 'HTML::FormHandler::Fields';
+with 'HTML::FormHandler::BuildFields';
 with 'HTML::FormHandler::InitResult';
 
 =head1 NAME

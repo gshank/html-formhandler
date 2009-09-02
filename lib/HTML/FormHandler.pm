@@ -3,6 +3,7 @@ package HTML::FormHandler;
 use Moose;
 use MooseX::AttributeHelpers;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
+   'HTML::FormHandler::BuildFields',
    'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
@@ -744,35 +745,6 @@ sub clear
    $self->clear_result;
 }
 
-sub fif
-{
-   my ( $self, $prefix, $node ) = @_;
-
-   return unless $self->has_result;
-   if ( !defined $node ) {
-      $node   = $self;
-      $prefix = '';
-      $prefix = $self->name . "." if $self->html_prefix;
-   }
-   my %params;
-   foreach my $field ( $node->fields ) {
-      next if ( $field->inactive || $field->password );
-      # result might be undef if garbage collected
-      next unless $field->has_result && $field->result;
-      my $fif = $field->fif;
-      next unless defined $fif;
-      if ( $field->DOES('HTML::FormHandler::Fields') ) {
-         my $next_params = $self->fif( $prefix . $field->name . '.', $field );
-         next unless $next_params;
-         %params = ( %params, %{$next_params} );
-      }
-      else {
-         $params{ $prefix . $field->name } = $fif;
-      }
-   }
-   return if !%params;
-   return \%params;
-}
 
 sub values { shift->value }
 
@@ -863,6 +835,8 @@ sub setup_form
    my %params = (%{$self->params});
    $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
 }
+
+sub fif { shift->fields_fif }
 
 sub _get_value
 {
