@@ -16,7 +16,7 @@ use HTML::FormHandler::Result;
 
 use 5.008;
 
-our $VERSION = '0.27006';
+our $VERSION = '0.28';
 
 =head1 NAME
 
