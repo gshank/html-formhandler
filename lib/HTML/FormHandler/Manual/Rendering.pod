@@ -94,9 +94,8 @@ You can create custom widgets for your complete application or on a per-form bas
 One possible layout for your widgets;
 
    lib/MyApp/Form
-   lib/MyApp/Form/Widget   (contains MyWidget.pm)
    lib/MyApp/Form/Widget/Form
-   lib/MyApp/Form/Widget/Field
+   lib/MyApp/Form/Widget/Field (contains MyWidget.pm)
    lib/MyApp/Form/Widget/Wrapper
 
 Create custom widgets and put them in the respective directories, and then specify your
