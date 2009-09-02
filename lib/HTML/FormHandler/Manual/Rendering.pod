@@ -6,7 +6,7 @@ HTML::FormHandler::Manual::Rendering
 
 HFH has a number of different rendering methods.
 
-   1. Handcoded html with no assist from HFH at al
+   1. Handcoded html with no assist from HFH at all
    2. Use templates and the field 'widget' to determine the template snippet
    3. Use a rendering role in your form class, like Render::Simple
 
@@ -117,7 +117,7 @@ you should use C<< $field->result >> to access the current value, errors and
 'fif' (fill-in-form) in field widgets, so that they will work 
 for both form and result rendering.
 
-The basic template for a field widget:
+The basic structure for a field widget:
 
    package MyApp::Form::Widget::Field::MyWidget;
    use Moose::Role;
