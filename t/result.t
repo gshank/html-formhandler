@@ -63,6 +63,11 @@ is( $result->num_errors, $num_errors, 'number of errors is correct');
 is( $result->field('somename')->value, undef, 'no value for somename' );
 ok( !$result->field('somename')->has_value, 'predicate no value' );
 
+$good->{my_selected} = 0;
+$good->{somename} = '';
+is_deeply( $result->fif, $good, 'fif is correct' );
+delete $good->{my_selected};
+
 $form->process({});
 ok( !$form->field('reqname')->input, 'no input for field');
 
@@ -94,7 +99,7 @@ $result = $form->run;
 ok( !$result->validated, 'no leftover params' );
 is( $result->num_errors, 0, 'no leftover errors' );
 ok( !$result->field('reqname')->has_errors, 'no leftover error in field' );
-#ok( !$result->field('optname')->fif,        'no lefover fif values' );
+ok( !$result->field('optname')->fif,        'no lefover fif values' );
 
 my $init_object = {
    reqname => 'Starting Perl',

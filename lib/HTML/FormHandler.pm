@@ -836,7 +836,7 @@ sub setup_form
    $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
 }
 
-sub fif { shift->fields_fif }
+sub fif { shift->fields_fif(@_) }
 
 sub _get_value
 {

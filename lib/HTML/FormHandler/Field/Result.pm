@@ -23,6 +23,13 @@ sub fif
    return $self->field_def->fif( $self );
 }
 
+sub fields_fif
+{
+   my ( $self, $prefix ) = @_;
+   return $self->field_def->fields_fif( $self, $prefix );
+}
+
+
 sub render
 {
    my $self = shift;

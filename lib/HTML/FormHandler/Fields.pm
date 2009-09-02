@@ -153,22 +153,22 @@ sub _fields_validate
 
 sub fields_fif
 {
-   my ( $self, $prefix ) = @_;
-$DB::single=1;
+   my ( $self, $result,  $prefix ) = @_;
+
+   $result ||= $self->result;
+   next unless $result;
    $prefix ||= '';
-   return unless $self->has_result;
    if ( $self->isa( 'HTML::FormHandler' ) ) { 
       $prefix = $self->name . "." if $self->html_prefix;
    }
    my %params;
-   foreach my $field ( $self->fields ) {
+   foreach my $fld_result ( $result->results ) {
+      my $field = $fld_result->field_def;
       next if ( $field->inactive || $field->password );
-      # result might be undef if garbage collected
-      next unless $field->has_result && $field->result;
-      my $fif = $field->fif;
+      my $fif = $fld_result->fif;
       next unless defined $fif;
-      if ( $field->has_fields ) {
-         my $next_params = $field->fields_fif( $prefix . $field->name . '.' );
+      if ( $fld_result->has_results ) {
+         my $next_params = $fld_result->fields_fif( $prefix . $field->name . '.' );
          next unless $next_params;
          %params = ( %params, %{$next_params} );
       }
