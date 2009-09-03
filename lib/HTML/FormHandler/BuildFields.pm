@@ -52,12 +52,12 @@ sub _build_fields {
 
     # get highest order number
     my $order = 0;
-    foreach my $field ( $self->fields ) {
+    foreach my $field ( $self->all_fields ) {
         $order++ if $field->order > $order;
     }
     $order++;
     # number all unordered fields
-    foreach my $field ( $self->fields ) {
+    foreach my $field ( $self->all_fields ) {
         $field->order($order) unless $field->order;
         $order++;
     }

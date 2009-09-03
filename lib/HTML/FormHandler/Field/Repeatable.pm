@@ -122,7 +122,7 @@ sub _fields_validate {
     my $self = shift;
     # loop through array of fields and validate
     my @value_array;
-    foreach my $field ( $self->fields ) {
+    foreach my $field ( $self->all_fields ) {
         next if ( $field->inactive || $field->inactive );
         # Validate each field and "inflate" input -> value.
         $field->validate_field;    # this calls the field's 'validate' routine
@@ -154,15 +154,15 @@ sub create_element {
         form   => $self->form
     );
     # copy the fields from this field into the instance
-    $instance->add_field( $self->fields );
+    $instance->add_field( $self->all_fields );
     if ( $self->auto_id ) {
-        unless ( grep $_->can('is_primary_key') && $_->is_primary_key, @{ $instance->fields } )
+        unless ( grep $_->can('is_primary_key') && $_->is_primary_key, $instance->all_fields )
         {
             my $field = HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' );
             $instance->add_field($field);
         }
     }
-    $_->parent($instance) for $instance->fields;
+    $_->parent($instance) for $instance->all_fields;
     return $instance;
 }
 
@@ -175,7 +175,7 @@ sub clone_element {
     $field->_set_result($result);
     $field->result->_set_field_def($field);
     if ( $field->has_fields ) {
-        $self->clone_fields( $result, $field, [ $field->fields ] );
+        $self->clone_fields( $result, $field, [ $field->all_fields ] );
     }
     return $field;
 }
@@ -191,7 +191,7 @@ sub clone_fields {
         );
         my $new_field = $field->clone( errors => [], error_fields => [] );
         if ( $new_field->has_fields ) {
-            $self->clone_fields( $result, $new_field, [ $new_field->fields ] );
+            $self->clone_fields( $result, $new_field, [ $new_field->all_fields ] );
         }
         $new_field->parent($parent);
         $new_field->_set_result($result);

@@ -50,7 +50,7 @@ sub validate {
     my ($self) = @_;
 
     my @dt_parms;
-    foreach my $child ( $self->fields ) {
+    foreach my $child ( $self->all_fields ) {
         next unless $child->value;
         push @dt_parms, ( $child->accessor => $child->value );
     }

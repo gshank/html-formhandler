@@ -31,7 +31,7 @@ sub validate {
     my ($self) = @_;
 
     my @dur_parms;
-    foreach my $child ( $self->fields ) {
+    foreach my $child ( $self->all_fields ) {
         unless ( $child->value =~ /^\d+$/ ) {
             $self->add_error( "Invalid value for " . $self->label . " " . $child->label );
             next;

@@ -175,11 +175,12 @@ This does a string compare.
 has 'options' => (
     isa       => 'ArrayRef',
     is        => 'rw',
-    metaclass => 'Collection::Array',
-    provides  => {
-        clear => 'reset_options',
-        empty => 'has_options',
-        count => 'num_options',
+    traits    => ['Array'],
+    handles  => {
+        reset_options => 'clear',
+        clear_options => 'clear',
+        has_options => 'count',
+        num_options => 'count',
     },
     lazy    => 1,
     builder => 'build_options'

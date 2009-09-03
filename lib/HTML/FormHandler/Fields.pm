@@ -14,9 +14,8 @@ to L<HTML::FormHandler> and L<HTML::FormHandler::Field::Compound>.
 =head2 fields
 
 The field definitions as built from the field_list and the 'has_field'
-declarations. This is a MooseX::AttributeHelpers::Collection::Array,
-and provides clear_fields, add_field, remove_last_field, num_fields,
-has_fields, and set_field_at methods.
+declarations. This provides clear_fields, add_field, remove_last_field, 
+num_fields, has_fields, and set_field_at methods.
 
 =head2 field( $full_name )
 
@@ -47,18 +46,17 @@ value. Non-sorted fields are retrieved with 'fields'.
 =cut
 
 has 'fields' => (
-    metaclass  => 'Collection::Array',
+    traits     => ['Array'],
     isa        => 'ArrayRef[HTML::FormHandler::Field]',
     is         => 'rw',
     default    => sub { [] },
-    auto_deref => 1,
-    provides   => {
-        clear => 'clear_fields',
-        push  => 'push_field',
-        pop   => 'remove_last_field',
-        count => 'num_fields',
-        empty => 'has_fields',
-        set   => 'set_field_at',
+    handles   => {
+        all_fields => 'elements',
+        clear_fields => 'clear',
+        push_field => 'push',
+        num_fields => 'count',
+        has_fields => 'count',
+        set_field_at => 'set',
     }
 );
 
@@ -89,7 +87,7 @@ has 'field_name_space' => (
 sub field_index {
     my ( $self, $name ) = @_;
     my $index = 0;
-    for my $field ( $self->fields ) {
+    for my $field ( $self->all_fields ) {
         return $index if $field->name eq $name;
         $index++;
     }
@@ -113,7 +111,7 @@ sub field {
     }
     else    # not a compound name
     {
-        for my $field ( $self->fields ) {
+        for my $field ( $self->all_fields ) {
             return $field if ( $field->name eq $name );
         }
     }
@@ -125,7 +123,7 @@ sub field {
 sub sorted_fields {
     my $self = shift;
 
-    my @fields = sort { $a->order <=> $b->order } grep { !$_->inactive } $self->fields;
+    my @fields = sort { $a->order <=> $b->order } grep { !$_->inactive } $self->all_fields;
     return wantarray ? @fields : \@fields;
 }
 
@@ -135,7 +133,7 @@ sub _fields_validate {
     return unless $self->has_fields;
     # validate all fields
     my %value_hash;
-    foreach my $field ( $self->fields ) {
+    foreach my $field ( $self->all_fields ) {
         next if ( $field->inactive || !$field->has_result );
         # Validate each field and "inflate" input -> value.
         $field->validate_field;    # this calls the field's 'validate' routine
@@ -176,7 +174,7 @@ sub fields_fif {
 sub clear_data {
     my $self = shift;
     $self->clear_result;
-    $_->clear_data for $self->fields;
+    $_->clear_data for $self->all_fields;
 }
 
 sub get_error_fields {
@@ -210,7 +208,7 @@ sub dump {
 sub dump_validated {
     my $self = shift;
     warn "HFH: fields validated:\n";
-    foreach my $field ( $self->fields ) {
+    foreach my $field ( $self->all_fields ) {
         $field->dump_validated if $field->can('dump_validated');
         warn "HFH: ", $field->name, ": ",
             ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";

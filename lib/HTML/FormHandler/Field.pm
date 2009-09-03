@@ -192,8 +192,8 @@ parents for the fields they contain.
 =item errors
 
 Returns the error list for the field. Also provides 'num_errors',
-'has_errors', 'push_errors' and 'clear_errors' from Collection::Array
-metaclass. Use 'add_error' to add an error to the array if you
+'has_errors', 'push_errors' and 'clear_errors' from Array
+trait. Use 'add_error' to add an error to the array if you
 want to use a MakeText language handle. Default is an empty list.
 
 =item add_error
