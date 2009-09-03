@@ -28,10 +28,12 @@ requires 'MooseX::Types' => 0;
 requires 'MooseX::Types::Common' => 0;
 requires 'aliased';
 requires 'File::Spec';
+requires 'Class::Load' => '0.05';
 
 # things the tests need
 test_requires 'Test::More'      => '0.88';
 test_requires 'Test::Differences';
+test_requires 'Test::Exception';
 
 tests();
 author_tests('t/xt');
