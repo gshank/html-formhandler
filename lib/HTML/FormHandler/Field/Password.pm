@@ -46,28 +46,27 @@ has '+required_message' => ( default => 'Please enter a password in this field' 
 has 'ne_username'       => ( isa     => 'Str', is => 'rw' );
 
 after 'validate_field' => sub {
-   my $self = shift;
+    my $self = shift;
 
-   if ( !$self->required && !( defined( $self->value ) && length( $self->value ) ) ) {
-      $self->noupdate(1);
-      $self->clear_errors;
-   }
+    if ( !$self->required && !( defined( $self->value ) && length( $self->value ) ) ) {
+        $self->noupdate(1);
+        $self->clear_errors;
+    }
 };
 
-sub validate
-{
-   my $self = shift;
+sub validate {
+    my $self = shift;
 
-   $self->noupdate(0);
-   return unless $self->SUPER::validate;
+    $self->noupdate(0);
+    return unless $self->SUPER::validate;
 
-   my $value = $self->value;
-   if ( $self->form && $self->ne_username ) {
-      my $username = $self->form->get_param( $self->ne_username );
-      return $self->add_error( 'Password must not match ' . $self->ne_username )
-         if $username && $username eq $value;
-   }
-   return 1;
+    my $value = $self->value;
+    if ( $self->form && $self->ne_username ) {
+        my $username = $self->form->get_param( $self->ne_username );
+        return $self->add_error( 'Password must not match ' . $self->ne_username )
+            if $username && $username eq $value;
+    }
+    return 1;
 }
 
 =head1 AUTHORS

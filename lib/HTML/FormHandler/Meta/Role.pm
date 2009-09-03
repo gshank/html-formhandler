@@ -1,5 +1,5 @@
-package  # hide from Pause
-   HTML::FormHandler::Meta::Role;
+package    # hide from Pause
+    HTML::FormHandler::Meta::Role;
 
 use Moose::Role;
 use MooseX::AttributeHelpers;
@@ -15,29 +15,28 @@ Add metaclass to field_list attribute
 =cut
 
 has 'field_list' => (
-   metaclass => 'Collection::Array',
-   is => 'rw',
-   isa => 'ArrayRef',
-   default => sub { [] },
-   provides => {
-      'push' => 'add_to_field_list',
-      'clear' => 'clear_field_list',
-      'empty' => 'has_field_list',
-   }
+    metaclass => 'Collection::Array',
+    is        => 'rw',
+    isa       => 'ArrayRef',
+    default   => sub { [] },
+    provides  => {
+        'push'  => 'add_to_field_list',
+        'clear' => 'clear_field_list',
+        'empty' => 'has_field_list',
+    }
 );
 
 has 'apply_list' => (
-   metaclass => 'Collection::Array',
-   is => 'rw',
-   isa => 'ArrayRef',
-   default => sub { [] },
-   provides => {
-      'push' => 'add_to_apply_list',
-      'empty' => 'has_apply_list',
-      'clear' => 'clear_apply_list',
-   }
+    metaclass => 'Collection::Array',
+    is        => 'rw',
+    isa       => 'ArrayRef',
+    default   => sub { [] },
+    provides  => {
+        'push'  => 'add_to_apply_list',
+        'empty' => 'has_apply_list',
+        'clear' => 'clear_apply_list',
+    }
 );
-
 
 =head1 AUTHOR
 

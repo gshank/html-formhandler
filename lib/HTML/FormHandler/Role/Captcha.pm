@@ -4,7 +4,7 @@ use HTML::FormHandler::Moose::Role;
 use GD::SecurityImage;
 use HTTP::Date;
 
-requires ('ctx');
+requires('ctx');
 
 has_field 'captcha' => ( type => 'Captcha', label => 'Verification' );
 
@@ -32,12 +32,11 @@ Get a captcha stored in C<< $form->ctx->{session} >>
 
 =cut
 
-sub get_captcha
-{
-   my $self = shift;
-   return unless $self->ctx;
-   my $captcha = $self->ctx->{session}->{captcha};
-   return $captcha;
+sub get_captcha {
+    my $self = shift;
+    return unless $self->ctx;
+    my $captcha = $self->ctx->{session}->{captcha};
+    return $captcha;
 }
 
 =head1 set_captcha
@@ -46,28 +45,25 @@ Set a captcha in C<< $self->ctx->{session} >>
 
 =cut
 
-sub set_captcha
-{
-   my ( $self, $captcha ) = @_;
-   return unless $self->ctx;
-   $self->ctx->{session}->{captcha} = $captcha;
+sub set_captcha {
+    my ( $self, $captcha ) = @_;
+    return unless $self->ctx;
+    $self->ctx->{session}->{captcha} = $captcha;
 }
 
-sub render_captcha
-{
-   my ( $self, $field ) = @_;
+sub render_captcha {
+    my ( $self, $field ) = @_;
 
-   my $output = $self->_label( $field );
-   $output .= '<img src="' . $self->captcha_image_url . '"/>';
-   $output .= '<input id="' . $field->id . '" name="';
-   $output .= $field->name . '">';
-   return $output;
+    my $output = $self->_label($field);
+    $output .= '<img src="' . $self->captcha_image_url . '"/>';
+    $output .= '<input id="' . $field->id . '" name="';
+    $output .= $field->name . '">';
+    return $output;
 }
 
-sub captcha_image_url
-{
-   my $self = shift;
-   return '/captcha/test';
+sub captcha_image_url {
+    my $self = shift;
+    return '/captcha/test';
 }
 
 1;

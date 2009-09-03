@@ -20,16 +20,15 @@ Uses the 'submit' widget.
 
 =cut
 
-has '+value' => ( default => 'Save' );
+has '+value'  => ( default => 'Save' );
 has '+widget' => ( default => 'submit' );
 
-sub _result_from_input 
-{
-   my ( $self, $result, $input, $exists ) = @_;
-   $self->_set_result($result);
-   $result->_set_input( $input );
-   $result->_set_field_def($self);
-   return $result;
+sub _result_from_input {
+    my ( $self, $result, $input, $exists ) = @_;
+    $self->_set_result($result);
+    $result->_set_input($input);
+    $result->_set_field_def($self);
+    return $result;
 }
 
 __PACKAGE__->meta->make_immutable;

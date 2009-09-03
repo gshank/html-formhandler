@@ -122,8 +122,7 @@ The basic structure for a field widget:
    package MyApp::Form::Widget::Field::MyWidget;
    use Moose::Role;
 
-   sub render
-   {
+   sub render {
       my ( $self, $result ) = @_;
 
       $result ||= $self->result;

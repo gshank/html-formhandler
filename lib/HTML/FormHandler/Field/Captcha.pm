@@ -44,65 +44,62 @@ has '+css_class' => ( default => 'captcha' );
 
 has '+noupdate' => ( default => 1 );
 
-sub get_init_value
-{
-   my $self = shift;
+sub get_init_value {
+    my $self = shift;
 
-   my $captcha = $self->form->get_captcha;
-   if ($captcha) {
-      if ( $captcha->{validated} ) {
-         $self->required(0);
-         $self->widget('no-display');
-      }
-      else {
-         $self->required(1);
-         $self->widget('captcha');
-         $self->image( $captcha->{image} );
-      }
-   }
-   else {
-      $self->required(1);
-      $self->widget('captcha');
-      $self->gen_captcha;
-   }
-   return;
+    my $captcha = $self->form->get_captcha;
+    if ($captcha) {
+        if ( $captcha->{validated} ) {
+            $self->required(0);
+            $self->widget('no-display');
+        }
+        else {
+            $self->required(1);
+            $self->widget('captcha');
+            $self->image( $captcha->{image} );
+        }
+    }
+    else {
+        $self->required(1);
+        $self->widget('captcha');
+        $self->gen_captcha;
+    }
+    return;
 }
 
-sub validate
-{
-   my $self = shift;
+sub validate {
+    my $self = shift;
 
-   my $captcha = $self->form->get_captcha;
-   unless ( $captcha->{rnd} eq $self->value ) {
-      $self->add_error("Verification incorrect. Try again.");
-      $self->gen_captcha;
-   }
-   else {
-      $captcha->{validated} = 1;
-   }
-   $self->clear_result;
-   return !$self->has_errors;
+    my $captcha = $self->form->get_captcha;
+    unless ( $captcha->{rnd} eq $self->value ) {
+        $self->add_error("Verification incorrect. Try again.");
+        $self->gen_captcha;
+    }
+    else {
+        $captcha->{validated} = 1;
+    }
+    $self->clear_result;
+    return !$self->has_errors;
 }
 
-sub gen_captcha
-{
-   my $self = shift;
+sub gen_captcha {
+    my $self = shift;
 
-   my ( $image, $type, $rnd ) = GD::SecurityImage->new(
-      height   => $self->height,
-      width    => $self->width,
-      scramble => $self->scramble,
-      lines    => $self->lines,
-      gd_font  => $self->gd_font,
-   )->random->create->out;
-   my $captcha = {
-      image     => $image,
-      type      => $type,
-      rnd       => $rnd,
-      validated => 0,
-   };
-   $self->image($image);
-   $self->form->set_captcha($captcha);
+    my ( $image, $type, $rnd ) = GD::SecurityImage->new(
+        height   => $self->height,
+        width    => $self->width,
+        scramble => $self->scramble,
+        lines    => $self->lines,
+        gd_font  => $self->gd_font,
+    )->random->create->out;
+    my $captcha = {
+        image     => $image,
+        type      => $type,
+        rnd       => $rnd,
+        validated => 0,
+    };
+    $self->image($image);
+    $self->form->set_captcha($captcha);
 }
 
 __PACKAGE__->meta->make_immutable;

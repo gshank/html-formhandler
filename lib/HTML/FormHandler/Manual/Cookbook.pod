@@ -103,8 +103,7 @@ a 'no choice' choice, in your template:
 
 Or customize the select list in an 'options_' method:
 
-   sub options_country
-   {
+   sub options_country {
       my $self = shift; 
       return unless $self->schema;
       my @rows =
@@ -160,8 +159,7 @@ templates and simplify your controllers.
    has 'title' => ( isa => 'Str', is => 'rw' );
    has 'nav_bar' => ( isa => 'Str', is => 'rw' );
 
-   sub summary
-   {
+   sub summary {
       my $self = shift;
       my $schema = $self->schema;
       my $text = $schema->resultset('Summary')->find( ... )->text;

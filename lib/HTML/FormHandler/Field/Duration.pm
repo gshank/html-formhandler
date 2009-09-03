@@ -27,22 +27,21 @@ For example:
 
 =cut
 
-sub validate
-{
-   my ($self) = @_;
+sub validate {
+    my ($self) = @_;
 
-   my @dur_parms;
-   foreach my $child ( $self->fields ) {
-      unless ( $child->value =~ /^\d+$/ ) {
-         $self->add_error( "Invalid value for " . $self->label . " " . $child->label );
-         next;
-      }
-      push @dur_parms, ( $child->accessor => $child->value );
-   }
+    my @dur_parms;
+    foreach my $child ( $self->fields ) {
+        unless ( $child->value =~ /^\d+$/ ) {
+            $self->add_error( "Invalid value for " . $self->label . " " . $child->label );
+            next;
+        }
+        push @dur_parms, ( $child->accessor => $child->value );
+    }
 
-   # set the value
-   my $duration = DateTime::Duration->new(@dur_parms);
-   $self->_set_value($duration);
+    # set the value
+    my $duration = DateTime::Duration->new(@dur_parms);
+    $self->_set_value($duration);
 }
 
 __PACKAGE__->meta->make_immutable;

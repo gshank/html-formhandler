@@ -1,5 +1,8 @@
+0.28
+    Add Widget roles
+    Major refactor to support result classes
+    Reformatting source to more Perl standard
     Fix bug generating CSS classes in Renderer::Simple (mazpe)
-
     Fix POD example in ::Intro (mazpe)
 
 0.27006 Mon Aug 17, 2009
