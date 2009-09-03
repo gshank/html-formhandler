@@ -838,24 +838,8 @@ sub setup_form
 
 sub fif { shift->fields_fif(@_) }
 
-sub _get_value
-{
-   my ( $self, $field, $item ) = @_;
-   my $accessor = $field->accessor;
-   my @values;
-   if ( blessed($item) && $item->can($accessor) ) {
-      @values = $item->$accessor;
-   }
-   elsif ( exists $item->{$accessor} ) {
-      @values = $item->{$accessor};
-   }
-   else {
-      return;
-   }
-   my $value = @values > 1 ? \@values : shift @values;
-   return $value;
-}
-
+# this is subclassed by the model, which may
+# do a lot more than this
 sub init_value
 {
    my ( $self, $field, $value ) = @_;

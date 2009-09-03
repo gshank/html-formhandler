@@ -8,7 +8,7 @@ HTML::FormHandler::InitResult
 
 =head1 SYNOPSIS
 
-Internal class for initializing the result objects.
+Internal role for initializing the result objects.
 
 =cut
 

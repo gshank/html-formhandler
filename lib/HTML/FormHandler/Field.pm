@@ -561,7 +561,7 @@ sub build_result
          if ( $self->parent && $self->parent->result );
    my $result = HTML::FormHandler::Field::Result->new( name => $self->name, 
       field_def => $self, @parent );
-   $self->_set_pin_result($result);
+   $self->_set_pin_result($result); # to prevent garbage collection of result
    return $result;
 }
 

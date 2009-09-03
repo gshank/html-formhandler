@@ -156,7 +156,7 @@ sub fields_fif
    my ( $self, $result,  $prefix ) = @_;
 
    $result ||= $self->result;
-   next unless $result;
+   return unless $result;
    $prefix ||= '';
    if ( $self->isa( 'HTML::FormHandler' ) ) { 
       $prefix = $self->name . "." if $self->html_prefix;

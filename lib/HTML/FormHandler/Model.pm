@@ -169,8 +169,6 @@ Update the model with validated fields
 
 sub update_model { }
 
-sub compute_model_stuff { }
-
 =head1 AUTHORS
 
 HTML::FormHandler Contributors; see HTML::FormHandler
