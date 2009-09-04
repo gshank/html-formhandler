@@ -181,7 +181,7 @@ is( $form->field('no_render')->render, '', 'no_render' );
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   has '+widget_name_space' => ( default => 'Widget' );
+   has '+widget_name_space' => ( default => sub {['Widget']} );
 
    has_field 'alpha' => ( widget => 'test_widget' );
    has_field 'omega' => ( widget => 'Omega' );
@@ -198,7 +198,7 @@ is( $form->field('omega')->render, '<h1>You got here!</h1>', 'omega rendered ok'
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   has '+widget_name_space' => ( default => 'Widget' );
+   has '+widget_name_space' => ( default =>  sub { ['Widget'] } );
    has_field 'no_widget' => ( widget => 'no_widget' );
 }
 dies_ok( sub { Test::NoWidget->new }, 'dies on no widget');

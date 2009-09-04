@@ -24,11 +24,7 @@ C<< $field->render >>. The widget rendering roles are applied at build time in
 each field object. 
 
 The name space used to look for the widget roles can be specified on a form or
-field basis by setting 'widget_name_space' to a scalar name space, like:
-
-   has '+widget_name_space' => ( default => 'MyApp::Form::Widget' );
-
-or to an arrayref of name spaces:
+field basis by setting 'widget_name_space' to an arrayref of name spaces:
 
    has '+widget_name_space' => ( default => sub { ['MyApp::Form::Submit',
        'MyApp::Form::Widget' ]);
@@ -103,7 +99,7 @@ widget name space:
 
    MyApp::Form::User:
    ...
-   has '+widget_name_space' => ( default => 'MyApp::Form::Widget' );
+   has '+widget_name_space' => ( default => sub { ['MyApp::Form::Widget'] } );
    ..
    has 'some_field' => ( widget => 'MyWidget' );
 

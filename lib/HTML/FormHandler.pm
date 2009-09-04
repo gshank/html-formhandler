@@ -593,7 +593,7 @@ sub build_result {
     }
     return $result;
 }
-has 'widget_name_space' => ( is => 'ro', isa => 'Str|ArrayRef[Str]' );
+has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
 

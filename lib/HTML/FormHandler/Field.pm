@@ -671,7 +671,7 @@ sub build_html_name {
     return $prefix . $self->full_name;
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
-has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw', default => 'Simple' );
+has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw' );
 has 'html_tags'         => ( 
     traits => ['Hash'],
     isa => 'HashRef', 
@@ -681,7 +681,15 @@ has 'html_tags'         => (
       get_tag => 'get',
     },
 );
-has 'widget_name_space' => ( isa => 'Str',  is => 'rw' );
+has 'widget_name_space' => ( 
+    traits => ['Array'],
+    isa => 'ArrayRef[Str]',  
+    is => 'ro',
+    default => sub {[]},
+    handles => {
+        add_widget_name_space => 'push',
+    }, 
+);
 has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
 has 'unique'            => ( isa => 'Bool', is => 'rw' );
@@ -958,10 +966,14 @@ sub dump {
 sub apply_rendering_widgets {
     my $self = shift;
 
+    $self->add_widget_name_space( @{$self->form->widget_name_space} )
+        if $self->form;
     return unless $self->widget;
     $self->apply_widget_role( $self, $self->widget, 'Field' );
-    return unless $self->widget_wrapper;
-    $self->apply_widget_role( $self, $self->widget_wrapper, 'Wrapper' );
+    my $widget_wrapper = $self->widget_wrapper;
+    $widget_wrapper ||= $self->form->widget_wrapper if $self->form;
+    $widget_wrapper ||= 'Simple';
+    $self->apply_widget_role( $self, $widget_wrapper, 'Wrapper' );
     return;
 
 }
