@@ -140,7 +140,7 @@ if ( !$form->process( params => { bar => 1, } ) )
    my @fields = $form->error_fields;
    if ( is( scalar @fields, 1, "there is an error field" ) )
    {
-      my @errors = $fields[0]->errors;
+      my @errors = $fields[0]->all_errors;
       is( scalar @errors, 1, "there is an error" );
 
       is( $errors[0], $fields[0]->label . " field is required", "error messages match" );

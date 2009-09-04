@@ -124,7 +124,7 @@ ok( $form->field('coerce_error')->has_errors,     'no suitable coercion - error'
 is( $form->field('coerce_pass')->value, 10, 'coercion filter' );
 is( ref $form->field('date_coercion_pass')->value, 'DateTime',   'values coerced to DateTime object' );
 ok( $form->field('date_coercion_error')->has_errors,     'DateTime coercion error' );
-my ( $message ) = $form->field('date_coercion_error')->errors;
+my $message = $form->field('date_coercion_error')->errors->[0];
 is( $message, 'This is not a correct date', 'Error message for coercion' );
 
 is( $form->field( 'date_time_fif.year' )->fif, 1000, 'fif from deflation - year' );

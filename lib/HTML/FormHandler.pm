@@ -749,7 +749,7 @@ sub error_field_names {
 sub errors {
     my $self         = shift;
     my @error_fields = $self->error_fields;
-    return map { $_->errors } @error_fields;
+    return map { $_->all_errors } @error_fields;
 }
 
 sub uuid {

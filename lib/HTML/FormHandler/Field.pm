@@ -539,7 +539,7 @@ has 'result' => (
     writer    => '_set_result',
     handles   => [
         '_set_input',   '_clear_input', '_set_value', '_clear_value',
-        'errors',       'push_errors',  'num_errors', 'has_errors',
+        'errors',       'all_errors',   'push_errors',  'num_errors', 'has_errors',
         'clear_errors', 'validated',
     ],
 );

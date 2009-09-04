@@ -70,7 +70,7 @@ sub render_field_struct {
         $output .= '<td>';
     }
     $output .= $rendered_field;
-    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
+    $output .= qq{\n<span class="error_message">$_</span>} for $field->all_errors;
     if ( $l_type ne 'legend' ) {
         $output .= "</td></tr>\n";
     }

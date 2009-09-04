@@ -1,4 +1,7 @@
 0.28
+    Removed 'auto_deref' from arrayrefs. Possible incompatibilities.
+       Use ->all_fields, ->all_errors for array
+    Switched to using native traits
     Add Widget roles
     Major refactor to support result classes
     Reformatting source to more Perl standard

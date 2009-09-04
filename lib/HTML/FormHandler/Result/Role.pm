@@ -59,7 +59,7 @@ has 'error_results' => (
     }
 );
 
-has '_errors' => (
+has 'errors' => (
     traits     => ['Array'],
     is         => 'rw',
     isa        => 'ArrayRef[Str]',
@@ -72,10 +72,8 @@ has '_errors' => (
         clear_errors => 'clear',
     }
 );
-sub errors { wantarray ? $_[0]->all_errors : $_[0]->_errors }
 
 sub validated { !$_[0]->has_error_results && $_[0]->has_input }
-# sub ran_validation { shift->has_input }
 
 sub field {
     my ( $self, $name, $die ) = @_;

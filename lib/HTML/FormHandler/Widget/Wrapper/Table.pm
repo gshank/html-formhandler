@@ -18,7 +18,7 @@ sub wrap_field {
         $output .= '<td>';
     }
     $output .= $rendered_widget;
-    $output .= qq{\n<span class="error_message">$_</span>} for $result->errors;
+    $output .= qq{\n<span class="error_message">$_</span>} for $result->all_errors;
     if ( !$self->has_flag('is_compound') ) {
         $output .= "</td></tr>\n";
     }
