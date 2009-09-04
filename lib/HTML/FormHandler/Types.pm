@@ -11,6 +11,7 @@ use MooseX::Types -declare => [
     'StrongPassword', 'NonEmptyStr', 'Email',             'State',
     'Zip',            'IPAddress',   'NoSpaces',          'WordChars',
     'NotAllDigits',   'Printable',   'SingleWord',
+    'Collapse',       'Upper',       'Lower',             'Trim',
 ];
 
 use MooseX::Types::Moose ( 'Str', 'Num', 'Int' );
@@ -54,7 +55,9 @@ From MooseX::Types::Common:
   'SimpleStr', 'NonEmptySimpleStr', 'Password', 'StrongPassword', 'NonEmptyStr',
 
 
-=head1 TYPES
+=head1 Type Constraints
+
+These types check the value and issue an error message.
 
 =over
 
@@ -85,6 +88,30 @@ Checks that the state is in a list of two uppercase letters.
 =item SingleWord
 
   Contains a single word
+
+=back
+
+=head2 Type Coercions
+
+These types will transform the value without an error message;
+
+=over
+
+=item Collapse
+
+  Replaces multiple spaces with a single space
+
+=item Upper
+
+  Makes the string all upper case
+
+=item Lower
+
+  Makes the string all lower case
+
+=item Trim
+
+  Trims the string of starting and ending spaces
 
 =back
 
@@ -160,7 +187,7 @@ subtype IPAddress, as Str, where {
 subtype NoSpaces,
     as Str,
     where { $_[0] !~ /\s/ },
-    message { 'Password can not contain spaces' };
+    message { 'Password cannot contain spaces' };
 
 subtype WordChars,
     as Str,
@@ -181,6 +208,41 @@ subtype SingleWord,
     as Str,
     where { $_ =~ /^\w*\z/ },
     message { 'Field must contain a single word' };
+
+subtype Collapse,
+   as Str,
+   where{ $_ !~ /\s{2,}/ };
+
+coerce Collapse,
+   from Str,
+   via { $_ =~ s/\s+/ /g; return $_; };
+
+subtype Lower,
+   as Str,
+   where { $_ !~ /[[:upper:]]/  };
+
+coerce Lower,
+   from Str,
+   via { lc($_) };
+
+subtype Upper,
+   as Str,
+   where { $_ !~ /[[:lower:]]/ };
+
+coerce Upper,
+   from Str,
+   via { uc($_) };
+
+subtype Trim,
+   as Str,
+   where  { $_ !~ /^\s+/ &&
+            $_ !~ /\s+$/ };
+
+coerce Trim,
+   from Str,
+   via { $_ =~ s/^\s+// &&
+         $_ =~ s/\s+$//; 
+         return $_;  };
 
 =head1 AUTHORS
 

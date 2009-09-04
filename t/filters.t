@@ -32,6 +32,9 @@ use Scalar::Util qw(blessed);
        => from 'HashRef'
        => via { DateTime->new( $_ ) };
 
+   has_field 'coderef_transform'=> (
+      apply => [{ transform => \&my_transform }]
+   );
 
    has_field 'sprintf_filter' => (
       apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
@@ -80,6 +83,11 @@ use Scalar::Util qw(blessed);
    has_field 'date_time_fif.year' => ( fif_from_value => 1 );
    has_field 'date_time_fif.month';
    has_field 'date_time_fif.day' => ( fif_from_value => 1 );
+
+   sub my_transform {
+      $_[0] =~ s/testing/IT WORKED/g;
+      return $_[0];
+   }
 }
 
 
@@ -88,6 +96,7 @@ ok( $form, 'get form' );
 
 my $params = {
       sprintf_filter   => '100',
+      coderef_transform => 'testing',
       date_time_error  => 'aaa',
       'date_time.year' => 2009,
       'date_time.month' => 4,
@@ -107,6 +116,7 @@ my $params = {
 $form->process($params);
 
 like( $form->field('sprintf_filter')->value, qr/<1e\+0+2>/, 'sprintf filter' );
+is( $form->field('coderef_transform')->value, 'IT WORKED', 'coderef transform' );
 ok( $form->field('date_time_error')->has_errors,      'DateTime error catched' );
 is( $form->field('date_time_error')->errors->[0], 'Not a valid DateTime', 'error message');
 is( ref $form->field('date_time')->value, 'DateTime',   'DateTime object created' );

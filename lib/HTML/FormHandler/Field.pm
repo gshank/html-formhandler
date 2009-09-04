@@ -459,12 +459,13 @@ a transformed value.
 
 =head2 trim
 
-A Hashref containing a transfrom to trim the field. By default
+An action to trim the field. By default
 this contains a transform to strip beginning and trailing spaces.
 Set this attribute to null to skip trimming, or supply a different
 transform.
 
   trim => { transform => sub { } }
+  trim => { type => MyTypeConstraint }
 
 Trimming is performed before any other defined actions.
 
@@ -745,24 +746,25 @@ has 'deflation' => (
     predicate => 'has_deflation',
 );
 has 'trim' => (
-    isa     => 'HashRef',
     is      => 'rw',
     default => sub {
         {
-            transform => sub {
-                my $value = shift;
-                return unless defined $value;
-                my @values = ref $value eq 'ARRAY' ? @$value : ($value);
-                for (@values) {
-                    next if ref $_;
-                    s/^\s+//;
-                    s/\s+$//;
-                }
-                return ref $value eq 'ARRAY' ? \@values : $values[0];
-            },
+            transform => \&default_trim, 
         };
     }
 );
+
+sub default_trim {
+    my $value = shift;
+    return unless defined $value;
+    my @values = ref $value eq 'ARRAY' ? @$value : ($value);
+    for (@values) {
+        next if ref $_;
+        s/^\s+//;
+        s/\s+$//;
+    }
+    return ref $value eq 'ARRAY' ? \@values : $values[0];
+}
 
 sub BUILD {
     my ( $self, $params ) = @_;
