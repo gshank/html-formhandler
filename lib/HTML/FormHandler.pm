@@ -614,7 +614,6 @@ has 'active_column' => ( isa => 'Str',  is  => 'rw' );
 has 'http_method'   => ( isa => 'Str',  is  => 'rw', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'action' => ( is => 'rw' );
-has 'submit' => ( is => 'rw' );
 has 'params' => (
     traits     => ['Hash'],
     isa        => 'HashRef',
@@ -766,8 +765,7 @@ sub validate_form {
     $self->_fields_validate;
     $self->_apply_actions;
     $self->validate();         # empty method for users
-                               # model specific validation
-    $self->validate_model;
+    $self->validate_model;     # model specific validation
     $self->_clear_dependency;
     $self->get_error_fields;
     $self->ran_validation(1);
@@ -803,9 +801,9 @@ sub setup_form {
         $self->item( $self->build_item );
     }
     # initialization of Repeatable fields and Select options
-    # will be done in init_object when there's an initial object
-    # in validation routines when there are params
-    # and by _init for empty forms
+    # will be done in _result_from_object when there's an initial object
+    # in _result_from_input when there are params
+    # and by _result_from_fields for empty forms
     $self->clear_result;
     if ( !$self->did_init_obj ) {
         if ( $self->init_object || $self->item ) {

@@ -520,7 +520,7 @@ errors with C<< $field->add_error >>.
 
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
-has 'parent'           => ( is  => 'rw',   predicate => 'has_parent' );
+has 'parent' => ( is  => 'rw',   predicate => 'has_parent' );
 sub has_fields { }
 has 'input_without_param' => (
     is        => 'rw',
@@ -692,8 +692,6 @@ has 'widget_name_space' => (
 );
 has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
-has 'unique'            => ( isa => 'Bool', is => 'rw' );
-has 'unique_message'    => ( isa => 'Str',  is => 'rw' );
 has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id { shift->html_name }
 has 'javascript' => ( isa => 'Str',  is => 'rw' );
@@ -968,12 +966,15 @@ sub apply_rendering_widgets {
 
     $self->add_widget_name_space( @{$self->form->widget_name_space} )
         if $self->form;
-    return unless $self->widget;
-    $self->apply_widget_role( $self, $self->widget, 'Field' );
+    if ( $self->widget ) {
+        $self->apply_widget_role( $self, $self->widget, 'Field' );
+    }
     my $widget_wrapper = $self->widget_wrapper;
     $widget_wrapper ||= $self->form->widget_wrapper if $self->form;
     $widget_wrapper ||= 'Simple';
-    $self->apply_widget_role( $self, $widget_wrapper, 'Wrapper' );
+    unless ( $widget_wrapper eq 'none' ) {
+        $self->apply_widget_role( $self, $widget_wrapper, 'Wrapper' );
+    }
     return;
 
 }

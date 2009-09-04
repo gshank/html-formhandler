@@ -48,7 +48,6 @@ sub _result_from_input {
                 name   => $field_name,
                 parent => $self_result
             );
-            # Trim values and move to "input" slot
             $result =
                 $field->_result_from_input( $result, $input->{$field_name},
                 exists $input->{$field_name} );

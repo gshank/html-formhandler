@@ -119,7 +119,6 @@ sub field {
     die "Field '$name' not found in '$self'";
 }
 
-# this may be an array of fields flattened from the tree
 sub sorted_fields {
     my $self = shift;
 
