@@ -32,46 +32,47 @@ has 'value' => (
     predicate => 'has_value',
 );
 
-has 'results' => (
-    metaclass  => 'Collection::Array',
+has '_results' => (
+    traits    => ['Array'],
     isa        => 'ArrayRef[HTML::FormHandler::Field::Result]',
     is         => 'rw',
-    auto_deref => 1,
     default    => sub { [] },
-    provides   => {
-        'push'  => 'add_result',
-        'count' => 'num_results',
-        'empty' => 'has_results',
-        'clear' => 'clear_results',
+    handles   => {
+        results => 'elements', 
+        add_result => 'push',
+        num_results => 'count',
+        has_results => 'count',
+        clear_results => 'clear',
     }
 );
 
 has 'error_results' => (
-    metaclass => 'Collection::Array',
+    traits    => ['Array'],
     isa       => 'ArrayRef',            # for HFH::Result and HFH::Field::Result
     is        => 'rw',
     default   => sub { [] },
-    provides  => {
-        empty => 'has_error_results',
-        clear => 'clear_error_results',
-        push  => 'add_error_result',
-        count => 'num_error_results'
+    handles  => {
+        has_error_results => 'count',
+        num_error_results => 'count',
+        clear_error_results => 'clear',
+        add_error_result => 'push',
     }
 );
 
-has 'errors' => (
-    metaclass  => 'Collection::Array',
-    isa        => 'ArrayRef[Str]',
+has '_errors' => (
+    traits     => ['Array'],
     is         => 'rw',
-    auto_deref => 1,
+    isa        => 'ArrayRef[Str]',
     default    => sub { [] },
-    provides   => {
-        'push'  => 'push_errors',
-        'count' => 'num_errors',
-        'empty' => 'has_errors',
-        'clear' => 'clear_errors',
+    handles   => {
+        all_errors  => 'elements',
+        push_errors => 'push',
+        num_errors => 'count',
+        has_errors => 'count',
+        clear_errors => 'clear',
     }
 );
+sub errors { wantarray ? $_[0]->all_errors : $_[0]->_errors }
 
 sub validated { !$_[0]->has_error_results && $_[0]->has_input }
 # sub ran_validation { shift->has_input }

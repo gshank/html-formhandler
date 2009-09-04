@@ -747,11 +747,7 @@ has 'deflation' => (
 );
 has 'trim' => (
     is      => 'rw',
-    default => sub {
-        {
-            transform => \&default_trim, 
-        };
-    }
+    default => sub { { transform => \&default_trim } }
 );
 
 sub default_trim {
