@@ -671,7 +671,16 @@ sub build_html_name {
     return $prefix . $self->full_name;
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
-has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw', default => 'Div' );
+has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw', default => 'Simple' );
+has 'html_tags'         => ( 
+    traits => ['Hash'],
+    isa => 'HashRef', 
+    is => 'ro',
+    default => sub {{}},
+    handles => {
+      get_tag => 'get',
+    },
+);
 has 'widget_name_space' => ( isa => 'Str',  is => 'rw' );
 has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
