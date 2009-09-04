@@ -64,7 +64,9 @@ sub validate_field {
                              # See if anything was submitted
     if ( $field->required && ( !$field->has_input || !$field->input_defined ) ) {
         $field->add_error( $field->required_message ) if ( $field->required );
-        $field->_set_value(undef) if ( $field->has_input );
+        if( $field->has_input ) {
+           $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);
+        }
         return;
     }
     elsif ( $field->DOES('HTML::FormHandler::Field::Repeatable') ) { }
@@ -72,7 +74,7 @@ sub validate_field {
         return;
     }
     elsif ( !$field->input_defined ) {
-        $field->_set_value(undef);
+        $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);
         return;
     }
 

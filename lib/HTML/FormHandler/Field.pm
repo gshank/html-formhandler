@@ -521,12 +521,12 @@ errors with C<< $field->add_error >>.
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
 has 'parent'           => ( is  => 'rw',   predicate => 'has_parent' );
-has 'errors_on_parent' => ( isa => 'Bool', is        => 'rw' );
 sub has_fields { }
 has 'input_without_param' => (
     is        => 'rw',
     predicate => 'has_input_without_param'
 );
+has 'not_nullable' => ( is => 'ro', isa => 'Bool' );
 has 'init_value' => ( is => 'rw', clearer => 'clear_init_value' );
 has 'result' => (
     isa       => 'HTML::FormHandler::Field::Result',
@@ -573,16 +573,16 @@ sub build_result {
 
 sub input {
     my $self = shift;
-    return unless $self->has_result;
-    return $self->_set_input(@_) if @_;
-    return $self->result->input;
+    my $result = $self->result;
+    return $result->_set_input(@_) if @_;
+    return $result->input;
 }
 
 sub value {
     my $self = shift;
-    return unless $self->has_result;
-    return $self->_set_value(@_) if @_;
-    return $self->result->value;
+    my $result = $self->result;
+    return $result->_set_value(@_) if @_;
+    return $result->value;
 }
 # for compatibility. deprecate and remove at some point
 sub clear_input { shift->_clear_input }

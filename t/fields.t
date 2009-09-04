@@ -440,6 +440,10 @@ ok( !$field->has_errors, 'Test just long enough' );
 $field->minlength( 4 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test plenty long enough' );
+$field = $class->new( name    => 'test_not_nullable', not_nullable => 1);
+$field->input('');
+$field->validate_field;
+is( $field->value, '', 'empty string');
 
 # weekday
 
