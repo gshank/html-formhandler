@@ -617,18 +617,16 @@ has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'action' => ( is => 'rw' );
 has 'submit' => ( is => 'rw' );
 has 'params' => (
-    metaclass  => 'Collection::Hash',
+    traits     => ['Hash'],
     isa        => 'HashRef',
     is         => 'rw',
     default    => sub { {} },
-    auto_deref => 1,
     trigger    => sub { shift->_munge_params(@_) },
-    provides   => {
-        set    => 'set_param',
-        get    => 'get_param',
-        clear  => 'clear_params',
-        delete => 'delete_param',
-        empty  => 'has_params',
+    handles   => {
+        set_param => 'set',
+        get_param => 'get',
+        clear_params => 'clear',
+        has_params => 'count',
     },
 );
 sub submitted { shift->has_params }
