@@ -1,7 +1,6 @@
 package HTML::FormHandler::Field::Compound;
 
 use Moose;
-use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Field';
 with 'HTML::FormHandler::Fields';
 with 'HTML::FormHandler::BuildFields';

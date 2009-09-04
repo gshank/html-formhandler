@@ -1,7 +1,6 @@
 package HTML::FormHandler::Field;
 
 use HTML::FormHandler::Moose;
-use MooseX::AttributeHelpers;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
 use HTML::FormHandler::Field::Result;
 

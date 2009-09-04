@@ -14,16 +14,15 @@ L<HTML::FormHandler::Field> and L<HTML::FormHandler>.
 =cut
 
 has 'actions' => (
-    metaclass  => 'Collection::Array',
+    traits     => ['Array'],
     isa        => 'ArrayRef',
     is         => 'rw',
-    auto_deref => 1,
     default    => sub { [] },
-    provides   => {
-        'push'  => 'add_action',
-        'count' => 'num_actions',
-        'empty' => 'has_actions',
-        'clear' => 'clear_actions',
+    handles   => {
+        add_action => 'push',
+        num_actions =>'count',
+        has_actions => 'count',
+        clear_actions => 'clear',
     }
 );
 

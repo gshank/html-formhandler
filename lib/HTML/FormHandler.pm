@@ -1,7 +1,6 @@
 package HTML::FormHandler;
 
 use Moose;
-use MooseX::AttributeHelpers;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::BuildFields',
     'HTML::FormHandler::Validate::Actions';
@@ -632,14 +631,13 @@ has 'params' => (
 sub submitted { shift->has_params }
 has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
 has '_required' => (
-    metaclass  => 'Collection::Array',
+    traits     => ['Array'],
     isa        => 'ArrayRef[HTML::FormHandler::Field]',
     is         => 'rw',
     default    => sub { [] },
-    auto_deref => 1,
-    provides   => {
-        clear => 'clear_required',
-        push  => 'add_required'
+    handles   => {
+        clear_required => 'clear',
+        add_required => 'push',
     }
 );
 
@@ -870,7 +868,7 @@ sub _set_dependency {
 sub _clear_dependency {
     my $self = shift;
 
-    $_->required(0) for $self->_required;
+    $_->required(0) for @{$self->_required};
     $self->clear_required;
 }
 

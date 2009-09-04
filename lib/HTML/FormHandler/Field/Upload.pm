@@ -2,7 +2,6 @@ package HTML::FormHandler::Field::Upload;
 
 use Moose;
 use Moose::Util::TypeConstraints;
-use MooseX::AttributeHelpers;
 
 extends 'HTML::FormHandler::Field';
 

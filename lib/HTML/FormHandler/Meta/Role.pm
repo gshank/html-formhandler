@@ -2,7 +2,6 @@ package    # hide from Pause
     HTML::FormHandler::Meta::Role;
 
 use Moose::Role;
-use MooseX::AttributeHelpers;
 
 =head1 NAME
 
@@ -15,26 +14,26 @@ Add metaclass to field_list attribute
 =cut
 
 has 'field_list' => (
-    metaclass => 'Collection::Array',
+    traits    => ['Array'],
     is        => 'rw',
     isa       => 'ArrayRef',
     default   => sub { [] },
-    provides  => {
-        'push'  => 'add_to_field_list',
-        'clear' => 'clear_field_list',
-        'empty' => 'has_field_list',
+    handles  => {
+        add_to_field_list => 'push',
+        clear_field_list => 'clear',
+        has_field_list => 'count',
     }
 );
 
 has 'apply_list' => (
-    metaclass => 'Collection::Array',
+    traits    => ['Array'],
     is        => 'rw',
     isa       => 'ArrayRef',
     default   => sub { [] },
-    provides  => {
-        'push'  => 'add_to_apply_list',
-        'empty' => 'has_apply_list',
-        'clear' => 'clear_apply_list',
+    handles  => {
+        add_to_apply_list => 'push',
+        has_apply_list => 'count',
+        clear_apply_list => 'clear',
     }
 );
 
