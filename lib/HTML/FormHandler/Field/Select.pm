@@ -173,185 +173,178 @@ This does a string compare.
 =cut
 
 has 'options' => (
-   isa        => 'ArrayRef',
-   is         => 'rw',
-   metaclass  => 'Collection::Array',
-   provides   => {
-      clear => 'reset_options',
-      empty => 'has_options',
-      count => 'num_options',
-   },
-   lazy    => 1,
-   builder => 'build_options'
+    isa       => 'ArrayRef',
+    is        => 'rw',
+    traits    => ['Array'],
+    handles  => {
+        reset_options => 'clear',
+        clear_options => 'clear',
+        has_options => 'count',
+        num_options => 'count',
+    },
+    lazy    => 1,
+    builder => 'build_options'
 );
 
 sub build_options { [] }
 has 'options_from' => ( isa => 'Str', is => 'rw', default => 'none' );
 has 'do_not_reload' => ( isa => 'Bool', is => 'ro' );
-sub BUILD
-{
-   my $self = shift;
 
-   $self->set_options;
-   $self->options_from('build') if $self->options && $self->has_options;
+sub BUILD {
+    my $self = shift;
+
+    $self->set_options;
+    $self->options_from('build') if $self->options && $self->has_options;
 }
 
 has 'set_options' => (
-   isa     => 'Str',
-   is      => 'rw',
-   default => sub {
-      my $self = shift;
-      my $name = $self->full_name;
-      $name =~ s/\./_/g;
-      return 'options_' . $name;
-   }
+    isa     => 'Str',
+    is      => 'rw',
+    default => sub {
+        my $self = shift;
+        my $name = $self->full_name;
+        $name =~ s/\./_/g;
+        return 'options_' . $name;
+    }
 );
 
-sub _can_form_options
-{
-   my $self = shift;
-   return
-      unless $self->form &&
-         $self->set_options &&
-         $self->form->can( $self->set_options );
-   return 1;
+sub _can_form_options {
+    my $self = shift;
+    return
+        unless $self->form &&
+            $self->set_options &&
+            $self->form->can( $self->set_options );
+    return 1;
 }
 
-sub _form_options
-{
-   my $self = shift;
-   return unless $self->_can_form_options;
-   my $meth = $self->set_options;
-   return $self->form->$meth($self);
+sub _form_options {
+    my $self = shift;
+    return unless $self->_can_form_options;
+    my $meth = $self->set_options;
+    return $self->form->$meth($self);
 }
 
 has 'multiple' => ( isa => 'Bool', is => 'rw', default => '0' );
-has 'size' => ( isa => 'Int|Undef', is => 'rw' );
-has 'label_column' => ( isa => 'Str', is => 'rw', default => 'name' );
-has 'active_column' => ( isa => 'Str', is => 'rw', default => 'active' );
-has 'auto_widget_size' => ( isa => 'Int', is => 'rw', default => '0' );
-has 'sort_column' => ( isa => 'Str', is => 'rw' );
+has 'size'             => ( isa => 'Int|Undef', is => 'rw' );
+has 'label_column'     => ( isa => 'Str',       is => 'rw', default => 'name' );
+has 'active_column'    => ( isa => 'Str',       is => 'rw', default => 'active' );
+has 'auto_widget_size' => ( isa => 'Int',       is => 'rw', default => '0' );
+has 'sort_column'      => ( isa => 'Str',       is => 'rw' );
 has '+widget' => ( default => 'select' );
 
-sub select_widget
-{
-   my $field = shift;
+sub select_widget {
+    my $field = shift;
 
-   my $size = $field->auto_widget_size;
-   return $field->widget unless $field->widget eq 'select' && $size;
-   my $options = $field->options || [];
-   return 'select' if @$options > $size;
-   return $field->multiple ? 'checkbox' : 'radio';
+    my $size = $field->auto_widget_size;
+    return $field->widget unless $field->widget eq 'select' && $size;
+    my $options = $field->options || [];
+    return 'select' if @$options > $size;
+    return $field->multiple ? 'checkbox' : 'radio';
 }
 
-sub as_label
-{
-   my $field = shift;
+sub as_label {
+    my $field = shift;
 
-   my $value = $field->value;
-   return unless defined $value;
+    my $value = $field->value;
+    return unless defined $value;
 
-   for ( $field->options ) {
-      return $_->{label} if $_->{value} eq $value;
-   }
-   return;
+    for ( $field->options ) {
+        return $_->{label} if $_->{value} eq $value;
+    }
+    return;
 }
 
-sub _inner_validate_field
-{
-   my ($self) = @_;
+sub _inner_validate_field {
+    my ($self) = @_;
 
-   my $value = $self->value;
-   return 1 unless defined $value;    # nothing to check
+    my $value = $self->value;
+    return 1 unless defined $value;    # nothing to check
 
-   if ( ref $value eq 'ARRAY' &&
-      !( $self->can('multiple') && $self->multiple ) )
-   {
-      $self->add_error('This field does not take multiple values');
-      return;
-   }
-   elsif ( ref $value ne 'ARRAY' && $self->multiple ) {
-      $value = [$value];
-      $self->_set_value($value);
-   }
+    if ( ref $value eq 'ARRAY' &&
+        !( $self->can('multiple') && $self->multiple ) )
+    {
+        $self->add_error('This field does not take multiple values');
+        return;
+    }
+    elsif ( ref $value ne 'ARRAY' && $self->multiple ) {
+        $value = [$value];
+        $self->_set_value($value);
+    }
 
-   # create a lookup hash
-   my %options = map { $_->{value} => 1 } @{$self->options};
-   for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) ) {
-      unless ( $options{$value} ) {
-         $self->add_error("'$value' is not a valid value");
-         return;
-      }
-   }
-   return 1;
+    # create a lookup hash
+    my %options = map { $_->{value} => 1 } @{ $self->options };
+    for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) ) {
+        unless ( $options{$value} ) {
+            $self->add_error("'$value' is not a valid value");
+            return;
+        }
+    }
+    return 1;
 }
 
-sub _result_from_object
-{
-   my ( $self, $result,  $item )  = @_;
+sub _result_from_object {
+    my ( $self, $result, $item ) = @_;
 
-   $result = $self->SUPER::_result_from_object($result, $item);
-   $self->_load_options;
-   return $result;
+    $result = $self->SUPER::_result_from_object( $result, $item );
+    $self->_load_options;
+    return $result;
 }
 
-sub _result_from_fields
-{
-   my ( $self, $result ) = @_;
+sub _result_from_fields {
+    my ( $self, $result ) = @_;
 
-   $result = $self->SUPER::_result_from_fields( $result );
-   $self->_load_options;
-   return $result;
+    $result = $self->SUPER::_result_from_fields($result);
+    $self->_load_options;
+    return $result;
 }
 
-sub _result_from_input
-{
-   my ( $self, $result, $input, $exists ) = @_;
+sub _result_from_input {
+    my ( $self, $result, $input, $exists ) = @_;
 
-   $result = $self->SUPER::_result_from_input( $result, $input, $exists );
-   $self->_load_options;
-   return $result;
+    $result = $self->SUPER::_result_from_input( $result, $input, $exists );
+    $self->_load_options;
+    return $result;
 }
 
-sub _load_options
-{
-   my $self = shift;
+sub _load_options {
+    my $self = shift;
 
-   return if ( $self->options_from eq 'build' ||
-      ($self->has_options && $self->do_not_reload ) );
-   my @options;
-   if ( $self->_can_form_options ) {
-      @options = $self->_form_options;
-      $self->options_from('method');
-   }
-   elsif ( $self->form ) {
-      my $full_accessor;
-      $full_accessor = $self->parent->full_accessor if $self->parent;
-      @options = $self->form->lookup_options( $self, $full_accessor );
-      $self->options_from('model') if scalar @options;
-   }
-   return unless @options;    # so if there isn't an options method and no options
-                              # from a table, already set options attributes stays put
+    return
+        if ( $self->options_from eq 'build' ||
+        ( $self->has_options && $self->do_not_reload ) );
+    my @options;
+    if ( $self->_can_form_options ) {
+        @options = $self->_form_options;
+        $self->options_from('method');
+    }
+    elsif ( $self->form ) {
+        my $full_accessor;
+        $full_accessor = $self->parent->full_accessor if $self->parent;
+        @options = $self->form->lookup_options( $self, $full_accessor );
+        $self->options_from('model') if scalar @options;
+    }
+    return unless @options;    # so if there isn't an options method and no options
+                               # from a table, already set options attributes stays put
 
-   # allow returning arrayref
-   if( ref $options[0] eq 'ARRAY' ) {
-      @options = @{ $options[0] } if ref $options[0];
-   }
+    # allow returning arrayref
+    if ( ref $options[0] eq 'ARRAY' ) {
+        @options = @{ $options[0] } if ref $options[0];
+    }
 
-   my $opts;
-   # if options_<field_name> is returning an already constructed array of hashrefs
-   if( ref $options[0] eq 'HASH' ) {
-      $opts = \@options;
-   }
-   else {
-      croak "Options array must contain an even number of elements for field " . $self->name
-         if @options % 2;
-      push @{$opts}, { value => shift @options, label => shift @options } while @options;
-   }
-   if( @$opts ) {
-      my $opts = $self->sort_options($opts); # allow sorting options
-      $self->options( $opts );
-   }
+    my $opts;
+    # if options_<field_name> is returning an already constructed array of hashrefs
+    if ( ref $options[0] eq 'HASH' ) {
+        $opts = \@options;
+    }
+    else {
+        croak "Options array must contain an even number of elements for field " . $self->name
+            if @options % 2;
+        push @{$opts}, { value => shift @options, label => shift @options } while @options;
+    }
+    if (@$opts) {
+        my $opts = $self->sort_options($opts);    # allow sorting options
+        $self->options($opts);
+    }
 }
 
 sub sort_options { shift; return shift; }

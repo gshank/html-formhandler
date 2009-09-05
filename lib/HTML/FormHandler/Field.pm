@@ -1,12 +1,12 @@
 package HTML::FormHandler::Field;
 
 use HTML::FormHandler::Moose;
-use MooseX::AttributeHelpers;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
 use HTML::FormHandler::Field::Result;
 
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
+with 'HTML::FormHandler::Widget::ApplyRole';
 
 our $VERSION = '0.02';
 
@@ -191,8 +191,8 @@ parents for the fields they contain.
 =item errors
 
 Returns the error list for the field. Also provides 'num_errors',
-'has_errors', 'push_errors' and 'clear_errors' from Collection::Array
-metaclass. Use 'add_error' to add an error to the array if you
+'has_errors', 'push_errors' and 'clear_errors' from Array
+trait. Use 'add_error' to add an error to the array if you
 want to use a MakeText language handle. Default is an empty list.
 
 =item add_error
@@ -458,12 +458,13 @@ a transformed value.
 
 =head2 trim
 
-A Hashref containing a transfrom to trim the field. By default
+An action to trim the field. By default
 this contains a transform to strip beginning and trailing spaces.
 Set this attribute to null to skip trimming, or supply a different
 transform.
 
   trim => { transform => sub { } }
+  trim => { type => MyTypeConstraint }
 
 Trimming is performed before any other defined actions.
 
@@ -520,136 +521,163 @@ errors with C<< $field->add_error >>.
 has 'name' => ( isa => 'Str', is => 'rw', required => 1 );
 has 'type' => ( isa => 'Str', is => 'rw', default => sub { ref shift } );
 has 'parent'           => ( is  => 'rw',   predicate => 'has_parent' );
-has 'errors_on_parent' => ( isa => 'Bool', is        => 'rw' );
 sub has_fields { }
 has 'input_without_param' => (
-   is        => 'rw',
-   predicate => 'has_input_without_param'
+    is        => 'rw',
+    predicate => 'has_input_without_param'
 );
-has 'init_value'       => ( is  => 'rw',   clearer   => 'clear_init_value' );
-has 'result' => ( isa => 'HTML::FormHandler::Field::Result', is => 'ro',
-   weak_ref => 1,
-   lazy => 1, builder => 'build_result',
-   clearer => 'clear_result',
-   predicate => 'has_result',
-   writer => '_set_result',
-   handles => [ '_set_input', '_clear_input', 'has_input',
-                '_set_value', '_clear_value', 'has_value',
-                'errors', 'push_errors', 'num_errors', 'has_errors', 'clear_errors', 'validated',
-              ],
+has 'not_nullable' => ( is => 'ro', isa => 'Bool' );
+has 'init_value' => ( is => 'rw', clearer => 'clear_init_value' );
+has 'result' => (
+    isa       => 'HTML::FormHandler::Field::Result',
+    is        => 'ro',
+    weak_ref  => 1,
+    lazy      => 1,
+    builder   => 'build_result',
+    clearer   => 'clear_result',
+    predicate => 'has_result',
+    writer    => '_set_result',
+    handles   => [
+        '_set_input',   '_clear_input', '_set_value', '_clear_value',
+        'errors',       'push_errors',  'num_errors', 'has_errors',
+        'clear_errors', 'validated',
+    ],
 );
 has '_pin_result' => ( is => 'ro', reader => '_get_pin_result', writer => '_set_pin_result' );
 
-# this should normally only be called for field tests
-sub build_result
-{
-   my $self = shift;
-   my @parent = ( 'parent' => $self->parent->result )
-         if ( $self->parent && $self->parent->result );
-   my $result = HTML::FormHandler::Field::Result->new( name => $self->name, 
-      field_def => $self, @parent );
-   $self->_set_pin_result($result);
-   return $result;
+sub has_input {
+    my $self = shift;
+    return unless $self->has_result;
+    return $self->result->has_input;
 }
 
-sub input
-{
-   my $self = shift;
-   return $self->_set_input(@_) if @_;
-   return $self->result->input;
+sub has_value {
+    my $self = shift;
+    return unless $self->has_result;
+    return $self->result->has_value;
 }
-sub value
-{
-   my $self = shift;
-   return $self->_set_value(@_) if @_;
-   return $self->result->value;
+
+# this should normally only be called for field tests
+sub build_result {
+    my $self = shift;
+    my @parent = ( 'parent' => $self->parent->result )
+        if ( $self->parent && $self->parent->result );
+    my $result = HTML::FormHandler::Field::Result->new(
+        name      => $self->name,
+        field_def => $self,
+        @parent
+    );
+    $self->_set_pin_result($result);    # to prevent garbage collection of result
+    return $result;
+}
+
+sub input {
+    my $self = shift;
+    my $result = $self->result;
+    return $result->_set_input(@_) if @_;
+    return $result->input;
+}
+
+sub value {
+    my $self = shift;
+    my $result = $self->result;
+    return $result->_set_value(@_) if @_;
+    return $result->value;
 }
 # for compatibility. deprecate and remove at some point
-sub clear_input { shift->_clear_input } 
+sub clear_input { shift->_clear_input }
 sub clear_value { shift->_clear_value }
+sub clear_data  { shift->clear_result }
 
 sub is_repeatable { }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 
 has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 
-sub fif
-{
-   my ( $self, $result ) = @_;
+sub fif {
+    my ( $self, $result ) = @_;
 
-   return if $self->inactive;
-   return '' if $self->password;
-   return unless $result || $self->has_result;
-   my $lresult = $result || $self->result;
-   if ( ( $self->has_result && $self->has_input && !$self->fif_from_value ) ||
-      ( $self->fif_from_value && !defined $lresult->value ) )
-   {
-      return defined $lresult->input ? $lresult->input : '';
-   }
-   my $parent = $self->parent;
-   if ( defined $parent &&
-      $parent->isa('HTML::FormHandler::Field') &&
-      ( $parent->has_deflation || $parent->can('deflate') ) )
-   {
-      my $parent_fif = $result ? $parent->fif($result->parent) : $parent->fif;
-      if ( ref $parent_fif eq 'HASH' &&
-         exists $parent_fif->{ $self->name } )
-      {
-         return $self->_apply_deflation( $parent_fif->{ $self->name } );
-      }
-   }
-   if ( defined $lresult->value ) {
-      return $self->_apply_deflation( $lresult->value );
-   }
-   elsif ( defined $self->value ) {
-      # this is because checkboxes and submit buttons have their own 'value'
-      # needs to be fixed in some better way
-      return $self->_apply_deflation( $self->value );
-   }
-   return '';
+    return if $self->inactive;
+    return '' if $self->password;
+    return unless $result || $self->has_result;
+    my $lresult = $result || $self->result;
+    if ( ( $self->has_result && $self->has_input && !$self->fif_from_value ) ||
+        ( $self->fif_from_value && !defined $lresult->value ) )
+    {
+        return defined $lresult->input ? $lresult->input : '';
+    }
+    my $parent = $self->parent;
+    if ( defined $parent &&
+        $parent->isa('HTML::FormHandler::Field') &&
+        ( $parent->has_deflation || $parent->can('deflate') ) )
+    {
+        my $parent_fif = $result ? $parent->fif( $result->parent ) : $parent->fif;
+        if ( ref $parent_fif eq 'HASH' &&
+            exists $parent_fif->{ $self->name } )
+        {
+            return $self->_apply_deflation( $parent_fif->{ $self->name } );
+        }
+    }
+    if ( defined $lresult->value ) {
+        return $self->_apply_deflation( $lresult->value );
+    }
+    elsif ( defined $self->value ) {
+        # this is because checkboxes and submit buttons have their own 'value'
+        # needs to be fixed in some better way
+        return $self->_apply_deflation( $self->value );
+    }
+    return '';
 }
 
 has 'accessor' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub {
-      my $self     = shift;
-      my $accessor = $self->name;
-      $accessor =~ s/^(.*)\.//g if ( $accessor =~ /\./ );
-      return $accessor;
-   }
+    isa     => 'Str',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub {
+        my $self     = shift;
+        my $accessor = $self->name;
+        $accessor =~ s/^(.*)\.//g if ( $accessor =~ /\./ );
+        return $accessor;
+    }
 );
 has 'temp' => ( is => 'rw' );
+
+sub has_flag {
+    my ( $self, $flag_name ) = @_;
+    return unless $self->can($flag_name);
+    return $self->$flag_name;
+}
+
 has 'label' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub { ucfirst( shift->name ) },
+    isa     => 'Str',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub { ucfirst( shift->name ) },
 );
 has 'title'     => ( isa => 'Str',               is => 'rw' );
 has 'style'     => ( isa => 'Str',               is => 'rw' );
 has 'css_class' => ( isa => 'Str',               is => 'rw' );
 has 'form'      => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
 has 'html_name' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   builder => 'build_html_name'
+    isa     => 'Str',
+    is      => 'rw',
+    lazy    => 1,
+    builder => 'build_html_name'
 );
 
-sub build_html_name
-{
-   my $self = shift;
-   my $prefix = ( $self->form && $self->form->html_prefix ) ? $self->form->name . "." : '';
-   return $prefix . $self->full_name;
+sub build_html_name {
+    my $self = shift;
+    my $prefix = ( $self->form && $self->form->html_prefix ) ? $self->form->name . "." : '';
+    return $prefix . $self->full_name;
 }
-has 'widget'         => ( isa => 'Str',  is => 'rw' );
-has 'order'          => ( isa => 'Int',  is => 'rw', default => 0 );
-has 'inactive'       => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
-has 'unique'         => ( isa => 'Bool', is => 'rw' );
-has 'unique_message' => ( isa => 'Str',  is => 'rw' );
-has 'id'             => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
+has 'widget'            => ( isa => 'Str',  is => 'rw' );
+has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw', default => 'Div' );
+has 'widget_name_space' => ( isa => 'Str',  is => 'rw' );
+has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
+has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
+has 'unique'            => ( isa => 'Bool', is => 'rw' );
+has 'unique_message'    => ( isa => 'Str',  is => 'rw' );
+has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id { shift->html_name }
 has 'javascript' => ( isa => 'Str',  is => 'rw' );
 has 'password'   => ( isa => 'Bool', is => 'rw' );
@@ -659,291 +687,274 @@ has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
 sub has_static_value { }
 has 'set_validate' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub {
-      my $self = shift;
-      my $name = $self->full_name;
-      $name =~ s/\./_/g;
-      return 'validate_' . $name;
-   }
+    isa     => 'Str',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $name = $self->full_name;
+        $name =~ s/\./_/g;
+        return 'validate_' . $name;
+    }
 );
 
-sub _can_validate
-{
-   my $self = shift;
-   return
-      unless $self->form &&
-         $self->set_validate &&
-         $self->form->can( $self->set_validate );
-   return 1;
+sub _can_validate {
+    my $self = shift;
+    return
+        unless $self->form &&
+            $self->set_validate &&
+            $self->form->can( $self->set_validate );
+    return 1;
 }
 
-sub _validate
-{
-   my $self = shift;
-   return unless $self->_can_validate;
-   my $meth = $self->set_validate;
-   $self->form->$meth($self);
+sub _validate {
+    my $self = shift;
+    return unless $self->_can_validate;
+    my $meth = $self->set_validate;
+    $self->form->$meth($self);
 }
 has 'set_init' => (
-   isa     => 'Str',
-   is      => 'rw',
-   lazy    => 1,
-   default => sub {
-      my $self = shift;
-      my $name = $self->full_name;
-      $name =~ s/\./_/g;
-      return 'init_value_' . $name;
-   }
+    isa     => 'Str',
+    is      => 'rw',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $name = $self->full_name;
+        $name =~ s/\./_/g;
+        return 'init_value_' . $name;
+    }
 );
 
-sub _can_init_value
-{
-   my $self = shift;
-   return
-      unless $self->form &&
-         $self->set_init &&
-         $self->form->can( $self->set_init );
-   return 1;
+sub _can_init_value {
+    my $self = shift;
+    return
+        unless $self->form &&
+            $self->set_init &&
+            $self->form->can( $self->set_init );
+    return 1;
 }
 
-sub get_init_value
-{
-   my $self = shift;
-   return unless $self->_can_init_value;
-   my $meth = $self->set_init;
-   $self->form->$meth( $self, $self->form->item );
+sub get_init_value {
+    my $self = shift;
+    return unless $self->_can_init_value;
+    my $meth = $self->set_init;
+    $self->form->$meth( $self, $self->form->item );
 }
 has 'deflation' => (
-   is        => 'rw',
-   predicate => 'has_deflation',
+    is        => 'rw',
+    predicate => 'has_deflation',
 );
 has 'trim' => (
-   isa     => 'HashRef',
-   is      => 'rw',
-   default => sub {
-      {
-         transform => sub {
-            my $value = shift;
-            return unless defined $value;
-            my @values = ref $value eq 'ARRAY' ? @$value : ($value);
-            for (@values) {
-               next if ref $_;
-               s/^\s+//;
-               s/\s+$//;
-            }
-            return ref $value eq 'ARRAY' ? \@values : $values[0];
-         },
-      };
-   }
+    is      => 'rw',
+    default => sub { { transform => \&default_trim } }
 );
 
-sub BUILD
-{
-   my ( $self, $params ) = @_;
+sub default_trim {
+    my $value = shift;
+    return unless defined $value;
+    my @values = ref $value eq 'ARRAY' ? @$value : ($value);
+    for (@values) {
+        next if ref $_;
+        s/^\s+//;
+        s/\s+$//;
+    }
+    return ref $value eq 'ARRAY' ? \@values : $values[0];
+}
 
-   $self->add_action( $self->trim ) if $self->trim;
-   $self->_build_apply_list;
-   $self->add_action( @{ $params->{apply} } ) if $params->{apply};
-   $self->set_validate;    # to vivify
-   $self->set_init;        # to vivify
+sub BUILD {
+    my ( $self, $params ) = @_;
+
+    $self->apply_rendering_widgets;
+    $self->add_action( $self->trim ) if $self->trim;
+    $self->_build_apply_list;
+    $self->add_action( @{ $params->{apply} } ) if $params->{apply};
+    $self->set_validate;    # to vivify
+    $self->set_init;        # to vivify
 
 }
 
 # this is the recursive routine that is used
 # to initial fields if there is no initial object and no params
-sub _result_from_fields
-{
-   my ( $self, $result ) = @_;
+sub _result_from_fields {
+    my ( $self, $result ) = @_;
 
-   if ( my @values = $self->get_init_value ) {
-      my $value = @values > 1 ? \@values : shift @values;
-      $self->init_value($value) if $value;
-      $result->_set_value($value)      if $value;
-   }
-   $self->_set_result($result);
-   $result->_set_field_def($self);
-   return $result;
+    if ( my @values = $self->get_init_value ) {
+        my $value = @values > 1 ? \@values : shift @values;
+        $self->init_value($value)   if $value;
+        $result->_set_value($value) if $value;
+    }
+    $self->_set_result($result);
+    $result->_set_field_def($self);
+    return $result;
 }
 
-sub _result_from_input
-{
-   my ( $self, $result, $input, $exists ) = @_;
+sub _result_from_input {
+    my ( $self, $result, $input, $exists ) = @_;
 
-   if( $exists ) {
-      $result->_set_input($input);
-   }
-   elsif ( $self->has_input_without_param ) {
-      $result->_set_input($self->input_without_param);
-   }
-   $self->_set_result($result);
-   $result->_set_field_def($self);
-   return $result;
+    if ($exists) {
+        $result->_set_input($input);
+    }
+    elsif ( $self->has_input_without_param ) {
+        $result->_set_input( $self->input_without_param );
+    }
+    $self->_set_result($result);
+    $result->_set_field_def($self);
+    return $result;
 }
 
-sub _result_from_object
-{
-   my ( $self, $result, $value ) = @_;
+sub _result_from_object {
+    my ( $self, $result, $value ) = @_;
 
-   $self->_set_result($result);
-   if ( my @values = $self->get_init_value ) {
-      my $values_ref = @values > 1 ? \@values : shift @values;
-      if ( defined $values_ref ) {
-         $self->init_value($values_ref);
-         $result->_set_value($values_ref);
-      }
-   }
-   elsif ($self->form) {
-      $self->form->init_value($self, $value);
-   }
-   else {
-      $self->init_value($value);
-      $result->_set_value($value);
-   }
-   $result->_set_value(undef) if $self->writeonly;
-   $result->_set_field_def($self);
-   return $result;
+    $self->_set_result($result);
+    if ( my @values = $self->get_init_value ) {
+        my $values_ref = @values > 1 ? \@values : shift @values;
+        if ( defined $values_ref ) {
+            $self->init_value($values_ref);
+            $result->_set_value($values_ref);
+        }
+    }
+    elsif ( $self->form ) {
+        $self->form->init_value( $self, $value );
+    }
+    else {
+        $self->init_value($value);
+        $result->_set_value($value);
+    }
+    $result->_set_value(undef) if $self->writeonly;
+    $result->_set_field_def($self);
+    return $result;
 }
 
+sub full_name {
+    my $field = shift;
 
-sub full_name
-{
-   my $field = shift;
-
-   my $name = $field->name;
-   my $parent = $field->parent || return $name;
-   return $parent->full_name . '.' . $name;
+    my $name = $field->name;
+    my $parent = $field->parent || return $name;
+    return $parent->full_name . '.' . $name;
 }
 
-sub full_accessor
-{
-   my $field = shift;
+sub full_accessor {
+    my $field = shift;
 
-   my $accessor = $field->accessor;
-   my $parent = $field->parent || return $accessor;
-   return $parent->full_accessor . '.' . $accessor;
+    my $accessor = $field->accessor;
+    my $parent = $field->parent || return $accessor;
+    return $parent->full_accessor . '.' . $accessor;
 }
 
-sub add_error
-{
-   my ( $self, @message ) = @_;
+sub add_error {
+    my ( $self, @message ) = @_;
 
-   my $lh;
-   unless ( defined $message[0] ) {
-      @message = ('field is invalid');
-   }
-   # Running without a form object?
-   if ( $self->form ) {
-      $lh = $self->form->language_handle;
-   }
-   else {
-      $lh = $ENV{LANGUAGE_HANDLE} ||
-         HTML::FormHandler::I18N->get_handle ||
-         die "Failed call to Locale::Maketext->get_handle";
-   }
-   my $message = $lh->maketext(@message);
-   $self->push_errors($message);
-   return;
+    my $lh;
+    unless ( defined $message[0] ) {
+        @message = ('field is invalid');
+    }
+    # Running without a form object?
+    if ( $self->form ) {
+        $lh = $self->form->language_handle;
+    }
+    else {
+        $lh = $ENV{LANGUAGE_HANDLE} ||
+            HTML::FormHandler::I18N->get_handle ||
+            die "Failed call to Locale::Maketext->get_handle";
+    }
+    my $message = $lh->maketext(@message);
+    $self->push_errors($message);
+    return;
 }
 
-sub _apply_deflation
-{
-   my ( $self, $value ) = @_;
+sub _apply_deflation {
+    my ( $self, $value ) = @_;
 
-   if ( $self->has_deflation ) {
-      $value = $self->deflation->($value);
-   }
-   elsif ( $self->can('deflate') ) {
-      $value = $self->deflate;
-   }
-   return $value;
+    if ( $self->has_deflation ) {
+        $value = $self->deflation->($value);
+    }
+    elsif ( $self->can('deflate') ) {
+        $value = $self->deflate;
+    }
+    return $value;
 }
 
 # use Class::MOP to clone
-sub clone
-{
-   my ( $self, %params ) = @_;
-   $self->meta->clone_object( $self, %params );
+sub clone {
+    my ( $self, %params ) = @_;
+    $self->meta->clone_object( $self, %params );
 }
 
-sub clear_data
-{
-   my $self = shift;
-   $self->clear_result;
-   $self->clear_other;
-}
-# clear_other used in Repeatable
-sub clear_other { }
+sub value_changed {
+    my ($self) = @_;
 
-sub value_changed
-{
-   my ($self) = @_;
-
-   my @cmp;
-   for ( 'init_value', 'value' ) {
-      my $val = $self->$_;
-      $val = '' unless defined $val;
-      push @cmp, join '|', sort
-         map { ref($_) && $_->isa('DateTime') ? $_->iso8601 : "$_" }
-         ref($val) eq 'ARRAY' ? @$val : $val;
-   }
-   return $cmp[0] ne $cmp[1];
+    my @cmp;
+    for ( 'init_value', 'value' ) {
+        my $val = $self->$_;
+        $val = '' unless defined $val;
+        push @cmp, join '|', sort
+            map { ref($_) && $_->isa('DateTime') ? $_->iso8601 : "$_" }
+            ref($val) eq 'ARRAY' ? @$val : $val;
+    }
+    return $cmp[0] ne $cmp[1];
 }
 
 sub required_text { shift->required ? 'required' : 'optional' }
 
-sub has_some_value
-{
-   my $x = shift;
+sub has_some_value {
+    my $x = shift;
 
-   return unless defined $x;
-   return $x =~ /\S/ if !ref $x;
-   if ( ref $x eq 'ARRAY' ) {
-      for my $elem (@$x) {
-         return 1 if has_some_value($elem);
-      }
-      return 0;
-   }
-   if ( ref $x eq 'HASH' ) {
-      for my $key ( keys %$x ) {
-         return 1 if has_some_value( $x->{$key} );
-      }
-      return 0;
-   }
-   return blessed $x;    # true if blessed, otherwise false
+    return unless defined $x;
+    return $x =~ /\S/ if !ref $x;
+    if ( ref $x eq 'ARRAY' ) {
+        for my $elem (@$x) {
+            return 1 if has_some_value($elem);
+        }
+        return 0;
+    }
+    if ( ref $x eq 'HASH' ) {
+        for my $key ( keys %$x ) {
+            return 1 if has_some_value( $x->{$key} );
+        }
+        return 0;
+    }
+    return blessed $x;    # true if blessed, otherwise false
 }
 
-sub input_defined
-{
-   my ($self) = @_;
-   return unless $self->has_input;
-   return has_some_value( $self->input );
+sub input_defined {
+    my ($self) = @_;
+    return unless $self->has_input;
+    return has_some_value( $self->input );
 }
-sub dump
-{
-   my $self = shift;
 
-   require Data::Dumper;
-   warn "HFH: -----  ", $self->name, " -----\n";
-   warn "HFH: type: ",  $self->type, "\n";
-   warn "HFH: required: ", ( $self->required || '0' ), "\n";
-   warn "HFH: label: ",  $self->label,  "\n";
-   warn "HFH: widget: ", $self->widget, "\n";
-   my $v = $self->value;
-   warn "HFH: value: ", Data::Dumper::Dumper $v if $v;
-   my $iv = $self->init_value;
-   warn "HFH: init_value: ", Data::Dumper::Dumper $iv if $iv;
-   my $i = $self->input;
-   warn "HFH: input: ", Data::Dumper::Dumper $i if $i;
-   my $fif = $self->fif;
-   warn "HFH: fif: ", Data::Dumper::Dumper $fif if $fif;
+sub dump {
+    my $self = shift;
 
-   if ( $self->can('options') ) {
-      my $o = $self->options;
-      warn "HFH: options: " . Data::Dumper::Dumper $o;
-   }
+    require Data::Dumper;
+    warn "HFH: -----  ", $self->name, " -----\n";
+    warn "HFH: type: ",  $self->type, "\n";
+    warn "HFH: required: ", ( $self->required || '0' ), "\n";
+    warn "HFH: label: ",  $self->label,  "\n";
+    warn "HFH: widget: ", $self->widget, "\n";
+    my $v = $self->value;
+    warn "HFH: value: ", Data::Dumper::Dumper $v if $v;
+    my $iv = $self->init_value;
+    warn "HFH: init_value: ", Data::Dumper::Dumper $iv if $iv;
+    my $i = $self->input;
+    warn "HFH: input: ", Data::Dumper::Dumper $i if $i;
+    my $fif = $self->fif;
+    warn "HFH: fif: ", Data::Dumper::Dumper $fif if $fif;
+
+    if ( $self->can('options') ) {
+        my $o = $self->options;
+        warn "HFH: options: " . Data::Dumper::Dumper $o;
+    }
+}
+
+sub apply_rendering_widgets {
+    my $self = shift;
+
+    return unless $self->widget;
+    $self->apply_widget_role( $self, $self->widget, 'Field' );
+    return unless $self->widget_wrapper;
+    $self->apply_widget_role( $self, $self->widget_wrapper, 'Wrapper' );
+    return;
+
 }
 
 =head1 AUTHORS

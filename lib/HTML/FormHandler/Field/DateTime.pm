@@ -46,19 +46,18 @@ the same terms as Perl itself.
 
 has '+widget' => ( default => 'compound' );
 
-sub validate
-{
-   my ($self) = @_;
+sub validate {
+    my ($self) = @_;
 
-   my @dt_parms;
-   foreach my $child ( $self->fields ) {
-      next unless $child->value;
-      push @dt_parms, ( $child->accessor => $child->value );
-   }
+    my @dt_parms;
+    foreach my $child ( $self->all_fields ) {
+        next unless $child->value;
+        push @dt_parms, ( $child->accessor => $child->value );
+    }
 
-   # set the value
-   my $dt = DateTime->new(@dt_parms);
-   $self->_set_value($dt);
+    # set the value
+    my $dt = DateTime->new(@dt_parms);
+    $self->_set_value($dt);
 }
 
 __PACKAGE__->meta->make_immutable;

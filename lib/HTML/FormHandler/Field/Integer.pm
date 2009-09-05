@@ -7,19 +7,19 @@ our $VERSION = '0.02';
 has '+size' => ( default => 8 );
 
 apply(
-   [
-      {
-         transform => sub {
-            my $value = shift;
-            $value =~ s/^\+//;
-            return $value;
-            }
-      },
-      {
-         check => sub { $_[0] =~ /^-?\d+$/ },
-         message => 'Value must be an integer'
-      }
-   ]
+    [
+        {
+            transform => sub {
+                my $value = shift;
+                $value =~ s/^\+//;
+                return $value;
+                }
+        },
+        {
+            check => sub { $_[0] =~ /^-?\d+$/ },
+            message => 'Value must be an integer'
+        }
+    ]
 );
 
 =head1 NAME

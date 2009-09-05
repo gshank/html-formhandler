@@ -6,16 +6,16 @@ extends 'HTML::FormHandler::Field::IntRange';
 our $VERSION = '0.01';
 
 has '+range_start' => (
-   default => sub {
-      my $year = (localtime)[5] + 1900 - 5;
-      return $year;
-   }
+    default => sub {
+        my $year = (localtime)[5] + 1900 - 5;
+        return $year;
+    }
 );
 has '+range_end' => (
-   default => sub {
-      my $year = (localtime)[5] + 1900 + 10;
-      return $year;
-   }
+    default => sub {
+        my $year = (localtime)[5] + 1900 + 10;
+        return $year;
+    }
 );
 
 =head1 NAME

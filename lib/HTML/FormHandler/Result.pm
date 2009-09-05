@@ -1,9 +1,7 @@
 package HTML::FormHandler::Result;
 
 use Moose;
-with 'HTML::FormHandler::Role::Result';
-with 'HTML::FormHandler::Render::Result';
-# this will be the form result object.
+with 'HTML::FormHandler::Result::Role';
 
 =head1 NAME
 
@@ -15,10 +13,19 @@ This is the Result object that maps to the Form.
 
 =cut
 
-has 'form' => ( isa => 'HTML::FormHandler', is => 'ro', weak_ref => 1,
-#  handles => ['render' ]
+has 'form' => (
+    isa      => 'HTML::FormHandler',
+    is       => 'ro',
+    weak_ref => 1,
+    #  handles => ['render' ]
 );
 
+has 'ran_validation' => ( is => 'rw', isa => 'Bool', default => 0 );
+
+sub fif {
+    my $self = shift;
+    $self->form->fields_fif($self);
+}
 
 =head1 AUTHORS
 

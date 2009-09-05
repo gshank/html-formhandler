@@ -38,18 +38,17 @@ For example, with Class::DBI you might return:
 =cut
 
 has 'item' => (
-   is      => 'rw',
-   lazy    => 1,
-   builder => 'build_item',
-   clearer => 'clear_item',
-   trigger => sub { shift->set_item(@_) }
+    is      => 'rw',
+    lazy    => 1,
+    builder => 'build_item',
+    clearer => 'clear_item',
+    trigger => sub { shift->set_item(@_) }
 );
 sub build_item { return }
 
-sub set_item
-{
-   my ( $self, $item ) = @_;
-   $self->item_class( ref $item );
+sub set_item {
+    my ( $self, $item ) = @_;
+    $self->item_class( ref $item );
 }
 
 =head2 item_id
@@ -61,9 +60,9 @@ fetch the object from the item_class for this id.
 =cut
 
 has 'item_id' => (
-   is      => 'rw',
-   clearer => 'clear_item_id',
-   trigger => sub { shift->set_item_id(@_) }
+    is      => 'rw',
+    clearer => 'clear_item_id',
+    trigger => sub { shift->set_item_id(@_) }
 );
 
 sub set_item_id { }
@@ -92,8 +91,8 @@ A builder for 'item_class' might be to return the class of the 'item'.
 =cut
 
 has 'item_class' => (
-   isa => 'Str',
-   is  => 'rw',
+    isa => 'Str',
+    is  => 'rw',
 );
 
 =head2 guess_field_type
@@ -107,9 +106,8 @@ The metadata info about the columns can be used to assign types.
 
 =cut
 
-sub guess_field_type
-{
-   Carp::confess "Don't know how to determine field type of [$_[1]]";
+sub guess_field_type {
+    Carp::confess "Don't know how to determine field type of [$_[1]]";
 }
 
 =head2 lookup_options
@@ -168,8 +166,6 @@ Update the model with validated fields
 =cut
 
 sub update_model { }
-
-sub compute_model_stuff { }
 
 =head1 AUTHORS
 

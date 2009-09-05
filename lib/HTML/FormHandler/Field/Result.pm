@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::Result;
 
 use Moose;
-with 'HTML::FormHandler::Role::Result';
+with 'HTML::FormHandler::Result::Role';
 
 =head1 NAME
 
@@ -13,14 +13,25 @@ Result class for L<HTML::FormHandler::Field>
 
 =cut
 
-has 'field_def' => ( is => 'ro', isa => 'HTML::FormHandler::Field',
-   writer => '_set_field_def',
-   handles => [ 'render' ] );
+has 'field_def' => (
+    is     => 'ro',
+    isa    => 'HTML::FormHandler::Field',
+    writer => '_set_field_def',
+);
 
-sub fif
-{
-   my $self = shift;
-   return $self->field_def->fif( $self );
+sub fif {
+    my $self = shift;
+    return $self->field_def->fif($self);
+}
+
+sub fields_fif {
+    my ( $self, $prefix ) = @_;
+    return $self->field_def->fields_fif( $self, $prefix );
+}
+
+sub render {
+    my $self = shift;
+    return $self->field_def->render($self);
 }
 
 =head1 AUTHORS

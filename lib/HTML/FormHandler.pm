@@ -1,10 +1,11 @@
 package HTML::FormHandler;
 
 use Moose;
-use MooseX::AttributeHelpers;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
-   'HTML::FormHandler::Validate::Actions';
+    'HTML::FormHandler::BuildFields',
+    'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::InitResult';
+with 'HTML::FormHandler::Widget::ApplyRole';
 
 use Carp;
 use Class::MOP;
@@ -14,7 +15,7 @@ use HTML::FormHandler::Result;
 
 use 5.008;
 
-our $VERSION = '0.27006';
+our $VERSION = '0.28';
 
 =head1 NAME
 
@@ -556,81 +557,88 @@ will return the form name + "." + field full_name
 
 # Moose attributes
 has 'name' => (
-   isa     => 'Str',
-   is      => 'rw',
-   default => sub { return 'form' . int( rand 1000 ) }
+    isa     => 'Str',
+    is      => 'rw',
+    default => sub { return 'form' . int( rand 1000 ) }
 );
 # for consistency in api with field nodes
 has 'form' => (
-   isa      => 'HTML::FormHandler',
-   is       => 'rw',
-   weak_ref => 1,
-   lazy     => 1,
-   default  => sub { shift }
+    isa      => 'HTML::FormHandler',
+    is       => 'rw',
+    weak_ref => 1,
+    lazy     => 1,
+    default  => sub { shift }
 );
 has 'parent' => ( is => 'rw' );
-has 'result' => ( isa => 'HTML::FormHandler::Result', is => 'ro',
-   writer => '_set_result',
-   clearer => 'clear_result',
-   lazy => 1, builder => 'build_result',
-   predicate => 'has_result',
-   handles => [ 'input', '_set_input',  '_clear_input', 'has_input',
-                'value', '_set_value', '_clear_value', 'has_value',
-                'add_result', 'results'
-              ],
+has 'result' => (
+    isa       => 'HTML::FormHandler::Result',
+    is        => 'ro',
+    writer    => '_set_result',
+    clearer   => 'clear_result',
+    lazy      => 1,
+    builder   => 'build_result',
+    predicate => 'has_result',
+    handles   => [
+        'input',      '_set_input', '_clear_input', 'has_input',
+        'value',      '_set_value', '_clear_value', 'has_value',
+        'add_result', 'results',    'validated',    'ran_validation'
+    ],
 );
-sub build_result { 
-   my $self = shift;
-   return HTML::FormHandler::Result->new( name => $self->name, form => $self );
-}
 
+sub build_result {
+    my $self = shift;
+    my $result = HTML::FormHandler::Result->new( name => $self->name, form => $self );
+    if ( $self->widget_form ) {
+        $self->apply_widget_role( $result, $self->widget_form, 'Form' );
+    }
+    return $result;
+}
+has 'widget_name_space' => ( is => 'ro', isa => 'Str|ArrayRef[Str]' );
+has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
+has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Div' );
 
 # object with which to initialize
-has 'init_object' => ( is => 'rw', clearer => 'clear_init_object' );
-has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
+has 'init_object'         => ( is => 'rw', clearer => 'clear_init_object' );
+has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 # flags
-has [ 'ran_validation', 'validated', 'verbose', 'processed', 'did_init_obj' ] =>
-   ( isa => 'Bool', is => 'rw' );
+has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
 # for Locale::MakeText
 has 'language_handle' => (
-   is      => 'rw',
-   builder => 'build_language_handle'
+    is      => 'rw',
+    builder => 'build_language_handle'
 );
-has 'html_prefix'   => ( isa => 'Bool', is => 'rw' );
-has 'active_column' => ( isa => 'Str',  is => 'rw' );
-has 'http_method'   => ( isa => 'Str',  is => 'rw', default => 'post' );
-has 'enctype' => ( is => 'rw', isa => 'Str', default => 'application/x-www-form-urlencoded' );
+has 'html_prefix'   => ( isa => 'Bool', is  => 'rw' );
+has 'active_column' => ( isa => 'Str',  is  => 'rw' );
+has 'http_method'   => ( isa => 'Str',  is  => 'rw', default => 'post' );
+has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'action' => ( is => 'rw' );
 has 'submit' => ( is => 'rw' );
 has 'params' => (
-   metaclass  => 'Collection::Hash',
-   isa        => 'HashRef',
-   is         => 'rw',
-   default    => sub { {} },
-   auto_deref => 1,
-   trigger    => sub { shift->_munge_params(@_) },
-   provides   => {
-      set    => 'set_param',
-      get    => 'get_param',
-      clear  => 'clear_params',
-      delete => 'delete_param',
-      empty  => 'has_params',
-   },
+    traits     => ['Hash'],
+    isa        => 'HashRef',
+    is         => 'rw',
+    default    => sub { {} },
+    trigger    => sub { shift->_munge_params(@_) },
+    handles   => {
+        set_param => 'set',
+        get_param => 'get',
+        clear_params => 'clear',
+        has_params => 'count',
+    },
 );
 sub submitted { shift->has_params }
 has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
 has '_required' => (
-   metaclass  => 'Collection::Array',
-   isa        => 'ArrayRef[HTML::FormHandler::Field]',
-   is         => 'rw',
-   default    => sub { [] },
-   auto_deref => 1,
-   provides   => {
-      clear => 'clear_required',
-      push  => 'add_required'
-   }
+    traits     => ['Array'],
+    isa        => 'ArrayRef[HTML::FormHandler::Field]',
+    is         => 'rw',
+    default    => sub { [] },
+    handles   => {
+        clear_required => 'clear',
+        add_required => 'push',
+    }
 );
 
 {
@@ -649,163 +657,122 @@ has '_required' => (
     no Moose::Util::TypeConstraints;
 }
 
-has 'params_args' => (is => 'ro', isa => 'ArrayRef');
+has 'params_args' => ( is => 'ro', isa => 'ArrayRef' );
 
-sub BUILDARGS
-{
-   my $class = shift;
+sub BUILDARGS {
+    my $class = shift;
 
-   if ( @_ == 1 ) {
-      my $id = $_[0];
-      return { item => $id, item_id => $id->id } if ( blessed $id);
-      return { item_id => $id };
-   }
-   return $class->SUPER::BUILDARGS(@_);
+    if ( @_ == 1 ) {
+        my $id = $_[0];
+        return { item => $id, item_id => $id->id } if ( blessed $id);
+        return { item_id => $id };
+    }
+    return $class->SUPER::BUILDARGS(@_);
 }
 
-sub BUILD
-{
-   my $self = shift;
+sub BUILD {
+    my $self = shift;
 
-   $self->_build_fields;    # create the form fields
-   return if defined $self->item_id && !$self->item;
-   # load values from object (if any)
-   if ( $self->init_object || $self->item ) {
-      $self->_result_from_object( $self->result, $self->init_object || $self->item );
-   }
-   else {
-      $self->_result_from_fields( $self->result );
-   }
-   $self->dump_fields if $self->verbose;
-   return;
+    $self->apply_widget_role( $self, $self->widget_form, 'Form' )
+        if ( $self->widget_form && !$self->can('render') );
+    $self->_build_fields;    # create the form fields
+    return if defined $self->item_id && !$self->item;
+    # load values from object (if any)
+    if ( $self->init_object || $self->item ) {
+        $self->_result_from_object( $self->result, $self->init_object || $self->item );
+    }
+    else {
+        $self->_result_from_fields( $self->result );
+    }
+    $self->dump_fields if $self->verbose;
+    return;
 }
 
-sub build_language_handle
-{
-   my $lh = $ENV{LANGUAGE_HANDLE} ||
-      HTML::FormHandler::I18N->get_handle ||
-      die "Failed call to Locale::Maketext->get_handle";
-   return $lh;
+sub build_language_handle {
+    my $lh = $ENV{LANGUAGE_HANDLE} ||
+        HTML::FormHandler::I18N->get_handle ||
+        die "Failed call to Locale::Maketext->get_handle";
+    return $lh;
 }
 
-sub process
-{
-   my $self = shift;
+sub process {
+    my $self = shift;
 
-   warn "HFH: process ", $self->name, "\n" if $self->verbose;
-   $self->clear if $self->processed;
-   $self->setup_form(@_);
-   $self->validate_form if $self->has_params;
-   $self->update_model  if $self->validated;
-   $self->after_update_model if $self->validated;
-   $self->dump_fields   if $self->verbose;
-#   $self->fill_result;
-   $self->processed(1);
-   return $self->validated;
+    warn "HFH: process ", $self->name, "\n" if $self->verbose;
+    $self->clear if $self->processed;
+    $self->setup_form(@_);
+    $self->validate_form      if $self->has_params;
+    $self->update_model       if $self->validated;
+    $self->after_update_model if $self->validated;
+    $self->dump_fields        if $self->verbose;
+    $self->processed(1);
+    return $self->validated;
 }
 
-sub get_result
-{
-   my $self = shift;
-   $self->process( @_ );
-   my $result = $self->result;
-   $self->clear;
-   return $result;
+sub run {
+    my $self = shift;
+    $self->setup_form(@_);
+    $self->validate_form      if $self->has_params;
+    $self->update_model       if $self->validated;
+    $self->after_update_model if $self->validated;
+    my $result = $self->result;
+    $self->clear;
+    return $result;
 }
 
-
-
-sub db_validate
-{
-   my $self = shift;
-   my $fif  = $self->fif;
-   $self->process($fif);
-   return $self->validated;
+sub db_validate {
+    my $self = shift;
+    my $fif  = $self->fif;
+    $self->process($fif);
+    return $self->validated;
 }
 
-sub clear
-{
-   my $self = shift;
-   warn "HFH: clear ", $self->name, "\n" if $self->verbose;
-   $self->clear_data;
-   $self->validated(0);
-   $self->ran_validation(0);
-   $self->clear_params;
-   $self->clear_ctx;
-   $self->processed(0);
-   $self->did_init_obj(0);
-}
-
-sub clear_data { shift->clear_result }
-
-sub fif
-{
-   my ( $self, $prefix, $node ) = @_;
-
-   if ( !defined $node ) {
-      $node   = $self;
-      $prefix = '';
-      $prefix = $self->name . "." if $self->html_prefix;
-   }
-   my %params;
-   foreach my $field ( $node->fields ) {
-      next if ( $field->inactive || $field->password );
-      my $fif = $field->fif;
-      next unless defined $fif;
-      if ( $field->DOES('HTML::FormHandler::Fields') ) {
-         my $next_params = $self->fif( $prefix . $field->name . '.', $field );
-         next unless $next_params;
-         %params = ( %params, %{$next_params} );
-      }
-      else {
-         $params{ $prefix . $field->name } = $fif;
-      }
-   }
-   return if !%params;
-   return \%params;
+sub clear {
+    my $self = shift;
+    $self->clear_data;
+    $self->clear_params;
+    $self->clear_ctx;
+    $self->processed(0);
+    $self->did_init_obj(0);
+    $self->clear_result;
 }
 
 sub values { shift->value }
 
 # deprecated?
-sub error_field_names
-{
-   my $self         = shift;
-   my @error_fields = $self->error_fields;
-   return map { $_->name } @error_fields;
+sub error_field_names {
+    my $self         = shift;
+    my @error_fields = $self->error_fields;
+    return map { $_->name } @error_fields;
 }
 
-sub errors
-{
-   my $self         = shift;
-   my @error_fields = $self->error_fields;
-   return map { $_->errors } @error_fields;
+sub errors {
+    my $self         = shift;
+    my @error_fields = $self->error_fields;
+    return map { $_->errors } @error_fields;
 }
 
-sub uuid
-{
-   my $form = shift;
-   require Data::UUID;
-   my $uuid = Data::UUID->new->create_str;
-   return qq[<input type="hidden" name="form_uuid" value="$uuid">];
+sub uuid {
+    my $form = shift;
+    require Data::UUID;
+    my $uuid = Data::UUID->new->create_str;
+    return qq[<input type="hidden" name="form_uuid" value="$uuid">];
 }
 
-sub validate_form
-{
-   my $self   = shift;
-   my $params = $self->params;
-   $self->_set_dependency;    # set required dependencies
-   $self->_fields_validate;    
-   $self->_apply_actions;
-   $self->validate(); # empty method for users
-   # model specific validation
-   $self->validate_model;
-   $self->_clear_dependency;
-   $self->get_error_fields;
-   $self->ran_validation(1);
-   $self->validated( $self->num_errors == 0 );
-   $self->dump_validated if $self->verbose;
-   return $self->validated;
+sub validate_form {
+    my $self   = shift;
+    my $params = $self->params;
+    $self->_set_dependency;    # set required dependencies
+    $self->_fields_validate;
+    $self->_apply_actions;
+    $self->validate();         # empty method for users
+                               # model specific validation
+    $self->validate_model;
+    $self->_clear_dependency;
+    $self->get_error_fields;
+    $self->ran_validation(1);
+    $self->dump_validated if $self->verbose;
+    return $self->validated;
 }
 
 sub validate { 1 }
@@ -813,126 +780,107 @@ sub validate { 1 }
 sub has_errors { shift->has_error_fields }
 sub num_errors { shift->num_error_fields }
 
-sub after_update_model 
-{
-   my $self = shift;
-   $self->_result_from_object( $self->result, $self->item )
-      if ( $self->reload_after_update && $self->item );
+sub after_update_model {
+    my $self = shift;
+    $self->_result_from_object( $self->result, $self->item )
+        if ( $self->reload_after_update && $self->item );
 }
 
-sub setup_form
-{
-   my ( $self, @args ) = @_;
-   if ( @args == 1 ) {
-      $self->params( $args[0] );
-   }
-   elsif ( @args > 1 ) {
-      my $hashref = {@args};
-      while ( my ( $key, $value ) = each %{$hashref} ) {
-         $self->$key($value) if $self->can($key);
-      }
-   }
-   if ( $self->item_id && !$self->item ) {
-      $self->item( $self->build_item );
-   }
-   # initialization of Repeatable fields and Select options
-   # will be done in init_object when there's an initial object
-   # in validation routines when there are params
-   # and by _init for empty forms
-   $self->clear_result;
-   if ( !$self->did_init_obj ) {
-      if ( $self->init_object || $self->item ) {
-         $self->_result_from_object( $self->result, $self->init_object || $self->item );
-      }
-      elsif( !$self->has_params )
-      {
-         # no initial object. empty form form must be initialized
-         $self->_result_from_fields( $self->result );
-      }
-   }
-   my %params = (%{$self->params});
-   $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
+sub setup_form {
+    my ( $self, @args ) = @_;
+    if ( @args == 1 ) {
+        $self->params( $args[0] );
+    }
+    elsif ( @args > 1 ) {
+        my $hashref = {@args};
+        while ( my ( $key, $value ) = each %{$hashref} ) {
+            confess "invalid attribute '$key' passed to setup_form"
+                unless $self->can($key);
+            $self->$key($value);
+        }
+    }
+    if ( $self->item_id && !$self->item ) {
+        $self->item( $self->build_item );
+    }
+    # initialization of Repeatable fields and Select options
+    # will be done in init_object when there's an initial object
+    # in validation routines when there are params
+    # and by _init for empty forms
+    $self->clear_result;
+    if ( !$self->did_init_obj ) {
+        if ( $self->init_object || $self->item ) {
+            $self->_result_from_object( $self->result, $self->init_object || $self->item );
+        }
+        elsif ( !$self->has_params ) {
+            # no initial object. empty form form must be initialized
+            $self->_result_from_fields( $self->result );
+        }
+    }
+    my %params = ( %{ $self->params } );
+    $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
 }
 
-sub _get_value
-{
-   my ( $self, $field, $item ) = @_;
-   my $accessor = $field->accessor;
-   my @values;
-   if ( blessed($item) && $item->can($accessor) ) {
-      @values = $item->$accessor;
-   }
-   elsif ( exists $item->{$accessor} ) {
-      @values = $item->{$accessor};
-   }
-   else {
-      return;
-   }
-   my $value = @values > 1 ? \@values : shift @values;
-   return $value;
+sub fif { shift->fields_fif(@_) }
+
+# this is subclassed by the model, which may
+# do a lot more than this
+sub init_value {
+    my ( $self, $field, $value ) = @_;
+    $field->init_value($value);
+    $field->_set_value($value);
 }
 
-sub init_value
-{
-   my ( $self, $field, $value ) = @_;
-   $field->init_value($value);
-   $field->_set_value($value);
+sub _set_dependency {
+    my $self = shift;
+
+    my $depends = $self->dependency || return;
+    my $params = $self->params;
+    for my $group (@$depends) {
+        next if @$group < 2;
+        # process a group of fields
+        for my $name (@$group) {
+            # is there a value?
+            my $value = $params->{$name};
+            next unless defined $value;
+            # The exception is a boolean can be zero which we count as not set.
+            # This is to allow requiring a field when a boolean is true.
+            my $field = $self->field($name);
+            next if $self->field($name)->type eq 'Boolean' && $value == 0;
+            if ( ref $value ) {
+                # at least one value is non-blank
+                next unless grep { /\S/ } @$value;
+            }
+            else {
+                next unless $value =~ /\S/;
+            }
+            # one field was found non-blank, so set all to required
+            for (@$group) {
+                my $field = $self->field($_);
+                next unless $field && !$field->required;
+                $self->add_required($field);    # save for clearing later.
+                $field->required(1);
+            }
+            last;
+        }
+    }
 }
 
-sub _set_dependency
-{
-   my $self = shift;
+sub _clear_dependency {
+    my $self = shift;
 
-   my $depends = $self->dependency || return;
-   my $params = $self->params;
-   for my $group (@$depends) {
-      next if @$group < 2;
-      # process a group of fields
-      for my $name (@$group) {
-         # is there a value?
-         my $value = $params->{$name};
-         next unless defined $value;
-         # The exception is a boolean can be zero which we count as not set.
-         # This is to allow requiring a field when a boolean is true.
-         my $field = $self->field($name);
-         next if $self->field($name)->type eq 'Boolean' && $value == 0;
-         if ( ref $value ) {
-            # at least one value is non-blank
-            next unless grep { /\S/ } @$value;
-         }
-         else {
-            next unless $value =~ /\S/;
-         }
-         # one field was found non-blank, so set all to required
-         for (@$group) {
-            my $field = $self->field($_);
-            next unless $field && !$field->required;
-            $self->add_required($field);    # save for clearing later.
-            $field->required(1);
-         }
-         last;
-      }
-   }
+    $_->required(0) for @{$self->_required};
+    $self->clear_required;
 }
 
-sub _clear_dependency
-{
-   my $self = shift;
-
-   $_->required(0) for $self->_required;
-   $self->clear_required;
-}
-
-sub _munge_params
-{
-   my ( $self, $params, $attr ) = @_;
-   my $_fix_params = $self->params_class->new(@{ $self->params_args || [] });
-   my $new_params  = $_fix_params->expand_hash($params);
-   if ( $self->html_prefix ) {
-      $new_params = $new_params->{ $self->name };
-   }
-   $new_params = {} if !defined $new_params;
-   $self->{params} = $new_params;
+sub _munge_params {
+    my ( $self, $params, $attr ) = @_;
+    my $_fix_params = $self->params_class->new( @{ $self->params_args || [] } );
+    my $new_params = $_fix_params->expand_hash($params);
+    if ( $self->html_prefix ) {
+        $new_params = $new_params->{ $self->name };
+    }
+    $new_params = {} if !defined $new_params;
+    $self->{params} = $new_params;
 }
 
 =head1 SUPPORT
@@ -974,9 +922,17 @@ L<HTML::FormHandler::Moose>
 
 gshank: Gerda Shank <gshank@cpan.org>
 
-zby:    Zbigniew Lukasiak <zby@cpan.org>
+zby: Zbigniew Lukasiak <zby@cpan.org>
 
-t0m:    Tomas Doran <bobtfish@bobtfish.net>
+t0m: Tomas Doran <bobtfish@bobtfish.net>
+
+augensalat: Bernhard Graf <augensalat@gmail.com>
+
+cubuanic: Oleg Kostyuk <cub.uanic@gmail.com>
+
+rafl: Florian Ragwitz <rafl@debian.org>
+
+mazpe: Lester Ariel Mesa
 
 Initially based on the source code of L<Form::Processor> by Bill Moseley
 

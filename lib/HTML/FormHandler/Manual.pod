@@ -16,13 +16,17 @@ data from the database.
 Creating FormHandler forms and interfacing them
 with your controllers.
 
+=head2 L<HTML::FormHandler::Manual::Rendering>
+
+Rendering options, particularly rendering with widgets
+
 =head2 L<HTML::FormHandler::Manual::Tutorial>
 
 Builds on the Catalyst tutorial. Step-by-step guide.
 
 =head2 L<HTML::FormHandler::Manual::Cookbook>
 
-'Howto' recipes...
+'Howto' recipes
 
 =head2 L<HTML::FormHandler::Manual::Templates>
 

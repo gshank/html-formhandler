@@ -60,7 +60,7 @@ my $fif = {
 
 is_deeply( $form->fif, $fif, 'fif is correct' );
 
-$result = $form->get_result( $fif );
+$result = $form->run( $fif );
 
 ok( $result->validated, 'form processed from fif' );
 

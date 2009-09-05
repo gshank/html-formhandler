@@ -1,9 +1,9 @@
 package HTML::FormHandler::Field::Compound;
 
 use Moose;
-use MooseX::AttributeHelpers;
 extends 'HTML::FormHandler::Field';
 with 'HTML::FormHandler::Fields';
+with 'HTML::FormHandler::BuildFields';
 with 'HTML::FormHandler::InitResult';
 
 =head1 NAME
@@ -59,32 +59,32 @@ Widget type is 'compound'
 =cut
 
 has '+widget' => ( default => 'compound' );
+has 'is_compound' => ( is => 'ro', isa => 'Bool', default => 1 );
 
 has '+field_name_space' => (
-   default => sub {
-      my $self = shift;
-      return $self->form->field_name_space
-         if $self->form && $self->form->field_name_space;
-      return '';
-   },
+    default => sub {
+        my $self = shift;
+        return $self->form->field_name_space
+            if $self->form && $self->form->field_name_space;
+        return '';
+    },
 );
 
-sub BUILD
-{
-   my $self = shift;
-   $self->_build_fields;
+sub BUILD {
+    my $self = shift;
+    $self->_build_fields;
 }
 
 around '_result_from_input' => sub {
-   my $orig = shift;
-   my $self = shift;
-   my ( $self_result, $input, $exists ) = @_;
-   if( !$input && !$exists ) {
-      return $self->_result_from_fields($self_result);
-   }
-   else {
-      return $self->$orig(@_);
-   }
+    my $orig = shift;
+    my $self = shift;
+    my ( $self_result, $input, $exists ) = @_;
+    if ( !$input && !$exists ) {
+        return $self->_result_from_fields($self_result);
+    }
+    else {
+        return $self->$orig(@_);
+    }
 };
 
 __PACKAGE__->meta->make_immutable;

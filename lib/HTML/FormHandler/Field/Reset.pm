@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::Reset;
 
 use Moose;
-extends 'HTML::FormHandler::Field::Submit';
+extends 'HTML::FormHandler::Field::Display';
 
 =head1 NAME
 
@@ -13,14 +13,11 @@ Use this field to declare a reset field in your form.
 
    has_field 'reset' => ( type => 'Reset', value => 'Restore' );
 
-It's exactly same as L<HTML::FormHandler::Field::Submit>,
-but use "reset" as type of input elemnt.
-
-Uses the 'submit' widget.
+Uses the 'reset' widget.
 
 =cut
 
-has '+value' => ( default => 'Restore' );
+has '+value' => ( default => 'Reset' );
 
 __PACKAGE__->meta->make_immutable;
 no Moose;

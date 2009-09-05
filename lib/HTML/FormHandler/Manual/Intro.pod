@@ -647,8 +647,7 @@ value) and value (label to be displayed in the select list) pairs.
 
 You can also write custom methods to retrieve the option info from the database:
 
-   sub options_country
-   {
+   sub options_country {
       my $self = shift; 
       return unless $self->schema;
       my @rows =

@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::Nested;
 
 use Moose;
-extends 'HTML::FormHandler::Field';
+extends 'HTML::FormHandler::Field::Text';
 
 =head1 NAME
 
@@ -15,7 +15,7 @@ that.
 
 =cut
 
-has '+errors_on_parent' => ( default => 1 );
+
 
 __PACKAGE__->meta->make_immutable;
 no Moose;

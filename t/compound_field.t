@@ -106,6 +106,6 @@ $form->process( params => $params );
 is_deeply( $form->values, { compound => { aaa => 'aaa', bbb => 'bbb' } }, 'Compound with separate fields - values in hash' );
 is_deeply( $form->fif, $params, 'get fif from compound field' );
 $form->process( params => { 'compound.aaa' => undef } );
-ok( !$form->field( 'compound' )->has_errors, 'Not required copound with empty sub values is not checked');
+ok( !$form->field( 'compound' )->has_errors, 'Not required compound with empty sub values is not checked');
 
 done_testing;

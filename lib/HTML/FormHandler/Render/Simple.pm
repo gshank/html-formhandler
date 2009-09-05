@@ -117,260 +117,253 @@ Renders field with 'submit' widget
 
 has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', default => 1 );
 has 'label_types' => (
-   metaclass => 'Collection::Hash',
-   isa       => 'HashRef[Str]',
-   is        => 'rw',
-   default   => sub {
-      {
-         text        => 'label',
-         password    => 'label',
-         'select'    => 'label',
-         checkbox    => 'label',
-         textarea    => 'label',
-         radio_group => 'label',
-         compound    => 'legend'
-      };
-   },
-   auto_deref => 1,
-   provides   => { get => 'get_label_type', },
+    traits    => ['Hash'], 
+    isa       => 'HashRef[Str]',
+    is        => 'rw',
+    default   => sub {
+        {
+            text        => 'label',
+            password    => 'label',
+            'select'    => 'label',
+            checkbox    => 'label',
+            textarea    => 'label',
+            radio_group => 'label',
+            compound    => 'legend'
+        };
+    },
+    handles   => { get_label_type => 'get' },
 );
 
-sub render
-{
-   my $self   = shift;
-   my $output = $self->render_start;
+sub render {
+    my $self   = shift;
+    my $output = $self->render_start;
 
-   foreach my $field ( $self->sorted_fields ) {
-      $output .= $self->render_field($field);
-   }
+    foreach my $field ( $self->sorted_fields ) {
+        $output .= $self->render_field($field);
+    }
 
-   $output .= $self->render_end;
-   return $output;
+    $output .= $self->render_end;
+    return $output;
 }
 
-sub render_start
-{
-   my $self   = shift;
-   my $output = '<form ';
-   $output .= 'action="' . $self->action . '" '     if $self->action;
-   $output .= 'id="' . $self->name . '" '           if $self->name;
-   $output .= 'method="' . $self->http_method . '"' if $self->http_method;
-   $output .= 'enctype="' . $self->enctype . '"'    if $self->enctype;
-   $output .= '>' . "\n";
-   $output .= '<fieldset class="main_fieldset">'    if $self->auto_fieldset;
-   return $output;
+sub render_start {
+    my $self   = shift;
+    my $output = '<form ';
+    $output .= 'action="' . $self->action . '" '      if $self->action;
+    $output .= 'id="' . $self->name . '" '            if $self->name;
+    $output .= 'method="' . $self->http_method . '" ' if $self->http_method;
+    $output .= 'enctype="' . $self->enctype . '" '    if $self->enctype;
+    $output .= '>' . "\n";
+    $output .= '<fieldset class="main_fieldset">'     if $self->auto_fieldset;
+    return $output;
 }
 
-sub render_end
-{
-   my $self = shift;
-   my $output;
-   $output .= '</fieldset>' if $self->auto_fieldset;
-   $output .= "</form>\n";
-   return $output;
+sub render_end {
+    my $self = shift;
+    my $output;
+    $output .= '</fieldset>' if $self->auto_fieldset;
+    $output .= "</form>\n";
+    return $output;
 }
 
-sub render_field
-{
-   my ( $self, $field ) = @_;
+sub render_field {
+    my ( $self, $field ) = @_;
 
-   if ( ref( \$field ) eq 'SCALAR' ) {
-      $field = $self->field($field);
-   }
-   die "must pass field to render_field"
-      unless ( defined $field && $field->isa('HTML::FormHandler::Field') );
-   return '' if $field->widget eq 'no_render';
-   my $rendered_field;
-   if ( $field->widget eq 'from_field' ) {
-      $rendered_field = $field->render;
-   }
-   else {
-      my $form_render = 'render_' . $field->widget;
-      die "Widget method $form_render not implemented in H::F::Render::Simple"
-         unless $self->can($form_render);
-      $rendered_field = $self->$form_render($field);
-   }
-   my $class = '';
-   if ( $field->css_class || $field->has_errors ) {
-      my @css_class;
-      push(@css_class, split( /[ ,]+/, $field->css_class )) if $field->css_class;
-      push(@css_class, 'error')                             if $field->has_errors;
-      $class .= ' class="';
-      $class .= join(' ' => @css_class);
-      $class .= '"';
-   }
-   return $self->render_field_struct( $field, $rendered_field, $class );
+    if ( ref( \$field ) eq 'SCALAR' ) {
+        $field = $self->field($field);
+    }
+    die "must pass field to render_field"
+        unless ( defined $field && $field->isa('HTML::FormHandler::Field') );
+    return '' if $field->widget eq 'no_render';
+    my $rendered_field;
+    my $form_render = 'render_' . $field->widget;
+    if ( $self->can($form_render) ) {
+        $rendered_field = $self->$form_render($field);
+    }
+    elsif ( $field->can('render') ) {
+        $rendered_field = $field->render;
+    }
+    else {
+        die "No widget method found for '" . $field->widget . "' in H::F::Render::Simple";
+    }
+    my $class = '';
+    if ( $field->css_class || $field->has_errors ) {
+        my @css_class;
+        push( @css_class, split( /[ ,]+/, $field->css_class ) ) if $field->css_class;
+        push( @css_class, 'error' ) if $field->has_errors;
+        $class .= ' class="';
+        $class .= join( ' ' => @css_class );
+        $class .= '"';
+    }
+    return $self->render_field_struct( $field, $rendered_field, $class );
 }
 
-sub render_field_struct
-{
-   my ( $self, $field, $rendered_field, $class ) = @_;
-   my $output = qq{\n<div$class>};
-   my $l_type =
-      defined $self->get_label_type( $field->widget ) ?
-      $self->get_label_type( $field->widget ) :
-      '';
-   if ( $l_type eq 'label' ) {
-      $output .= $self->_label($field);
-   }
-   elsif ( $l_type eq 'legend' ) {
-      $output .= '<fieldset class="' . $field->html_name . '">';
-      $output .= '<legend>' . $field->label . '</legend>';
-   }
-   $output .= $rendered_field;
-   $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
-   if ( $l_type eq 'legend' ) {
-      $output .= '</fieldset>';
-   }
-   $output .= "</div>\n";
-   return $output;
+sub render_field_struct {
+    my ( $self, $field, $rendered_field, $class ) = @_;
+    my $output = qq{\n<div$class>};
+    my $l_type =
+        defined $self->get_label_type( $field->widget ) ?
+        $self->get_label_type( $field->widget ) :
+        '';
+    if ( $l_type eq 'label' && $field->label ) {
+        $output .= $self->_label($field);
+    }
+    elsif ( $l_type eq 'legend' ) {
+        $output .= '<fieldset class="' . $field->html_name . '">';
+        $output .= '<legend>' . $field->label . '</legend>';
+    }
+    $output .= $rendered_field;
+    $output .= qq{\n<span class="error_message">$_</span>} for $field->errors;
+    if ( $l_type eq 'legend' ) {
+        $output .= '</fieldset>';
+    }
+    $output .= "</div>\n";
+    return $output;
 }
 
-sub render_text
-{
-   my ( $self, $field ) = @_;
-   my $output = '<input type="text" name="';
-   $output .= $field->html_name . '"';
-   $output .= ' id="' . $field->id . '"';
-   $output .= ' size="' . $field->size . '"' if $field->size;
-   $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
-   $output .= ' value="' . $field->fif . '" />';
-   return $output;
+sub render_text {
+    my ( $self, $field ) = @_;
+    my $output = '<input type="text" name="';
+    $output .= $field->html_name . '"';
+    $output .= ' id="' . $field->id . '"';
+    $output .= ' size="' . $field->size . '"' if $field->size;
+    $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
+    $output .= ' value="' . $field->fif . '" />';
+    return $output;
 }
 
-sub render_password
-{
-   my ( $self, $field ) = @_;
-   my $output = '<input type="password" name="';
-   $output .= $field->html_name . '"';
-   $output .= ' id="' . $field->id . '"';
-   $output .= ' size="' . $field->size . '"' if $field->size;
-   $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
-   $output .= ' value="' . $field->fif . '" />';
-   return $output;
+sub render_password {
+    my ( $self, $field ) = @_;
+    my $output = '<input type="password" name="';
+    $output .= $field->html_name . '"';
+    $output .= ' id="' . $field->id . '"';
+    $output .= ' size="' . $field->size . '"' if $field->size;
+    $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
+    $output .= ' value="' . $field->fif . '" />';
+    return $output;
 }
 
-sub render_hidden
-{
-   my ( $self, $field ) = @_;
-   my $output = '<input type="hidden" name="';
-   $output .= $field->html_name . '"';
-   $output .= ' id="' . $field->id . '"';
-   $output .= ' value="' . $field->fif . '" />';
-   return $output;
+sub render_hidden {
+    my ( $self, $field ) = @_;
+    my $output = '<input type="hidden" name="';
+    $output .= $field->html_name . '"';
+    $output .= ' id="' . $field->id . '"';
+    $output .= ' value="' . $field->fif . '" />';
+    return $output;
 }
 
-sub render_select
-{
-   my ( $self, $field ) = @_;
+sub render_select {
+    my ( $self, $field ) = @_;
 
-   my $output = '<select name="' . $field->html_name . '"';
-   $output .= ' id="' . $field->id . '"';
-   $output .= ' multiple="multiple"' if $field->multiple == 1;
-   $output .= ' size="' . $field->size . '"' if $field->size;
-   $output .= '>';
-   my $index = 0;
-   foreach my $option ( @{$field->options} ) {
-      $output .= '<option value="' . $option->{value} . '" ';
-      $output .= 'id="' . $field->id . ".$index\" ";
-      if ( $field->fif ) {
-         if ( $field->multiple == 1 ) {
-            my @fif;
-            if ( ref $field->fif ) {
-               @fif = @{ $field->fif };
+    my $output = '<select name="' . $field->html_name . '"';
+    $output .= ' id="' . $field->id . '"';
+    $output .= ' multiple="multiple"' if $field->multiple == 1;
+    $output .= ' size="' . $field->size . '"' if $field->size;
+    $output .= '>';
+    my $index = 0;
+    foreach my $option ( @{ $field->options } ) {
+        $output .= '<option value="' . $option->{value} . '" ';
+        $output .= 'id="' . $field->id . ".$index\" ";
+        if ( $field->fif ) {
+            if ( $field->multiple == 1 ) {
+                my @fif;
+                if ( ref $field->fif ) {
+                    @fif = @{ $field->fif };
+                }
+                else {
+                    @fif = ( $field->fif );
+                }
+                foreach my $optval (@fif) {
+                    $output .= 'selected="selected"'
+                        if $optval == $option->{value};
+                }
             }
             else {
-               @fif = ( $field->fif );
+                $output .= 'selected="selected"'
+                    if $option->{value} eq $field->fif;
             }
-            foreach my $optval (@fif) {
-               $output .= 'selected="selected"'
-                  if $optval == $option->{value};
-            }
-         }
-         else {
-            $output .= 'selected="selected"'
-               if $option->{value} eq $field->fif;
-         }
-      }
-      $output .= '>' . $option->{label} . '</option>';
-      $index++;
-   }
-   $output .= '</select>';
-   return $output;
+        }
+        $output .= '>' . $option->{label} . '</option>';
+        $index++;
+    }
+    $output .= '</select>';
+    return $output;
 }
 
-sub render_checkbox
-{
-   my ( $self, $field ) = @_;
+sub render_checkbox {
+    my ( $self, $field ) = @_;
 
-   my $output = '<input type="checkbox" name="';
-   $output .=
-      $field->html_name . '" id="' . $field->id . '" value="' . $field->checkbox_value . '"';
-   $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
-   $output .= ' />';
-   return $output;
+    my $output = '<input type="checkbox" name="';
+    $output .=
+        $field->html_name . '" id="' . $field->id . '" value="' . $field->checkbox_value . '"';
+    $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
+    $output .= ' />';
+    return $output;
 }
 
-sub render_radio_group
-{
-   my ( $self, $field ) = @_;
+sub render_radio_group {
+    my ( $self, $field ) = @_;
 
-   my $output = " <br />";
-   my $index  = 0;
-   foreach my $option ( @{$field->options} ) {
-      $output .= '<input type="radio" value="' . $option->{value} . '"';
-      $output .= ' name="' . $field->html_name . '" id="' . $field->id . ".$index\"";
-      $output .= ' checked="checked"' if $option->{value} eq $field->fif;
-      $output .= ' />';
-      $output .= $option->{label} . '<br />';
-      $index++;
-   }
-   return $output;
+    my $output = " <br />";
+    my $index  = 0;
+    foreach my $option ( @{ $field->options } ) {
+        $output .= '<input type="radio" value="' . $option->{value} . '"';
+        $output .= ' name="' . $field->html_name . '" id="' . $field->id . ".$index\"";
+        $output .= ' checked="checked"' if $option->{value} eq $field->fif;
+        $output .= ' />';
+        $output .= $option->{label} . '<br />';
+        $index++;
+    }
+    return $output;
 }
 
-sub render_textarea
-{
-   my ( $self, $field ) = @_;
-   my $fif  = $field->fif || '';
-   my $id   = $field->id;
-   my $cols = $field->cols || 10;
-   my $rows = $field->rows || 5;
-   my $name = $field->html_name;
+sub render_textarea {
+    my ( $self, $field ) = @_;
+    my $fif  = $field->fif || '';
+    my $id   = $field->id;
+    my $cols = $field->cols || 10;
+    my $rows = $field->rows || 5;
+    my $name = $field->html_name;
 
-   my $output =
-      qq(<textarea name="$name" id="$id" ) . qq(rows="$rows" cols="$cols">$fif</textarea>);
+    my $output =
+        qq(<textarea name="$name" id="$id" ) . qq(rows="$rows" cols="$cols">$fif</textarea>);
 
-   return $output;
+    return $output;
 }
 
-sub _label
-{
-   my ( $self, $field ) = @_;
-   return '<label class="label" for="' . $field->id . '">' . $field->label . ': </label>';
+sub _label {
+    my ( $self, $field ) = @_;
+    return '<label class="label" for="' . $field->id . '">' . $field->label . ': </label>';
 }
 
-sub render_compound
-{
-   my ( $self, $field ) = @_;
+sub render_compound {
+    my ( $self, $field ) = @_;
 
-   my $output = '';
-   foreach my $subfield ( $field->sorted_fields ) {
-      $output .= $self->render_field($subfield);
-   }
-   return $output;
+    my $output = '';
+    foreach my $subfield ( $field->sorted_fields ) {
+        $output .= $self->render_field($subfield);
+    }
+    return $output;
 }
 
-sub render_submit
-{
-   my ( $self, $field ) = @_;
+sub render_submit {
+    my ( $self, $field ) = @_;
 
-   my $output = '<input';
-   $output .= ' type="'  . lc($field->type)  . '"';
-   $output .= ' name="'  . $field->html_name . '"';
-   $output .= ' id="'    . $field->id        . '"';
-   $output .= ' value="' . $field->value     . '"';
-   $output .= '/>';
-   return $output;
+    my $output = '<input type="submit" name="';
+    $output .= $field->html_name . '"';
+    $output .= ' id="' . $field->id . '"';
+    $output .= ' value="' . $field->value . '" />';
+    return $output;
+}
+
+sub render_reset {
+    my ( $self, $field ) = @_;
+
+    my $output = '<input type="reset" name="';
+    $output .= $field->html_name . '"';
+    $output .= ' id="' . $field->id . '"';
+    $output .= ' value="' . $field->value . '" />';
+    return $output;
 }
 
 =head1 AUTHORS
