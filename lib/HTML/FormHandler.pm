@@ -609,10 +609,21 @@ has 'language_handle' => (
     is      => 'rw',
     builder => 'build_language_handle'
 );
-has 'html_prefix'   => ( isa => 'Bool', is  => 'rw' );
-has 'active_column' => ( isa => 'Str',  is  => 'rw' );
-has 'http_method'   => ( isa => 'Str',  is  => 'rw', default => 'post' );
+has 'html_prefix'   => ( isa => 'Bool', is  => 'ro' );
+has 'active_column' => ( isa => 'Str',  is  => 'ro' );
+has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
+has 'html_tags'         => ( 
+    traits => ['Hash'],
+    isa => 'HashRef', 
+    is => 'ro',
+    default => sub {{}},
+    handles => {
+      get_tag => 'get',
+      set_tag => 'set',
+      tag_exists => 'exists',
+    },
+);
 has 'action' => ( is => 'rw' );
 has 'params' => (
     traits     => ['Hash'],

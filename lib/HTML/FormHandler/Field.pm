@@ -679,6 +679,8 @@ has 'html_tags'         => (
     default => sub {{}},
     handles => {
       get_tag => 'get',
+      set_tag => 'set',
+      tag_exists => 'exists',
     },
 );
 has 'widget_name_space' => ( 
@@ -964,8 +966,13 @@ sub dump {
 sub apply_rendering_widgets {
     my $self = shift;
 
-    $self->add_widget_name_space( @{$self->form->widget_name_space} )
-        if $self->form;
+    if( $self->form ) {
+        $self->add_widget_name_space( @{$self->form->widget_name_space} );
+        foreach my $key ( keys %{$self->form->html_tags} ) {
+            $self->set_tag( $key, $self->form->html_tags->{$key} )
+                 unless $self->tag_exists($key);
+        }
+    }
     if ( $self->widget ) {
         $self->apply_widget_role( $self, $self->widget, 'Field' );
     }
