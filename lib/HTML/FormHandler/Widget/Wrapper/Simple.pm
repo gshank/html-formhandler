@@ -3,6 +3,28 @@ package HTML::FormHandler::Widget::Wrapper::Simple;
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Wrapper::Base';
 
+=head1 NAME
+
+HTML::FormHandler::Widget::Wrapper::Simple
+
+=head1 SYNOPSIS
+
+This is the default wrapper role. It will be installed if
+no other wrapper is specified and widget_wrapper is not set to
+'none'.
+
+It used the 'html_tags' keys 'wrapper_start' and 'wrapper_end',
+so that the default C<< '<div<%class>>' >> and C<< '</div>' >> tags
+may be replaced. The following will cause the fields to be wrapped
+in paragraph tags instead:
+
+   has '+html_tags' => ( default => sub { {
+      wrapper_start => '<p>',
+      wrapper_end   => '</p>' }
+   );
+    
+=cut
+
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
