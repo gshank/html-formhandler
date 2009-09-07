@@ -278,7 +278,7 @@ use the 'validate_addresses_city' method for validation.
 =item set_init
 
 The name of the method in the form that provides a field's initial value.
-Default is C<< 'init_' . $field->name >>. Periods replaced by underscores.
+Default is C<< 'init_value_' . $field->name >>. Periods replaced by underscores.
 
 =back
 
