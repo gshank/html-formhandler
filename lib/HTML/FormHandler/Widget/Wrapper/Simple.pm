@@ -13,12 +13,12 @@ This is the default wrapper role. It will be installed if
 no other wrapper is specified and widget_wrapper is not set to
 'none'.
 
-It used the 'html_tags' keys 'wrapper_start' and 'wrapper_end',
+It used the 'widget_tags' keys 'wrapper_start' and 'wrapper_end',
 so that the default C<< '<div<%class>>' >> and C<< '</div>' >> tags
 may be replaced. The following will cause the fields to be wrapped
 in paragraph tags instead:
 
-   has '+html_tags' => ( default => sub { {
+   has '+widget_tags' => ( default => sub { {
       wrapper_start => '<p>',
       wrapper_end   => '</p>' }
    );

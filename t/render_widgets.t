@@ -257,7 +257,7 @@ ok( $outputT, 'output from table rendering' );
     extends 'HTML::FormHandler';
 
     has_field 'foo';
-    has '+html_tags' => (
+    has '+widget_tags' => (
         default => sub {
             {
                 wrapper_start => '<p>',

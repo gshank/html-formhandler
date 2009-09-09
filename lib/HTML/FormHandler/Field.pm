@@ -672,7 +672,7 @@ sub build_html_name {
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
 has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw' );
-has 'html_tags'         => ( 
+has 'widget_tags'         => ( 
     traits => ['Hash'],
     isa => 'HashRef', 
     is => 'ro',
@@ -968,8 +968,8 @@ sub apply_rendering_widgets {
 
     if( $self->form ) {
         $self->add_widget_name_space( @{$self->form->widget_name_space} );
-        foreach my $key ( keys %{$self->form->html_tags} ) {
-            $self->set_tag( $key, $self->form->html_tags->{$key} )
+        foreach my $key ( keys %{$self->form->widget_tags} ) {
+            $self->set_tag( $key, $self->form->widget_tags->{$key} )
                  unless $self->tag_exists($key);
         }
     }

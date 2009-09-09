@@ -18,7 +18,7 @@ and now:
 =head1 Rendering with Widgets
 
 All FormHandler widgets are Moose roles.
-Default widget roles are installed into HTML::FormHandler::Widget. They include
+Default widget roles are found in the HTML::FormHandler::Widget directory. They include
 widgets for the fields in the distribution. Each field can render itself with
 C<< $field->render >>. The widget rendering roles are applied at build time in 
 each field object. 
@@ -75,7 +75,7 @@ Can be set in the field:
 The widget_name_space and widget_wrapper will be copied into the fields from the
 form if they are not already defined.
 
-By default, a form will use the Form::Simple and Wrapper::Div widgets. If you
+By default, a form will use the Form::Simple and Wrapper::Simple widgets. If you
 want to use the table format you can change the 'widget_form' and 'widget_wrapper'
 attributes in the form, or do it on new:
 
@@ -104,6 +104,22 @@ widget name space:
    has 'some_field' => ( widget => 'MyWidget' );
 
 Your rendering widgets will be applied into your field classes.
+
+The 'widget_tags' hashref attribute has been provided to allow customizing
+rendering behavior on a per-field basis. They can be used to switch the Simple
+wrapper from divs to using paragraphs instead:
+
+   has_field 'my_field' => ( widget_tags => {wrapper_start => '<p>',
+       wrapper_end => '</p>' } );
+
+Widget tags set for the form will be copied into the fields if the same key
+does not exist in the field 'wrapper_tags' hashref, so you can set the
+widget_tags in a form to apply them to all the fields:
+
+   package MyApp::Form;
+   ....
+   has '+widget_tags' => ( default => sub { {wrapper_start => '<p>',
+      wrapper_end => '</p>' } );
 
 =head1 Creating Widgets
 
