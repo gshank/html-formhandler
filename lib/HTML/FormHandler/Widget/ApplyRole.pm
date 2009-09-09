@@ -9,22 +9,14 @@ our $ERROR;
 sub apply_widget_role {
     my ( $self, $target, $widget_name, $dir ) = @_;
 
-    my $widget_name_space = $self->widget_name_space;
     my $widget_class      = $self->widget_class($widget_name);
     my $ldir              = $dir ? '::' . $dir . '::' : '::';
-    my @name_spaces;
-    push @name_spaces, ref $widget_name_space ? @{$widget_name_space} : $widget_name_space
-        if $widget_name_space;
-    push @name_spaces, 'HTML::FormHandler::Widget';
-    my $meta;
+    my @name_spaces = ( @{$self->widget_name_space}, 'HTML::FormHandler::Widget' );
     my $found;
-
     foreach my $ns (@name_spaces) {
-        my $render_role = $ns . $ldir . $self->widget_class($widget_name);
+        my $render_role = $ns . $ldir . $widget_class;
         if ( try_load_class($render_role) ) {
-            $target->meta->make_mutable;
             $render_role->meta->apply($target);
-            $target->meta->make_immutable;
             $found++;
             last;
         }
