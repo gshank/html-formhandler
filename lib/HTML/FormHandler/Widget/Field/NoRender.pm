@@ -4,5 +4,5 @@ use Moose::Role;
 
 sub render { '' }
 
-no Moose::Role;
+use namespace::autoclean;
 1;

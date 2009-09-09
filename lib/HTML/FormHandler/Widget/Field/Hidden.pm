@@ -16,4 +16,5 @@ sub render {
     return $output;
 }
 
+use namespace::autoclean;
 1;

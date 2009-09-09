@@ -66,4 +66,5 @@ the same terms as Perl itself.
 
 =cut
 
+use namespace::autoclean;
 1;

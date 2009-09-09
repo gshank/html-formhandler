@@ -15,4 +15,5 @@ sub render {
     return $self->wrap_field( $result, $output );
 }
 
+use namespace::autoclean;
 1;

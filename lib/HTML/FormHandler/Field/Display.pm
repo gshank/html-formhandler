@@ -55,5 +55,5 @@ sub validate_field { }
 sub clear_value { }
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

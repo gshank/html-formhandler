@@ -42,4 +42,5 @@ sub widget_class {
     return $widget;
 }
 
+use namespace::autoclean;
 1;

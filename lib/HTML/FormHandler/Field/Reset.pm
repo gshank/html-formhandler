@@ -20,5 +20,5 @@ Uses the 'reset' widget.
 has '+value' => ( default => 'Reset' );
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

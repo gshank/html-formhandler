@@ -13,5 +13,5 @@ sub render {
     return $self->wrap_field($output);
 }
 
-no Moose::Role;
+use namespace::autoclean;
 1;

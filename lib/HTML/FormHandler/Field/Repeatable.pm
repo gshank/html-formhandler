@@ -286,5 +286,5 @@ sub _result_from_fields {
 }
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

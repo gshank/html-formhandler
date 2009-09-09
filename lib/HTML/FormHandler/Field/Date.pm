@@ -125,5 +125,6 @@ sub get_strf_format {
         return $format;
 }
 
-no Moose;
+__PACKAGE__->meta->make_immutable;
+use namespace::autoclean;
 1;

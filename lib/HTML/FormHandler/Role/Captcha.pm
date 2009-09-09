@@ -66,4 +66,5 @@ sub captcha_image_url {
     return '/captcha/test';
 }
 
+use namespace::autoclean;
 1;

@@ -239,7 +239,7 @@ A form that extends them both:
    use Moose;
    extends ('Form::Person', 'Form::Address');
 
-   no Moose;
+   use namespace::autoclean; 
    1;
 
 Or if you don't need to use the pieces of your forms as forms themself, you can

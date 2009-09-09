@@ -18,5 +18,5 @@ has 'is_primary_key' => ( isa => 'Bool', is => 'ro', default => '1' );
 has '+widget' => ( default => 'hidden' );
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;
