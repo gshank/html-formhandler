@@ -156,7 +156,7 @@ sub fields_fif {
         my $field = $fld_result->field_def;
         next if ( $field->inactive || $field->password );
         my $fif = $fld_result->fif;
-        next unless defined $fif;
+        next if ( !defined $fif || (ref $fif eq 'ARRAY' && ! scalar @{$fif} ) );
         if ( $fld_result->has_results ) {
             my $next_params = $fld_result->fields_fif( $prefix . $field->name . '.' );
             next unless $next_params;
