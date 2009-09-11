@@ -51,9 +51,11 @@ my $veg_options =   [ {'label' => 'lettuce',
       'value' => 3 },
      {'label' => 'peas',
       'value' => 4 } ];
-is_deeply( $form->field('vegetables')->options, $veg_options,
+my $field_options = $form->field('vegetables')->options;
+is_deeply( $field_options, $veg_options,
    'get options for vegetables' );
-is_deeply( $form->field('fruit')->options,
+$field_options = $form->field('fruit')->options;
+is_deeply( $field_options,
     [ {'label' => 'apples',
        'value' => 1 },
       {'label' => 'oranges',

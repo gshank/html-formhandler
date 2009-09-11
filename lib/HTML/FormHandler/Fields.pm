@@ -50,6 +50,7 @@ has 'fields' => (
     isa        => 'ArrayRef[HTML::FormHandler::Field]',
     is         => 'rw',
     default    => sub { [] },
+    auto_deref => 1,
     handles   => {
         all_fields => 'elements',
         clear_fields => 'clear',

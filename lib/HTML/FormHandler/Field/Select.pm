@@ -176,7 +176,9 @@ has 'options' => (
     isa       => 'ArrayRef',
     is        => 'rw',
     traits    => ['Array'],
+    auto_deref => 1,
     handles  => {
+        all_options => 'elements',
         reset_options => 'clear',
         clear_options => 'clear',
         has_options => 'count',
@@ -328,7 +330,7 @@ sub _load_options {
 
     # allow returning arrayref
     if ( ref $options[0] eq 'ARRAY' ) {
-        @options = @{ $options[0] } if ref $options[0];
+        @options = @{ $options[0] };
     }
 
     my $opts;
