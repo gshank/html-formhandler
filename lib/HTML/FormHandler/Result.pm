@@ -11,6 +11,13 @@ HTML::FormHandler::Result
 
 This is the Result object that maps to the Form.
 
+    my $result = $self->form->run( $params );
+
+=head2 DESCRIPTION
+
+This is currently experimental. No functionality will be removed, but
+interface names may change.
+
 =cut
 
 has 'form' => (

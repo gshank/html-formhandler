@@ -929,17 +929,17 @@ L<HTML::FormHandler::Moose>
 
 =head1 CONTRIBUTORS
 
-gshank: Gerda Shank <gshank@cpan.org>
+gshank: Gerda Shank E<lt>gshank@cpan.orgE<gt>
 
-zby: Zbigniew Lukasiak <zby@cpan.org>
+zby: Zbigniew Lukasiak E<lt>zby@cpan.orgE<gt>
 
-t0m: Tomas Doran <bobtfish@bobtfish.net>
+t0m: Tomas Doran E<lt>bobtfish@bobtfish.netE<gt>
 
-augensalat: Bernhard Graf <augensalat@gmail.com>
+augensalat: Bernhard Graf E<lt>augensalat@gmail.comE<gt>
 
-cubuanic: Oleg Kostyuk <cub.uanic@gmail.com>
+cubuanic: Oleg Kostyuk E<lt>cub.uanic@gmail.comE<gt>
 
-rafl: Florian Ragwitz <rafl@debian.org>
+rafl: Florian Ragwitz E<lt>rafl@debian.orgE<gt>
 
 mazpe: Lester Ariel Mesa
 
