@@ -28,6 +28,7 @@ requires 'MooseX::Types::Common' => 0;
 requires 'aliased';
 requires 'File::Spec';
 requires 'Class::Load' => '0.05';
+requires 'namespace::autoclean';
 
 # things the tests need
 test_requires 'Test::More'      => '0.88';
