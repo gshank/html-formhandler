@@ -18,17 +18,18 @@ repository 'http://github.com/gshank/html-formhandler/tree/master';
 
 # prereqs
 requires 'Carp';
-requires 'Moose'              => '0.89_01';
+requires 'Moose'              => '0.90';
 requires 'Locale::Maketext'   => '1.09';
 requires 'DateTime';
 requires 'HTML::Entities';
 requires 'MooseX::Getopt' => '0.16';
-requires 'MooseX::Types' => 0;
-requires 'MooseX::Types::Common' => 0;
+requires 'MooseX::Types' => '0.20';
+requires 'MooseX::Types::Common';
+requires 'namespace::autoclean';
 requires 'aliased';
 requires 'File::Spec';
 requires 'Class::Load' => '0.05';
-requires 'namespace::autoclean';
+requires 'namespace::autoclean' => '0.09';
 
 # things the tests need
 test_requires 'Test::More'      => '0.88';
