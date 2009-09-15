@@ -280,6 +280,13 @@ use the 'validate_addresses_city' method for validation.
 The name of the method in the form that provides a field's initial value.
 Default is C<< 'init_value_' . $field->name >>. Periods replaced by underscores.
 
+=item default
+
+Provide an initial value just like the 'set_init' method, except in the field
+declaration:
+
+  has_field 'bax' => ( default => 'Default bax' );
+
 =back
 
 =head1 Constraints and Validations
@@ -528,6 +535,7 @@ has 'input_without_param' => (
 );
 has 'not_nullable' => ( is => 'ro', isa => 'Bool' );
 has 'init_value' => ( is => 'rw', clearer => 'clear_init_value' );
+has 'default' => ( is => 'ro' );
 has 'result' => (
     isa       => 'HTML::FormHandler::Field::Result',
     is        => 'ro',
@@ -753,9 +761,14 @@ sub _can_init_value {
 
 sub get_init_value {
     my $self = shift;
-    return unless $self->_can_init_value;
-    my $meth = $self->set_init;
-    $self->form->$meth( $self, $self->form->item );
+    if ( $self->_can_init_value ) {
+        my $meth = $self->set_init;
+        return $self->form->$meth( $self, $self->form->item );
+    }
+    elsif ( $self->default ) {
+        return $self->default;
+    }
+    return;
 }
 has 'deflation' => (
     is        => 'rw',
