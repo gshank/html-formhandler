@@ -818,7 +818,7 @@ sub setup_form {
     $self->clear_result;
     if ( !$self->did_init_obj ) {
         if ( $self->init_object || $self->item ) {
-            $self->_result_from_object( $self->result, $self->init_object || $self->item );
+            $self->_result_from_object( $self->result, $self->item || $self->init_object );
         }
         elsif ( !$self->has_params ) {
             # no initial object. empty form form must be initialized
