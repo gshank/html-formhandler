@@ -72,12 +72,13 @@ sub _result_from_object {
             name   => $field->name,
             parent => $self_result
         );
-        if ( ref $item eq 'HASH' && !exists $item->{ $field->accessor } ) {
+        if ( (ref $item eq 'HASH' && !exists $item->{ $field->accessor } ) ||
+             ( blessed $item && !$item->can($field->accessor) ) ) {
             $result = $field->_result_from_fields($result);
         }
         else {
-            my $value = $self->_get_value( $field, $item );
-            $result = $field->_result_from_object( $result, $value );
+           my $value = $self->_get_value( $field, $item );
+           $result = $field->_result_from_object( $result, $value );
         }
         $self_result->add_result($result) if $result;
         $my_value->{ $field->name } = $field->value;
@@ -87,6 +88,7 @@ sub _result_from_object {
     $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');
     return $self_result;
 }
+
 
 sub _get_value {
     my ( $self, $field, $item ) = @_;

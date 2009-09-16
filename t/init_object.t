@@ -59,7 +59,9 @@ ok( $form->field('bax')->value, 'default_bax' );
     has_field 'foo';
     has_field 'bar';
     has_field 'baz';
+    has_field 'bax' => ( default => 'bax_from_default' );
     has '+init_object' => ( default => sub { { bar => 'initbar' } } );
+
 }
 
 my $obj = Mock::Object->new( foo => 'myfoo', bar => 'mybar', baz => 'mybaz' );
@@ -68,7 +70,6 @@ $form = Test::Object->new;
 $form->process( item => $obj, item_id => 1, params => {} );
 is( $form->field('foo')->value, 'myfoo', 'field value from item');
 is( $form->field('bar')->value, 'mybar', 'field value from item');
-
-
+is( $form->field('bax')->value, 'bax_from_default', 'non-item field value from default' );
 
 done_testing;
