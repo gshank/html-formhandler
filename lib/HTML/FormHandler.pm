@@ -15,7 +15,7 @@ use HTML::FormHandler::Result;
 
 use 5.008;
 
-our $VERSION = '0.28';
+our $VERSION = '0.28001';
 
 =head1 NAME
 
@@ -688,8 +688,8 @@ sub BUILD {
     $self->_build_fields;    # create the form fields
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
-    if ( $self->init_object || $self->item ) {
-        $self->_result_from_object( $self->result, $self->init_object || $self->item );
+    if ( $self->item || $self->init_object ) {
+        $self->_result_from_object( $self->result, $self->item || $self->init_object );
     }
     else {
         $self->_result_from_fields( $self->result );
@@ -818,7 +818,8 @@ sub setup_form {
     $self->clear_result;
     if ( !$self->did_init_obj ) {
         if ( $self->init_object || $self->item ) {
-            $self->_result_from_object( $self->result, $self->item || $self->init_object );
+            my $obj = ($self->item && $self->item_id) ? $self->item : $self->init_object; 
+            $self->_result_from_object( $self->result, $obj ); 
         }
         elsif ( !$self->has_params ) {
             # no initial object. empty form form must be initialized

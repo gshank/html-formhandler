@@ -836,14 +836,8 @@ sub _result_from_object {
     my ( $self, $result, $value ) = @_;
 
     $self->_set_result($result);
-    if ( my @values = $self->get_init_value ) {
-        my $values_ref = @values > 1 ? \@values : shift @values;
-        if ( defined $values_ref ) {
-            $self->init_value($values_ref);
-            $result->_set_value($values_ref);
-        }
-    }
-    elsif ( $self->form ) {
+
+    if ( $self->form ) {
         $self->form->init_value( $self, $value );
     }
     else {
