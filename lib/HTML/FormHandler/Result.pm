@@ -2,6 +2,7 @@ package HTML::FormHandler::Result;
 
 use Moose;
 with 'HTML::FormHandler::Result::Role';
+with 'MooseX::Traits';
 
 =head1 NAME
 

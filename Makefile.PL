@@ -25,6 +25,7 @@ requires 'HTML::Entities';
 requires 'MooseX::Getopt' => '0.16';
 requires 'MooseX::Types' => '0.20';
 requires 'MooseX::Types::Common';
+requires 'MooseX::Traits';
 requires 'aliased';
 requires 'File::Spec';
 requires 'Class::Load' => '0.05';

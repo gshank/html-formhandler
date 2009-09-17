@@ -6,6 +6,7 @@ with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
+with 'MooseX::Traits';
 
 use Carp;
 use Class::MOP;

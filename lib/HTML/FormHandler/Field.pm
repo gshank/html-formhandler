@@ -4,6 +4,7 @@ use HTML::FormHandler::Moose;
 use HTML::FormHandler::I18N;    # only needed if running without a form object.
 use HTML::FormHandler::Field::Result;
 
+with 'MooseX::Traits';
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::Widget::ApplyRole';
