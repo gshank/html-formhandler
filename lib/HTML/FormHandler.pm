@@ -674,7 +674,7 @@ sub BUILDARGS {
 
     if ( @_ == 1 ) {
         my $id = $_[0];
-        return { item => $id, item_id => $id->id } if ( blessed $id);
+        return { item => $id, item_id => $id->id } if ( blessed($id) );
         return { item_id => $id };
     }
     return $class->SUPER::BUILDARGS(@_);

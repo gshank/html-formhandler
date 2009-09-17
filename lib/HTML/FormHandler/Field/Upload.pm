@@ -62,7 +62,7 @@ sub validate {
     my $self   = shift;
     my $upload = $self->upload();
 
-    blessed $upload and
+    blessed($upload) and
         $upload->size > 0 or
         return $self->add_error('This is not valid file upload data');
 

@@ -73,7 +73,7 @@ sub _result_from_object {
             parent => $self_result
         );
         if ( (ref $item eq 'HASH' && !exists $item->{ $field->accessor } ) ||
-             ( blessed $item && !$item->can($field->accessor) ) ) {
+             ( blessed($item) && !$item->can($field->accessor) ) ) {
             $result = $field->_result_from_fields($result);
         }
         else {
