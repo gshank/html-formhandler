@@ -103,6 +103,12 @@ Will create an 'id' field automatically
 
 =back
 
+sub BUILD {
+    my $self = shift;
+    $self->set_validate; # vivify
+    $self->set_init; # vivify
+}
+
 =cut
 
 has 'contains' => (
@@ -115,6 +121,19 @@ has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
 has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 has '+reload_after_update' => ( default => 1 );
+
+=pod
+
+has '+set_validate' => ( lazy => 1, default => sub {
+        my $self = shift;
+$DB::single=1;
+        my $name = $self->full_name;
+        $name =~ s/\./_/g;
+        return 'validate_' . $name;
+    }
+);
+
+=cut
 
 has 'is_repeatable' => ( is => 'ro', default => 1 );
 
