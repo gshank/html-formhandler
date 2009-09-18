@@ -65,18 +65,6 @@ use_ok('HTML::FormHandler::Field::Upload');
 }
 {
 
-    package Mock::Request;
-    use Moose;
-    has 'upload' => ( is => 'rw', isa => 'Mock::Upload' );
-}
-{
-
-    package Mock::Ctx;
-    use Moose;
-    has 'request' => ( is => 'rw', isa => 'Mock::Request' );
-}
-{
-
     package My::Form::Upload;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
@@ -84,6 +72,7 @@ use_ok('HTML::FormHandler::Field::Upload');
     has '+enctype' => ( default => 'multipart/form-data');
 
     has_field 'file' => ( type => 'Upload' );
+    has_field 'submit' => ( type => 'Submit', value => 'Upload' );
 }
 
 my $form = My::Form::Upload->new;
@@ -92,6 +81,16 @@ ok( $form, 'created form with upload field' );
 is( $form->field('file')->render, '
 <div><label class="label" for="file">File: </label><input type="file" name="file" id="file"/></div>
 ', 'renders ok' );
+
+my $upload = Mock::Upload->new( filename => 'test.txt', size => 1024 );
+
+$form->process( params => { file => $upload } ); 
+ok( $form->validated, 'form validated' );
+
+$upload->size( 20000000 );
+$form->process( params => { file => $upload } );
+ok( !$form->validated, 'form did not validate' );
+
 
 
 done_testing;

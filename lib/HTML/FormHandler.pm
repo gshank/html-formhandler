@@ -651,6 +651,7 @@ has '_required' => (
         add_required => 'push',
     }
 );
+sub submit { warn "Please use a Submit field instead of the submit form attribute" }
 
 {
     use Moose::Util::TypeConstraints;
