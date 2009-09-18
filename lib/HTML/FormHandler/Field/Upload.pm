@@ -14,25 +14,21 @@ HTML::FormHandler::Field::Upload - File upload field
 =head1 DESCRIPTION
 
 Validates that the input is an uploaded file.
+A form containing this field must have the enctype set:
+
+    has '+enctype' => ( default => 'multipart/form-data');
 
 =head1 DEPENDENCIES
 
 =head2 widget
 
-Widget type is 'file'
+Widget type is 'upload'
 
 =cut
 
 has '+widget' => ( default => 'upload', );
 has minimum   => ( is      => 'rw', isa => 'Int', default => 1 );
 has maximum   => ( is      => 'rw', isa => 'Int', default => 1_048_576 );
-
-sub BUILD {
-    for my $form ( $_[0]->form ) {
-        $form->enctype('multipart/form-data');
-        $form->http_method('post');
-    }
-}
 
 sub minimum_kilobyte {
     my ( $self, $value ) = @_;
