@@ -29,7 +29,8 @@ A form containing this field must have the enctype set.
 In your controller:
 
     my $form = My::Form::Upload->new; 
-    my @params = ( file => $c->req->upload('file') ) if $c->req->upload('file');
+    my @params = ( file => $c->req->upload('file') ) 
+             if $c->req->method eq 'POST';
     $form->process( params => { @params } );
     return unless ( $form->validated );
 
