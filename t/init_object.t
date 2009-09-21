@@ -34,7 +34,7 @@ is( $form->field('reqname')->fif, 'Starting Perl',
    has_field 'baz';
    has_field 'bax' => ( default => 'default_bax' );
    has '+init_object' => ( default => sub { { foo => 'initfoo' } } );
-   sub init_value_bar { 'init_value_bar' }
+   sub default_bar { 'init_value_bar' }
    sub init_value_baz { 'init_value_baz' }
 }
 

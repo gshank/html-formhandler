@@ -276,14 +276,14 @@ use the 'validate_addresses_city' method for validation.
    has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
    has_field 'subtitle' => ( isa => 'Str', set_validate => 'check_title' );
 
-=item set_init
+=item set_default
 
-The name of the method in the form that provides a field's initial value.
-Default is C<< 'init_value_' . $field->name >>. Periods replaced by underscores.
+The name of the method in the form that provides a field's default value.
+Default is C<< 'default_' . $field->name >>. Periods replaced by underscores.
 
 =item default
 
-Provide an initial value just like the 'set_init' method, except in the field
+Provide an initial value just like the 'set_default' method, except in the field
 declaration:
 
   has_field 'bax' => ( default => 'Default bax' );
@@ -735,27 +735,34 @@ sub _validate {
     return unless (my $meth = $self->_can_validate);
     $self->form->$meth($self);
 }
-has 'set_init' => ( isa => 'Str', is => 'ro',);
-sub _can_init_value {
+has 'set_default' => ( isa => 'Str', is => 'ro', writer => '_set_default');
+sub _can_default {
     my $self = shift;
-    my $set_init = $self->_set_init_meth; 
+    my $set_default = $self->_set_default_meth; 
     return
         unless $self->form &&
-            $set_init &&
-            $self->form->can( $set_init );
-    return $set_init;
+            $set_default &&
+            $self->form->can( $set_default );
+    return $set_default;
 }
-sub _set_init_meth {
+sub _comp_default_meth {
     my $self = shift;
-    return $self->set_init if $self->set_init;
     my $name = $self->full_name;
     $name =~ s/\./_/g;
     $name =~ s/_\d_/_/g;
     return 'init_value_' . $name;
 }
-sub get_init_value {
+sub _set_default_meth {
     my $self = shift;
-    if ( my $meth = $self->_can_init_value ) {
+    return $self->set_default if $self->set_default;
+    my $name = $self->full_name;
+    $name =~ s/\./_/g;
+    $name =~ s/_\d_/_/g;
+    return 'default_' . $name;
+}
+sub get_default_value {
+    my $self = shift;
+    if ( my $meth = $self->_can_default ) {
         return $self->form->$meth( $self, $self->form->item );
     }
     elsif ( $self->default ) {
@@ -784,9 +791,21 @@ sub default_trim {
     return ref $value eq 'ARRAY' ? \@values : $values[0];
 }
 
+sub BUILDARGS {
+    my $class = shift;
+
+    # for compatibility, change 'set_init' to 'set_default'
+    my @new;
+    push @new, ('set_default', {@_}->{set_init} )
+        if( exists {@_}->{set_init} );
+    return $class->SUPER::BUILDARGS(@_, @new);
+}
+
 sub BUILD {
     my ( $self, $params ) = @_;
 
+    $self->_set_default( $self->_comp_default_meth )
+        if( $self->form && $self->form->can( $self->_comp_default_meth ) );
     $self->apply_rendering_widgets;
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;
@@ -798,7 +817,7 @@ sub BUILD {
 sub _result_from_fields {
     my ( $self, $result ) = @_;
 
-    if ( my @values = $self->get_init_value ) {
+    if ( my @values = $self->get_default_value ) {
         my $value = @values > 1 ? \@values : shift @values;
         $self->init_value($value)   if $value;
         $result->_set_value($value) if $value;

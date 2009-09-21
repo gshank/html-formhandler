@@ -12,11 +12,11 @@ use Test::More tests => 7;
    has_field 'reqname' => ( required => 1 );
    has_field 'somename';
 
-   sub init_value_reqname {
+   sub default_reqname {
       my $self = shift;
       return 'From Method';
    }
-   sub init_value_somename {
+   sub default_somename {
       my $self = shift;
       return 'SN from meth';
    }

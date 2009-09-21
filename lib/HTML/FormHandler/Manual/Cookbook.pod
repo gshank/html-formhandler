@@ -79,10 +79,10 @@ code into a role and apply it in all of your forms.
 
 =head2 Select lists
 
-If you want to set the initial value of a select field to 0 (or some other
+If you want to set the default value of a select field to 0 (or some other
 default):
 
-   sub init_value_license {
+   sub default_license {
       my ( $self, $field, $item ) = @_;
       return 0 unless $item && $item->license_id; 
       return $item->license_id;
