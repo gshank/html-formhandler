@@ -1,6 +1,7 @@
 package HTML::FormHandler::Widget::Field::Select;
 
 use Moose::Role;
+use HTML::Entities;
 
 sub render {
     my ( $self, $result ) = @_;
@@ -15,7 +16,7 @@ sub render {
     foreach my $option ( @{ $self->{options} } ) {
         $output .= '<option value="' . $option->{value} . '" ';
         $output .= 'id="' . $self->id . ".$index\" ";
-        if ( my $ffif = $result->fif ) {
+        if ( my $ffif = encode_entities($result->fif) ) {
             if ( $self->multiple == 1 ) {
                 my @fif;
                 if ( ref $ffif ) {
