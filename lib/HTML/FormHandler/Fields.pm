@@ -123,7 +123,8 @@ sub field {
 sub sorted_fields {
     my $self = shift;
 
-    my @fields = sort { $a->order <=> $b->order } grep { !$_->inactive } $self->all_fields;
+    my @fields = sort { $a->order <=> $b->order } 
+        grep { !$_->inactive || ($_->inactive && $_->_active) } $self->all_fields;
     return wantarray ? @fields : \@fields;
 }
 
@@ -134,7 +135,7 @@ sub _fields_validate {
     # validate all fields
     my %value_hash;
     foreach my $field ( $self->all_fields ) {
-        next if ( $field->inactive || !$field->has_result );
+        next if ( ($field->inactive && !$field->_active) || !$field->has_result );
         # Validate each field and "inflate" input -> value.
         $field->validate_field;    # this calls the field's 'validate' routine
         $value_hash{ $field->accessor } = $field->value
@@ -155,7 +156,7 @@ sub fields_fif {
     my %params;
     foreach my $fld_result ( $result->results ) {
         my $field = $fld_result->field_def;
-        next if ( $field->inactive || $field->password );
+        next if ( ($field->inactive && !$field->_active) || $field->password );
         my $fif = $fld_result->fif;
         next if ( !defined $fif || (ref $fif eq 'ARRAY' && ! scalar @{$fif} ) );
         if ( $fld_result->has_results ) {
@@ -174,6 +175,7 @@ sub fields_fif {
 sub clear_data {
     my $self = shift;
     $self->clear_result;
+    $self->clear_active;
     $_->clear_data for $self->all_fields;
 }
 

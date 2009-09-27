@@ -350,6 +350,24 @@ add fields to the form depending on some other state.
       return \@field_list;
    }
 
+=head3 active
+
+If a form has a variable number of fields, fields which are not always to be
+used should be defined as 'inactive':
+
+   has_field 'foo' => ( type => 'Text', inactive => 1 );
+
+Then the field name can be specified in the 'active' array, either on 'new',
+or on 'process':
+
+   my $form = MyApp::Form->new( active => ['foo'] );
+   ...
+   $form->process( active => ['foo'] );
+
+Fields specified as active on new will have the 'inactive' flag cleared, and so:
+those fields will be active for the life of the form object. Fields specified as
+active on 'process' will have the field's '_active' flag set just for the life of the
+request.
 
 =head3 field_name_space
 
@@ -597,6 +615,17 @@ sub build_result {
 has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
+has 'active' => (
+    is => 'rw',
+    traits => ['Array'],
+    isa => 'ArrayRef[Str]',
+    default => sub {[]},
+    handles => {
+        has_active => 'count',
+        clear_active => 'clear',
+    } 
+);
+   
 
 # object with which to initialize
 has 'init_object'         => ( is => 'rw', clearer => 'clear_init_object' );
@@ -688,6 +717,7 @@ sub BUILD {
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && !$self->can('render') );
     $self->_build_fields;    # create the form fields
+    $self->build_active if $self->has_active; # set optional fields active
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
     if ( $self->item || $self->init_object ) {
@@ -809,6 +839,7 @@ sub setup_form {
                 unless $self->can($key);
             $self->$key($value);
         }
+        $self->set_active if $self->has_active;
     }
     if ( $self->item_id && !$self->item ) {
         $self->item( $self->build_item );
@@ -831,6 +862,36 @@ sub setup_form {
     my %params = ( %{ $self->params } );
     $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
 }
+
+# if active => [...] is set at process time, set 'active' flag
+sub set_active {
+    my $self = shift;
+    foreach my $fname (@{$self->active}) {
+        my $field = $self->field($fname);
+        if ( $field ) {
+            $field->_active(1);
+        }
+        else {
+            warn "field $fname not found to set active";
+        }
+    }
+    $self->clear_active;
+}
+
+# if active => [...] is set at build time, remove 'inactive' flags
+sub build_active {
+    my $self = shift;
+    foreach my $fname (@{$self->active}) {
+        my $field = $self->field($fname);
+        if( $field ) {
+            $field->clear_inactive;
+        }
+        else {
+            warn "field $fname not found to set active";
+        }
+    }
+    $self->clear_active;
+} 
 
 sub fif { shift->fields_fif(@_) }
 

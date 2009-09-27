@@ -140,7 +140,9 @@ The full_name plus the form name if 'html_prefix' is set.
 =item inactive
 
 Set this attribute if this field is inactive. This provides a way to define fields
-in the form and selectively set them to inactive.
+in the form and selectively set them to inactive. There is also an '_active' attribute,
+for internal use to indicate that the field has been activated by the form's 'active'
+attribute.
 
 =item input
 
@@ -597,7 +599,11 @@ sub value {
 # for compatibility. deprecate and remove at some point
 sub clear_input { shift->_clear_input }
 sub clear_value { shift->_clear_value }
-sub clear_data  { shift->clear_result }
+sub clear_data  { 
+    my $self = shift;
+    $self->clear_result;
+    $self->clear_active;
+}
 
 sub is_repeatable { }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
@@ -607,7 +613,7 @@ has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 sub fif {
     my ( $self, $result ) = @_;
 
-    return if $self->inactive;
+    return if ( $self->inactive && !$self->_active );
     return '' if $self->password;
     return unless $result || $self->has_result;
     my $lresult = $result || $self->result;
@@ -703,7 +709,10 @@ has 'widget_name_space' => (
     }, 
 );
 has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
+# 'inactive' is set in the field declaration, and is static. Default status.
 has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
+# 'active' is cleared whenever the form is cleared. Ephemeral activation.
+has '_active'         => ( isa => 'Bool', is => 'rw', clearer => 'clear_active' );
 has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id { shift->html_name }
 has 'javascript' => ( isa => 'Str',  is => 'ro' );
