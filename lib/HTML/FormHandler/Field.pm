@@ -816,7 +816,7 @@ sub BUILD {
 
     $self->_set_default( $self->_comp_default_meth )
         if( $self->form && $self->form->can( $self->_comp_default_meth ) );
-    $self->apply_rendering_widgets;
+    $self->apply_rendering_widgets unless ($self->can('render') );
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;
     $self->add_action( @{ $params->{apply} } ) if $params->{apply};
@@ -994,10 +994,6 @@ sub apply_rendering_widgets {
 
     if( $self->form ) {
         $self->add_widget_name_space( @{$self->form->widget_name_space} );
-        foreach my $key ( keys %{$self->form->widget_tags} ) {
-            $self->set_tag( $key, $self->form->widget_tags->{$key} )
-                 unless $self->tag_exists($key);
-        }
     }
     if ( $self->widget ) {
         $self->apply_widget_role( $self, $self->widget, 'Field' );
