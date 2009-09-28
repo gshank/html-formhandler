@@ -1,4 +1,4 @@
-package MyForm;
+package Form::MyForm;
 use strict;
 use warnings;
 

@@ -103,6 +103,12 @@ Will create an 'id' field automatically
 
 =back
 
+sub BUILD {
+    my $self = shift;
+    $self->set_validate; # vivify
+    $self->set_init; # vivify
+}
+
 =cut
 
 has 'contains' => (
@@ -115,7 +121,6 @@ has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
 has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 has '+reload_after_update' => ( default => 1 );
-
 has 'is_repeatable' => ( is => 'ro', default => 1 );
 
 sub _fields_validate {
@@ -123,7 +128,7 @@ sub _fields_validate {
     # loop through array of fields and validate
     my @value_array;
     foreach my $field ( $self->all_fields ) {
-        next if ( $field->inactive || $field->inactive );
+        next if ( $field->inactive && !$field->_active ); 
         # Validate each field and "inflate" input -> value.
         $field->validate_field;    # this calls the field's 'validate' routine
         push @value_array, $field->value;

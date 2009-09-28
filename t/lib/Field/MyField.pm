@@ -1,4 +1,4 @@
-package MyField;
+package Field::MyField;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';

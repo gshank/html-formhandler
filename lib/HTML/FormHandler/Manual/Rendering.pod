@@ -17,6 +17,9 @@ and now:
 
 =head1 Rendering with Widgets
 
+This feature is still experimental. The functionality will probably remain
+approximately the same, but interfaces may change.
+
 All FormHandler widgets are Moose roles.
 Default widget roles are found in the HTML::FormHandler::Widget directory. They include
 widgets for the fields in the distribution. Each field can render itself with

@@ -30,5 +30,11 @@ ok( $form->validated, 'form validated' );
 is_deeply( $form->fif, $fif, 'fif is correct' );
 is_deeply( $form->value, $fif, 'value is correct' );
 
+$form = Test::Form->new;
+$form->process( active => ['foo'], params => $fif );
+ok( $form->validated, 'form validated' );
+is_deeply( $form->fif, $fif, 'fif is correct' );
+is_deeply( $form->value, $fif, 'value is correct' );
+ 
 
 done_testing;

@@ -5,7 +5,7 @@ use Moose::Util::TypeConstraints;
 
 extends 'HTML::FormHandler::Field';
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -13,83 +13,62 @@ HTML::FormHandler::Field::Upload - File upload field
 
 =head1 DESCRIPTION
 
+This field is designed to be used with L<Catalyst::Request::Upload>.
 Validates that the input is an uploaded file.
+A form containing this field must have the enctype set.
+
+    package My::Form::Upload;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has '+enctype' => ( default => 'multipart/form-data');
+
+    has_field 'file' => ( type => 'Upload' );
+    has_field 'submit' => ( type => 'Submit', value => 'Upload' );
+
+In your controller:
+
+    my $form = My::Form::Upload->new; 
+    my @params = ( file => $c->req->upload('file') ) 
+             if $c->req->method eq 'POST';
+    $form->process( params => { @params } );
+    return unless ( $form->validated );
 
 =head1 DEPENDENCIES
 
 =head2 widget
 
-Widget type is 'file'
+Widget type is 'upload'
 
 =cut
 
 has '+widget' => ( default => 'upload', );
-has minimum   => ( is      => 'rw', isa => 'Int', default => 1 );
-has maximum   => ( is      => 'rw', isa => 'Int', default => 1_048_576 );
+has min_size   => ( is      => 'rw', isa => 'Int', default => 1 );
+has max_size   => ( is      => 'rw', isa => 'Int', default => 1048576 );
 
-sub BUILD {
-    for my $form ( $_[0]->form ) {
-        $form->enctype('multipart/form-data');
-        $form->http_method('post');
-    }
-}
-
-sub minimum_kilobyte {
-    my ( $self, $value ) = @_;
-    return $self->minimum >> 10 unless $value;
-    return $self->minimum( $value << 10 );
-}
-
-sub minimum_megabyte {
-    my ( $self, $value ) = @_;
-    return $self->minimum >> 20 unless $value;
-    return $self->minimum( $value << 20 );
-}
-
-sub maximum_kilobyte {
-    my ( $self, $value ) = @_;
-    return $self->maximum >> 10 unless $value;
-    return $self->maximum( $value << 10 );
-}
-
-sub maximum_megabyte {
-    my ( $self, $value ) = @_;
-    return $self->maximum >> 20 unless $value;
-    return $self->maximum( $value << 20 );
-}
 
 sub validate {
     my $self   = shift;
-    my $upload = $self->upload();
 
-    blessed $upload and
+    my $upload = $self->value;
+    blessed($upload) and
         $upload->size > 0 or
-        return $self->add_error('This is not valid file upload data');
+        return $self->add_error('File uploaded is empty');
 
     my $size = $upload->size;
 
-    $size >= $self->minimum or
-        return $self->add_error( 'File is too small (< [_1] bytes)', $self->minimum );
+    $upload->size >= $self->min_size or
+        return $self->add_error( 'File is too small (< [_1] bytes)', $self->min_size );
 
-    $size <= $self->maximum or
-        return $self->add_error( 'File is too big (> [_1] bytes)', $self->maximum );
-
-    return $upload;
-}
-
-sub upload {
-    my $self = shift;
-
-    return $self->form->ctx->req->upload( $self->name );
+    $upload->size <= $self->max_size or
+        return $self->add_error( 'File is too big (> [_1] bytes)', $self->max_size );
 }
 
 __PACKAGE__->meta->make_immutable;
 
 =head1 AUTHOR
 
-Bernhard Graf
-
-Oleg Kostyuk, cub.uanic@gmail.com
+Bernhard Graf & Oleg Kostyuk
 
 and FormHandler contributors
 

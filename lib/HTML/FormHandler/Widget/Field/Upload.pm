@@ -10,7 +10,7 @@ sub render {
     $output = '<input type="file" name="';
     $output .= $self->html_name . '"';
     $output .= ' id="' . $self->id . '"/>';
-    return $self->wrap_field($output);
+    return $self->wrap_field($result, $output);
 }
 
 use namespace::autoclean;

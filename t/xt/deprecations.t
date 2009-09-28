@@ -8,8 +8,8 @@ BEGIN {
    plan tests => 2;
 }
 my $critic = Perl::Critic->new( -theme => 'formhandler' );
-my @violations = $critic->critique( 't/var/MyForm.pm');
+my @violations = $critic->critique( 't/lib/Form/MyForm.pm');
 is( $violations[0]->description, 'The "min_length" attribute used', 'min_length in has_field' );
-@violations = $critic->critique( 't/var/MyField.pm');
+@violations = $critic->critique( 't/lib/Field/MyField.pm');
 is( $violations[0]->description, 'The "min_length" attribute used', '+min_length in field def' );
 

@@ -18,7 +18,7 @@ Internal role for initializing the result objects.
 sub _result_from_fields {
     my ( $self, $self_result ) = @_;
     for my $field ( $self->sorted_fields ) {
-        next if $field->inactive;
+        next if ($field->inactive && !$field->_active);
         my $result = HTML::FormHandler::Field::Result->new(
             name   => $field->name,
             parent => $self_result
@@ -42,7 +42,7 @@ sub _result_from_input {
     $self_result->_set_input($input);
     if ( ref $input eq 'HASH' ) {
         foreach my $field ( $self->sorted_fields ) {
-            next if $field->inactive;
+            next if ($field->inactive && !$field->_active);
             my $field_name = $field->name;
             my $result     = HTML::FormHandler::Field::Result->new(
                 name   => $field_name,
@@ -67,17 +67,18 @@ sub _result_from_object {
     return unless ( $item || $self->has_fields );    # empty fields for compounds
     my $my_value;
     for my $field ( $self->sorted_fields ) {
-        next if $field->inactive;
+        next if ( $field->inactive && !$field->_active );
         my $result = HTML::FormHandler::Field::Result->new(
             name   => $field->name,
             parent => $self_result
         );
-        if ( ref $item eq 'HASH' && !exists $item->{ $field->accessor } ) {
+        if ( (ref $item eq 'HASH' && !exists $item->{ $field->accessor } ) ||
+             ( blessed($item) && !$item->can($field->accessor) ) ) {
             $result = $field->_result_from_fields($result);
         }
         else {
-            my $value = $self->_get_value( $field, $item );
-            $result = $field->_result_from_object( $result, $value );
+           my $value = $self->_get_value( $field, $item );
+           $result = $field->_result_from_object( $result, $value );
         }
         $self_result->add_result($result) if $result;
         $my_value->{ $field->name } = $field->value;
@@ -87,6 +88,7 @@ sub _result_from_object {
     $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');
     return $self_result;
 }
+
 
 sub _get_value {
     my ( $self, $field, $item ) = @_;

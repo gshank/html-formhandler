@@ -1,12 +1,13 @@
 package HTML::FormHandler::Widget::Field::Textarea;
 
 use Moose::Role;
+use HTML::Entities;
 
 sub render {
     my ( $self, $result ) = @_;
 
     $result ||= $self->result;
-    my $fif  = $result->fif || '';
+    my $fif  = encode_entities($result->fif) || '';
     my $id   = $self->id;
     my $cols = $self->cols || 10;
     my $rows = $self->rows || 5;

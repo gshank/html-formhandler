@@ -23,8 +23,8 @@ has 'required_message' => (
 );
 has 'unique'            => ( isa => 'Bool', is => 'rw' );
 has 'unique_message'    => ( isa => 'Str',  is => 'rw' );
-has 'range_start' => ( isa => 'Int|Undef', is => 'rw', default => undef );
-has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
+has 'range_start' => ( isa => 'Int|Undef', is => 'rw' );
+has 'range_end'   => ( isa => 'Int|Undef', is => 'rw' );
 
 sub test_ranges {
     my $field = shift;

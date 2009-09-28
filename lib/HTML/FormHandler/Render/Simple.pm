@@ -210,10 +210,13 @@ sub render_field_struct {
     }
     elsif ( $l_type eq 'legend' ) {
         $output .= '<fieldset class="' . $field->html_name . '">';
-        $output .= '<legend>' . $field->label . '</legend>';
+        $output .= '<legend>' . encode_entities($field->label) . '</legend>';
     }
     $output .= $rendered_field;
-    $output .= qq{\n<span class="error_message">$_</span>} for $field->all_errors;
+    foreach my $error ($field->all_errors){
+        $output .= qq{\n<span class="error_message">} . encode_entities($error) . '</span>';
+    }
+
     if ( $l_type eq 'legend' ) {
         $output .= '</fieldset>';
     }
@@ -228,7 +231,7 @@ sub render_text {
     $output .= ' id="' . $field->id . '"';
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
-    $output .= ' value="' . $field->fif . '" />';
+    $output .= ' value="' . encode_entities($field->fif) . '" />';
     return $output;
 }
 
@@ -239,7 +242,7 @@ sub render_password {
     $output .= ' id="' . $field->id . '"';
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
-    $output .= ' value="' . $field->fif . '" />';
+    $output .= ' value="' . encode_entities($field->fif) . '" />';
     return $output;
 }
 
@@ -248,7 +251,7 @@ sub render_hidden {
     my $output = '<input type="hidden" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= ' value="' . $field->fif . '" />';
+    $output .= ' value="' . encode_entities($field->fif) . '" />';
     return $output;
 }
 
@@ -262,7 +265,7 @@ sub render_select {
     $output .= '>';
     my $index = 0;
     foreach my $option ( @{ $field->options } ) {
-        $output .= '<option value="' . $option->{value} . '" ';
+        $output .= '<option value="' . encode_entities($option->{value}) . '" ';
         $output .= 'id="' . $field->id . ".$index\" ";
         if ( $field->fif ) {
             if ( $field->multiple == 1 ) {
@@ -283,7 +286,7 @@ sub render_select {
                     if $option->{value} eq $field->fif;
             }
         }
-        $output .= '>' . $option->{label} . '</option>';
+        $output .= '>' . encode_entities($option->{label}) . '</option>';
         $index++;
     }
     $output .= '</select>';
@@ -293,9 +296,9 @@ sub render_select {
 sub render_checkbox {
     my ( $self, $field ) = @_;
 
-    my $output = '<input type="checkbox" name="';
-    $output .=
-        $field->html_name . '" id="' . $field->id . '" value="' . $field->checkbox_value . '"';
+    my $output = '<input type="checkbox" name="' . $field->html_name . '"';
+    $output .= ' id="' . $field->id . '"';
+    $output .= ' value="' . encode_entities($field->checkbox_value) . '"';
     $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
     $output .= ' />';
     return $output;
@@ -307,11 +310,11 @@ sub render_radio_group {
     my $output = " <br />";
     my $index  = 0;
     foreach my $option ( @{ $field->options } ) {
-        $output .= '<input type="radio" value="' . $option->{value} . '"';
+        $output .= '<input type="radio" value="' . encode_entities($option->{value}) . '"';
         $output .= ' name="' . $field->html_name . '" id="' . $field->id . ".$index\"";
         $output .= ' checked="checked"' if $option->{value} eq $field->fif;
         $output .= ' />';
-        $output .= $option->{label} . '<br />';
+        $output .= encode_entities($option->{label}) . '<br />';
         $index++;
     }
     return $output;
@@ -326,14 +329,19 @@ sub render_textarea {
     my $name = $field->html_name;
 
     my $output =
-        qq(<textarea name="$name" id="$id" ) . qq(rows="$rows" cols="$cols">$fif</textarea>);
+        qq(<textarea name="$name" id="$id" )
+        . qq(rows="$rows" cols="$cols">)
+        . encode_entities($fif)
+        . q(</textarea>);
 
     return $output;
 }
 
 sub _label {
     my ( $self, $field ) = @_;
-    return '<label class="label" for="' . $field->id . '">' . $field->label . ': </label>';
+    return '<label class="label" for="' . $field->id . '">' . 
+        encode_entities($field->label)
+        . ': </label>';
 }
 
 sub render_compound {
@@ -352,7 +360,7 @@ sub render_submit {
     my $output = '<input type="submit" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= ' value="' . $field->value . '" />';
+    $output .= ' value="' . encode_entities($field->value) . '" />';
     return $output;
 }
 
@@ -362,7 +370,7 @@ sub render_reset {
     my $output = '<input type="reset" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= ' value="' . $field->value . '" />';
+    $output .= ' value="' . encode_entities($field->value) . '" />';
     return $output;
 }
 

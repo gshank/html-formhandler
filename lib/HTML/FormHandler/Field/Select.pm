@@ -195,34 +195,31 @@ has 'do_not_reload' => ( isa => 'Bool', is => 'ro' );
 sub BUILD {
     my $self = shift;
 
-    $self->set_options;
     $self->options_from('build') if $self->options && $self->has_options;
 }
 
-has 'set_options' => (
-    isa     => 'Str',
-    is      => 'rw',
-    default => sub {
-        my $self = shift;
-        my $name = $self->full_name;
-        $name =~ s/\./_/g;
-        return 'options_' . $name;
-    }
-);
-
+has 'set_options' => ( isa => 'Str', is => 'ro');
+sub _set_options_meth {
+    my $self = shift;
+    return $self->set_options if $self->set_options;
+    my $name = $self->full_name;
+    $name =~ s/\./_/g;
+    $name =~ s/_\d_/_/g;
+    return 'options_' . $name;
+}
 sub _can_form_options {
     my $self = shift;
+    my $set_options = $self->_set_options_meth;
     return
         unless $self->form &&
-            $self->set_options &&
-            $self->form->can( $self->set_options );
-    return 1;
+            $set_options &&
+            $self->form->can( $set_options );
+    return $set_options;
 }
 
 sub _form_options {
     my $self = shift;
-    return unless $self->_can_form_options;
-    my $meth = $self->set_options;
+    return unless (my $meth = $self->_can_form_options);
     return $self->form->$meth($self);
 }
 
