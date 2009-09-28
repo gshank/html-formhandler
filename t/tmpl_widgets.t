@@ -14,11 +14,12 @@ use Test::More;
         [% IF maxlength %] maxlength="[% maxlength %]"[% END %]
         value="[% fif %]">
 END
-    has 'template' => ( is => 'ro', isa => 'Template::Tiny', builder => 'build_temlate');
+    has 'template' => ( is => 'ro', isa => 'Template::Tiny', builder => 'build_template');
     sub build_template {
         my $self = shift;
         my $tt = Template::Tiny->new;
-        $tt->_add_template('text_widget', $widget );
+        $tt->add_template('text_widget', $widget );
+        return $tt;
     }
     
 
@@ -40,6 +41,7 @@ END
 
 }
 
+use HTML::FormHandler::Field::Text;
 my $field = HTML::FormHandler::Field::Text->new_with_traits( 
     traits => ['Widget::Field::Text'], name => 'test_text' );
 ok( $field, 'created field' );

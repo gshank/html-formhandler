@@ -125,7 +125,8 @@ sub compile_tmpl {
     my ( $self, $AST ) = @_;
 
     my $current_level = 0;
-    my $current_stash = 0; 
+    my @current_stash; 
+    push @current_stash, $current_level;
     my $code = '';
     if ( !$current_level ) {
         $code .= $TMPL_CODE_START;
@@ -139,23 +140,26 @@ sub compile_tmpl {
         }
         elsif ( $type eq 'VARS' ) {
             $code .=
-                q{  $out .= $stash_} . $names[$current_stash] . q{->get(} .
+                q{  $out .= $stash_} . $names[$current_stash[-1]] . q{->get(} .
                 quote_lists(@$val) . qq{);\n};
         }
         elsif ( $type eq 'END' ) {
             $code .= "  }\n";
             $current_level--;
-            $current_stash--;
+            pop @current_stash;
         }
         elsif ( $type eq 'SECTION' ) {
-            my $old = $names[$current_stash];
-            my $new = $names[ ++$current_stash ];
+            my $cur = $current_stash[-1];
+            my $old = $names[$cur];
+            push @current_stash, $cur + 1;
             $current_level++;
+            my $new = $names[ $current_stash[-1] ];
             $code .= "  for my \$stash_$new ( \$stash_$old\->sections('$val') ) {\n";
         }
         elsif ( $type eq 'IF' ) {
+           push @current_stash, $current_stash[-1];
            $current_level++;
-           my $cur = $names[$current_stash];
+           my $cur = $names[$current_stash[-1]];
            $code .= " if ( \$stash_$cur->get('$val') ) {\n";
         }
         elsif ( $type eq 'CONCAT' ) {
@@ -166,7 +170,7 @@ sub compile_tmpl {
             }
             elsif ( $t eq 'VARS' ) {
                 $code .=
-                    q{  $out .= $stash_} . $names[$current_stash] . q{->get(} .
+                    q{  $out .= $stash_} . $names[$current_stash[-1]] . q{->get(} .
                     quote_lists(@$val) . qq{)};
             }
             for my $concat (@$val) {
@@ -178,7 +182,7 @@ sub compile_tmpl {
                 }
                 elsif ( $ct eq 'VARS' ) {
                     $code .=
-                        qq{\n    . \$stash_} . $names[$current_stash] . q{->get(qw(} .
+                        qq{\n    . \$stash_} . $names[$current_stash[-1]] . q{->get(qw(} .
                         join( ' ', @$cv ) . qq{))};
                 }
             }
@@ -194,7 +198,7 @@ sub compile_tmpl {
     return $code;
 }
 
-sub _add_tmpl {
+sub add_template {
     my ( $self, $tmpl_name, $tmpl_str ) = @_;
     my $AST = $self->parse_tmpl($tmpl_str);
     $AST = $self->_optimize_tmpl($AST);
@@ -208,7 +212,7 @@ sub process_str {
 
     my $compiled_tmpl;
     unless ( $compiled_tmpl = $self->_get_template($tmpl_name) ) {
-        $compiled_tmpl = $self->_add_tmpl($tmpl_name, $tmpl_str );
+        $compiled_tmpl = $self->add_template($tmpl_name, $tmpl_str );
     }
     return $self->process( $tmpl_name, $stash );
 }

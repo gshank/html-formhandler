@@ -319,12 +319,35 @@ TEST: [% some_var %] [% IF reason %]reason="[% reason %]"[% END %]
 stop test
 END
 
-$DB::single=1;
-$tt->_add_tmpl('test_if', $template);
+$tt->add_template('test_if', $template);
 ok( $tt->_has_template('test_if'), 'template has been added' );
 $out = $tt->process( 'test_if', { some_var => "Here it is" } );
 ok( $out, 'got output' );
 
+my $widget = <<'END';
+<input type="text" name="[% html_name %]" id="[% id %]" 
+    [% IF size %] size="[% size %]"[% END %] 
+    [% IF maxlength %] maxlength="[% maxlength %]"[% END %]
+    value="[% fif %]">
+END
+
+$DB::single=1;
+$tt->add_template('widget', $widget);
+ok( $tt->_has_template('widget'), 'widget template added' );
+$out = $tt->process('widget', {
+        html_name => 'test_field',
+        id => 'abc1',
+        size => 40,
+        maxlength => 50,
+        fif => 'my_test',
+    });
+ok( $out, 'got output' );
+my $output = 
+'<input type="text" name="test_field" id="abc1" 
+     size="40" 
+     maxlength="50"
+    value="my_test">';
+is( $out, $output, 'output matches' );
 
 
 
