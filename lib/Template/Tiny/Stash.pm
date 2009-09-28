@@ -1,4 +1,4 @@
-package HTML::FormHandler::Template::Stash;
+package Template::Tiny::Stash;
 
 use Moose;
 

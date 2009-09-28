@@ -1,6 +1,7 @@
-package HTML::FormHandler::Template;
+package Template::Tiny;
 
-use Moose::Role;
+use Moose;
+use aliased 'Template::Tiny::Stash';
 
 our $TMPL_CODE_START = <<'END';
 sub {
@@ -20,6 +21,19 @@ has tmpl_include_path => (
     default  => sub { [qw(.)] },
 );
 
+has '_templates' => (
+    traits => ['Hash'],
+    is => 'ro',
+    isa => 'HashRef',
+    default => sub {{}},
+    handles => {
+       _set_template => 'set',
+       _get_template => 'get',
+       _has_template => 'exists',
+    }
+);
+
+
 my ( $START, $END ) = map { qr{\Q$_\E} } qw([% %]);
 my $tmpl_declaration = qr{$START (?:.+?) $END}x;
 my $tmpl_text        = qr{
@@ -33,6 +47,7 @@ my $tmpl_ident = qr{
                     # with a letter; everything must be lower case
 }x;
 my $tmpl_section = qr{ SECTION \s+ ($tmpl_ident) }x;
+my $tmpl_if = qr{ IF \s+ ($tmpl_ident) }x;
 my $tmpl_include = qr{ INCLUDE \s+ ["']? ([^"']+) ["']?  }x;
 my $tmpl_vars = qr{ (?: \s* \| \s* )?  ( $tmpl_ident ) }x;
 my $tmpl_directive = qr{
@@ -40,6 +55,7 @@ my $tmpl_directive = qr{
         \s*?
         (END
             | $tmpl_section
+            | $tmpl_if
             | $tmpl_include
             | [a-z0-9_\s\|]+
         )
@@ -53,13 +69,17 @@ sub parse_tmpl {
     my @AST;
     while ( my $chunk = shift @chunks ) {
         if ( my ($dir) = $chunk =~ $tmpl_directive ) {
-            if ( my ($name) = $dir =~ $tmpl_section ) {
-                $name =~ s/['"]//g;
-                push @AST, [ SECTION => $name ];
+            if ( my ($sec_name) = $dir =~ $tmpl_section ) {
+                $sec_name =~ s/['"]//g;
+                push @AST, [ SECTION => $sec_name ];
             }
-            elsif ( my ($nm) = $dir =~ $tmpl_include ) {
-                $nm =~ s/['"]//g;
-                push @AST, [ INCLUDE => $nm ];
+            elsif ( my ($if_name) = $dir =~ $tmpl_if ) {
+                $if_name =~ s/['"]//g;
+                push @AST, [ IF => $if_name ];
+            }
+            elsif ( my ($inc_name) = $dir =~ $tmpl_include ) {
+                $inc_name =~ s/['"]//g;
+                push @AST, [ INCLUDE => $inc_name ];
             }
             elsif ( $dir =~ m{END} ) {
                 push @AST, ['END'];
@@ -104,7 +124,8 @@ sub _optimize_tmpl {
 sub compile_tmpl {
     my ( $self, $AST ) = @_;
 
-    my $current_level ||= 0;
+    my $current_level = 0;
+    my $current_stash = 0; 
     my $code = '';
     if ( !$current_level ) {
         $code .= $TMPL_CODE_START;
@@ -118,17 +139,24 @@ sub compile_tmpl {
         }
         elsif ( $type eq 'VARS' ) {
             $code .=
-                q{  $out .= $stash_} . $names[$current_level] . q{->get(qw(} .
-                join( ' ', @$val ) . qq{));\n};
+                q{  $out .= $stash_} . $names[$current_stash] . q{->get(} .
+                quote_lists(@$val) . qq{);\n};
         }
         elsif ( $type eq 'END' ) {
             $code .= "  }\n";
             $current_level--;
+            $current_stash--;
         }
         elsif ( $type eq 'SECTION' ) {
-            my $old = $names[$current_level];
-            my $new = $names[ ++$current_level ];
+            my $old = $names[$current_stash];
+            my $new = $names[ ++$current_stash ];
+            $current_level++;
             $code .= "  for my \$stash_$new ( \$stash_$old\->sections('$val') ) {\n";
+        }
+        elsif ( $type eq 'IF' ) {
+           $current_level++;
+           my $cur = $names[$current_stash];
+           $code .= " if ( \$stash_$cur->get('$val') ) {\n";
         }
         elsif ( $type eq 'CONCAT' ) {
             my ( $t, $v ) = @{ shift @$val };
@@ -138,8 +166,8 @@ sub compile_tmpl {
             }
             elsif ( $t eq 'VARS' ) {
                 $code .=
-                    q{  $out .= $stash_} . $names[$current_level] . q{->get(qw(} .
-                    join( ' ', @$v ) . qq{))};
+                    q{  $out .= $stash_} . $names[$current_stash] . q{->get(} .
+                    quote_lists(@$val) . qq{)};
             }
             for my $concat (@$val) {
                 my ( $ct, $cv ) = @$concat;
@@ -150,7 +178,7 @@ sub compile_tmpl {
                 }
                 elsif ( $ct eq 'VARS' ) {
                     $code .=
-                        qq{\n    . \$stash_} . $names[$current_level] . q{->get(qw(} .
+                        qq{\n    . \$stash_} . $names[$current_stash] . q{->get(qw(} .
                         join( ' ', @$cv ) . qq{))};
                 }
             }
@@ -166,27 +194,46 @@ sub compile_tmpl {
     return $code;
 }
 
-my $compiled_tpls = {};
+sub _add_tmpl {
+    my ( $self, $tmpl_name, $tmpl_str ) = @_;
+    my $AST = $self->parse_tmpl($tmpl_str);
+    $AST = $self->_optimize_tmpl($AST);
+    my $code_str = $self->compile_tmpl($AST);
+    my $coderef = eval($code_str) or die "Could not compile template: $@";
+    $self->_set_template( $tmpl_name, $coderef );
+}
 
-sub process_tmpl {
+sub process_str {
     my ( $self, $tmpl_name, $tmpl_str, $stash ) = @_;
-$DB::single=1;
-    my $compile = $compiled_tpls->{$tmpl_name} ||= do {
-        my $AST = $self->parse_tmpl($tmpl_str);
-        $AST = $self->_optimize_tmpl($AST);
-        my $code_str = $self->compile_tmpl($AST);
-        my $coderef = eval($code_str) or die "Could not compile template: $@";
-    };
-    my $out = $compile->($stash);
+
+    my $compiled_tmpl;
+    unless ( $compiled_tmpl = $self->_get_template($tmpl_name) ) {
+        $compiled_tmpl = $self->_add_tmpl($tmpl_name, $tmpl_str );
+    }
+    return $self->process( $tmpl_name, $stash );
+}
+
+sub process {
+    my ( $self, $tmpl_name, $stash ) = @_;
+    die "Template does not exist" unless $self->_has_template( $tmpl_name );
+    my $compiled_tmpl = $self->_get_template($tmpl_name );
+    if( ref $stash eq 'HASH' ) {
+       $stash = Stash->new($stash);
+    } 
+    my $out = $compiled_tmpl->($stash);
     return $out;
 }
 
-sub process_tmpl_file {
+
+sub process_file {
    my ( $self, $tmpl_file, $stash ) = @_;
-   my $tmpl_str = '';
-   $tmpl_str .= $self->_get_tmpl_str($tmpl_file) 
-                   unless $compiled_tpls->{$tmpl_file};
-   return $self->process_tmpl( $tmpl_file, $tmpl_str, $stash );
+   if( $self->_has_template( $tmpl_file ) ) {
+       return $self->process( $tmpl_file, $stash );
+   }
+   else {
+       my $tmpl_str = $self->_get_tmpl_str( $tmpl_file );
+       return $self->process_str( $tmpl_file, $tmpl_str, $stash );
+   }
 }
 
 sub _get_tmpl_str {
@@ -207,6 +254,18 @@ sub _get_tmpl_str {
     $tpl_str .= do { local $/; <$fh>; };
     close $fh or die "Could not close '$file': $!";
     return $tpl_str;
+}
+
+sub quote_lists {
+    my @list = @_;
+    my $string = '';
+    my $sep = '';
+    foreach my $val (@list) {
+        $string .= $sep;
+        $string .= "'$val'";
+        $sep = ', ';
+    }
+    return $string;
 }
 
 1;
