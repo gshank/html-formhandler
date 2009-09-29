@@ -67,8 +67,6 @@ sub fif {
 
 HTML::FormHandler Contributors; see HTML::FormHandler
 
-Initially based on the original source code of L<Form::Processor::Field> by Bill Moseley
-
 =head1 COPYRIGHT
 
 This library is free software, you can redistribute it and/or modify it under
