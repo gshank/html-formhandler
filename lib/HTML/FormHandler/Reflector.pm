@@ -53,6 +53,9 @@ sub reflect {
     my ($self) = @_;
     my $target = $self->target_metaclass;
 
+    # XXX: at some point we probably want to reflect a form instance out of a
+    # metaclass, but most of the logic is the same really, so for now we just
+    # rely on the formhandler metaclass trait to be there
     $target->add_to_field_list($_)
         for $self->reflect_class($self->metaclass);
 
@@ -64,7 +67,9 @@ sub reflect_class {
 
     return map {
         $self->reflect_attribute($_)
-    } sort {
+    } sort { # XXX: i suppose fields might want to decide on their order themself, probably using the
+             # Form trait and either some numeric order, or something like "after $that field". we
+             # quite possibly also want to accept a custom sort function as well.
         $a->has_insertion_order && $b->has_insertion_order ? $a->insertion_order <=> $b->insertion_order
       : $a->has_insertion_order                            ? -1
       : $b->has_insertion_order                            ?  1
