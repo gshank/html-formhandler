@@ -9,11 +9,11 @@ use Test::More;
     use namespace::autoclean;
 
     has bar => (is => 'ro', isa => Str);
-    has baz => (is => 'ro', isa => Num);
+    has baz => (is => 'rw', isa => Num);
 
     has corge => (
         traits   => [qw(FormHandler::NoField)],
-        is       => 'ro',
+        is       => 'rw',
         init_arg => undef,
         lazy     => 1,
         default  => sub { shift->bar },
@@ -21,7 +21,7 @@ use Test::More;
 
     has fred => (
         traits   => [qw(FormHandler::Field)],
-        is       => 'ro',
+        is       => 'rw',
         isa      => Str,
         required => 1,
         form     => {
@@ -60,7 +60,7 @@ isa_ok($form, 'HTML::FormHandler');
 my @fields = $form->fields;
 is_deeply(
     [sort map { $_->name } @fields],
-    [qw/bar baz fred submit/],
+    [qw/baz fred submit/],
     'form has fields for every attribute',
 );
 

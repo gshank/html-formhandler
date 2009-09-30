@@ -80,7 +80,10 @@ sub reflect_class {
 sub reflect_attribute {
     my ($self, $attr) = @_;
 
-    return () if $attr->does(NoField);
+    return () if $attr->does(NoField)
+      || !$attr->has_write_method; # XXX: we should probably include them anyway and give them a field
+                                   # type that just displays the value instead of making it editable, at
+                                   # least by default.
 
     my %field = (
         name     => $attr->name,
