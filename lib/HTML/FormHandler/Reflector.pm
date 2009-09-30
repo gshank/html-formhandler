@@ -75,7 +75,7 @@ sub reflect_attribute {
     my %field = (
         name     => $attr->name,
         required => $attr->is_required,
-        type     => 'Text',
+        type     => 'Text', # XXX: we need a typemap, and something with sane defaults for it
     );
 
     if ($attr->has_type_constraint) {
