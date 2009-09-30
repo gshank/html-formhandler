@@ -72,13 +72,28 @@ sub reflect_attribute {
 
     return () if $attr->does(NoField);
 
-    return {
-        name => $attr->name,
-        type => 'Text',
-        ($attr->does(Field)
-            ? %{ $attr->form }
-            : ()),
-    };
+    my %field = (
+        name     => $attr->name,
+        required => $attr->is_required,
+        type     => 'Text',
+    );
+
+    if ($attr->has_type_constraint) {
+        my $tc = $attr->type_constraint;
+
+        $field{apply} = [
+            { transform => ($tc->has_coercion
+                            ? sub { $tc->coerce($_[0]) }
+                            : sub { }) },
+            { check   => sub { $tc->check($_[0]) },
+              message => 'invalid' }, # XXX: tweak formhandler to not expect people to know their error message in advance
+        ];
+    }
+
+    %field = (%field, %{ $attr->form })
+        if $attr->does(Field);
+
+    return \%field;
 }
 
 __PACKAGE__->meta->make_immutable;
