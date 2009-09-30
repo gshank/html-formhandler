@@ -64,6 +64,11 @@ sub reflect_class {
 
     return map {
         $self->reflect_attribute($_)
+    } sort {
+        $a->has_insertion_order && $b->has_insertion_order ? $a->insertion_order <=> $b->insertion_order
+      : $a->has_insertion_order                            ? -1
+      : $b->has_insertion_order                            ?  1
+      :                                                       0
     } $metaclass->get_all_attributes;
 }
 
