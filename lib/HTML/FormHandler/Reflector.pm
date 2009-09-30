@@ -90,7 +90,7 @@ sub reflect_attribute {
         ];
     }
 
-    %field = (%field, %{ $attr->form })
+    %field = (%field, %{ $attr->form || {} })
         if $attr->does(Field);
 
     return \%field;
