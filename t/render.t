@@ -174,4 +174,16 @@ ok( $output, 'get rendered output from form');
 
 is( $form->render_field( $form->field('no_render')), '', 'no_render' );
 
+{
+    package Test::Field::Rendering;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'my_html' => ( type => 'Display', html => '<h2>You got here!</h2>' );
+
+}
+
+$form = Test::Field::Rendering->new;
+is( $form->field('my_html')->render, '<h2>You got here!</h2>', 'display field renders' );
+
 done_testing;

@@ -287,10 +287,18 @@ sub new_field_with_traits {
         $widget_wrapper = $class->meta->get_attribute('widget')->default if $attr;
         $widget_wrapper ||= 'Simple';
     }
+    my @traits;
+    if( $field_attr->{traits} ) {
+        @traits = @{$field_attr->{traits}};
+        delete $field_attr->{traits};
+    }
     if( $widget ) {
         my $widget_role = $self->get_widget_role( $widget, 'Field' );
         my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
-        $field = $class->new_with_traits( traits => [$widget_role, $wrapper_role], %{$field_attr} );
+        push @traits, $widget_role, $wrapper_role;
+    }
+    if( @traits ) {
+        $field = $class->new_with_traits( traits => \@traits, %{$field_attr} ); 
     }
     else { 
         $field = $class->new( %{$field_attr} );

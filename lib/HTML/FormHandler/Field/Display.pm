@@ -17,6 +17,7 @@ need validating.
 
 =cut
 
+has 'html' => ( is => 'ro', isa => 'Str', default => '' );
 has 'has_static_value' => ( is => 'ro', default => 1 );
 has 'value' => (
     is        => 'rw',
@@ -46,13 +47,18 @@ sub _result_from_object {
 
 sub fif { }
 
-has '+widget'    => ( default => 'display' );
+has '+widget'    => ( default => '' );
 has '+writeonly' => ( default => 1 );
 has '+noupdate'  => ( default => 1 );
 
 sub validate_field { }
 
 sub clear_value { }
+
+sub render {
+    my $self = shift;
+    return $self->html;
+}
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
