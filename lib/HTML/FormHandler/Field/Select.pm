@@ -329,7 +329,7 @@ sub _load_options {
     if ( ref $options[0] eq 'ARRAY' ) {
         @options = @{ $options[0] };
     }
-
+    return unless @options;
     my $opts;
     # if options_<field_name> is returning an already constructed array of hashrefs
     if ( ref $options[0] eq 'HASH' ) {
@@ -340,7 +340,7 @@ sub _load_options {
             if @options % 2;
         push @{$opts}, { value => shift @options, label => shift @options } while @options;
     }
-    if (@$opts) {
+    if ($opts) {
         my $opts = $self->sort_options($opts);    # allow sorting options
         $self->options($opts);
     }
