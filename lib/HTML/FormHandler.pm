@@ -956,6 +956,13 @@ sub _munge_params {
     $self->{params} = $new_params;
 }
 
+after 'get_error_fields' => sub {
+   my $self = shift;
+   foreach my $err_res (@{$self->result->error_results}) {
+       $self->result->push_errors($err_res->all_errors);
+   }
+};
+
 =head1 SUPPORT
 
 IRC:
