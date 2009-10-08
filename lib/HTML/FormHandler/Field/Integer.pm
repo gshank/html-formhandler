@@ -16,7 +16,7 @@ apply(
                 }
         },
         {
-            check => sub { $_[0] =~ /^-?\d+$/ },
+            check => sub { $_[0] =~ /^-?[0-9]+$/ },
             message => 'Value must be an integer'
         }
     ]
