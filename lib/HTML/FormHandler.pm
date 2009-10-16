@@ -840,11 +840,11 @@ sub setup_form {
                 unless $self->can($key);
             $self->$key($value);
         }
-        $self->set_active if $self->has_active;
     }
     if ( $self->item_id && !$self->item ) {
         $self->item( $self->build_item );
     }
+    $self->set_active;
     # initialization of Repeatable fields and Select options
     # will be done in _result_from_object when there's an initial object
     # in _result_from_input when there are params
@@ -867,6 +867,7 @@ sub setup_form {
 # if active => [...] is set at process time, set 'active' flag
 sub set_active {
     my $self = shift;
+    return unless $self->has_active;
     foreach my $fname (@{$self->active}) {
         my $field = $self->field($fname);
         if ( $field ) {

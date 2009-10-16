@@ -66,10 +66,10 @@ of them 'inactive';
 Then you can mark them active using a Moose method modifier on
 'setup_form'.
 
-   before 'setup_form' => sub {
+   before 'set_active' => sub {
       my $self = shift;
       $self->active(['foo', bar']) if ( <some_condition> );
-   }
+   };
 
 Or on the 'process' call:
 
