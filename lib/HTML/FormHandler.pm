@@ -621,6 +621,7 @@ has 'active' => (
     isa => 'ArrayRef[Str]',
     default => sub {[]},
     handles => {
+        add_active => 'push',
         has_active => 'count',
         clear_active => 'clear',
     } 
