@@ -852,7 +852,7 @@ sub setup_form {
     $self->clear_result;
     if ( !$self->did_init_obj ) {
         if ( $self->init_object || $self->item ) {
-            my $obj = ($self->item && $self->item_id) ? $self->item : $self->init_object; 
+            my $obj = $self->item ? $self->item : $self->init_object; 
             $self->_result_from_object( $self->result, $obj ); 
         }
         elsif ( !$self->has_params ) {
