@@ -27,7 +27,7 @@ Use this module instead of C< use Moose; >
 =cut
 
 Moose::Exporter->setup_import_methods(
-    with_caller => [ 'has_field', 'apply' ],
+    with_meta => [ 'has_field', 'apply' ],
     also        => 'Moose',
 );
 
@@ -44,15 +44,15 @@ sub init_meta {
 }
 
 sub has_field {
-    my ( $class, $name, %options ) = @_;
+    my ( $meta, $name, %options ) = @_;
 
-    $class->meta->add_to_field_list( { name => $name, %options } );
+    $meta->add_to_field_list( { name => $name, %options } );
 }
 
 sub apply {
-    my ( $class, $arrayref ) = @_;
+    my ( $meta, $arrayref ) = @_;
 
-    $class->meta->add_to_apply_list( @{$arrayref} );
+    $meta->add_to_apply_list( @{$arrayref} );
 }
 
 =head1 AUTHOR
