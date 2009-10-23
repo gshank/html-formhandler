@@ -621,6 +621,7 @@ has 'active' => (
     isa => 'ArrayRef[Str]',
     default => sub {[]},
     handles => {
+        add_active => 'push',
         has_active => 'count',
         clear_active => 'clear',
     } 
@@ -839,11 +840,11 @@ sub setup_form {
                 unless $self->can($key);
             $self->$key($value);
         }
-        $self->set_active if $self->has_active;
     }
     if ( $self->item_id && !$self->item ) {
         $self->item( $self->build_item );
     }
+    $self->set_active;
     # initialization of Repeatable fields and Select options
     # will be done in _result_from_object when there's an initial object
     # in _result_from_input when there are params
@@ -851,7 +852,7 @@ sub setup_form {
     $self->clear_result;
     if ( !$self->did_init_obj ) {
         if ( $self->init_object || $self->item ) {
-            my $obj = ($self->item && $self->item_id) ? $self->item : $self->init_object; 
+            my $obj = $self->item ? $self->item : $self->init_object; 
             $self->_result_from_object( $self->result, $obj ); 
         }
         elsif ( !$self->has_params ) {
@@ -866,6 +867,7 @@ sub setup_form {
 # if active => [...] is set at process time, set 'active' flag
 sub set_active {
     my $self = shift;
+    return unless $self->has_active;
     foreach my $fname (@{$self->active}) {
         my $field = $self->field($fname);
         if ( $field ) {
