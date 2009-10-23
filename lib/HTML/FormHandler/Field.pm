@@ -483,7 +483,8 @@ Trimming is performed before any other defined actions.
 
 A 'deflation' is a coderef that will convert from an inflated value back to a 
 flat data representation suitable for displaying in an HTML field.
-A deflation is automatically used for data that is taken from the database.
+If deflation is defined for a field it is automatically used for data that is 
+taken from the database.
 For the fill-in-form value (fif) usually the fif string is taken straight from 
 the input string if it exists, so if you want to use a deflated value instead, set
 the 'fif_from_value' flag on the field. Normally you'd only need to do that if
@@ -493,7 +494,7 @@ the year and you want to re-display it as '2009'.
    has_field 'my_date_time' => (
       type => 'Compound',
       apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
-      deflation => sub { { year => $_->year, month => $_->month, day => $_->day } },
+      deflation => sub { { year => $_[0]->year, month => $_[0]->month, day => $_[0]->day } },
       fif_from_value => 1,
    );
    has_field 'my_date_time.year' => ( fif_from_value => 1 );
