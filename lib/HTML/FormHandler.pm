@@ -808,8 +808,9 @@ sub validate_form {
     $self->_set_dependency;    # set required dependencies
     $self->_fields_validate;
     $self->_apply_actions;
-    $self->validate();         # empty method for users
+    $self->validate;           # empty method for users
     $self->validate_model;     # model specific validation
+    $self->fields_set_value;
     $self->_clear_dependency;
     $self->get_error_fields;
     $self->ran_validation(1);

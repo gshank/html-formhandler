@@ -144,6 +144,17 @@ sub _fields_validate {
     $self->_set_value( \%value_hash );
 }
 
+sub fields_set_value {
+    my $self = shift; 
+    my %value_hash;
+    foreach my $field ( $self->all_fields ) {
+        next if ( ($field->inactive && !$field->_active) || !$field->has_result );
+        $value_hash{ $field->accessor } = $field->value
+            if ( $field->has_value && !$field->noupdate );
+    }
+    $self->_set_value( \%value_hash );
+}
+
 sub fields_fif {
     my ( $self, $result, $prefix ) = @_;
 

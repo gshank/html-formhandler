@@ -156,6 +156,26 @@ if ( !$form->process( params => { bar => 1, } ) )
 $form = HTML::FormHandler->new( name => 'baz', html_prefix => 1, field_list => [ 'foo' ] );
 eval{  $form->process( params => {  'baz.foo' => 'bar', 'baz.foo.x' => 42, 'baz.foo.y' => 23  } ) };
 ok( !$@, 'image field processed' ) or diag $@;
-is_deeply( $form->field( 'foo' )->value, { '' => 'bar', x => 42, y => 23 } );
+is_deeply( $form->field( 'foo' )->value, { '' => 'bar', x => 42, y => 23 }, 'image field' );
+
+{
+    package Test::Form;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+    
+    has_field 'foo';
+    has_field 'bar';
+
+    sub validate {
+       my $self = shift;
+       if( $self->field('foo')->value eq 'cow' ) {
+           $self->field('foo')->value('bovine');
+       }
+   }
+}
+$form = Test::Form->new;
+$form->process( { foo => 'cow', bar => 'horse' } );
+is_deeply( $form->value, { foo => 'bovine', bar => 'horse' }, 'correct value' );
+     
 
 done_testing;
