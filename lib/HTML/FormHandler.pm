@@ -861,8 +861,14 @@ sub setup_form {
             $self->_result_from_fields( $self->result );
         }
     }
+    # There's some weirdness here because of trying to support supplying
+    # the db object in the ->new. May change to not support that? 
     my %params = ( %{ $self->params } );
-    $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
+    if ( $self->has_params ) {
+        $self->clear_result;
+        $self->_result_from_input( $self->result, \%params, 1 );
+    }
+
 }
 
 # if active => [...] is set at process time, set 'active' flag
