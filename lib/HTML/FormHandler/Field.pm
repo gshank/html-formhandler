@@ -669,8 +669,15 @@ has 'label' => (
     isa     => 'Str',
     is      => 'rw',
     lazy    => 1,
-    default => sub { ucfirst( shift->name ) },
+    builder => 'build_label',
 );
+sub build_label {
+    my $self = shift;
+    my $label = $self->name;
+    $label =~ s/_//g;
+    $label = ucfirst($label);
+    return $label;
+}
 has 'title'     => ( isa => 'Str',               is => 'rw' );
 has 'style'     => ( isa => 'Str',               is => 'rw' );
 has 'css_class' => ( isa => 'Str',               is => 'rw' );
