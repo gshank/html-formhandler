@@ -674,7 +674,7 @@ has 'label' => (
 sub build_label {
     my $self = shift;
     my $label = $self->name;
-    $label =~ s/_//g;
+    $label =~ s/_/ /g;
     $label = ucfirst($label);
     return $label;
 }
