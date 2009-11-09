@@ -7,12 +7,12 @@ class ::Entry::OptionsFromTrait
     use MooseX::Types::Moose qw(RoleName Str);
 
     has trait => (
-        is => 'ro',
+        is  => 'ro',
         isa => RoleName,
     );
 
     has option_reader => (
-        is => 'ro',
+        is  => 'ro',
         isa => Str,
     );
 

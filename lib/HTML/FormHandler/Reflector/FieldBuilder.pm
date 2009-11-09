@@ -5,9 +5,9 @@ class HTML::FormHandler::Reflector::FieldBuilder {
     use HTML::FormHandler::Reflector::Types qw(FieldBuilderEntry);
 
     has entries => (
-        is => 'ro',
-        isa => ArrayRef[FieldBuilderEntry],
-        lazy => 1,
+        is      => 'ro',
+        isa     => ArrayRef[FieldBuilderEntry],
+        lazy    => 1,
         builder => '_build_entries',
     );
 

@@ -1,13 +1,13 @@
 use MooseX::Declare;
 
-namespace HTML::FormHandler::Reflector;
+namespace HTML::FormHandler::Reflector::FieldBuilder;
 
-class ::FieldBuilder::Entry::SkipField
-  with ::FieldBuilder::Entry {
+class ::Entry::SkipField
+  with ::Entry {
     use MooseX::Types::Moose qw(CodeRef);
 
     has filter => (
-        is => 'ro',
+        is  => 'ro',
         isa => CodeRef,
     );
 

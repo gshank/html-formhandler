@@ -52,7 +52,7 @@ class ::FieldBuilder::Default
             }),
             ValidateWithConstraint->new,
             OptionsFromTrait->new({
-                trait => FieldTrait,
+                trait         => FieldTrait,
                 option_reader => 'form',
             }),
             @{ $self->extra_entries },

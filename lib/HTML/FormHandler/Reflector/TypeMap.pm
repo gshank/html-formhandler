@@ -8,23 +8,23 @@ class HTML::FormHandler::Reflector::TypeMap {
     use HTML::FormHandler::Reflector::Types qw(TypeMapEntry);
 
     has entries => (
-        is => 'ro',
-        isa => ArrayRef[TypeMapEntry],
-        lazy => 1,
+        is      => 'ro',
+        isa     => ArrayRef[TypeMapEntry],
+        lazy    => 1,
         builder => '_build_entries',
     );
 
     has subtype_entries => (
-        is => 'ro',
-        isa => ArrayRef[TypeMapEntry],
-        lazy => 1,
+        is      => 'ro',
+        isa     => ArrayRef[TypeMapEntry],
+        lazy    => 1,
         builder => '_build_subtype_entries',
     );
 
     has _sorted_entries => (
-        is => 'ro',
-        isa => ArrayRef[ArrayRef[TypeMapEntry]],
-        lazy => 1,
+        is      => 'ro',
+        isa     => ArrayRef[ArrayRef[TypeMapEntry]],
+        lazy    => 1,
         builder => '_build__sorted_entries',
     );
 

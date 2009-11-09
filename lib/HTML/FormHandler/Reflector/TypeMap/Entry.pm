@@ -2,7 +2,7 @@ use MooseX::Declare;
 
 class HTML::FormHandler::Reflector::TypeMap::Entry {
     has type_constraint => (
-        is => 'ro',
+        is  => 'ro',
         isa => 'Moose::Meta::TypeConstraint',
     );
 

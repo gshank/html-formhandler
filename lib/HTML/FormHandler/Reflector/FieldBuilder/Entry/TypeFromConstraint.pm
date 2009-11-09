@@ -1,17 +1,17 @@
 use MooseX::Declare;
 
-namespace HTML::FormHandler::Reflector;
+namespace HTML::FormHandler::Reflector::FieldBuilder;
 
-class ::FieldBuilder::Entry::TypeFromConstraint
-  with ::FieldBuilder::Entry {
+class ::Entry::TypeFromConstraint
+  with ::Entry {
     use HTML::FormHandler::Reflector::Types qw(TypeMap);
 
     has typemap => (
-        is => 'ro',
+        is  => 'ro',
         isa => TypeMap,
     );
 
-    method match ($attr) { 
+    method match ($attr) {
         $attr->has_type_constraint && $self->typemap->has_entry_for($attr->type_constraint)
     }
 
