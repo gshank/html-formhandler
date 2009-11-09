@@ -8,7 +8,7 @@ class ::FieldBuilder::Entry::ValidateWithConstraint
     method apply ($attr) {
         (apply => [
             { check   => method ($val:) { $attr->type_constraint->check($val) }->body,
-              message => 'FIXME' },
+              message => method ($val:) { $attr->type_constraint->get_message($val) }->body, },
             ($attr->type_constraint->has_coercion
                 ? ({ transform => method ($val:) { $attr->type_constraint->coerce($val) }->body })
                 : ()),
