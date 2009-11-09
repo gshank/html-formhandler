@@ -59,7 +59,7 @@ isa_ok($form, 'HTML::FormHandler');
 
 my @fields = $form->fields;
 is_deeply(
-    [sort map { $_->name } @fields],
+    [sort map { $_->name } grep { !$_->inactive } @fields],
     [qw/baz fred submit/],
     'form has fields for every attribute',
 );
