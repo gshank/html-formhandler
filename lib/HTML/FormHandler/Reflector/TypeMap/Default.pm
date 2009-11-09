@@ -28,6 +28,11 @@ class ::TypeMap::Default
                 type_constraint => Item,
                 data            => sub { (type => 'Text') },
             }),
+            @{ $self->extra_entries },
         ];
+    }
+
+    method _build_subtype_entries {
+        return [@{ $self->extra_subtype_entries }];
     }
 }
