@@ -2,8 +2,10 @@ package HTML::FormHandler::Reflector;
 
 use Moose;
 use MooseX::Types::Moose qw/Object Str/;
+use HTML::FormHandler::Reflector::Types qw/FieldBuilder/;
 use aliased 'HTML::FormHandler::Reflector::Meta::Attribute::NoField';
 use aliased 'HTML::FormHandler::Reflector::Meta::Attribute::Field';
+use aliased 'HTML::FormHandler::Reflector::FieldBuilder::Default', 'DefaultFieldBuilder';
 
 use namespace::autoclean;
 
@@ -24,6 +26,12 @@ has target_metaclass => (
     isa     => Object,
     lazy    => 1,
     builder => '_build_target_metaclass',
+);
+
+has field_builder => (
+    is      => 'ro',
+    isa     => FieldBuilder,
+    default => sub { DefaultFieldBuilder->new },
 );
 
 sub _build_target_metaclass {
@@ -79,34 +87,7 @@ sub reflect_class {
 
 sub reflect_attribute {
     my ($self, $attr) = @_;
-
-    return () if $attr->does(NoField)
-      || !$attr->has_write_method; # XXX: we should probably include them anyway and give them a field
-                                   # type that just displays the value instead of making it editable, at
-                                   # least by default.
-
-    my %field = (
-        name     => $attr->name,
-        required => $attr->is_required,
-        type     => 'Text', # XXX: we need a typemap, and something with sane defaults for it
-    );
-
-    if ($attr->has_type_constraint) {
-        my $tc = $attr->type_constraint;
-
-        $field{apply} = [
-            { transform => ($tc->has_coercion
-                            ? sub { $tc->coerce($_[0]) }
-                            : sub { }) },
-            { check   => sub { $tc->check($_[0]) },
-              message => 'invalid' }, # XXX: tweak formhandler to not expect people to know their error message in advance
-        ];
-    }
-
-    %field = (%field, %{ $attr->form || {} })
-        if $attr->does(Field);
-
-    return \%field;
+    return $self->field_builder->resolve($attr);
 }
 
 __PACKAGE__->meta->make_immutable;
