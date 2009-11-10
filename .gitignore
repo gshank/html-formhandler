@@ -4,6 +4,6 @@ blib
 pm_to_blib
 MANIFEST
 META.yml
-Makefile
+Makefile*
 Makefile.old
 MANIFEST.bak
