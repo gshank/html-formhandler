@@ -31,6 +31,7 @@ requires 'aliased';
 requires 'File::Spec';
 requires 'Class::Load' => '0.05';
 requires 'Hash::Util::FieldHash::Compat';
+requires 'Template::Snippets';
 requires 'namespace::autoclean' => '0.09';
 
 # things the tests need

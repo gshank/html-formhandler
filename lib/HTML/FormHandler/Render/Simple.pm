@@ -1,6 +1,6 @@
 package HTML::FormHandler::Render::Simple;
 
-use Moose::Role;
+use Template::Snippets::Sugar::Role;
 use HTML::Entities;
 
 requires( 'sorted_fields', 'field' );
@@ -146,25 +146,6 @@ sub render {
     return $output;
 }
 
-sub render_start {
-    my $self   = shift;
-    my $output = '<form ';
-    $output .= 'action="' . $self->action . '" '      if $self->action;
-    $output .= 'id="' . $self->name . '" '            if $self->name;
-    $output .= 'method="' . $self->http_method . '" ' if $self->http_method;
-    $output .= 'enctype="' . $self->enctype . '" '    if $self->enctype;
-    $output .= '>' . "\n";
-    $output .= '<fieldset class="main_fieldset">'     if $self->auto_fieldset;
-    return $output;
-}
-
-sub render_end {
-    my $self = shift;
-    my $output;
-    $output .= '</fieldset>' if $self->auto_fieldset;
-    $output .= "</form>\n";
-    return $output;
-}
 
 sub render_field {
     my ( $self, $field ) = @_;
@@ -224,36 +205,43 @@ sub render_field_struct {
     return $output;
 }
 
-sub render_text {
+sub render_compound {
     my ( $self, $field ) = @_;
-    my $output = '<input type="text" name="';
-    $output .= $field->html_name . '"';
-    $output .= ' id="' . $field->id . '"';
-    $output .= ' size="' . $field->size . '"' if $field->size;
-    $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
-    $output .= ' value="' . encode_entities($field->fif) . '" />';
+
+    my $output = '';
+    foreach my $subfield ( $field->sorted_fields ) {
+        $output .= $self->render_field($subfield);
+    }
     return $output;
 }
 
-sub render_password {
-    my ( $self, $field ) = @_;
-    my $output = '<input type="password" name="';
-    $output .= $field->html_name . '"';
-    $output .= ' id="' . $field->id . '"';
-    $output .= ' size="' . $field->size . '"' if $field->size;
-    $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
-    $output .= ' value="' . encode_entities($field->fif) . '" />';
-    return $output;
-}
+snippet 'start' => ( template => '
+    <form action="[% self.action %]
+          id="[% self.name %]" 
+          method="[% self.http_method %]"
+          enctype="[% self.enctype %]" >
+    [% IF self.auto_fieldset %]<fieldset class="main_fieldset">[% END %]' );
 
-sub render_hidden {
-    my ( $self, $field ) = @_;
-    my $output = '<input type="hidden" name="';
-    $output .= $field->html_name . '"';
-    $output .= ' id="' . $field->id . '"';
-    $output .= ' value="' . encode_entities($field->fif) . '" />';
-    return $output;
-}
+snippet 'end' => ( template => '
+    [% IF self.auto_fieldset %]</fieldset>[% END %]
+    </form>' );
+
+snippet 'widget_text' => ( template => '
+    <input type="text" name="[% field.html_name %]" id="[% field.id %]"
+      [% IF field.size %]size="[% field.size %][% END %]
+      [% IF field.maxlength %]maxlength="[% field.maxlength %]"[% END %]
+      value="[% field.fif %]" />' );
+
+snippet 'widget_password' => ( template => '
+    <input type="password" name="[% field.html_name %]" id="[% field.id %]"
+      [% IF field.size %]size="[% field.size %][% END %]
+      [% IF field.maxlength %]maxlength="[% field.maxlength %]"[% END %]
+      value="[% field.fif %]" />' );
+      
+snippet 'widget_hidden' => ( template => '
+    <input type="hidden" name="[% field.html_name %]" id="[% field.id %]"
+      value="[% field.fif %]" />' );
+   
 
 sub render_select {
     my ( $self, $field ) = @_;
@@ -293,16 +281,24 @@ sub render_select {
     return $output;
 }
 
-sub render_checkbox {
-    my ( $self, $field ) = @_;
+snippet 'widget_select_option' => ( code => sub {
 
-    my $output = '<input type="checkbox" name="' . $field->html_name . '"';
-    $output .= ' id="' . $field->id . '"';
-    $output .= ' value="' . encode_entities($field->checkbox_value) . '"';
-    $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
-    $output .= ' />';
-    return $output;
-}
+    });
+
+snippet 'widget_select' => ( template => '
+    <select name="[% field.html_name %] id="[% field.id %]"
+      [% IF field.multiple eq 1 %]multiple="multiple"[% END %]
+      size="[% field.size %]" >
+      [% FOREACH option IN field.options %]
+        [% INCLUDE widget_select_option %]
+      [% END %]
+      </select>' );
+
+
+
+snippet 'widget_checkbox' => ( template => '
+    <input type="checkbox" name="[% field.html_name %]" id="[% field.id %]
+      [% IF field.fif EQ field.checkbox_value %]checked="checked"[% END %] />');
 
 sub render_radio_group {
     my ( $self, $field ) = @_;
@@ -320,59 +316,20 @@ sub render_radio_group {
     return $output;
 }
 
-sub render_textarea {
-    my ( $self, $field ) = @_;
-    my $fif  = $field->fif || '';
-    my $id   = $field->id;
-    my $cols = $field->cols || 10;
-    my $rows = $field->rows || 5;
-    my $name = $field->html_name;
+snippet 'widget_textarea' => ( template => '
+    <textarea name="[% field.html_name %]" id="[% field.id %]"
+      rows="[% field.rows %]" cols="[% field.cols %]">[% field.fif %]</textarea>' );
 
-    my $output =
-        qq(<textarea name="$name" id="$id" )
-        . qq(rows="$rows" cols="$cols">)
-        . encode_entities($fif)
-        . q(</textarea>);
+snippet 'widget_label' => ( template => '
+    <label class="label" for="[% field.id %]>[% field.label %]: </label>' );
 
-    return $output;
-}
+snippet 'widget_submit' => ( template => '
+    <input type="submit" name="[% field.html_name %] id="[% field.html_name %]"
+      value="[% field.value %] />' );
 
-sub _label {
-    my ( $self, $field ) = @_;
-    return '<label class="label" for="' . $field->id . '">' . 
-        encode_entities($field->label)
-        . ': </label>';
-}
-
-sub render_compound {
-    my ( $self, $field ) = @_;
-
-    my $output = '';
-    foreach my $subfield ( $field->sorted_fields ) {
-        $output .= $self->render_field($subfield);
-    }
-    return $output;
-}
-
-sub render_submit {
-    my ( $self, $field ) = @_;
-
-    my $output = '<input type="submit" name="';
-    $output .= $field->html_name . '"';
-    $output .= ' id="' . $field->id . '"';
-    $output .= ' value="' . encode_entities($field->value) . '" />';
-    return $output;
-}
-
-sub render_reset {
-    my ( $self, $field ) = @_;
-
-    my $output = '<input type="reset" name="';
-    $output .= $field->html_name . '"';
-    $output .= ' id="' . $field->id . '"';
-    $output .= ' value="' . encode_entities($field->value) . '" />';
-    return $output;
-}
+snippet 'widget_reset' => ( template => '
+    <input type="reset" name="[% field.html_name %]" id="[% field.id %]
+      value="[% field.value %] />' );
 
 =head1 AUTHORS
 
