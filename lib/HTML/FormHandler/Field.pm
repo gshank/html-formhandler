@@ -343,7 +343,7 @@ Use the 'apply' keyword to specify an ArrayRef of constraints and coercions to
 be executed on the field at validate_field time.
 
    has_field 'test' => (
-      apply => [ 'MooseType', { check => sub {...}, message => { } }
+      apply => [ 'MooseType', { check => sub {...}, message => { } } ],
    );
 
 In general the action can be of three types: a Moose type (which is
