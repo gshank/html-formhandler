@@ -218,10 +218,6 @@ sub _make_field {
         die "Could not load field class '$type' $class for field '$name'";
 
     $field_attr->{form} = $self->form if $self->form;
-    $field_attr->{widget_wrapper} = $self->widget_wrapper
-        if ( $self->widget_wrapper && !exists $field_attr->{widget_wrapper} );
-    $field_attr->{widget_name_space} = $self->widget_name_space
-        if ( $self->widget_name_space && !exists $field_attr->{widget_name_space} );
     # parent and name correction for names with dots
     if ( $field_attr->{name} =~ /\./ ) {
         my @names       = split /\./, $field_attr->{name};
@@ -263,17 +259,55 @@ sub _update_or_create {
         }
         else               # replace existing field
         {
-            $field = $class->new( %{$field_attr} );
+            $field = $self->new_field_with_traits( $class, $field_attr);
             $parent->set_field_at( $index, $field );
         }
     }
     else                   # new field
     {
-        $field = $class->new( %{$field_attr} );
+        $field = $self->new_field_with_traits( $class, $field_attr);
         $parent->add_field($field);
     }
     $field->form->reload_after_update(1)
         if ( $field->form && $field->reload_after_update );
+}
+
+sub new_field_with_traits {
+    my ( $self, $class, $field_attr ) = @_;
+
+    my $widget = $field_attr->{widget};
+    my $field;
+    unless( $widget ) {
+        my $attr = $class->meta->get_attribute('widget');
+        $widget = $class->meta->get_attribute('widget')->default if $attr;
+    }
+    my $widget_wrapper = $field_attr->{widget_wrapper};
+    unless( $widget_wrapper ) {
+        my $attr = $class->meta->get_attribute('widget_wrapper');
+        $widget_wrapper = $class->meta->get_attribute('widget')->default if $attr;
+        $widget_wrapper ||= 'Simple';
+    }
+    my @traits;
+    if( $field_attr->{traits} ) {
+        @traits = @{$field_attr->{traits}};
+        delete $field_attr->{traits};
+    }
+    if( $widget ) {
+        my $widget_role = $self->get_widget_role( $widget, 'Field' );
+        my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
+        push @traits, $widget_role, $wrapper_role;
+    }
+    if( @traits ) {
+        $field = $class->new_with_traits( traits => \@traits, %{$field_attr} ); 
+    }
+    else { 
+        $field = $class->new( %{$field_attr} );
+    }
+    foreach my $key ( keys %{$field->form->widget_tags} ) {
+        $field->set_tag( $key, $field->form->widget_tags->{$key} )
+             unless $field->tag_exists($key);
+    }
+    return $field;
 }
 
 =head1 AUTHORS
@@ -287,5 +321,5 @@ the same terms as Perl itself.
 
 =cut
 
-no Moose::Role;
+use namespace::autoclean;
 1;

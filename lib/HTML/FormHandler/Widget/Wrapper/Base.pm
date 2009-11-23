@@ -23,5 +23,5 @@ sub render_class {
     return $class;
 }
 
-no Moose::Role;
+use namespace::autoclean;
 1;

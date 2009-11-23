@@ -1,79 +1,65 @@
+HTML::FormHandler
+  form object. contains roles to build fields and a Result object
+HTML::FormHandler::BuildFields
+  Builds the field arrays. Used by HFH & Field::Compound
+HTML::FormHandler::InitResult
+  Methods to initialize the fields
+HTML::FormHandler::Fields
+  Attributes and methods for the Field arrays and accessors
+  Used by HFH and Field::Compound
+HTML::FormHandler::Result
+  Result object that contains non-static data: input, value, errors
+  mostly implemented by HTML::FormHandler::Result::Role
+HTML::FormHandller::Validate
+  Role that hold validation code (used in Field)
+HTML::FormHandler::Validate::Action
+  Role that validates the action array (use in HFH & Field)
+HTML::FormHandler::Field::Compound
+  Implements compound fields, mostly via the Fields role
+HTML::FormHandler::Field::Repeatable
+  Implements repeatable fields
+HTML::FormHandler::Widget::Field::Result
+  Field result object, mostly implemented by HTML::FormHandler::Field::Result 
+HTML::FormHandler::Types
+  Library of Moose types (not used internally)
+HTML::FormHandler::Params
+  munges params from CGI style to hashes and arrays
+HTML::FormHandler::Widget::ApplyRole
+  method to apply widget roles to HFH and Field
+HTML::FormHandler::Widget::Form::*
+  form widgets
+HTML::FormHandler::Widget::Field::*
+  field widgets
+HTML::FormHandler::Widget::Wrapper::*
+  wrapper widgets
 
-Recursive operations
 
-
-Form fields are filled in with input/value by _init_from_object if there's
-  an initial object or model object (row), by the validation process if
-  there are params, and by the '_init' process if there's neither an
+Form fields are filled in with input/value by _result_from_object if there's
+  an initial object or model object (row), by _result_from_input if
+  there are params, and by the '_result_from_fields' if there's neither an
   initial object or params (such as when the form is empty).
+ 
+There are three methods in InitResult (called by setup_form) to do the
+field initialization:
+  _result_from_fields
+  _result_from_input
+  _result_from_object
+
+If there are parameters (i.e. POST) then validation is performed.
+validate_form in HFH calls _fields_validate in the Fields role.
 
 Validation
    validate_form (HFH) 
-     process_node (Fields) 
-        fields_validate (Fields in HFH & Compound)
-           loop through fields doing 'validate_field' (TransformAndCheck in HFH & Field)
-              process_node ( if field is Compound (recursive))
-              _apply_actions (T&C)
-              validate (Field subclasses)
-              _validate (form method pointed to in Field)
+      fields_validate (Fields in HFH & Compound)
+         loop through fields doing 'validate_field' (TransformAndCheck in HFH & Field)
+            fields_validate ( if field is Compound (recursive))
+            _apply_actions (T&C)
+            validate (Field subclasses)
+            _validate (form method pointed to in Field)
       
-_init
-    initially Called in BUILD or setup_form
-    sub _init is in Fields.pm
-      it loops through the fields calling sub _init in Field.pm
-      special processing for _init in Repeatable and Select
+The fields contain weak references to the result objects they contain. Each field
+result object is chained to a parent result object in the _result_from methods.
+Each field contains it's own _result_from methods. The Fields class contains the 
+methods for form and compound fields. Repeatable contains its own versions of these methods.
 
-_init_from_object
-    called in BUILD and setup_form
-
-  Clear (recursive)
-    Clear is called in 'process' in HFH. In Fields.pm the "after 'clear_data'"
-    will fire. It loops through all the fields, and if any of them are also
-    compound, another "after 'clear_date'" will fire.  
-    in HFH
-
-      sub clear # called in 'process'
-      { 
-         my $self = shift;
-         warn "HFH: clear ", $self->name, "\n" if $self->verbose;
-         $self->clear_data;
-         $self->validated(0);
-         $self->ran_validation(0);
-         $self->clear_params;
-         $self->clear_ctx;
-         $self->processed(0);
-         $self->did_init_obj(0);
-      }
-
-      sub clear_data
-      {
-         my $self = shift;
-         $self->clear_value;
-         $self->clear_input;
-      }
-
-   in Fields.pm
-      after clear_data => sub
-      {
-         my $self = shift;
-         $self->clear_error_fields;
-         $self->clear_data for shift->fields;
-      };
-
-   in Field.pm
-
-      sub clear_data
-      {
-         my $self = shift;
-         $self->clear_input;
-         $self->clear_value;
-         $self->clear_fif;
-         $self->clear_errors;
-         $self->clear_init_value;
-         $self->clear_other;
-      }
-      sub clear_other { }
-
-  Field::Repeatable
-      sub clear_other ...
 

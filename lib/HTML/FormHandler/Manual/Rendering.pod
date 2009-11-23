@@ -17,18 +17,17 @@ and now:
 
 =head1 Rendering with Widgets
 
+This feature is still experimental. The functionality will probably remain
+approximately the same, but interfaces may change.
+
 All FormHandler widgets are Moose roles.
-Default widget roles are installed into HTML::FormHandler::Widget. They include
+Default widget roles are found in the HTML::FormHandler::Widget directory. They include
 widgets for the fields in the distribution. Each field can render itself with
 C<< $field->render >>. The widget rendering roles are applied at build time in 
 each field object. 
 
 The name space used to look for the widget roles can be specified on a form or
-field basis by setting 'widget_name_space' to a scalar name space, like:
-
-   has '+widget_name_space' => ( default => 'MyApp::Form::Widget' );
-
-or to an arrayref of name spaces:
+field basis by setting 'widget_name_space' to an arrayref of name spaces:
 
    has '+widget_name_space' => ( default => sub { ['MyApp::Form::Submit',
        'MyApp::Form::Widget' ]);
@@ -79,7 +78,7 @@ Can be set in the field:
 The widget_name_space and widget_wrapper will be copied into the fields from the
 form if they are not already defined.
 
-By default, a form will use the Form::Simple and Wrapper::Div widgets. If you
+By default, a form will use the Form::Simple and Wrapper::Simple widgets. If you
 want to use the table format you can change the 'widget_form' and 'widget_wrapper'
 attributes in the form, or do it on new:
 
@@ -103,11 +102,27 @@ widget name space:
 
    MyApp::Form::User:
    ...
-   has '+widget_name_space' => ( default => 'MyApp::Form::Widget' );
+   has '+widget_name_space' => ( default => sub { ['MyApp::Form::Widget'] } );
    ..
    has 'some_field' => ( widget => 'MyWidget' );
 
 Your rendering widgets will be applied into your field classes.
+
+The 'widget_tags' hashref attribute has been provided to allow customizing
+rendering behavior on a per-field basis. They can be used to switch the Simple
+wrapper from divs to using paragraphs instead:
+
+   has_field 'my_field' => ( widget_tags => {wrapper_start => '<p>',
+       wrapper_end => '</p>' } );
+
+Widget tags set for the form will be copied into the fields if the same key
+does not exist in the field 'wrapper_tags' hashref, so you can set the
+widget_tags in a form to apply them to all the fields:
+
+   package MyApp::Form;
+   ....
+   has '+widget_tags' => ( default => sub { {wrapper_start => '<p>',
+      wrapper_end => '</p>' } );
 
 =head1 Creating Widgets
 
@@ -134,7 +149,7 @@ The basic structure for a field widget:
       < done creating rendered field )
       return $self->wrap_field($result, $output);
    }
-   no Moose::Role;
+   use namespace::autoclean; 
    1;
 
 =cut

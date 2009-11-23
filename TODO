@@ -1,10 +1,7 @@
   result refactoring tasks
     Handle dynamic selection lists in result rendering
-    Clean up non-result 'value' in field classes (Checkbox, Submit)
     api for result
-    auto_deref for options bug
     put back empty related fields for fif (to allow filling in if empty)
-  Default value for field (like 'set_init' but at field level)
   Unique support for non-top-level fields?
   Create multibox widget & rendering for checkbox group for multiple select
   Improve example of Repeatable form (BookDB, User) to do adds & deletes with js
@@ -13,5 +10,3 @@
   add Rendering modules: TT using Data::Section? using HTML::Dom or Treebuilder?, Reaction?
   improve auto field support 
   investigate a Catalyst View to provide better template support (like Reaction)
-  investigate other Form processing HTML generation
-  clean up DateTime fields (make consistent), better tests

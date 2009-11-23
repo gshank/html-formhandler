@@ -4,5 +4,5 @@ use Moose::Role;
 
 sub wrap_field { $_[2] } 
 
-no Moose::Role;
+use namespace::autoclean;
 1;

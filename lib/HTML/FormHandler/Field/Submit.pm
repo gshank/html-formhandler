@@ -32,5 +32,5 @@ sub _result_from_input {
 }
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

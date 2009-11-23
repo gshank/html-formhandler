@@ -16,7 +16,7 @@ apply(
                 }
         },
         {
-            check => sub { $_[0] =~ /^-?\d+$/ },
+            check => sub { $_[0] =~ /^-?[0-9]+$/ },
             message => 'Value must be an integer'
         }
     ]
@@ -44,5 +44,5 @@ the same terms as Perl itself.
 =cut
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

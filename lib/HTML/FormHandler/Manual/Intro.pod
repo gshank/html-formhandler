@@ -613,7 +613,7 @@ The field name space for use with '+' prefixed fields:
    has_field 'subname' => ( type => '+SubName' );
    
 An 'init_object' for filling in the form with default values instead of
-the database object. (To set individual field values use "init_value_$fieldname".)
+the database object. (To set individual field values use "default_$fieldname".)
 
    has '+init_object' => ( default => sub { 
          {  name => 'Choose name',
@@ -657,12 +657,12 @@ You can also write custom methods to retrieve the option info from the database:
    }
 
 
-=item init_value_$fieldname
+=item default_$fieldname
 
 Allows you to provide (in the form) a different initial value for a particular 
 field than that in the database.
 
-   sub init_value_license {
+   sub default_license {
       my ( $self, $field, $item ) = @_;
       return 0 unless $item && $item->license_id; 
       return $item->license_id;

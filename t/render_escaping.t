@@ -14,14 +14,14 @@ use HTML::FormHandler::Field::Text;
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
                size => 20,
-               label => 'TEST',
+               label => '"TEST"',
                id    => 'f99',
             );
    has_field 'number';
    has_field 'fruit' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple' );
    has_field 'opt_in' => ( type => 'Select', widget => 'radio_group',
-      options => [{ value => 0, label => 'No'}, { value => 1, label => 'Yes'} ] );
+      options => [{ value => 0, label => '<No>'}, { value => 1, label => '<Yes>'} ] );
    has_field 'active' => ( type => 'Checkbox' );
    has_field 'comments' => ( type => 'TextArea' );
    has_field 'hidden' => ( type => 'Hidden' );
@@ -48,15 +48,15 @@ use HTML::FormHandler::Field::Text;
    has_field 'no_render' => ( widget => 'no_render' );
    sub options_fruit {
        return (
-           1   => 'apples',
-           2   => 'oranges',
-           3   => 'kiwi',
+           1   => '"apples"',
+           2   => '<oranges>',
+           3   => '&kiwi&',
        );
    }
 
    sub options_vegetables {
        return (
-           1   => 'lettuce',
+           1   => '<lettuce>',
            2   => 'broccoli',
            3   => 'carrots',
            4   => 'peas',
@@ -69,13 +69,13 @@ my $form = Test::Form->new;
 ok( $form, 'create form');
 
 my $params = {
-   test_field => 'something',
+   test_field => 'something<br>',
    number => 0,
    fruit => 2,
    vegetables => [2,4],
    active => 'now',
-   comments => 'Four score and seven years ago...',
-   hidden => '1234',
+   comments => 'Four score and seven years ago...</textarea>',
+   hidden => '<1234>',
    selected => '1',
    'start_date.month' => '7',
    'start_date.day' => '14',
@@ -96,21 +96,21 @@ is( $form->render_field( $form->field('number') ),
 my $output1 = $form->render_field( $form->field('test_field') );
 is( $output1,
    '
-<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" /></div>
+<div><label class="label" for="f99">&quot;TEST&quot;: </label><input type="text" name="test_field" id="f99" size="20" value="something&lt;br&gt;" /></div>
 ',
    'output from text field');
 
 my $output2 = $form->render_field( $form->field('fruit') );
 is( $output2,
    '
-<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0" >apples</option><option value="2" id="fruit.1" selected="selected">oranges</option><option value="3" id="fruit.2" >kiwi</option></select></div>
+<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0" >&quot;apples&quot;</option><option value="2" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="3" id="fruit.2" >&amp;kiwi&amp;</option></select></div>
 ',
    'output from select field');
 
 my $output3 = $form->render_field( $form->field('vegetables') );
 is( $output3,
    '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0" >lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2" >carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
+<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0" >&lt;lettuce&gt;</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2" >carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
 ',
 'output from select multiple field');
 
@@ -124,14 +124,14 @@ is( $output4,
 my $output5 = $form->render_field( $form->field('comments') );
 is( $output5,
    '
-<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...</textarea></div>
+<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...&lt;/textarea&gt;</textarea></div>
 ',
    'output from textarea' );
 
 my $output6 = $form->render_field( $form->field('hidden') );
 is( $output6,
    '
-<div><input type="hidden" name="hidden" id="hidden" value="1234" /></div>
+<div><input type="hidden" name="hidden" id="hidden" value="&lt;1234&gt;" /></div>
 ',
    'output from hidden field' );
 
@@ -156,14 +156,14 @@ is( $output8,
    'output from DateTime' );
 
 my $output9 = $form->render_field( $form->field('submit') );
-is( $output9, '
+is( $output9, q{
 <div><input type="submit" name="submit" id="submit" value="Update" /></div>
-', 'output from Submit');
+}, 'output from Submit');
 
 my $output10 = $form->render_field( $form->field('opt_in') );
-is( $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />No<br /><input type="radio" value="1" name="opt_in" id="opt_in.1" />Yes<br /></div>
-', 'output from radio group' );
+is( $output10, q{
+<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />&lt;No&gt;<br /><input type="radio" value="1" name="opt_in" id="opt_in.1" />&lt;Yes&gt;<br /></div>
+}, 'output from radio group' );
 
 my $output11 = $form->render_start;
 is( $output11,'<form id="testform" method="post" >
@@ -173,17 +173,5 @@ my $output = $form->render;
 ok( $output, 'get rendered output from form');
 
 is( $form->render_field( $form->field('no_render')), '', 'no_render' );
-
-{
-    package Test::Field::Rendering;
-    use HTML::FormHandler::Moose;
-    extends 'HTML::FormHandler';
-
-    has_field 'my_html' => ( type => 'Display', html => '<h2>You got here!</h2>' );
-
-}
-
-$form = Test::Field::Rendering->new;
-is( $form->field('my_html')->render, '<h2>You got here!</h2>', 'display field renders' );
 
 done_testing;

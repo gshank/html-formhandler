@@ -6,6 +6,38 @@ HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
 
 Collection of use recipes for L<HTML::FormHandler>
 
+=head2 No form file, no template file...
+
+I had to create a tiny little form this week for admins to enter a comment, and
+it seemed silly to have to create a form file and a template file. I remembered
+that you can set the TT 'template' to a a string reference and not use a template 
+at all, which is nice when FormHandler will create the form HTML for you anyway. 
+
+    sub comment : Chained('base_sub') PathPart('comment') Args(0) {
+        my ( $self, $c ) = @_;
+        
+        my $form = HTML::FormHandler->new( field_list => 
+            [ comment => { type => 'Text', size => 60 }, 
+              submit => {type => 'Submit'} ] );
+        $form->process($c->req->params);
+        if ( $form->validated ) {
+            $self->admin_log( $c, "Admin::Queue", "admin comment", 
+                  $form->field('comment')->value );
+            $c->flash( message => 'Comment added' );
+            $c->res->redirect( $c->stash->{urilist}->{view} );
+        }
+        my $rendered_form = $form->render;
+        $c->stash( template => \$rendered_form );
+    }
+
+This creates the form on the fly with a comment field and a submit button, 
+renders it using the default TT wrappers, then logs the comment. No other files
+at all....
+
+FormHandler isn't really necessary for validation here, but it does make it 
+possible to have a simple, standalone method.
+
+
 =head2 Dynamically change the active fields 
 
 A common use case is for forms with some fields that should be displayed in
@@ -31,21 +63,26 @@ of them 'inactive';
    has_field 'bar' => ( inactive => 1 );
    1;
 
-Then you can mark them active or inactive using a Moose method modifier on
+Then you can mark them active using a Moose method modifier on
 'setup_form'.
 
-   before 'setup_form' => sub {
+   before 'set_active' => sub {
       my $self = shift;
-      if( <some condition> ) {
-         $self->field('foo')->inactive(1);
-         $self->field('bar')->inactive(0);
-      }
-      else {
-         $self->field('foo')->inactive(0);
-         $self->field('bar')->inactive(1);
-      }
-   }
-   
+      $self->active(['foo', bar']) if ( <some_condition> );
+   };
+
+Or on the 'process' call:
+
+   $form->process( params => $params, active => ['foo', 'bar'] );
+
+Fields set to active with the form's 'active' modifier (but not on new) will 
+be automatically set back to inactive when the form is cleared, so there's no 
+need to reset.
+
+If you want the fields activated for the life of an object, set active on new:
+
+    my $form = MyApp::Form::User->new( active => ['opt_in', 'active']);
+
 =head2 Add custom attributes to FormHandler fields
 
 If you want to add custom attributes to the FormHandler fields but don't want
@@ -79,10 +116,10 @@ code into a role and apply it in all of your forms.
 
 =head2 Select lists
 
-If you want to set the initial value of a select field to 0 (or some other
+If you want to set the default value of a select field to 0 (or some other
 default):
 
-   sub init_value_license {
+   sub default_license {
       my ( $self, $field, $item ) = @_;
       return 0 unless $item && $item->license_id; 
       return $item->license_id;
@@ -239,7 +276,7 @@ A form that extends them both:
    use Moose;
    extends ('Form::Person', 'Form::Address');
 
-   no Moose;
+   use namespace::autoclean; 
    1;
 
 Or if you don't need to use the pieces of your forms as forms themself, you can

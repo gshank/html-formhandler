@@ -59,7 +59,7 @@ has 'error_results' => (
     }
 );
 
-has '_errors' => (
+has 'errors' => (
     traits     => ['Array'],
     is         => 'rw',
     isa        => 'ArrayRef[Str]',
@@ -72,10 +72,8 @@ has '_errors' => (
         clear_errors => 'clear',
     }
 );
-sub errors { wantarray ? $_[0]->all_errors : $_[0]->_errors }
 
 sub validated { !$_[0]->has_error_results && $_[0]->has_input }
-# sub ran_validation { shift->has_input }
 
 sub field {
     my ( $self, $name, $die ) = @_;
@@ -106,8 +104,6 @@ sub field {
 
 HTML::FormHandler Contributors; see HTML::FormHandler
 
-Initially based on the original source code of L<Form::Processor::Field> by Bill Moseley
-
 =head1 COPYRIGHT
 
 This library is free software, you can redistribute it and/or modify it under
@@ -115,5 +111,5 @@ the same terms as Perl itself.
 
 =cut
 
-no Moose::Role;
+use namespace::autoclean;
 1;

@@ -18,8 +18,12 @@ use HTML::FormHandler::Field::Text;
             );
    has_field 'fruit' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple' );
+   has_field 'empty' => ( type => 'Multiple'  );
 
    sub init_value_fruit { 2 }
+
+   # the following sometimes happens with db options
+   sub options_empty { ([]) }
 
    sub options_fruit {
        return (
@@ -51,9 +55,11 @@ my $veg_options =   [ {'label' => 'lettuce',
       'value' => 3 },
      {'label' => 'peas',
       'value' => 4 } ];
-is_deeply( $form->field('vegetables')->options, $veg_options,
+my $field_options = $form->field('vegetables')->options;
+is_deeply( $field_options, $veg_options,
    'get options for vegetables' );
-is_deeply( $form->field('fruit')->options,
+$field_options = $form->field('fruit')->options;
+is_deeply( $field_options,
     [ {'label' => 'apples',
        'value' => 1 },
       {'label' => 'oranges',
@@ -65,6 +71,7 @@ is_deeply( $form->field('fruit')->options,
 my $params = {
    fruit => 2,
    vegetables => [2,4],
+   empty => '',
 };
 
 is( $form->field('fruit')->value, 2, 'initial value ok');
@@ -74,7 +81,9 @@ ok( $form->validated, 'form validated' );
 is( $form->field('fruit')->value, 2, 'fruit value is correct');
 is_deeply( $form->field('vegetables')->value, [2,4], 'vegetables value is correct');
 
-is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], test_field => '' }, 'fif is correct');
-is_deeply( $form->values, { fruit => 2, vegetables => [2, 4] }, 'values are correct');
+is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], test_field => '', empty => '' }, 
+    'fif is correct');
+is_deeply( $form->values, { fruit => 2, vegetables => [2, 4], empty => undef }, 
+    'values are correct');
 
 done_testing;

@@ -6,6 +6,7 @@ with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
+with 'MooseX::Traits';
 
 use Carp;
 use Class::MOP;
@@ -15,7 +16,7 @@ use HTML::FormHandler::Result;
 
 use 5.008;
 
-our $VERSION = '0.28';
+our $VERSION = '0.28001';
 
 =head1 NAME
 
@@ -349,6 +350,24 @@ add fields to the form depending on some other state.
       return \@field_list;
    }
 
+=head3 active
+
+If a form has a variable number of fields, fields which are not always to be
+used should be defined as 'inactive':
+
+   has_field 'foo' => ( type => 'Text', inactive => 1 );
+
+Then the field name can be specified in the 'active' array, either on 'new',
+or on 'process':
+
+   my $form = MyApp::Form->new( active => ['foo'] );
+   ...
+   $form->process( active => ['foo'] );
+
+Fields specified as active on new will have the 'inactive' flag cleared, and so:
+those fields will be active for the life of the form object. Fields specified as
+active on 'process' will have the field's '_active' flag set just for the life of the
+request.
 
 =head3 field_name_space
 
@@ -593,9 +612,21 @@ sub build_result {
     }
     return $result;
 }
-has 'widget_name_space' => ( is => 'ro', isa => 'Str|ArrayRef[Str]' );
+has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
-has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Div' );
+has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
+has 'active' => (
+    is => 'rw',
+    traits => ['Array'],
+    isa => 'ArrayRef[Str]',
+    default => sub {[]},
+    handles => {
+        add_active => 'push',
+        has_active => 'count',
+        clear_active => 'clear',
+    } 
+);
+   
 
 # object with which to initialize
 has 'init_object'         => ( is => 'rw', clearer => 'clear_init_object' );
@@ -609,12 +640,22 @@ has 'language_handle' => (
     is      => 'rw',
     builder => 'build_language_handle'
 );
-has 'html_prefix'   => ( isa => 'Bool', is  => 'rw' );
-has 'active_column' => ( isa => 'Str',  is  => 'rw' );
-has 'http_method'   => ( isa => 'Str',  is  => 'rw', default => 'post' );
+has 'html_prefix'   => ( isa => 'Bool', is  => 'ro' );
+has 'active_column' => ( isa => 'Str',  is  => 'ro' );
+has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
+has 'widget_tags'         => ( 
+    traits => ['Hash'],
+    isa => 'HashRef', 
+    is => 'ro',
+    default => sub {{}},
+    handles => {
+      get_tag => 'get',
+      set_tag => 'set',
+      tag_exists => 'exists',
+    },
+);
 has 'action' => ( is => 'rw' );
-has 'submit' => ( is => 'rw' );
 has 'params' => (
     traits     => ['Hash'],
     isa        => 'HashRef',
@@ -640,6 +681,7 @@ has '_required' => (
         add_required => 'push',
     }
 );
+sub submit { warn "Please use a Submit field instead of the submit form attribute" }
 
 {
     use Moose::Util::TypeConstraints;
@@ -664,7 +706,7 @@ sub BUILDARGS {
 
     if ( @_ == 1 ) {
         my $id = $_[0];
-        return { item => $id, item_id => $id->id } if ( blessed $id);
+        return { item => $id, item_id => $id->id } if ( blessed($id) );
         return { item_id => $id };
     }
     return $class->SUPER::BUILDARGS(@_);
@@ -676,10 +718,11 @@ sub BUILD {
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && !$self->can('render') );
     $self->_build_fields;    # create the form fields
+    $self->build_active if $self->has_active; # set optional fields active
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
-    if ( $self->init_object || $self->item ) {
-        $self->_result_from_object( $self->result, $self->init_object || $self->item );
+    if ( $self->item || $self->init_object ) {
+        $self->_result_from_object( $self->result, $self->item || $self->init_object );
     }
     else {
         $self->_result_from_fields( $self->result );
@@ -749,7 +792,7 @@ sub error_field_names {
 sub errors {
     my $self         = shift;
     my @error_fields = $self->error_fields;
-    return map { $_->errors } @error_fields;
+    return map { $_->all_errors } @error_fields;
 }
 
 sub uuid {
@@ -765,9 +808,9 @@ sub validate_form {
     $self->_set_dependency;    # set required dependencies
     $self->_fields_validate;
     $self->_apply_actions;
-    $self->validate();         # empty method for users
-                               # model specific validation
-    $self->validate_model;
+    $self->validate;           # empty method for users
+    $self->validate_model;     # model specific validation
+    $self->fields_set_value;
     $self->_clear_dependency;
     $self->get_error_fields;
     $self->ran_validation(1);
@@ -802,23 +845,62 @@ sub setup_form {
     if ( $self->item_id && !$self->item ) {
         $self->item( $self->build_item );
     }
+    $self->set_active;
     # initialization of Repeatable fields and Select options
-    # will be done in init_object when there's an initial object
-    # in validation routines when there are params
-    # and by _init for empty forms
+    # will be done in _result_from_object when there's an initial object
+    # in _result_from_input when there are params
+    # and by _result_from_fields for empty forms
     $self->clear_result;
     if ( !$self->did_init_obj ) {
         if ( $self->init_object || $self->item ) {
-            $self->_result_from_object( $self->result, $self->init_object || $self->item );
+            my $obj = $self->item ? $self->item : $self->init_object; 
+            $self->_result_from_object( $self->result, $obj ); 
         }
         elsif ( !$self->has_params ) {
             # no initial object. empty form form must be initialized
             $self->_result_from_fields( $self->result );
         }
     }
+    # There's some weirdness here because of trying to support supplying
+    # the db object in the ->new. May change to not support that? 
     my %params = ( %{ $self->params } );
-    $self->_result_from_input( $self->result, \%params, 1 ) if ( $self->has_params );
+    if ( $self->has_params ) {
+        $self->clear_result;
+        $self->_result_from_input( $self->result, \%params, 1 );
+    }
+
 }
+
+# if active => [...] is set at process time, set 'active' flag
+sub set_active {
+    my $self = shift;
+    return unless $self->has_active;
+    foreach my $fname (@{$self->active}) {
+        my $field = $self->field($fname);
+        if ( $field ) {
+            $field->_active(1);
+        }
+        else {
+            warn "field $fname not found to set active";
+        }
+    }
+    $self->clear_active;
+}
+
+# if active => [...] is set at build time, remove 'inactive' flags
+sub build_active {
+    my $self = shift;
+    foreach my $fname (@{$self->active}) {
+        my $field = $self->field($fname);
+        if( $field ) {
+            $field->clear_inactive;
+        }
+        else {
+            warn "field $fname not found to set active";
+        }
+    }
+    $self->clear_active;
+} 
 
 sub fif { shift->fields_fif(@_) }
 
@@ -883,6 +965,13 @@ sub _munge_params {
     $self->{params} = $new_params;
 }
 
+after 'get_error_fields' => sub {
+   my $self = shift;
+   foreach my $err_res (@{$self->result->error_results}) {
+       $self->result->push_errors($err_res->all_errors);
+   }
+};
+
 =head1 SUPPORT
 
 IRC:
@@ -920,17 +1009,17 @@ L<HTML::FormHandler::Moose>
 
 =head1 CONTRIBUTORS
 
-gshank: Gerda Shank <gshank@cpan.org>
+gshank: Gerda Shank E<lt>gshank@cpan.orgE<gt>
 
-zby: Zbigniew Lukasiak <zby@cpan.org>
+zby: Zbigniew Lukasiak E<lt>zby@cpan.orgE<gt>
 
-t0m: Tomas Doran <bobtfish@bobtfish.net>
+t0m: Tomas Doran E<lt>bobtfish@bobtfish.netE<gt>
 
-augensalat: Bernhard Graf <augensalat@gmail.com>
+augensalat: Bernhard Graf E<lt>augensalat@gmail.comE<gt>
 
-cubuanic: Oleg Kostyuk <cub.uanic@gmail.com>
+cubuanic: Oleg Kostyuk E<lt>cub.uanic@gmail.comE<gt>
 
-rafl: Florian Ragwitz <rafl@debian.org>
+rafl: Florian Ragwitz E<lt>rafl@debian.orgE<gt>
 
 mazpe: Lester Ariel Mesa
 
@@ -944,5 +1033,5 @@ the same terms as Perl itself.
 =cut
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

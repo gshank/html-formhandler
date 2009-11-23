@@ -126,6 +126,5 @@ sub _collapse_hash {
 }
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
-
+use namespace::autoclean;
 1;

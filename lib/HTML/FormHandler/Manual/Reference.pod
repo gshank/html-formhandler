@@ -53,8 +53,8 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
 These attributes are usually accessed in a subroutine or in a template.
 
-   init_value    Initial value from the database (or see init_value_$fieldname) 
-   value         The value of your field. Initially, init_value, then from input.
+   init_value    Initial value from the database
+   value         The value of your field.
    input         Input value from parameter or initial value from database
    fif           Retrieve (do not set) values for filling in a form 
    options       Select lists. Sorted array of hashes, keys: "value", "label"
@@ -111,7 +111,7 @@ These attributes are usually accessed in a subroutine or in a template.
 
    options_$fieldname       Provides a list of key value pairs for select lists
    validate_$fieldname      Validation routine for field 
-   init_value_$fieldname    Overrides initial value for the field
+   default_$fieldname       Default value for the field in an initial form
    validate                 For validation after individual fields are validated 
    
 =head2 Methods from HTML::FormHandler::Model::DBIC for method modifiers

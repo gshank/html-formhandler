@@ -38,8 +38,6 @@ sub render {
 
 HTML::FormHandler Contributors; see HTML::FormHandler
 
-Initially based on the original source code of L<Form::Processor::Field> by Bill Moseley
-
 =head1 COPYRIGHT
 
 This library is free software, you can redistribute it and/or modify it under
@@ -48,5 +46,5 @@ the same terms as Perl itself.
 =cut
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

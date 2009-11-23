@@ -44,7 +44,7 @@ has '+css_class' => ( default => 'captcha' );
 
 has '+noupdate' => ( default => 1 );
 
-sub get_init_value {
+sub get_default_value {
     my $self = shift;
 
     my $captcha = $self->form->get_captcha;
@@ -103,5 +103,5 @@ sub gen_captcha {
 }
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

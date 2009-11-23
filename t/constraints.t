@@ -101,7 +101,7 @@ ok( $form->field('set_error')->has_errors,                 'set error' );
 ok( $form->field('callback_error')->has_errors,            'callback constraint - error' );
 ok( !$form->field('callback_pass')->has_errors,            'callback constraint - pass' );
 ok( $form->field('less_than_ten_error')->has_errors,     'type constraint - error' );
-my ( $message ) = $form->field('less_than_ten_error')->errors;
+my $message = $form->field('less_than_ten_error')->errors->[0];
 is( $message, "This number (10) is not less than ten!", 'type constraint - error message' );
 ok( !$form->field('less_than_ten_pass')->has_errors,     'type constraint - pass' );
 #warn Dumper( $form ); use Data::Dumper;

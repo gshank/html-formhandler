@@ -161,8 +161,8 @@ the label_column is used as the sort condition.
 
 If the widget is 'select' for the field then will look if the field
 also has a L<auto_widget_size>.  If the options list is less than or equal
-to the L<auto_widget_size> then will return C<radio> if L<multiple> is false,
-otherwise will return C<checkbox>.
+to the L<auto_widget_size> then will return C<radio_group> if L<multiple> is false,
+otherwise will return C<checkbox_group>.
 
 =head2 as_label
 
@@ -176,7 +176,9 @@ has 'options' => (
     isa       => 'ArrayRef',
     is        => 'rw',
     traits    => ['Array'],
+    auto_deref => 1,
     handles  => {
+        all_options => 'elements',
         reset_options => 'clear',
         clear_options => 'clear',
         has_options => 'count',
@@ -193,34 +195,31 @@ has 'do_not_reload' => ( isa => 'Bool', is => 'ro' );
 sub BUILD {
     my $self = shift;
 
-    $self->set_options;
     $self->options_from('build') if $self->options && $self->has_options;
 }
 
-has 'set_options' => (
-    isa     => 'Str',
-    is      => 'rw',
-    default => sub {
-        my $self = shift;
-        my $name = $self->full_name;
-        $name =~ s/\./_/g;
-        return 'options_' . $name;
-    }
-);
-
+has 'set_options' => ( isa => 'Str', is => 'ro');
+sub _set_options_meth {
+    my $self = shift;
+    return $self->set_options if $self->set_options;
+    my $name = $self->full_name;
+    $name =~ s/\./_/g;
+    $name =~ s/_\d_/_/g;
+    return 'options_' . $name;
+}
 sub _can_form_options {
     my $self = shift;
+    my $set_options = $self->_set_options_meth;
     return
         unless $self->form &&
-            $self->set_options &&
-            $self->form->can( $self->set_options );
-    return 1;
+            $set_options &&
+            $self->form->can( $set_options );
+    return $set_options;
 }
 
 sub _form_options {
     my $self = shift;
-    return unless $self->_can_form_options;
-    my $meth = $self->set_options;
+    return unless (my $meth = $self->_can_form_options);
     return $self->form->$meth($self);
 }
 
@@ -239,7 +238,7 @@ sub select_widget {
     return $field->widget unless $field->widget eq 'select' && $size;
     my $options = $field->options || [];
     return 'select' if @$options > $size;
-    return $field->multiple ? 'checkbox' : 'radio';
+    return $field->multiple ? 'checkbox_group' : 'radio_group';
 }
 
 sub as_label {
@@ -328,9 +327,9 @@ sub _load_options {
 
     # allow returning arrayref
     if ( ref $options[0] eq 'ARRAY' ) {
-        @options = @{ $options[0] } if ref $options[0];
+        @options = @{ $options[0] };
     }
-
+    return unless @options;
     my $opts;
     # if options_<field_name> is returning an already constructed array of hashrefs
     if ( ref $options[0] eq 'HASH' ) {
@@ -341,7 +340,7 @@ sub _load_options {
             if @options % 2;
         push @{$opts}, { value => shift @options, label => shift @options } while @options;
     }
-    if (@$opts) {
+    if ($opts) {
         my $opts = $self->sort_options($opts);    # allow sorting options
         $self->options($opts);
     }
@@ -363,5 +362,5 @@ the same terms as Perl itself.
 =cut
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
+use namespace::autoclean;
 1;

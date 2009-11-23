@@ -21,8 +21,10 @@ has 'required_message' => (
     lazy    => 1,
     default => sub { shift->label . ' field is required' }
 );
-has 'range_start' => ( isa => 'Int|Undef', is => 'rw', default => undef );
-has 'range_end'   => ( isa => 'Int|Undef', is => 'rw', default => undef );
+has 'unique'            => ( isa => 'Bool', is => 'rw' );
+has 'unique_message'    => ( isa => 'Str',  is => 'rw' );
+has 'range_start' => ( isa => 'Int|Undef', is => 'rw' );
+has 'range_end'   => ( isa => 'Int|Undef', is => 'rw' );
 
 sub test_ranges {
     my $field = shift;
@@ -111,6 +113,6 @@ the same terms as Perl itself.
 
 =cut
 
-no Moose::Role;
+use namespace::autoclean;
 1;
 
