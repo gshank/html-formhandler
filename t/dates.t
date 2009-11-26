@@ -108,7 +108,7 @@ $field = $class->new( name => 'test_field', field_list => [ year => 'Integer',
     month => 'Integer', day => 'Integer' ] );
 ok( defined $field, 'new() called for DateTime' );
 $field->_set_input({ month => 2, day => 10, year => 2009 });
-$field->validate_field;
+$field->test_validate_field;
 ok( $field->validated, 'No errors 1' );
 ok( $field->value && $field->value->isa('DateTime'), 'isa DateTime' );
 is( $field->value->ymd, '2009-02-10', 'correct DateTime' );
@@ -120,14 +120,14 @@ ok( $field, 'field compiles and builds' );
 $field->clear_result;
 my $date_hash = { month => 5, day => 10, year => 2009 };
 $field->_set_input($date_hash);
-$field->validate_field;
+$field->test_validate_field;
 ok( $field->has_errors, 'Date is wrong month' );
 is( $field->fif, $date_hash, 'Correct value' );
 
 $field->clear_result;
 $date_hash = { month => 10, day => 32, year => 2009 };
 $field->_set_input($date_hash);
-$field->validate_field;
+$field->test_validate_field;
 ok( $field->has_errors, 'Date is wrong month' );
 like( $field->errors->[0], qr/Not a valid/, 'DateTime error message' );
 is( $field->fif, $date_hash, 'Correct value' );
