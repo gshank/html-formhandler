@@ -303,9 +303,11 @@ sub new_field_with_traits {
     else { 
         $field = $class->new( %{$field_attr} );
     }
-    foreach my $key ( keys %{$field->form->widget_tags} ) {
-        $field->set_tag( $key, $field->form->widget_tags->{$key} )
-             unless $field->tag_exists($key);
+    if( $field->form ) {
+        foreach my $key ( keys %{$field->form->widget_tags} ) {
+            $field->set_tag( $key, $field->form->widget_tags->{$key} )
+                 unless $field->tag_exists($key);
+        };
     }
     return $field;
 }

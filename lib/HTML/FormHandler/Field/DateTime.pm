@@ -4,6 +4,7 @@ use Moose;
 extends 'HTML::FormHandler::Field::Compound';
 
 use DateTime;
+use Try::Tiny;
 our $VERSION = '0.03';
 
 =head1 NAME
@@ -56,8 +57,19 @@ sub validate {
     }
 
     # set the value
-    my $dt = DateTime->new(@dt_parms);
-    $self->_set_value($dt);
+    my $dt;
+    try {
+        $dt = DateTime->new(@dt_parms);
+    }
+    catch {
+        $self->add_error('Not a valid DateTime');
+    };
+    if( $dt ) { 
+        $self->_set_value($dt);
+    }
+    else {
+        $self->_set_value( {@dt_parms} );
+    }
 }
 
 __PACKAGE__->meta->make_immutable;
