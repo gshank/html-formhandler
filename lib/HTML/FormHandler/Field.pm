@@ -587,6 +587,7 @@ sub build_result {
 sub input {
     my $self = shift;
     my $result = $self->result;
+    return unless $result;
     return $result->_set_input(@_) if @_;
     return $result->input;
 }
@@ -594,6 +595,7 @@ sub input {
 sub value {
     my $self = shift;
     my $result = $self->result;
+    return unless $result;
     return $result->_set_value(@_) if @_;
     return $result->value;
 }
