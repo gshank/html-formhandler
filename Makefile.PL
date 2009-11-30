@@ -1,13 +1,10 @@
 use strict;
 use warnings;
-use inc::Module::Install 0.89;
+use inc::Module::Install 0.91;
 
-BEGIN {
-    if ($Module::Install::AUTHOR) { # Not strictly needed, but reminds idiots like
-                                    # me what M::I extensions I need ;)
-        require Module::Install::AuthorTests;
-    }
-}
+# Not strictly needed, but reminds idiots like
+# me what M::I extensions I need ;)
+use Module::Install::AuthorTests;
 
 name 'HTML-FormHandler';
 author 'Gerda Shank';
@@ -36,6 +33,7 @@ requires 'namespace::autoclean' => '0.09';
 test_requires 'Test::More'      => '0.88';
 test_requires 'Test::Differences';
 test_requires 'Test::Exception';
+test_requires 'IO::All'; # t/xt/chbox_group.t
 
 tests();
 author_tests('t/xt');
