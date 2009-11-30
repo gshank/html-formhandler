@@ -2,7 +2,7 @@ package HTML::FormHandler::Widget::ApplyRole;
 
 use Moose::Role;
 use File::Spec;
-use Class::Load ('try_load_class' );
+use Class::MOP;
 
 our $ERROR;
 
@@ -21,7 +21,7 @@ sub get_widget_role {
     my $found;
     foreach my $ns (@name_spaces) {
         my $render_role = $ns . $ldir . $widget_class;
-        if ( try_load_class($render_role) ) {
+        if ( eval { Class::MOP::load_class($render_role) } ) {
             return $render_role;
         }
     }

@@ -25,7 +25,6 @@ requires 'MooseX::Types::Common';
 requires 'MooseX::Traits';
 requires 'aliased';
 requires 'File::Spec';
-requires 'Class::Load' => '0.05';
 requires 'Try::Tiny';
 requires 'namespace::autoclean' => '0.09';
 

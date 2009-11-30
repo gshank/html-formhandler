@@ -1,3 +1,5 @@
+    Remove use of Class::Load, instead use Class::MOP::load_class()
+
 0.28
     Switched to using native traits
     Add Widget roles
