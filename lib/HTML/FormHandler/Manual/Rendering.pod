@@ -15,6 +15,11 @@ and now:
    4. Automatically installed rendering widgets using a combination of
       rendering roles, which can easily be customized by the user.
 
+With all of the rendering roles, it is impossible to make improvements
+and additions to rendering without changes to the output, so you should
+consider either using your own versions of the rendering objects, or
+carefully inspecting the output when installing new versions of FormHandler.
+
 =head2 Handcoded HTML
 
 The names of your fields must match the names of your FormHandler fields.

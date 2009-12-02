@@ -1033,6 +1033,8 @@ rafl: Florian Ragwitz E<lt>rafl@debian.orgE<gt>
 
 mazpe: Lester Ariel Mesa
 
+dew: Dan Thomas
+
 Initially based on the source code of L<Form::Processor> by Bill Moseley
 
 =head1 COPYRIGHT

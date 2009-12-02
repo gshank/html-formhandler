@@ -1,4 +1,15 @@
+0.29
+    Add CheckboxGroup widget, add MooseX::Traits to Form & Field class
+    Fix bug where defaults were not being used with an initial object
+    Fix DateTime field to trap DateTime errors, pass hash in value
+    Use build_label for field labels
     Remove use of Class::Load, instead use Class::MOP::load_class()
+    Add set_active and make switching fields to active simpler
+    Fix bug when options lists from db are empty
+    Add encode_entities to rendering widgets
+    Switch from init_value_<fieldname> to default_<fieldname>
+    Change upload field.
+    Improve setting of method defaults for set_default, set_validate, set_options
 
 0.28
     Switched to using native traits
