@@ -1,4 +1,4 @@
-0.29
+0.29 Wed Dec 2, 2009
     Add CheckboxGroup widget, add MooseX::Traits to Form & Field class
     Fix bug where defaults were not being used with an initial object
     Fix DateTime field to trap DateTime errors, pass hash in value
