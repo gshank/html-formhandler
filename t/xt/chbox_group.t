@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use IO::All;
 
 use_ok('HTML::FormHandler::Widget::Field::CheckboxGroup');
 
@@ -31,7 +30,5 @@ my $rendered = $form->field('foo_list')->render;
 ok( $rendered, 'field renders' );
 my $rendered_form = $form->render;
 ok( $rendered_form, 'form renders' );
-
-$rendered_form > io('chbox.html');
 
 done_testing;

@@ -32,7 +32,6 @@ requires 'namespace::autoclean' => '0.09';
 test_requires 'Test::More'      => '0.88';
 test_requires 'Test::Differences';
 test_requires 'Test::Exception';
-test_requires 'IO::All'; # t/xt/chbox_group.t
 
 tests();
 author_tests('t/xt');
