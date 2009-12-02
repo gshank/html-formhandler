@@ -7,8 +7,10 @@ HTML::FormHandler::Manual::Intro - basic usage of FormHandler
 HTML::FormHandler is a form handling class that validates HTML form data
 and, for database forms, saves it to the database on validation. 
 It has field classes that can be used for creating a set of widgets 
-and highly automatic templates. There is a simple rendering role,
-L<HTML::FormHandler::Render::Simple>, and FormHandler is designed to
+and highly automatic templates. There are two simple rendering roles,
+L<HTML::FormHandler::Render::Simple> and a subclass of it 
+L<HTML::FormHandler::Render::Table>, plus a set of widget roles for
+individual form and field classes. FormHandler is designed to
 make it easy to produce alternative rendering modules.
 
 The DBIC & CDBI models will save form fields automatically to the database, will
@@ -46,7 +48,6 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     package MyApp:Form::User;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Model::DBIC';
-    with 'HTML::FormHandler::Render::Simple'; # if you want to render the form
 
     # Associate this form with a DBIx::Class result class
     # Or 'item_class' can be passed in on 'new', or you
@@ -82,12 +83,19 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     no HTML::FormHandler::Moose;
     1;
 
-For many forms, if L<HTML::FormHandler::Render::Simple> is included as a form role,
-you can render a simple form for scaffolding:
+By default the L<HTML::FormHandler::Widget> roles will be applied, making it
+possible to render a simple form for scaffolding:
 
     [% form.render %]
 
 Individual fields can also be rendered:
+
+    [% form.field('title').render %]
+
+You can also use the Simple and Table rendering roles by adding
+C< with 'HTML::FormHandler::Field::Render'; > to your class. These rendering
+roles also enable  use of the C< [% form.render %] > syntax, but the widget 
+rendering methods included in the these roles are accessed with:
 
     [% form.render_field('title') %]
 

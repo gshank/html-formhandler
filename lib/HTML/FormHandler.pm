@@ -16,7 +16,7 @@ use HTML::FormHandler::Result;
 
 use 5.008;
 
-our $VERSION = '0.28001';
+our $VERSION = '0.29';
 
 =head1 NAME
 
@@ -33,7 +33,6 @@ An example of a form class:
 
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    with 'HTML::FormHandler::Render::Simple';
 
     has '+item_class' => ( default => 'User' );
 
@@ -134,12 +133,16 @@ You can write custom methods to process forms, add any attribute you like,
 use Moose method modifiers.  FormHandler forms are Perl classes, so there's
 a lot of flexibility in what you can do.
 
-HTML::FormHandler does not (yet) provide a complex HTML generating facility,
-but a simple, straightforward rendering role is provided by
-L<HTML::FormHandler::Render::Simple>, which will output HTML formatted
-strings for a field or a form. L<HTML::FormHandler::Render::Table> will
-display the form using an HTML table layout.  There are also sample Template
-Toolkit widget files, documented at L<HTML::FormHandler::Manual::Templates>.
+HTML::FormHandler provides rendering through roles which are applied to
+form and field classes. There are currently two flavors: all-in-on
+solutions like L<HTML::FormHandler::Render::Simple> and 
+L<HTML::FormHandler::Render::Table> that contain methods for rendering 
+field widget classes, and the L<HTML::FormHandler::Widget> roles, which are 
+more atomic roles which are automatically applied to fields and form if a 
+'render' method does not already exist. See
+L<HTML::FormHandler::Manual::Rendering> for more details.
+(And you can easily use hand-build forms - FormHandler doesn't care.)
+
 
 The typical application for FormHandler would be in a Catalyst, DBIx::Class,
 Template Toolkit web application, but use is not limited to that. FormHandler
@@ -845,12 +848,13 @@ sub setup_form {
     if ( $self->item_id && !$self->item ) {
         $self->item( $self->build_item );
     }
+    $self->clear_result;
     $self->set_active;
     # initialization of Repeatable fields and Select options
     # will be done in _result_from_object when there's an initial object
     # in _result_from_input when there are params
     # and by _result_from_fields for empty forms
-    $self->clear_result;
+
     if ( !$self->did_init_obj ) {
         if ( $self->init_object || $self->item ) {
             my $obj = $self->item ? $self->item : $self->init_object; 
@@ -998,11 +1002,17 @@ L<HTML::FormHandler::Manual::Templates>
 
 L<HTML::FormHandler::Manual::Cookbook>
 
+L<HTML::FormHandler::Manual::Rendering>
+
+L<HTML::FormHandler::Manual::Reference>
+
 L<HTML::FormHandler::Field>
 
 L<HTML::FormHandler::Model::DBIC>
 
 L<HTML::FormHandler::Render::Simple>
+
+L<HTML::FormHandler::Render::Table>
 
 L<HTML::FormHandler::Moose>
 

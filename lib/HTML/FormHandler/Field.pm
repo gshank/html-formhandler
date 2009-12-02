@@ -587,7 +587,12 @@ sub build_result {
 sub input {
     my $self = shift;
     my $result = $self->result;
-    return unless $result;
+    # garbage collection should not happen
+    # but just in case resetting for safety
+    unless ( $result ) {
+        $self->clear_result;
+        $result = $self->result; 
+    }
     return $result->_set_input(@_) if @_;
     return $result->input;
 }
@@ -595,7 +600,12 @@ sub input {
 sub value {
     my $self = shift;
     my $result = $self->result;
-    return unless $result;
+    # garbage collection should not happen
+    # but just in case resetting for safety
+    unless ( $result ) {
+        $self->clear_result;
+        $result = $self->result;
+    }
     return $result->_set_value(@_) if @_;
     return $result->value;
 }
@@ -826,6 +836,8 @@ sub BUILD {
 
     $self->_set_default( $self->_comp_default_meth )
         if( $self->form && $self->form->can( $self->_comp_default_meth ) );
+    # widgets will already have been applied by BuildFields, but this allows
+    # testing individual fields
     $self->apply_rendering_widgets unless ($self->can('render') );
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;
