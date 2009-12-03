@@ -372,8 +372,7 @@ does for you, you should use an 'around' method modifier and a transaction:
 
           <perform additional updates>
       };
-
-      $schema->txn_do($changes);
+      $self->schema->txn_do($changes);
   };
 
 =head2 Doing cross validation in roles
