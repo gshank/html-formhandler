@@ -357,6 +357,25 @@ as updated by the user, for example:
       $self->item->user_updated if $self->item;
    };
 
+=head2 Additional changes to the database
+
+If you want to do additional database updates besides the ones that FormHandler
+does for you, you should use an 'around' method modifier and a transaction:
+
+  around 'update_model' => sub {
+      my $orig = shift;
+      my $self = shift;
+      my $item = $self->item;
+
+      my $changes = sub {	
+          $orig->($self, @_);
+
+          <perform additional updates>
+      };
+
+      $schema->txn_do($changes);
+  };
+
 =head2 Doing cross validation in roles
 
 In a role that handles a number of different fields, you may want to
