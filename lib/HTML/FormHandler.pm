@@ -615,6 +615,8 @@ sub build_result {
     }
     return $result;
 }
+has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef', 
+     default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
 has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
@@ -718,6 +720,7 @@ sub BUILDARGS {
 sub BUILD {
     my $self = shift;
 
+    $self->apply_field_traits if $self->has_field_traits;
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && !$self->can('render') );
     $self->_build_fields;    # create the form fields
@@ -975,6 +978,14 @@ after 'get_error_fields' => sub {
        $self->result->push_errors($err_res->all_errors);
    }
 };
+
+sub apply_field_traits {
+    my $self = shift; 
+    my $fmeta = HTML::FormHandler::Field->meta;
+    $fmeta->make_mutable;
+    Moose::Util::apply_all_roles( $fmeta, @{$self->field_traits});
+    $fmeta->make_immutable;
+}
 
 =head1 SUPPORT
 

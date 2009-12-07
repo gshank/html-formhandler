@@ -29,12 +29,19 @@ use lib ('t/lib');
    has 'bar_attr' => ( isa => 'Str', is => 'rw' );
 }
 
-my $form = Form::RoleForm->new;
+{ 
+    package MyApp::Field::Test;
+    use Moose::Role;
+    sub got_here { 1 }
+}
+
+my $form = Form::RoleForm->new( field_traits => ['MyApp::Field::Test'] );
 
 ok( $form, 'form created' );
 is( $form->field('bar')->foo_attr, 'xxx', 'attribute set ok' );
 ok( $form->field('bar')->foo_attr('test'), 'has extra attribute' );
 is( $form->field('bar')->foo_attr, 'test', 'attribute was set' );
+ok( $form->field('foo')->got_here  && $form->field('bar')->got_here, 'base field role applied' );
 
 {
     package My::Render;
