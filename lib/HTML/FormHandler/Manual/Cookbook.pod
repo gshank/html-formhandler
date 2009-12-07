@@ -360,19 +360,20 @@ as updated by the user, for example:
 =head2 Additional changes to the database
 
 If you want to do additional database updates besides the ones that FormHandler
-does for you, you should use an 'around' method modifier and a transaction:
+does for you, the best solution would generally be to add the functionality to
+your result source or resultset classes, but if you want to do additional updates
+in a form you should use an 'around' method modifier and a transaction:
 
   around 'update_model' => sub {
       my $orig = shift;
       my $self = shift;
       my $item = $self->item;
 
-      my $changes = sub {	
+      $self->schema->txn_do( sub {
           $orig->($self, @_);
 
           <perform additional updates>
       };
-      $self->schema->txn_do($changes);
   };
 
 =head2 Doing cross validation in roles
