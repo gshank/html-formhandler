@@ -3,6 +3,8 @@ use warnings;
 
 use Test::More;
 
+$ENV{LANG} = 'en_us'; # in case user has set LANG to de_de
+
 #
 # Boolean
 #

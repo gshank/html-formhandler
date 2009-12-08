@@ -5,6 +5,8 @@ use Test::Exception;
 
 use HTML::FormHandler::Types (':all');
 
+$ENV{LANG} = 'en_us'; # in case user has LANG set
+
 {
   package Test::Form;
   use HTML::FormHandler::Moose;
