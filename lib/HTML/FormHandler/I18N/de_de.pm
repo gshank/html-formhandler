@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base 'HTML::FormHandler::I18N';
 
-use utf8; ### is this wise?
+use utf8;
 
 # Auto define lexicon
 our %Lexicon = (
@@ -28,9 +28,6 @@ our %Lexicon = (
     # H::F::Field::PosInteger
     'Value must be a positive integer' => 'Muss eine positive ganze Zahl sein',
     
-    # H::F::Field::Repeatable
-    'Not a valid tag' => 'Kein gültiger Tag',
-    
     # H::F::Field
     'field is invalid' => 'Feld ist ungültig',
     
@@ -45,7 +42,7 @@ our %Lexicon = (
     'Must be between 4 and 255 chars' => '4 bis 255 Zeichen erforderlich',
     'Not a valid state' => 'Kein gültiger Bundesstaat',
     'Email is not valid' => 'E-Mail ist nicht gültig',
-    'Zip is not valid' => 'ZIP ungültig',
+    'Zip is not valid' => 'PLZ ungültig',
     'Not a valid IP address' => 'IP Adresse ungültig',
     'Password cannot contain spaces' => 'Passwort darf keine Leerzeichen enthalten',
     'Password must be made up of letters, digits, and underscores' => 'Passwort darf nur Buchstaben, Ziffern oder "_" enthalten',
