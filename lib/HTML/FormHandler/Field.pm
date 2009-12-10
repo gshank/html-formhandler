@@ -757,7 +757,7 @@ sub _set_validate_meth {
     return $self->set_validate if $self->set_validate;
     my $name = $self->full_name;
     $name =~ s/\./_/g;
-    $name =~ s/_\d_/_/g; # remove repeatable field instances
+    $name =~ s/_\d+_/_/g; # remove repeatable field instances
     return 'validate_' . $name;
 }
 sub _validate {
@@ -779,7 +779,7 @@ sub _comp_default_meth {
     my $self = shift;
     my $name = $self->full_name;
     $name =~ s/\./_/g;
-    $name =~ s/_\d_/_/g;
+    $name =~ s/_\d+_/_/g;
     return 'init_value_' . $name;
 }
 sub _set_default_meth {
