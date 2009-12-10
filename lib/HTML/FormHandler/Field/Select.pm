@@ -204,7 +204,7 @@ sub _set_options_meth {
     return $self->set_options if $self->set_options;
     my $name = $self->full_name;
     $name =~ s/\./_/g;
-    $name =~ s/_\d_/_/g;
+    $name =~ s/_\d+_/_/g;
     return 'options_' . $name;
 }
 sub _can_form_options {
