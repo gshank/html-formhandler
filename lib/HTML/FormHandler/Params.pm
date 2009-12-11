@@ -5,7 +5,6 @@ use Moose;
 use Carp;
 
 has 'separator' => ( isa => 'Str', is => 'rw', default => '.' );
-has 'max_array' => ( isa => 'Int', is => 'rw', default => '100' );
 
 sub split_name {
     my ( $self, $name, $sep ) = @_;
@@ -52,9 +51,7 @@ sub expand_hash {
 
         my $box_ref = \$deep->{$first};
         for (@segments) {
-            if ( $self->max_array && /^(0|[1-9]\d*)$/ ) {
-                croak "HFH: param array limit exceeded $1 for $name=$_"
-                    if ( $1 >= $self->max_array );
+            if ( /^(0|[1-9]\d*)$/ ) {
                 $$box_ref = [] unless defined $$box_ref;
                 croak "HFH: param clash for $name=$_"
                     unless ref $$box_ref eq 'ARRAY';
@@ -113,8 +110,6 @@ sub _collapse_hash {
         }
     }
     elsif ( ref $deep eq 'ARRAY' ) {
-        croak "HFH: param array limit exceeded $#$deep for ", $self->join_name(@_)
-            if ( $#$deep + 1 >= $self->max_array );
         for ( 0 .. $#$deep ) {
             $self->_collapse_hash( $deep->[$_], $flat, @segments, $_ )
                 if defined $deep->[$_];
