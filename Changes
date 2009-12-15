@@ -1,3 +1,7 @@
+0.29001 Tues Dec 15, 2009
+    Fix bug with passing widget_wrapper to fields
+    Fix bug with generated method names for form methods
+
 0.29 Wed Dec 2, 2009
     Add CheckboxGroup widget, add MooseX::Traits to Form & Field class
     Fix bug where defaults were not being used with an initial object
