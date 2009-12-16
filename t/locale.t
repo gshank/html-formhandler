@@ -19,6 +19,7 @@ delete $ENV{$_}
     our %Lexicon = (
         '_AUTO' => 1,
         'You lost, insert coin' => 'Not won, coin needed',
+        'Test field' => 'Grfg svryq',
     );
 }
 
@@ -44,12 +45,16 @@ is(ref($form->language_handle), 'HTML::FormHandler::I18N::en_us', 'locale en_us'
 # ensure we know / don't know the translations
 $HTML::FormHandler::I18N::en_us::Lexicon{'You lost, insert coin'} = 'XX Dummy 42';
 $HTML::FormHandler::I18N::en_us::Lexicon{'Must insert a [_1] coin'} = 'Want a [_1] coin';
+delete $HTML::FormHandler::I18N::en_us::Lexicon{'Test field'};
 delete $HTML::FormHandler::I18N::en_us::Lexicon{'You won'};
 
 # translating a known error works
 $form->field('test_field')->clear_errors;
 $form->field('test_field')->add_error('You lost, insert coin');
 is_deeply($form->field('test_field')->errors, ['XX Dummy 42'], 'error is translated into en_us');
+
+# translating a known label
+is($form->field('test_field')->label, 'Test field', 'Label w/o translation = ok');
 
 # translating a known error with a positional parameter
 $form->field('test_field')->clear_errors;
@@ -80,5 +85,8 @@ is_deeply($form->field('test_field')->errors, ['Not won, coin needed'], 'error i
 $form->field('test_field')->clear_errors;
 $form->field('test_field')->add_error('You won');
 is_deeply($form->field('test_field')->errors, ['You won'], 'error is translated into xx_xx');
+
+# translating a known label
+is($form->field('test_field')->label, 'Grfg svryq', 'label rot13 to xx_xx');
 
 done_testing;

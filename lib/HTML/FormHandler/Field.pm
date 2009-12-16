@@ -688,7 +688,7 @@ sub build_label {
     my $label = $self->name;
     $label =~ s/_/ /g;
     $label = ucfirst($label);
-    return $label;
+    return $self->_localize($label);
 }
 has 'title'     => ( isa => 'Str',               is => 'rw' );
 has 'style'     => ( isa => 'Str',               is => 'rw' );
@@ -913,17 +913,7 @@ sub add_error {
     unless ( defined $message[0] ) {
         @message = ('field is invalid');
     }
-    # Running without a form object?
-    if ( $self->form ) {
-        $lh = $self->form->language_handle;
-    }
-    else {
-        $lh = $ENV{LANGUAGE_HANDLE} ||
-            HTML::FormHandler::I18N->get_handle ||
-            die "Failed call to Locale::Maketext->get_handle";
-    }
-    my $message = $lh->maketext(@message);
-    $self->push_errors($message);
+    $self->push_errors($self->_localize(@message));
     return;
 }
 
@@ -1042,6 +1032,10 @@ This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
+
+sub _localize {
+    return shift->HTML::FormHandler::I18N::_localize(@_);
+}
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
