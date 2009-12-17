@@ -4,15 +4,13 @@ use Moose;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::BuildFields',
     'HTML::FormHandler::Validate::Actions',
-    'HTML::FormHandler::I18NRole';
+    'HTML::FormHandler::TraitFor::I18N';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
 with 'MooseX::Traits';
 
 use Carp;
 use Class::MOP;
-use Locale::Maketext;
-#use HTML::FormHandler::I18N;
 use HTML::FormHandler::Result;
 
 use 5.008;

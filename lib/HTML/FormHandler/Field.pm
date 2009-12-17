@@ -1,7 +1,6 @@
 package HTML::FormHandler::Field;
 
 use HTML::FormHandler::Moose;
-use HTML::FormHandler::I18N;    # only needed if running without a form object.
 use HTML::FormHandler::Field::Result;
 use HTML::Entities;
 
@@ -9,7 +8,7 @@ with 'MooseX::Traits';
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::Widget::ApplyRole';
-with 'HTML::FormHandler::I18NRole';
+with 'HTML::FormHandler::TraitFor::I18N';
 
 our $VERSION = '0.02';
 

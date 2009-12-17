@@ -1,4 +1,4 @@
-package HTML::FormHandler::I18NRole;
+package HTML::FormHandler::TraitFor::I18N;
 
 use base 'Locale::Maketext';
 use Moose::Role;
