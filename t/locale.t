@@ -4,7 +4,8 @@ use Test::More;
 use Test::Exception;
 use HTML::FormHandler::Field::Text;
 
-use_ok('HTML::FormHandler::I18N::de_de');
+#use_ok('HTML::FormHandler::I18N');
+#use_ok('HTML::FormHandler::I18N::de_de');
 
 # ensure $ENV is properly set up
 delete $ENV{$_}
@@ -68,7 +69,8 @@ is_deeply($form->field('test_field')->errors, ['You won'], 'error is translated 
 
 
 ################ Locale xx_xx set via ENV{LANG}
-$ENV{LANG} = 'xx_xx';
+#$ENV{LANG} = 'xx_xx';
+$ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('xx_xx');
 
 # create form w/ locale must work
 undef $form;
