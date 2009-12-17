@@ -508,15 +508,10 @@ the DBIC model).
 
 Place to store application context for your use in your form's methods.
 
-=head3 language_handle, build_language_handle
+=head3 language_handle
 
-Holds a Locale::Maketext language handle
-
-The builder for this attribute gets the Locale::Maketext language
-handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates
-a default language handler using L<HTML::FormHandler::I18N>. The
-language handle is used in the field's add_error method to allow
-localizing.
+See 'language_handle' and '_build_language_handle' in
+L<HTML::FormHandler::TraitFor::I18N>.
 
 =head3 dependency
 
