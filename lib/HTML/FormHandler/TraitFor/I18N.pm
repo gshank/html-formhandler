@@ -29,7 +29,7 @@ sub _build_language_handle {
     if (!$self->isa('HTML::FormHandler') && $self->has_form) {
         return $self->form->language_handle();
     }
-    return $ENV{LANGUAGE_HANDLE} // HTML::FormHandler::I18N->get_handle;
+    return $ENV{LANGUAGE_HANDLE} || HTML::FormHandler::I18N->get_handle;
 }
 
 sub _localize {
