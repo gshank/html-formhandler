@@ -9,6 +9,7 @@ with 'MooseX::Traits';
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::Widget::ApplyRole';
+with 'HTML::FormHandler::I18NRole';
 
 our $VERSION = '0.02';
 
@@ -693,7 +694,12 @@ sub build_label {
 has 'title'     => ( isa => 'Str',               is => 'rw' );
 has 'style'     => ( isa => 'Str',               is => 'rw' );
 has 'css_class' => ( isa => 'Str',               is => 'rw' );
-has 'form'      => ( isa => 'HTML::FormHandler', is => 'rw', weak_ref => 1 );
+has 'form'      => ( 
+    isa => 'HTML::FormHandler',
+    is => 'rw',
+    weak_ref => 1,
+    predicate => 'has_form',
+);
 has 'html_name' => (
     isa     => 'Str',
     is      => 'rw',
@@ -1032,10 +1038,6 @@ This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
-
-sub _localize {
-    return shift->HTML::FormHandler::I18N::_localize(@_);
-}
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

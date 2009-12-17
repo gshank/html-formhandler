@@ -3,7 +3,8 @@ package HTML::FormHandler;
 use Moose;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::BuildFields',
-    'HTML::FormHandler::Validate::Actions';
+    'HTML::FormHandler::Validate::Actions',
+    'HTML::FormHandler::I18NRole';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
 with 'MooseX::Traits';
@@ -11,7 +12,7 @@ with 'MooseX::Traits';
 use Carp;
 use Class::MOP;
 use Locale::Maketext;
-use HTML::FormHandler::I18N;
+#use HTML::FormHandler::I18N;
 use HTML::FormHandler::Result;
 
 use 5.008;
@@ -588,6 +589,7 @@ has 'form' => (
     isa      => 'HTML::FormHandler',
     is       => 'rw',
     weak_ref => 1,
+    predicate => 'has_form',
     lazy     => 1,
     default  => sub { shift }
 );
@@ -640,11 +642,6 @@ has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
-# for Locale::MakeText
-has 'language_handle' => (
-    is      => 'rw',
-    builder => 'build_language_handle'
-);
 has 'html_prefix'   => ( isa => 'Bool', is  => 'ro' );
 has 'active_column' => ( isa => 'Str',  is  => 'ro' );
 has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
@@ -735,13 +732,6 @@ sub BUILD {
     }
     $self->dump_fields if $self->verbose;
     return;
-}
-
-sub build_language_handle {
-    my $lh = $ENV{LANGUAGE_HANDLE} ||
-        HTML::FormHandler::I18N->get_handle ||
-        die "Failed call to Locale::Maketext->get_handle";
-    return $lh;
 }
 
 sub process {
