@@ -1,3 +1,6 @@
+0.29002 Wed Dec 16, 2009
+    Remove locale.t from dist until issues solved
+
 0.29001 Tues Dec 15, 2009
     Fix bug with passing widget_wrapper to fields
     Fix bug with generated method names for form methods
