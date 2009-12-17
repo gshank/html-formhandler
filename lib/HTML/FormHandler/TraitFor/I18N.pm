@@ -1,6 +1,7 @@
 package HTML::FormHandler::TraitFor::I18N;
 
 use base 'Locale::Maketext';
+use HTML::FormHandler::I18N;
 use Moose::Role;
 
 =head3 language_handle, _build_language_handle
