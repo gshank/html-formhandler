@@ -10,7 +10,7 @@ $ENV{LANG} = 'en_us'; # in case user has set LANG to de_de
 #
 my $class = 'HTML::FormHandler::Field::Boolean';
 use_ok($class);
-my $field = $class->new( name => 'test_field', );
+my $field = $class->new( name => 'test', );
 ok( defined $field, 'new() called' );
 $field->_set_input(1);
 $field->validate_field;
@@ -32,7 +32,7 @@ is( $field->value, 0, 'Test true == 0' );
 # checkbox
 $class = 'HTML::FormHandler::Field::Checkbox';
 use_ok($class);
-$field = $class->new( name => 'test_field', );
+$field = $class->new( name => 'test', );
 ok( defined $field, 'new() called' );
 $field->_set_input(1);
 $field->validate_field;
@@ -408,7 +408,7 @@ ok( !$field->has_errors, 'field has no errors');
 
 $class = 'HTML::FormHandler::Field::Text';
 use_ok( $class );
-$field = $class->new( name    => 'test_field',);
+$field = $class->new( name    => 'test',);
 ok( defined $field,  'new() called' );
 $string = 'Some text';
 $field->_set_input( $string );
@@ -434,8 +434,9 @@ $field->maxlength( 5 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for right length' );
 $field->minlength( 10 );
+$field->minlength_message('[_3] field must be at least [quant,_1,character]');
 $field->validate_field;
-is( $field->errors->[0], 'Field must be at least 10 characters. You entered 5', 'Test not long enough' );
+is( $field->errors->[0], 'Test field must be at least 10 characters', 'Test not long enough' );
 $field->minlength( 5 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test just long enough' );
