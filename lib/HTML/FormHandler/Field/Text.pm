@@ -7,11 +7,11 @@ our $VERSION = '0.01';
 has 'size' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has 'maxlength' => ( isa => 'Int|Undef', is => 'rw' );
 has 'maxlength_message' => ( isa => 'Str', is => 'rw',
-    default => 'Field should not exceed [quant,_1,character] characters. You entered [_2]', 
+    default => 'Field should not exceed [quant,_1,character]. You entered [_2]', 
 );
 has 'minlength' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has 'minlength_message' => ( isa => 'Str', is => 'rw', 
-    default => 'Field must be at least [quant,_1,character] characters. You entered [_2]' );
+    default => 'Field must be at least [quant,_1,character]. You entered [_2]' );
 has 'min_length' => (
     isa     => 'Int|Undef',
     is      => 'rw',
