@@ -740,11 +740,11 @@ has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inacti
 has '_active'         => ( isa => 'Bool', is => 'rw', clearer => 'clear_active' );
 has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id { shift->html_name }
-has 'javascript' => ( isa => 'Str',  is => 'ro' );
-has 'password'   => ( isa => 'Bool', is => 'ro' );
-has 'writeonly'  => ( isa => 'Bool', is => 'ro' );
+has 'javascript' => ( isa => 'Str',  is => 'rw' );
+has 'password'   => ( isa => 'Bool', is => 'rw' );
+has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
 has 'disabled'   => ( isa => 'Bool', is => 'rw' );
-has 'readonly'   => ( isa => 'Bool', is => 'ro' );
+has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
 sub has_static_value { }
 has 'set_validate' => ( isa => 'Str', is => 'ro',);
