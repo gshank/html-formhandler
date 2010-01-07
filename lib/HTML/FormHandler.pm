@@ -650,7 +650,7 @@ has 'widget_tags'         => (
       tag_exists => 'exists',
     },
 );
-has 'action' => ( is => 'rw' );
+has 'action' => ( is => 'rw', default => "." );
 has 'params' => (
     traits     => ['Hash'],
     isa        => 'HashRef',

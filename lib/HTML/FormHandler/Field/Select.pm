@@ -113,6 +113,15 @@ If true allows multiple input values
 This can be used to store how many items should be offered in the UI
 at a given time.  Defaults to 0.
 
+=head2 empty_select
+
+Set to the string value of the select label if you want the renderer
+to create an empty select value. This only affects rendering - it does
+not add an entry to the list of options.
+
+   has_field 'fruit' => ( type => 'Select, 
+        empty_select => '---Choose a Fruit---' );
+
 =head2 label_column
 
 Sets or returns the name of the method to call on the foreign class
@@ -223,13 +232,14 @@ sub _form_options {
     return $self->form->$meth($self);
 }
 
-has 'multiple' => ( isa => 'Bool', is => 'rw', default => '0' );
+has 'multiple'         => ( isa => 'Bool', is => 'rw', default => '0' );
 has 'size'             => ( isa => 'Int|Undef', is => 'rw' );
 has 'label_column'     => ( isa => 'Str',       is => 'rw', default => 'name' );
 has 'active_column'    => ( isa => 'Str',       is => 'rw', default => 'active' );
 has 'auto_widget_size' => ( isa => 'Int',       is => 'rw', default => '0' );
 has 'sort_column'      => ( isa => 'Str',       is => 'rw' );
-has '+widget' => ( default => 'select' );
+has '+widget'          => ( default => 'select' );
+has 'empty_select'     => ( isa => 'Str',       is => 'rw' );
 
 sub select_widget {
     my $field = shift;

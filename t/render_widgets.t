@@ -205,7 +205,7 @@ is(
 
 my $output11 = $form->render_start;
 is(
-    $output11, '<form id="testform" method="post" >
+    $output11, '<form action="." id="testform" method="post" >
 <fieldset class="main_fieldset">', 'Form start OK'
 );
 

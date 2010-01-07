@@ -270,6 +270,9 @@ sub render_select {
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= '>';
     my $index = 0;
+    if( $field->empty_select ) {
+        $output .= '<option value="">' . $field->empty_select . '</option>'; 
+    }
     foreach my $option ( @{ $field->options } ) {
         $output .= '<option value="' . encode_entities($option->{value}) . '" ';
         $output .= 'id="' . $field->id . ".$index\" ";

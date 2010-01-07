@@ -13,6 +13,9 @@ sub render {
     $output .= ' size="' . $self->size . '"' if $self->size;
     $output .= '>';
     my $index = 0;
+    if( $self->empty_select ) {
+        $output .= '<option value="">' . $self->empty_select . '</option>'; 
+    }
     foreach my $option ( @{ $self->{options} } ) {
         $output .= '<option value="' . $option->{value} . '" ';
         $output .= 'id="' . $self->id . ".$index\" ";
