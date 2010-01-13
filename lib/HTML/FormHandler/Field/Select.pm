@@ -229,7 +229,12 @@ sub _can_form_options {
 sub _form_options {
     my $self = shift;
     return unless (my $meth = $self->_can_form_options);
-    return $self->form->$meth($self);
+    if( $self->form->meta->has_attribute( $meth ) ) {
+        return $self->form->$meth;
+    }
+    else {
+        return $self->form->$meth($self);
+    }
 }
 
 has 'multiple'         => ( isa => 'Bool', is => 'rw', default => '0' );

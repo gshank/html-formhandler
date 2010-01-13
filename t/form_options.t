@@ -25,13 +25,9 @@ use HTML::FormHandler::Field::Text;
    # the following sometimes happens with db options
    sub options_empty { ([]) }
 
-   sub options_fruit {
-       return (
-           1   => 'apples',
-           2   => 'oranges',
-           3   => 'kiwi',
-       );
-   }
+   has 'options_fruit' => ( is => 'rw', traits => ['Array'],
+       default => sub { [1 => 'apples', 2 => 'oranges',
+           3 => 'kiwi'] } );
 
    sub options_vegetables {
        return (
