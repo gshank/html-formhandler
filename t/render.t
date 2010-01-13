@@ -166,7 +166,7 @@ is( $output10, '
 ', 'output from radio group' );
 
 my $output11 = $form->render_start;
-is( $output11,'<form action="." id="testform" method="post" >
+is( $output11,'<form id="testform" method="post" >
 <fieldset class="main_fieldset">', 'Form start OK' );
 
 my $output = $form->render;
