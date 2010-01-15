@@ -39,11 +39,17 @@ You can execute the sample from a downloaded DBIC model distribution package wit
 
 =head1 Basics
 
-To use HTML::FormHandler, you need to create a form class, call the
-form class from a controller, and choose a method of displaying
-the form in an HTML page. 
+You can either create a form dynamically with 
+C<< my $form = HTML::FormHandler->new( <arguments>); >> (or with
+C<< HTML::FormHandler::Model::DBIC->new(...) >> for DBIC forms ) or by
+creating a form subclass. There are some features 
+and usage patterns which do not fit well with the dynamic method - it's harder
+to create form methods or attributes, for example. But most forms could be
+created in either way.
 
-Create a Form, subclassed from HTML::FormHandler::Model::DBIC
+Create a Form, subclassed from HTML::FormHandler::Model::DBIC. The fields
+are declared here using the 'has_field' sugar, but they could also be
+defined using the 'field_list', as in the following dynamic example.
 
     package MyApp:Form::User;
     use HTML::FormHandler::Moose;
@@ -82,6 +88,98 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
 
     no HTML::FormHandler::Moose;
     1;
+
+An example of a dynamically created form instance:
+
+    use HTML::FormHandler;
+
+    my @select_options = ( {value => 1, label => 'One'}, 
+         {value => 2, label => 'Two'}, {value => 3, label => 'Three'} );
+    my $args =  {
+        name       => 'test_form',
+        field_list => [
+            'username' => {
+                type  => 'Text',
+                apply => [ { check => qr/^[0-9a-z]*/, 
+                   message => 'Contains invalid characters' } ],
+            },
+            'password' => {
+                type => 'Password',
+            },
+            'some_number' => {
+                type      => 'IntRange',
+                range_min => 12,
+                range_max => 291,
+            },
+            'some_option' => {
+                type           => 'Checkbox',
+                checkbox_value => 'yes',
+                input_without_param => 'no'
+            },
+            'some_text' => {
+                type => 'TextArea',
+            },
+            'hidden_field' => {
+                type    => 'Hidden',
+                default => 'foo',
+            },
+            'upload_file' => {
+                type => 'Upload',
+                max_size => 262144,
+            },
+            'select_foo' => {
+                type    => 'Select',
+                options => \@select_options,
+            },
+            'select_bar' => {
+                type     => 'Select',
+                options  => \@select_options,
+                multiple => 1,
+                size     => 4,
+            },
+            'select_baz' => {
+                type    => 'Select',
+                options => \@select_options,
+                widget  => 'radio_group',
+            },
+            'select_bax' => {
+                type     => 'Select',
+                options  => \@select_options,
+                multiple => 1,
+                widget   => 'checkbox_group'
+            },
+            'sub' => {
+                type => 'Compound',
+            },
+            'sub.user' => {
+                type  => 'Text',
+                apply => [ { check => qr/^[0-9a-z]*/, 
+                             message => 'Not a valid user' } ],
+            },
+            'sub.name' => {
+                type  => 'Text',
+                apply => [ { check => qr/^[0-9a-z]*/, 
+                             message => 'Not a valid name' } ],
+            },
+            'reset' => {
+                type => 'Reset',
+            },
+            'submit' => {
+                type => 'Submit',
+            },
+            'some_link' => {
+                type => 'Display',
+                html => '<a href="http://google.com/">Go somewhere</>',
+            },
+        ]
+    };
+    my $form = HTML::FormHandler->new( %$args );
+    my $renderedform = $form->render;
+
+
+You can create custom rendering roles or classes and easily change the
+rendering methods. FormHandler ships with 'Simple' and 'Table' renderers, and
+returns the validated values in a hashref using C<< $form->value >>.
 
 By default the L<HTML::FormHandler::Widget> roles will be applied, making it
 possible to render a simple form for scaffolding:
