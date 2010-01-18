@@ -35,10 +35,17 @@ use Scalar::Util qw(blessed);
    has_field 'coderef_transform'=> (
       apply => [{ transform => \&my_transform }]
    );
-
    has_field 'sprintf_filter' => (
       apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
    );
+   has_field 'regex_trim' => (
+       trim => { transform => sub { 
+               my $string = shift;
+               $string =~ s/^\s+//;
+               $string =~ s/\s+$//;
+               return $string;
+        }}
+   ); 
    has_field 'date_time_error' => (
       apply => [ { transform => sub{ DateTime->new( $_[0] ) },
                    message => 'Not a valid DateTime' } ],
@@ -96,6 +103,7 @@ ok( $form, 'get form' );
 
 my $params = {
       sprintf_filter   => '100',
+      regex_trim => "  xxxy  \n",
       coderef_transform => 'testing',
       date_time_error  => 'aaa',
       'date_time.year' => 2009,
@@ -116,6 +124,7 @@ my $params = {
 $form->process($params);
 
 like( $form->field('sprintf_filter')->value, qr/<1e\+0+2>/, 'sprintf filter' );
+is( $form->field('regex_trim')->value, 'xxxy', 'regex trim' );
 is( $form->field('coderef_transform')->value, 'IT WORKED', 'coderef transform' );
 ok( $form->field('date_time_error')->has_errors,      'DateTime error catched' );
 is( $form->field('date_time_error')->errors->[0], 'Not a valid DateTime', 'error message');

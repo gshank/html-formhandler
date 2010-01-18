@@ -474,7 +474,12 @@ this contains a transform to strip beginning and trailing spaces.
 Set this attribute to null to skip trimming, or supply a different
 transform.
 
-  trim => { transform => sub { } }
+  trim => { transform => sub { 
+      my $string = shift; 
+      $string =~ s/^\s+//;
+      $string =~ s/\s+$//;
+      return $string;
+  } }
   trim => { type => MyTypeConstraint }
 
 Trimming is performed before any other defined actions.
