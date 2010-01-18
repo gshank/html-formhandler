@@ -3,9 +3,9 @@ package HTML::FormHandler::Render::WithTT;
 use Moose::Role;
 use File::ShareDir;
 use Template;
-
 use namespace::autoclean; 
 
+requires 'form';
 
 has 'tt_include_path' => (
     traits => ['Array'],

@@ -87,7 +87,7 @@ field declaration sugar):
 
 
 A dynamic form - one that does not use a custom form class - may be 
-created in a controller using the 'field_list' attribute to set fields:
+created in using the 'field_list' attribute to set fields:
 
     my $form = HTML::FormHandler->new(
         name => 'user_form',
@@ -693,7 +693,6 @@ has '_required' => (
         add_required => 'push',
     }
 );
-sub submit { warn "Please use a Submit field instead of the submit form attribute" }
 
 {
     use Moose::Util::TypeConstraints;
