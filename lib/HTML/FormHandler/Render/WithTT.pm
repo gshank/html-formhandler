@@ -39,7 +39,7 @@ has 'tt_engine' => ( is => 'rw', isa => 'Template', lazy => 1,
 );
 
 has 'tt_vars' => ( is => 'rw', traits => ['HashRef'], 
-   is => 'rw', lazy => 1, default => {{}} );
+   is => 'rw', lazy => 1, default => sub {{}} );
 has 'default_tt_vars' => ( is => 'ro', isa => 'HashRef',
    lazy => 1, builder => 'build_default_tt_vars' );
 
