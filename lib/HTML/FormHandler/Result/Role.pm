@@ -74,6 +74,7 @@ has 'errors' => (
 );
 
 sub validated { !$_[0]->has_error_results && $_[0]->has_input }
+sub is_valid { shift->validated }
 
 sub field {
     my ( $self, $name, $die ) = @_;
