@@ -4,7 +4,20 @@ HTML::FormHandler::Manual::Rendering
 
 =head1 SYNOPSIS
 
-HFH has a number of different rendering methods.
+You can easily build any kind of renderer for FormHandler. A custom
+renderer could be a separate object or class that takes a form object,
+or a role that is applied to your form. Since the primary use of
+FormHandler is for HTML forms, the built-in rendering methods create
+HTML (though in addition all forms can return a hashref of the values 
+and a hashref of the values to use to fill in an HTML form).
+
+If you are interested in creating your own renderer,
+L<HTML::FormHandler::Render::Simple> can be used as an example of
+rendering directly from forms/fields. Depending on what kind of
+rendering you want to do, it may be simpler to take the 'value'
+hashref and use that.
+
+HFH has a number of different rendering methods:
 
    1. Handcoded html with no assist from HFH at all
    2. Use templates and the field 'widget' to determine the template snippet
