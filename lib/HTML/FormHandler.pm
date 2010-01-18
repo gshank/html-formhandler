@@ -715,7 +715,7 @@ has 'params_args' => ( is => 'ro', isa => 'ArrayRef' );
 sub BUILDARGS {
     my $class = shift;
 
-    if ( @_ == 1 ) {
+    if ( scalar @_ == 1 && ref( $_[0]) ne 'HASH' ) {
         my $id = $_[0];
         return { item => $id, item_id => $id->id } if ( blessed($id) );
         return { item_id => $id };
