@@ -17,7 +17,7 @@ need validating.
 
 =cut
 
-has 'html' => ( is => 'ro', isa => 'Str', default => '' );
+has 'html' => ( is => 'rw', isa => 'Str', default => '' );
 has 'has_static_value' => ( is => 'ro', default => 1 );
 has 'value' => (
     is        => 'rw',
