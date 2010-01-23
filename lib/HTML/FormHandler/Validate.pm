@@ -21,7 +21,7 @@ has 'required_message' => (
     lazy    => 1,
     default => sub { shift->label . ' field is required' }
 );
-has 'unique'            => ( isa => 'Bool', is => 'rw' );
+has 'unique'            => ( isa => 'Bool', is => 'rw', predicate => 'has_unique' );
 has 'unique_message'    => ( isa => 'Str',  is => 'rw' );
 has 'range_start' => ( isa => 'Int|Undef', is => 'rw' );
 has 'range_end'   => ( isa => 'Int|Undef', is => 'rw' );
