@@ -1,0 +1,11 @@
+<label class="label [% IF field.has_errors %]fld_error[% END %]" for="[% f.name %]">[% f.label %]</label>
+<select name="[% f.name %]" multiple="multiple" size="[% f.size %]">
+  [% FOR option IN f.options %]
+    <option value="[% option.value %]" 
+    [% FOREACH selval IN f.fif %]
+      [% IF selval == option.value %]selected="selected"[% END %]
+    [% END %]>
+    [% option.label | html %]</option>
+  [% END %] 
+</select>
+

@@ -25,6 +25,7 @@ requires 'MooseX::Types::Common';
 requires 'MooseX::Traits';
 requires 'aliased';
 requires 'File::Spec';
+requires 'File::ShareDir';
 requires 'Try::Tiny';
 requires 'namespace::autoclean' => '0.09';
 
@@ -35,6 +36,8 @@ test_requires 'Test::Exception';
 
 tests();
 author_tests('t/xt');
+
+install_share 'share';
 
 auto_install();
 

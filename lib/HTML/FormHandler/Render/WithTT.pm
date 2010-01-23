@@ -7,16 +7,39 @@ use namespace::autoclean;
 
 requires 'form';
 
+=head1 NAME
+
+HTML::FormHandler::Render::WithTT
+
+=head1 SYNOPSIS
+
+A rendering role for HTML::FormHandler that allows rendering using 
+Template::Toolkit
+
+   package MyApp::Form;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+   with 'HTML::FormHandler::Render::WithTT';
+
+   ....< define form >....
+
+   my $form = MyApp::Form->new( template => 'user/edit.tt' );
+   $form->render;
+
+=head1 DESCRIPTION
+
+=cut
+
 has 'tt_include_path' => (
     traits => ['Array'],
     is => 'rw',
-    isa => 'ArrayRef[Str',
+    isa => 'ArrayRef',
     lazy => 1,
-    default => sub { return [] },
+    default => sub {[]},
 );
 
 has 'tt_config' => (
-    traits => ['HashRef'],
+    traits => ['Hash'],
     is => 'rw',
     lazy => 1,
     builder => 'build_tt_config',
@@ -38,8 +61,8 @@ has 'tt_engine' => ( is => 'rw', isa => 'Template', lazy => 1,
    builder => 'build_tt_engine'
 );
 
-has 'tt_vars' => ( is => 'rw', traits => ['HashRef'], 
-   is => 'rw', lazy => 1, default => sub {{}} );
+has 'tt_vars' => ( is => 'rw', traits => ['Hash'], is => 'rw' );
+
 has 'default_tt_vars' => ( is => 'ro', isa => 'HashRef',
    lazy => 1, builder => 'build_default_tt_vars' );
 
