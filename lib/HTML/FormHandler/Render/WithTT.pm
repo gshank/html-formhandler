@@ -21,12 +21,17 @@ Template::Toolkit
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Render::WithTT';
 
+   sub build_tt_template { 'user_form.tt' }
+   sub build_tt_include_path { 'root/templates' }
    ....< define form >....
 
-   my $form = MyApp::Form->new( template => 'user/edit.tt' );
-   $form->render;
+   my $form = MyApp::Form->new( 
+   $form->tt_render;
 
 =head1 DESCRIPTION
+
+Uses 'tt_render' instead of 'render' to allow using both TT templates and the
+built-in rendering.
 
 =cut
 
@@ -35,8 +40,9 @@ has 'tt_include_path' => (
     is => 'rw',
     isa => 'ArrayRef',
     lazy => 1,
-    default => sub {[]},
+    builder => 'build_tt_include_path', 
 );
+sub build_tt_include_path {[]}
 
 has 'tt_config' => (
     traits => ['Hash'],
@@ -55,17 +61,26 @@ sub build_tt_config {
 }
 
 # either file name string or string ref?
-has 'tt_template' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'form.tt' );
+has 'tt_template' => ( is => 'rw', isa => 'Str', lazy => 1, 
+   builder => 'build_tt_template' );
+sub build_tt_template { 'form.tt' }
 
 has 'tt_engine' => ( is => 'rw', isa => 'Template', lazy => 1,
    builder => 'build_tt_engine'
 );
+sub build_tt_engine {
+    my $self = shift;
 
-has 'tt_vars' => ( is => 'rw', traits => ['Hash'], is => 'rw' );
+    my $tt_engine = Template->new( $self->tt_config );
+    return $tt_engine;
+}
+
+has 'tt_vars' => ( is => 'rw', traits => ['Hash'],
+    builder => 'build_tt_vars');
+sub build_tt_vars {{}}
 
 has 'default_tt_vars' => ( is => 'ro', isa => 'HashRef',
    lazy => 1, builder => 'build_default_tt_vars' );
-
 sub build_default_tt_vars {
     my $self = shift;
     return { form => $self->form };
@@ -76,21 +91,16 @@ has 'tt_default_options' => (
     is => 'rw',
     isa => 'HashRef',
     lazy => 1,
-    default => sub { {} },
+    builder => 'build_tt_default_options',
 );
-sub build_tt_engine {
-    my $self = shift;
-
-    my $tt_engine = Template->new( $self->tt_config );
-    return $tt_engine;
-}
+sub build_tt_default_options {{}}
 
 
-sub render {
+sub tt_render {
     my $self = shift;
 
     my $output;
-    my $vars = { %{$self->default_tt_vars}, $self->tt_vars };
+    my $vars = { %{$self->default_tt_vars}, %{$self->tt_vars} };
     $self->tt_engine->process( $self->tt_template, $vars, \$output );
     return $output;
 }
