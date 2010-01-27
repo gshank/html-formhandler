@@ -44,11 +44,11 @@ our %Lexicon = (
     'Email is not valid' => 'E-Mail ist nicht gültig',
     'Zip is not valid' => 'PLZ ungültig',
     'Not a valid IP address' => 'IP Adresse ungültig',
-    'Password cannot contain spaces' => 'Passwort darf keine Leerzeichen enthalten',
-    'Password must be made up of letters, digits, and underscores' => 'Passwort darf nur Buchstaben, Ziffern oder "_" enthalten',
-    'Password must not be all digits' => 'Passwort darf nicht nur Ziffern enthalten',
-    'Field contains non-printable characters' => 'Enthält nicht druckbare Zeichen',
-    'Field must contain a single word' => 'Muss ein einzelnes Wort sein',
+    'Cannot contain spaces' => 'Darf keine Leerzeichen enthalten',
+    'Must be made up of letters, digits, and underscores' => 'Darf nur Buchstaben, Ziffern oder "_" enthalten',
+    'Must not be all digits' => 'Darf nicht nur Ziffern enthalten',
+    'Field contains non-printable characters' => 'Feld enthält nicht druckbare Zeichen',
+    'Field must contain a single word' => 'Feld muss ein einzelnes Wort enthalten',
     
     # H::F::Validate::Actions
     'Wrong value' => 'Ungültiger Wert',
