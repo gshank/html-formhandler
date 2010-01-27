@@ -28,11 +28,12 @@ using new (usually for test purposes).
 In your custom field class:
 
     package MyApp::Field::MyText;
+    use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Field::Text';
 
     has 'my_attribute' => ( isa => 'Str', is => 'rw' );
 
-    apply [ { transform => sub {...}, message => '...' },
+    apply [ { transform => sub {...} },
             { check => ['fighter', 'bard', 'mage' ], message => '....' }
           ];
     1;
@@ -934,7 +935,7 @@ sub _apply_deflation {
         $value = $self->deflation->($value);
     }
     elsif ( $self->can('deflate') ) {
-        $value = $self->deflate;
+        $value = $self->deflate($value);
     }
     return $value;
 }

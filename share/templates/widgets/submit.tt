@@ -1,0 +1,2 @@
+<input type="submit" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
+
