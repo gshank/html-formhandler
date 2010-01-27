@@ -80,14 +80,42 @@ SKIP: {
    $field->validate_field;
    is( $field->errors->[0], 'Email is not valid', 'error from Email' );
 }
-# IPAddress
-$field = HTML::FormHandler::Field->new( name => 'Test', apply => [ IPAddress ] );
-$field->_set_input('198.168.0.101');
-ok( $field->validate_field, 'IPAddress validated' );
-ok( !$field->has_errors, 'email field is valid');
-$field->_set_input('198.300.0.101');
-$field->validate_field;
-is( $field->errors->[0], 'Not a valid IP address', 'error from IPAddress' );
+my @test = (
+    IPAddress => \&IPAddress =>
+	[qw(0.0.0.0 01.001.0.00 198.168.0.101 255.255.255.255)],
+	[qw(1 2.33 4.56.789 198.300.0.101 0.-1.13.255)],
+        'Not a valid IP address',
+    NoSpaces => \&NoSpaces =>
+	[qw(a 1 _+~ *), '#'], ['a b', "x\ny", "foo\tbar"],
+        'Must not contain spaces',
+    WordChars => \&WordChars =>
+	[qw(abc 8 ___ 90_i 0)],
+	['a b', "x\ny", "foo\tbar", 'c++', 'C#', '$1,000,000'],
+        'Must be made up of letters, digits, and underscores',
+    NotAllDigits => \&NotAllDigits =>
+        [qw(a 1a . a=1 1.23), 'a 1'], [qw(0 1 12 03450)],
+        'Must not be all digits',
+# does not work at all!!!
+#    Printable => \&Printable =>
+#        [qw(a 1 $ % *), '# ?'], [0x00, "foo\tbar", "x\ny"],
+#        'Field contains non-printable characters',
+    SingleWord => \&SingleWord =>
+        [qw(a 1a _ a_1 1_234)], ['a b', '1.23', 'a=1'],
+        'Field must contain a single word',
+);
 
+while (my ($name, $type, $good, $bad, $error_msg) = splice @test, 0, 5) {
+    $field = HTML::FormHandler::Field->new(name => 'Test', apply => [&$type]);
+    for (@$good) {
+        $field->_set_input($_);
+        ok($field->validate_field, "$name validated");
+        ok(!$field->has_errors, "$name field is valid");
+    }
+    for (@$bad) {
+        $field->_set_input($_);
+        ok(!$field->validate_field, "$name validation failed");
+        is($field->errors->[0], $error_msg, "error from $name");
+    }
+}
 
 done_testing;

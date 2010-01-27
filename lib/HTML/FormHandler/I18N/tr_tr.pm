@@ -68,9 +68,9 @@ our %Lexicon = (
     'Email is not valid' => 'Geçersiz E-Posta',
     'Zip is not valid' => 'Geçersiz posta kodu',
     'Not a valid IP address' => 'Geçersiz IP adresi',
-    'Password cannot contain spaces' => 'Şifre boşluk içeremez',
-    'Password must be made up of letters, digits, and underscores' => 'Şifre sadece harf, rakam ya da "_" içerebilir',
-    'Password must not be all digits' => 'Şifre sadece rakamlardan oluşamaz',
+    'Cannot contain spaces' => 'Boşluk içeremez',
+    'Must be made up of letters, digits, and underscores' => 'Sadece harf, rakam ya da "_" içerebilir',
+    'Must not be all digits' => 'Sadece rakamlardan oluşamaz',
     'Field contains non-printable characters' => 'Basılamayan karakterler içeriyor',
     'Field must contain a single word' => 'Tek bir kelime olmalı',
    
