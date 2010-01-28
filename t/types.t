@@ -118,4 +118,21 @@ while (my ($name, $type, $good, $bad, $error_msg) = splice @test, 0, 5) {
     }
 }
 
+@test = (
+    Lower => \&Lower =>
+	[A => 'a', AB => 'ab', Abc => 'abc', abc => 'abc', 'A-z' => 'a-z', '1 + X' => '1 + x'],
+    Upper => \&Upper =>
+	[a => 'A', ab => 'AB', Abc => 'ABC', ABC => 'ABC', 'A-z' => 'A-Z', '1 + x' => '1 + X'],
+);
+
+while (my ($name, $type, $trans) = splice @test, 0, 3) {
+    my @trans = @$trans;
+    $field = HTML::FormHandler::Field->new(name => 'Test', apply => [&$type]);
+    while (my ($from, $to) = splice @trans, 0, 2) {
+	$field->_set_input($from);
+	ok($field->validate_field, "$name validated");
+	is($field->value, $to , "$name field transformation");
+    }
+}
+
 done_testing;
