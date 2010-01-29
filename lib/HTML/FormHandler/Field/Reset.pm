@@ -17,6 +17,8 @@ Uses the 'reset' widget.
 
 =cut
 
+has '+widget' => ( default => 'reset' );
+
 has '+value' => ( default => 'Reset' );
 
 __PACKAGE__->meta->make_immutable;

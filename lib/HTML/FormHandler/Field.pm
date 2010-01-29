@@ -221,12 +221,13 @@ Compound fields will have an array of errors from the subfields.
    style       - Place to put field style string
    css_class   - For a css class name (string; could be several classes,
                  separated by spaces or commas)
-   id          - Useful for javascript (default is form_name + field_name)
+   id          - Useful for javascript (default is html_name. to prefix with
+                 form name, use 'html_prefix' in your form)
    disabled    - for the HTML flag
    readonly    - for the HTML flag
    javascript  - for a Javascript string
    order       - Used for sorting errors and fields. Built automatically,
-                 but may also be explicity set
+                 but may also be explicitly set
 
 =head2 widget
 
@@ -242,20 +243,33 @@ of Render::Simple or in your form class.
 If you are using a template based rendering system you will want
 to create a widget template.
 (see L<HTML::FormHandler::Manual::Templates>)
+If you are using the widget roles, you can specify the widget
+with the short class name instead.
 
 Widget types for the provided field classes:
 
-    Widget      : Field classes
-    ------------:-----------------------------------
-    text        : Text, Integer
-    checkbox    : Checkbox, Boolean
-    radio_group : Select, Multiple, IntRange (etc)
-    select      : Select, Multiple, IntRange (etc)
-    textarea    : TextArea, HtmlArea
-    compound    : Compound, Repeatable, DateTime
-    password    : Password
-    hidden      : Hidden
-    submit      : Submit
+    Widget         : Field classes
+    ---------------:-----------------------------------
+    text (Text)            : Text, Integer
+    checkbox (Checkbox)    : Checkbox, Boolean
+    radio_group 
+       (RadioGroup)        : Select, Multiple, IntRange (etc)
+    select (Select)        : Select, Multiple, IntRange (etc)
+    checkbox_group 
+       (CheckboxGroup)     : Multiple select
+    textarea (Textarea)    : TextArea, HtmlArea
+    compound (Compound)    : Compound, Repeatable, DateTime
+    password (Password)    : Password
+    hidden (Hidden)        : Hidden
+    submit (Submit)        : Submit
+    reset (Reset)          : Reset
+    no_render (NoRender)   :
+    upload (Upload)        : Upload
+
+Widget roles are automatically applied to field classes
+unless they already have a 'render' method. Render::Simple
+will fall back to doing C<< $field->render >> if the corresponding
+widget method does not exist.
 
 =head2 Flags
 

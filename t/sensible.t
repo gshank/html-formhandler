@@ -88,5 +88,6 @@ ok( $form, 'form builds ok' );
 
 my $renderedform = $form->render;
 ok( $renderedform, 'form renders' );
+like( $renderedform, qr/Reset/, 'reset rendered' );
 
 done_testing;
