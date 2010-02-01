@@ -4,6 +4,9 @@ use warnings;
 use utf8;
 use base 'HTML::FormHandler::I18N';
 
+# translator: Oleg Kostyuk
+# notify before release: cub@cpan.org
+
 # Auto define lexicon
 our %Lexicon = (
     '_AUTO' => 1,
