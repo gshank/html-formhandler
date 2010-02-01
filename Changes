@@ -1,3 +1,18 @@
+0.30 Mon Feb 1, 2010
+    Improve Display Field, adding more ways to set html
+    Add initial pass at more automatic TT rendering
+    Change readonly, html attributes to 'rw'
+    Set widget in Reset field
+    Fix bugs and oddities in HFH::types
+    Fix bug allowing hashref to be passed to constructor
+    Improve doc on 'trim'
+    Add more doc on dynamic form creation
+    Allow 'options_<field_name>' attributes in form
+    Add Turkish message file
+    Add 'empty_select' to Select field
+    Fix bug displaying empty repeatable element if no values from object
+    Improvements in I18N factoring
+    
 0.29002 Wed Dec 16, 2009
     Remove locale.t from dist until issues solved
 

@@ -68,8 +68,7 @@ $form->field('test_field')->add_error('You won');
 is_deeply($form->field('test_field')->errors, ['You won'], 'error is translated into en_us');
 
 
-################ Locale xx_xx set via ENV{LANG}
-#$ENV{LANG} = 'xx_xx';
+################ Locale xx_xx set via ENV{LANGUAGE_HANDLE}
 $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('xx_xx');
 
 # create form w/ locale must work
