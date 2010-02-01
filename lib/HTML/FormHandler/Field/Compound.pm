@@ -75,6 +75,27 @@ sub BUILD {
     $self->_build_fields;
 }
 
+# this is for testing compound fields outside
+# of a form
+sub test_validate_field {
+    my $self = shift;
+    unless( $self->form ) {
+        if( $self->has_input ) {
+            $self->_result_from_input( $self->result, $self->input );;
+        }
+        else {
+            $self->_result_from_fields( $self->result );
+        }
+    }
+    $self->validate_field;
+    unless( $self->form ) {
+        $self->get_error_fields;
+        foreach my $err_res (@{$self->result->error_results}) {
+            $self->result->push_errors($err_res->all_errors);
+        }
+    }
+}
+
 around '_result_from_input' => sub {
     my $orig = shift;
     my $self = shift;

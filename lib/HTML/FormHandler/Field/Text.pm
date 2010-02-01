@@ -6,7 +6,12 @@ our $VERSION = '0.01';
 
 has 'size' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has 'maxlength' => ( isa => 'Int|Undef', is => 'rw' );
+has 'maxlength_message' => ( isa => 'Str', is => 'rw',
+    default => 'Field should not exceed [quant,_1,character]. You entered [_2]', 
+);
 has 'minlength' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
+has 'minlength_message' => ( isa => 'Str', is => 'rw', 
+    default => 'Field must be at least [quant,_1,character]. You entered [_2]' );
 has 'min_length' => (
     isa     => 'Int|Undef',
     is      => 'rw',
@@ -33,16 +38,16 @@ sub validate {
     my $value = $field->input;
     # Check for max length
     if ( my $maxlength = $field->maxlength ) {
-        return $field->add_error( 'Please limit to [quant,_1,character]. You submitted [_2]',
-            $maxlength, length $value )
+        return $field->add_error( $field->maxlength_message, 
+            $maxlength, length $value, $field->label )
             if length $value > $maxlength;
     }
 
     # Check for min length
     if ( my $minlength = $field->minlength || $field->_min_length_r ) {
         return $field->add_error(
-            'Input must be at least [quant,_1,character]. You submitted [_2]',
-            $minlength, length $value )
+            $field->minlength_message,
+            $minlength, length $value, $field->label )
             if length $value < $minlength;
     }
     return 1;

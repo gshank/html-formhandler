@@ -73,21 +73,27 @@ Checks that the state is in a list of two uppercase letters.
 
 =item IPAddress
 
+Must be a valid IPv4 address.
+
 =item NoSpaces
 
-  No spaces in string
+No spaces in string allowed.
 
 =item WordChars
 
+Must be made up of letters, digits, and underscores.
+
 =item NotAllDigits
 
-  Might be useful for passwords
+Might be useful for passwords.
 
 =item Printable
 
+Must not contain non-printable characters.
+
 =item SingleWord
 
-  Contains a single word
+Contains a single word.
 
 =back
 
@@ -99,19 +105,19 @@ These types will transform the value without an error message;
 
 =item Collapse
 
-  Replaces multiple spaces with a single space
+Replaces multiple spaces with a single space
 
 =item Upper
 
-  Makes the string all upper case
+Makes the string all upper case
 
 =item Lower
 
-  Makes the string all lower case
+Makes the string all lower case
 
 =item Trim
 
-  Trims the string of starting and ending spaces
+Trims the string of starting and ending spaces
 
 =back
 
@@ -169,79 +175,71 @@ subtype Email, as Str, where {
 
 subtype Zip,
     as Str,
-    where { $_ =~ /^(\s*\d{5}(?:[-]\d{4})?\s*)$/ },
+    where { /^(\s*\d{5}(?:[-]\d{4})?\s*)$/ },
     message { "Zip is not valid" };
 
 subtype IPAddress, as Str, where {
-    $_ =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/ &&
-        $1 >= 0 &&
-        $1 <= 255 &&
-        $2 >= 0 &&
-        $2 <= 255 &&
-        $3 >= 0 &&
-        $3 <= 255 &&
-        $4 >= 0 &&
-        $4 <= 255;
+    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
 }, message { "Not a valid IP address" };
 
 subtype NoSpaces,
     as Str,
-    where { $_[0] !~ /\s/ },
-    message { 'Password cannot contain spaces' };
+    where { ! /\s/ },
+    message { 'Must not contain spaces' };
 
 subtype WordChars,
     as Str,
-    where { $_ !~ /\s/ },
-    message { 'Password must be made up of letters, digits, and underscores' };
+    where { ! /\W/ },
+    message { 'Must be made up of letters, digits, and underscores' };
 
 subtype NotAllDigits,
     as Str,
-    where { $_ !~ /^\d+$/ },
-    message { 'Password must not be all digits' };
+    where { ! /^\d+$/ },
+    message { 'Must not be all digits' };
 
 subtype Printable,
     as Str,
-    where { $_ =~ /^\p{IsPrint}*\z/ },
+    where { /^\p{IsPrint}*\z/ },
     message { 'Field contains non-printable characters' };
 
 subtype SingleWord,
     as Str,
-    where { $_ =~ /^\w*\z/ },
+    where { /^\w*\z/ },
     message { 'Field must contain a single word' };
 
 subtype Collapse,
    as Str,
-   where{ $_ !~ /\s{2,}/ };
+   where{ ! /\s{2,}/ };
 
 coerce Collapse,
    from Str,
-   via { $_ =~ s/\s+/ /g; return $_; };
+   via { s/\s+/ /g; return $_; };
 
 subtype Lower,
    as Str,
-   where { $_ !~ /[[:upper:]]/  };
+   where { ! /[[:upper:]]/  };
 
 coerce Lower,
    from Str,
-   via { lc($_) };
+   via { lc };
 
 subtype Upper,
    as Str,
-   where { $_ !~ /[[:lower:]]/ };
+   where { ! /[[:lower:]]/ };
 
 coerce Upper,
    from Str,
-   via { uc($_) };
+   via { uc };
 
 subtype Trim,
    as Str,
-   where  { $_ !~ /^\s+/ &&
-            $_ !~ /\s+$/ };
+   where  { ! /^\s+/ &&
+            ! /\s+$/ };
 
 coerce Trim,
    from Str,
-   via { $_ =~ s/^\s+// &&
-         $_ =~ s/\s+$//; 
+   via { s/^\s+// &&
+         s/\s+$//; 
          return $_;  };
 
 =head1 AUTHORS

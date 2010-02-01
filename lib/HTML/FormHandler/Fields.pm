@@ -131,6 +131,7 @@ sub sorted_fields {
 #  the routine for looping through and processing each field
 sub _fields_validate {
     my $self = shift;
+
     return unless $self->has_fields;
     # validate all fields
     my %value_hash;

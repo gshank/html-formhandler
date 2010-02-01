@@ -246,6 +246,7 @@ throws_ok( sub { Test::NoWidget->new }, qr/not found in/, 'no widget throws mess
 
 $form = Test::Form->new( widget_form => 'Table', widget_wrapper => 'Table' );
 ok( $form->can('render'), 'form has table widget' );
+like( $form->field('number')->render, qr/<td>/, 'field has table wrapper');
 $form->process($params);
 my $outputT = $form->render;
 ok( $outputT, 'output from table rendering' );

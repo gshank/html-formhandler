@@ -1,0 +1,5 @@
+<form id="[% form.name %]" method="[% form.http_method %]" 
+   [% IF form.action %]action="[% form.action %]"[% END %] 
+   [% IF form.enctype %]enctype="[% form.enctype %]"[% END %]
+>
+

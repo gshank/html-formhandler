@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::Reset;
 
 use Moose;
-extends 'HTML::FormHandler::Field::Display';
+extends 'HTML::FormHandler::Field::NoValue';
 
 =head1 NAME
 
@@ -16,6 +16,8 @@ Use this field to declare a reset field in your form.
 Uses the 'reset' widget.
 
 =cut
+
+has '+widget' => ( default => 'reset' );
 
 has '+value' => ( default => 'Reset' );
 

@@ -14,7 +14,8 @@ HTML::FormHandler::Render::Table - render a form with a table layout
 Include this role in a form:
 
    package MyApp::Form::User;
-   with 'HTML::FormHandler::Render::Table
+   use Moose;
+   with 'HTML::FormHandler::Render::Table';
 
 Use in a template:
 

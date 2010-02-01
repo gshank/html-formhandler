@@ -1,0 +1,2 @@
+<input type="submit" name="[% f.html_name %]" id="[% f.id %]" value="[% f.value %]">
+

@@ -231,7 +231,9 @@ sub render_text {
     $output .= ' id="' . $field->id . '"';
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
-    $output .= ' value="' . encode_entities($field->fif) . '" />';
+    $output .= ' value="' . encode_entities($field->fif) . '"';
+    $output .= $self->_add_html_attributes( $field );
+    $output .= ' />';
     return $output;
 }
 
@@ -242,7 +244,9 @@ sub render_password {
     $output .= ' id="' . $field->id . '"';
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
-    $output .= ' value="' . encode_entities($field->fif) . '" />';
+    $output .= ' value="' . encode_entities($field->fif) . '"';
+    $output .= $self->_add_html_attributes( $field );
+    $output .= ' />';
     return $output;
 }
 
@@ -251,7 +255,9 @@ sub render_hidden {
     my $output = '<input type="hidden" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= ' value="' . encode_entities($field->fif) . '" />';
+    $output .= ' value="' . encode_entities($field->fif) . '"';
+    $output .= $self->_add_html_attributes( $field );
+    $output .= ' />';
     return $output;
 }
 
@@ -264,6 +270,9 @@ sub render_select {
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= '>';
     my $index = 0;
+    if( $field->empty_select ) {
+        $output .= '<option value="">' . $field->empty_select . '</option>'; 
+    }
     foreach my $option ( @{ $field->options } ) {
         $output .= '<option value="' . encode_entities($option->{value}) . '" ';
         $output .= 'id="' . $field->id . ".$index\" ";
@@ -300,6 +309,7 @@ sub render_checkbox {
     $output .= ' id="' . $field->id . '"';
     $output .= ' value="' . encode_entities($field->checkbox_value) . '"';
     $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
+    $output .= $self->_add_html_attributes( $field );
     $output .= ' />';
     return $output;
 }
@@ -330,6 +340,7 @@ sub render_textarea {
 
     my $output =
         qq(<textarea name="$name" id="$id" )
+        . $self->_add_html_attributes($field)
         . qq(rows="$rows" cols="$cols">)
         . encode_entities($fif)
         . q(</textarea>);
@@ -360,6 +371,7 @@ sub render_submit {
     my $output = '<input type="submit" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
+    $output .= $self->_add_html_attributes( $field );
     $output .= ' value="' . encode_entities($field->value) . '" />';
     return $output;
 }
@@ -370,7 +382,19 @@ sub render_reset {
     my $output = '<input type="reset" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
+    $output .= $self->_add_html_attributes( $field );
     $output .= ' value="' . encode_entities($field->value) . '" />';
+    return $output;
+}
+
+sub _add_html_attributes {
+    my ( $self, $field ) = @_;
+
+    my $output = q{};
+    for my $attr ( 'readonly', 'disabled', 'style' ) {
+        $output .= ( $field->$attr ? qq{ $attr="} . $field->$attr . '"' : '' );
+    }
+    $output .= ($field->javascript ? ' ' . $field->javascript : '');
     return $output;
 }
 

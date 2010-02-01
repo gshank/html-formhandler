@@ -1,65 +1,84 @@
 package HTML::FormHandler::Field::Display;
 
 use Moose;
-extends 'HTML::FormHandler::Field';
+extends 'HTML::FormHandler::Field::NoValue';
+use namespace::autoclean;
 
 =head1 NAME
 
-HTML::FormHandler::Field::Display - display only
+HTML::FormHandler::Field::Display 
 
 =head1 SYNOPSIS
 
-This is the base class for the Submit field. It can be used for fields that
-are display only. It should not be used for fields that produce a value or
-need validating.
+This class can be used for fields that are display only. It will
+render the value returned by a form's 'html_<field_name>' method,
+or the field's 'html' attribute.
 
-   has_field 'explain' => ( type => 'Display', value => 'Please pick a date and a time' );
+  has_field 'explanation' => ( type => 'Display',
+     html => '<p>This is an explanation...</p>' );
+
+or in a form:
+
+  sub html_explanation {
+     my ( $self, $field ) = @_;
+     if( $self->something ) {
+        return '<p>This type of explanation...</p>';
+     }
+     else {
+        return '<p>Another type of explanation...</p>';
+     }
+  }
+
+or set the name of the rendering method:
+
+   has_field 'explanation' => ( type => 'Display', set_html => 'my_explanation' );
+   sub my_explanation {
+     ....
+   }
 
 =cut
 
-has 'html' => ( is => 'ro', isa => 'Str', default => '' );
-has 'has_static_value' => ( is => 'ro', default => 1 );
-has 'value' => (
-    is        => 'rw',
-    predicate => 'has_value',
-);
-
-sub _result_from_fields {
-    my ( $self, $result ) = @_;
-    $self->_set_result($result);
-    $result->_set_field_def($self);
-    return $result;
+has 'html' => ( is => 'rw', isa => 'Str', builder => 'build_html' ); 
+sub build_html {''}
+has 'set_html' => ( isa => 'Str', is => 'ro');
+sub _set_html_meth {
+    my $self = shift;
+    return $self->set_html if $self->set_html;
+    my $name = $self->full_name;
+    $name =~ s/\./_/g;
+    $name =~ s/_\d+_/_/g;
+    return 'html_' . $name;
 }
-
-sub _result_from_input {
-    my ( $self, $result, $input, $exists ) = @_;
-    $self->_set_result($result);
-    $result->_set_field_def($self);
-    return $result;
+sub _can_form_html {
+    my $self = shift;
+    my $set_html = $self->_set_html_meth;
+    return
+        unless $self->form &&
+            $set_html &&
+            $self->form->can( $set_html );
+    return $set_html;
 }
-
-sub _result_from_object {
-    my ( $self, $result, $value ) = @_;
-    $self->_set_result($result);
-    $result->_set_field_def($self);
-    return $result;
+sub _form_html {
+    my $self = shift;
+    return unless (my $meth = $self->_can_form_html);
+    if( $self->form->meta->has_attribute( $meth ) ) {
+        return $self->form->$meth;
+    }
+    else {
+        return $self->form->$meth($self);
+    }
 }
-
-sub fif { }
-
-has '+widget'    => ( default => '' );
-has '+writeonly' => ( default => 1 );
-has '+noupdate'  => ( default => 1 );
-
-sub validate_field { }
-
-sub clear_value { }
 
 sub render {
     my $self = shift;
-    return $self->html;
+    if ( my $meth = $self->_can_form_html ) {
+        return $self->form->$meth( $self );
+    }
+    elsif ( $self->html ) {
+        return $self->html;
+    }
+    return '';
 }
 
 __PACKAGE__->meta->make_immutable;
-use namespace::autoclean;
 1;

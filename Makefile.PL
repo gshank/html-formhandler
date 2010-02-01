@@ -1,13 +1,10 @@
 use strict;
 use warnings;
-use inc::Module::Install 0.89;
+use inc::Module::Install 0.91;
 
-BEGIN {
-    if ($Module::Install::AUTHOR) { # Not strictly needed, but reminds idiots like
-                                    # me what M::I extensions I need ;)
-        require Module::Install::AuthorTests;
-    }
-}
+# Not strictly needed, but reminds idiots like
+# me what M::I extensions I need ;)
+use Module::Install::AuthorTests;
 
 name 'HTML-FormHandler';
 author 'Gerda Shank';
@@ -28,7 +25,8 @@ requires 'MooseX::Types::Common';
 requires 'MooseX::Traits';
 requires 'aliased';
 requires 'File::Spec';
-requires 'Class::Load' => '0.05';
+requires 'File::ShareDir';
+requires 'Try::Tiny';
 requires 'namespace::autoclean' => '0.09';
 
 # things the tests need
@@ -38,6 +36,8 @@ test_requires 'Test::Exception';
 
 tests();
 author_tests('t/xt');
+
+install_share 'share';
 
 auto_install();
 

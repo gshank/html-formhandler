@@ -3,12 +3,14 @@ use warnings;
 
 use Test::More;
 
+$ENV{LANG} = 'en_us'; # in case user has set LANG to de_de
+
 #
 # Boolean
 #
 my $class = 'HTML::FormHandler::Field::Boolean';
 use_ok($class);
-my $field = $class->new( name => 'test_field', );
+my $field = $class->new( name => 'test', );
 ok( defined $field, 'new() called' );
 $field->_set_input(1);
 $field->validate_field;
@@ -30,7 +32,7 @@ is( $field->value, 0, 'Test true == 0' );
 # checkbox
 $class = 'HTML::FormHandler::Field::Checkbox';
 use_ok($class);
-$field = $class->new( name => 'test_field', );
+$field = $class->new( name => 'test', );
 ok( defined $field, 'new() called' );
 $field->_set_input(1);
 $field->validate_field;
@@ -374,11 +376,12 @@ $class = 'HTML::FormHandler::Field::Select';
 use_ok( $class );
 $field = $class->new( name    => 'test_field',);
 ok( $field->options, 'Test for init_options failure in 0.09' );
-$field->options([
+my $options = [
     { value => 1, label => 'one' },
     { value => 2, label => 'two' },
     { value => 3, label => 'three' },
-]);
+];
+$field->options($options);
 ok( defined $field,  'new() called' );
 $field->_set_input( 1 );
 $field->validate_field;
@@ -391,6 +394,10 @@ $field->_set_input( [1,4] );
 $field->validate_field;
 ok( $field->has_errors, 'Test for errors 4' );
 is( $field->errors->[0], 'This field does not take multiple values', 'Error message' );
+$field = $class->new( name => 'test_prompt', 'empty_select' => "Choose a Number",
+    options => $options, required => 1 );
+is( $field->num_options, 3, 'right number of options');
+like( $field->render, qr/Choose/, 'contains empty selection' );
 
 # textarea
 
@@ -406,7 +413,7 @@ ok( !$field->has_errors, 'field has no errors');
 
 $class = 'HTML::FormHandler::Field::Text';
 use_ok( $class );
-$field = $class->new( name    => 'test_field',);
+$field = $class->new( name    => 'test',);
 ok( defined $field,  'new() called' );
 $string = 'Some text';
 $field->_set_input( $string );
@@ -427,13 +434,14 @@ ok( !$field->has_errors, 'Test for errors 3' );
 is( $field->value, 'hello', 'Check again' );
 $field->maxlength( 3 );
 $field->validate_field;
-ok( $field->has_errors, 'Test for too long' );
+is( $field->errors->[0], 'Field should not exceed 3 characters. You entered 5',  'Test for too long' );
 $field->maxlength( 5 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for right length' );
 $field->minlength( 10 );
+$field->minlength_message('[_3] field must be at least [quant,_1,character]');
 $field->validate_field;
-ok( $field->has_errors, 'Test not long enough' );
+is( $field->errors->[0], 'Test field must be at least 10 characters', 'Test not long enough' );
 $field->minlength( 5 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test just long enough' );

@@ -9,6 +9,8 @@ BEGIN
    plan tests => 7;
 }
 
+$ENV{LANG} = 'en_us'; # in case user has LANG set
+
 my $class = 'HTML::FormHandler::Field::Email';
 use_ok($class);
 my $field = $class->new( name => 'test_field', );

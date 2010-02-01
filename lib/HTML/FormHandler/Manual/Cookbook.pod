@@ -64,7 +64,7 @@ of them 'inactive';
    1;
 
 Then you can mark them active using a Moose method modifier on
-'setup_form'.
+'set_active'.
 
    before 'set_active' => sub {
       my $self = shift;
@@ -87,32 +87,24 @@ If you want the fields activated for the life of an object, set active on new:
 
 If you want to add custom attributes to the FormHandler fields but don't want
 to subclass all the fields, you can apply a role containing the new
-attributes to L<HTML::FormHandler::Field> in your form. 
+attributes to an L<HTML::FormHandler::Field> in your form. 
 
-   package MyApp::Form::Custom;
-   use HTML::FormHandler::Moose;
-   extends 'HTML::FormHandler';
-   use HTML::FormHandler::Field;
+Use the form attribute 'field_traits' to apply a role to the base field class.
+Use 'traits' on the individual fields to apply a role to field instances.
 
-   # can't do this in BUILD because the base class BUILD fires before this one
-   after 'BUILDARGS' => sub {
-      my $fmeta = HTML::FormHandler::Field->meta;
-      $fmeta->make_mutable;
-      Moose::Util::apply_all_roles( $fmeta, ('MyApp::Field::Role::Custom'));
-      $fmeta->make_immutable;
-   };
-   has_field 'bar';
-   has_field 'foo';
-   1;
+    package MyApp::Form::Test;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
 
-   package MyApp::Field::Role::Custom;
-   use Moose::Role;
-   has 'my_extra_attribute => ( isa => 'Bool, is => 'rw' );
-   1; 
+    has_field 'foo' => ( traits => ['MyApp::TraitFor::Test'] );
+    has '+field_traits' => ( default => sub { ['Some::Trait', 'Another::Trait'] } );
+     
+Or set the traits on new:
 
-If you want all your forms to use fields with the custom attributes, you
-can create a base form object that applies the role, or turn the
-code into a role and apply it in all of your forms.
+    my $form = MyApp::Form::User->new( field_traits => ['MyApp::TraitFor::Test'] );
+    my $form = MyApp::Form::User->new( 
+             field_list => [ '+foo' => { traits => [...] } ]);
+  
 
 =head2 Select lists
 
@@ -356,6 +348,25 @@ as updated by the user, for example:
       my $self = shift;
       $self->item->user_updated if $self->item;
    };
+
+=head2 Additional changes to the database
+
+If you want to do additional database updates besides the ones that FormHandler
+does for you, the best solution would generally be to add the functionality to
+your result source or resultset classes, but if you want to do additional updates
+in a form you should use an 'around' method modifier and a transaction:
+
+  around 'update_model' => sub {
+      my $orig = shift;
+      my $self = shift;
+      my $item = $self->item;
+
+      $self->schema->txn_do( sub {
+          $orig->($self, @_);
+
+          <perform additional updates>
+      };
+  };
 
 =head2 Doing cross validation in roles
 

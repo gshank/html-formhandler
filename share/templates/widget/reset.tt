@@ -1,0 +1,2 @@
+<input type="reset" name="[% f.html_name %]" id="[% f.id %]" value="[% f.fif %]">
+

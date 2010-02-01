@@ -7,8 +7,10 @@ HTML::FormHandler::Manual::Intro - basic usage of FormHandler
 HTML::FormHandler is a form handling class that validates HTML form data
 and, for database forms, saves it to the database on validation. 
 It has field classes that can be used for creating a set of widgets 
-and highly automatic templates. There is a simple rendering role,
-L<HTML::FormHandler::Render::Simple>, and FormHandler is designed to
+and highly automatic templates. There are two simple rendering roles,
+L<HTML::FormHandler::Render::Simple> and a subclass of it 
+L<HTML::FormHandler::Render::Table>, plus a set of widget roles for
+individual form and field classes. FormHandler is designed to
 make it easy to produce alternative rendering modules.
 
 The DBIC & CDBI models will save form fields automatically to the database, will
@@ -37,16 +39,21 @@ You can execute the sample from a downloaded DBIC model distribution package wit
 
 =head1 Basics
 
-To use HTML::FormHandler, you need to create a form class, call the
-form class from a controller, and choose a method of displaying
-the form in an HTML page. 
+You can either create a form dynamically with 
+C<< my $form = HTML::FormHandler->new( <arguments>); >> (or with
+C<< HTML::FormHandler::Model::DBIC->new(...) >> for DBIC forms ) or by
+creating a form subclass. There are some features 
+and usage patterns which do not fit well with the dynamic method - it's harder
+to create form methods or attributes, for example. But most forms could be
+created in either way.
 
-Create a Form, subclassed from HTML::FormHandler::Model::DBIC
+Create a Form, subclassed from HTML::FormHandler::Model::DBIC. The fields
+are declared here using the 'has_field' sugar, but they could also be
+defined using the 'field_list', as in the following dynamic example.
 
     package MyApp:Form::User;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Model::DBIC';
-    with 'HTML::FormHandler::Render::Simple'; # if you want to render the form
 
     # Associate this form with a DBIx::Class result class
     # Or 'item_class' can be passed in on 'new', or you
@@ -82,12 +89,111 @@ Create a Form, subclassed from HTML::FormHandler::Model::DBIC
     no HTML::FormHandler::Moose;
     1;
 
-For many forms, if L<HTML::FormHandler::Render::Simple> is included as a form role,
-you can render a simple form for scaffolding:
+An example of a dynamically created form instance:
+
+    use HTML::FormHandler;
+
+    my @select_options = ( {value => 1, label => 'One'}, 
+         {value => 2, label => 'Two'}, {value => 3, label => 'Three'} );
+    my $args =  {
+        name       => 'test_form',
+        field_list => [
+            'username' => {
+                type  => 'Text',
+                apply => [ { check => qr/^[0-9a-z]*/, 
+                   message => 'Contains invalid characters' } ],
+            },
+            'password' => {
+                type => 'Password',
+            },
+            'some_number' => {
+                type      => 'IntRange',
+                range_min => 12,
+                range_max => 291,
+            },
+            'some_option' => {
+                type           => 'Checkbox',
+                checkbox_value => 'yes',
+                input_without_param => 'no'
+            },
+            'some_text' => {
+                type => 'TextArea',
+            },
+            'hidden_field' => {
+                type    => 'Hidden',
+                default => 'foo',
+            },
+            'upload_file' => {
+                type => 'Upload',
+                max_size => 262144,
+            },
+            'select_foo' => {
+                type    => 'Select',
+                options => \@select_options,
+            },
+            'select_bar' => {
+                type     => 'Select',
+                options  => \@select_options,
+                multiple => 1,
+                size     => 4,
+            },
+            'select_baz' => {
+                type    => 'Select',
+                options => \@select_options,
+                widget  => 'radio_group',
+            },
+            'select_bax' => {
+                type     => 'Select',
+                options  => \@select_options,
+                multiple => 1,
+                widget   => 'checkbox_group'
+            },
+            'sub' => {
+                type => 'Compound',
+            },
+            'sub.user' => {
+                type  => 'Text',
+                apply => [ { check => qr/^[0-9a-z]*/, 
+                             message => 'Not a valid user' } ],
+            },
+            'sub.name' => {
+                type  => 'Text',
+                apply => [ { check => qr/^[0-9a-z]*/, 
+                             message => 'Not a valid name' } ],
+            },
+            'reset' => {
+                type => 'Reset',
+            },
+            'submit' => {
+                type => 'Submit',
+            },
+            'some_link' => {
+                type => 'Display',
+                html => '<a href="http://google.com/">Go somewhere</>',
+            },
+        ]
+    };
+    my $form = HTML::FormHandler->new( %$args );
+    my $renderedform = $form->render;
+
+
+You can create custom rendering roles or classes and easily change the
+rendering methods. FormHandler ships with 'Simple' and 'Table' renderers, and
+returns the validated values in a hashref using C<< $form->value >>.
+
+By default the L<HTML::FormHandler::Widget> roles will be applied, making it
+possible to render a simple form for scaffolding:
 
     [% form.render %]
 
 Individual fields can also be rendered:
+
+    [% form.field('title').render %]
+
+You can also use the Simple and Table rendering roles by adding
+C< with 'HTML::FormHandler::Field::Render'; > to your class. These rendering
+roles also enable  use of the C< [% form.render %] > syntax, but the widget 
+rendering methods included in the these roles are accessed with:
 
     [% form.render_field('title') %]
 
@@ -613,7 +719,9 @@ The field name space for use with '+' prefixed fields:
    has_field 'subname' => ( type => '+SubName' );
    
 An 'init_object' for filling in the form with default values instead of
-the database object. (To set individual field values use "default_$fieldname".)
+the database object. (To set individual field values use "default_$fieldname"
+or default => '...' on the field. Individual field defaults take precedence
+over an init_object or model item.)
 
    has '+init_object' => ( default => sub { 
          {  name => 'Choose name',
@@ -660,13 +768,16 @@ You can also write custom methods to retrieve the option info from the database:
 =item default_$fieldname
 
 Allows you to provide (in the form) a different initial value for a particular 
-field than that in the database.
+field than that in the database (formerly init_value_$fieldname ).
 
    sub default_license {
       my ( $self, $field, $item ) = @_;
       return 0 unless $item && $item->license_id; 
       return $item->license_id;
    }
+
+Defaults can also be provided by the field's 'default' attribute and the
+init_object. 
 
 
 =item validate_$fieldname

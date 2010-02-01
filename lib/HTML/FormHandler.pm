@@ -3,20 +3,19 @@ package HTML::FormHandler;
 use Moose;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::BuildFields',
-    'HTML::FormHandler::Validate::Actions';
+    'HTML::FormHandler::Validate::Actions',
+    'HTML::FormHandler::TraitFor::I18N';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
 with 'MooseX::Traits';
 
 use Carp;
 use Class::MOP;
-use Locale::Maketext;
-use HTML::FormHandler::I18N;
 use HTML::FormHandler::Result;
 
 use 5.008;
 
-our $VERSION = '0.28001';
+our $VERSION = '0.30';
 
 =head1 NAME
 
@@ -24,16 +23,40 @@ HTML::FormHandler - form handler written in Moose
 
 =head1 SYNOPSIS
 
-Note: This package no longer includes the DBIC model. If you intend to use
-L<HTML::FormHandler::Model::DBIC>, please install that package separately.
+    use HTML::FormHandler; # or a custom form: use MyApp::Form::User;
+    my $form = HTML::FormHandler->new( .... );
+    $form->process( params => $params );
+    my $rendered_form = $form->render;
+    if( $form->validated ) {
+        # perform validated form actions
+    }
+    else {
+        # perform non-validated actions
+    }
+    
+Or, if you want to use a form 'result' (which contains only the form
+values and error messages) instead:
 
-An example of a form class:
+    use MyApp::Form; # or a generic form: use HTML::FormHandler;
+    my $form = MyApp::Form->new( .... );
+    my $result = $form->run( params => $params );
+    if( $result->validated ) {
+        # perform validated form actions
+    }
+    else {
+        # perform non-validated actions
+        $result->render;
+    }
+
+
+An example of a custom form class (you could also use a 'field_list'
+like the dynamic form example if you don't want to use the 'has_field'
+field declaration sugar):
 
     package MyApp::Form::User;
 
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    with 'HTML::FormHandler::Render::Simple';
 
     has '+item_class' => ( default => 'User' );
 
@@ -63,69 +86,59 @@ An example of a form class:
     1;
 
 
-An example of a Catalyst controller that uses an HTML::FormHandler form
-to update a 'Book' record:
-
-   package MyApp::Controller::Book;
-   use Moose;
-   BEGIN { extends 'Catalyst::Controller' }
-   use MyApp::Form::Book;
-
-   sub book_base : Chained PathPart('book') CaptureArgs(0)
-   {
-      my ( $self, $c ) = @_;
-      # setup
-   }
-   sub item : Chained('book_base') PathPart('') CaptureArgs(1)
-   {
-      my ( $self, $c, $book_id ) = @_;
-      $c->stash( book => $c->model('DB::Book')->find($book_id) );
-   }
-   sub edit : Chained('item') PathPart('edit') Args(0)
-   {
-      my ( $self, $c ) = @_;
-
-      my $form = MyApp::Form::Book->new;
-      $c->stash( form => $form, template => 'book/form.tt' );
-      return unless $form->process( item => $c->stash->{book},
-         params => $c->req->parameters );
-      $c->res->redirect( $c->uri_for('list') );
-   }
-
-The example above creates the form dynamically on each request.
-You can also use a Moose attribute for the form.
-
-    has 'form' => ( isa => 'MyApp::Form::Book', is => 'ro',
-       default => sub { MyApp::Form::Book->new } );
-
-A dynamic form may be created in a controller using the field_list
-attribute to set fields:
+A dynamic form - one that does not use a custom form class - may be 
+created in using the 'field_list' attribute to set fields:
 
     my $form = HTML::FormHandler->new(
+        name => 'user_form',
         item => $user,
         field_list => [
-               first_name => 'Text',
-               last_name => 'Text'
+            'username' => {
+                type  => 'Text',
+                apply => [ { check => qr/^[0-9a-z]*/, 
+                   message => 'Contains invalid characters' } ],
+            },
+            'select_bar' => {
+                type     => 'Select',
+                options  => \@select_options,
+                multiple => 1,
+                size     => 4,
+            },
         ],
     );
+
+FormHandler does not provide a custom controller for Catalyst because
+it isn't necessary. Interfacing to FormHandler is only a couple of
+lines of code. See L<HTML::FormHandler::Manual::Catalyst> for more
+details, or L<Catalyst::Manual::Tutorial::09_AdvancedCRUD::09_FormHandler>.
 
 
 =head1 DESCRIPTION
 
-HTML::FormHandler allows you to define HTML form fields and validators. It can
+HTML::FormHandler maintains a clean separation between form construction
+and form rendering. It allows you to define your forms and fields in a
+number of flexible ways. Although it provides renderers for HTML, you
+can define custom renderers for any kind of presentation.
+
+Although documentation in this file provides some overview, it is mainly
+intended for API documentation. See L<HTML::FormHandler::Manual::Intro>
+for a more detailed introduction.
+
+HTML::FormHandler allows you to define form fields and validators. It can
 be used for both database and non-database forms, and will
-automatically update or create rows in a database. It can also be used
+automatically update or create rows in a database. It can be used
 to process structured data that doesn't come from an HTML form.
 
-One of its goals is to keep the controller interface as simple as possible,
-and to minimize the duplication of code. In most cases, interfacing your
-controller to your form is only a few lines of code.
+One of its goals is to keep the controller/application program interface as 
+simple as possible, and to minimize the duplication of code. In most cases, 
+interfacing your controller to your form is only a few lines of code.
 
 With FormHandler you'll never spend hours trying to figure out how to make a
 simple HTML change that would take one minute by hand. Because you CAN do it
 by hand. Or you can automate HTML generation as much as you want, with
 template widgets or pure Perl rendering classes, and stay completely in
-control of what, where, and how much is done automatically.
+control of what, where, and how much is done automatically. You can define
+custom renderers and display your rendered forms however you want.
 
 You can split the pieces of your forms up into logical parts and compose
 complete forms from FormHandler classes, roles, fields, collections of
@@ -134,12 +147,17 @@ You can write custom methods to process forms, add any attribute you like,
 use Moose method modifiers.  FormHandler forms are Perl classes, so there's
 a lot of flexibility in what you can do.
 
-HTML::FormHandler does not (yet) provide a complex HTML generating facility,
-but a simple, straightforward rendering role is provided by
-L<HTML::FormHandler::Render::Simple>, which will output HTML formatted
-strings for a field or a form. L<HTML::FormHandler::Render::Table> will
-display the form using an HTML table layout.  There are also sample Template
-Toolkit widget files, documented at L<HTML::FormHandler::Manual::Templates>.
+HTML::FormHandler provides rendering through roles which are applied to
+form and field classes (although there's no reason you couldn't write
+a renderer as an external object either).  There are currently two flavors: 
+all-in-one solutions like L<HTML::FormHandler::Render::Simple> and 
+L<HTML::FormHandler::Render::Table> that contain methods for rendering 
+field widget classes, and the L<HTML::FormHandler::Widget> roles, which are 
+more atomic roles which are automatically applied to fields and form if a 
+'render' method does not already exist. See
+L<HTML::FormHandler::Manual::Rendering> for more details.
+(And you can easily use hand-build forms - FormHandler doesn't care.)
+
 
 The typical application for FormHandler would be in a Catalyst, DBIx::Class,
 Template Toolkit web application, but use is not limited to that. FormHandler
@@ -506,15 +524,10 @@ the DBIC model).
 
 Place to store application context for your use in your form's methods.
 
-=head3 language_handle, build_language_handle
+=head3 language_handle
 
-Holds a Locale::Maketext language handle
-
-The builder for this attribute gets the Locale::Maketext language
-handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates
-a default language handler using L<HTML::FormHandler::I18N>. The
-language handle is used in the field's add_error method to allow
-localizing.
+See 'language_handle' and '_build_language_handle' in
+L<HTML::FormHandler::TraitFor::I18N>.
 
 =head3 dependency
 
@@ -527,11 +540,11 @@ value, then all of the group are set to 'required'.
 
 =head2 Flags
 
-=head3 validated
+=head3 validated, is_valid
 
 Flag that indicates if form has been validated. You might want to use
 this flag if you're doing something in between process and returning,
-such as setting a stash key.
+such as setting a stash key. ('is_valid' is a synonym for this flag)
 
    $form->process( ... );
    $c->stash->{...} = ...;
@@ -585,6 +598,7 @@ has 'form' => (
     isa      => 'HTML::FormHandler',
     is       => 'rw',
     weak_ref => 1,
+    predicate => 'has_form',
     lazy     => 1,
     default  => sub { shift }
 );
@@ -600,7 +614,8 @@ has 'result' => (
     handles   => [
         'input',      '_set_input', '_clear_input', 'has_input',
         'value',      '_set_value', '_clear_value', 'has_value',
-        'add_result', 'results',    'validated',    'ran_validation'
+        'add_result', 'results',    'validated',    'ran_validation',
+        'is_valid'
     ],
 );
 
@@ -612,6 +627,8 @@ sub build_result {
     }
     return $result;
 }
+has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef', 
+     default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
 has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
@@ -635,11 +652,6 @@ has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
-# for Locale::MakeText
-has 'language_handle' => (
-    is      => 'rw',
-    builder => 'build_language_handle'
-);
 has 'html_prefix'   => ( isa => 'Bool', is  => 'ro' );
 has 'active_column' => ( isa => 'Str',  is  => 'ro' );
 has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
@@ -681,7 +693,6 @@ has '_required' => (
         add_required => 'push',
     }
 );
-sub submit { warn "Please use a Submit field instead of the submit form attribute" }
 
 {
     use Moose::Util::TypeConstraints;
@@ -704,7 +715,7 @@ has 'params_args' => ( is => 'ro', isa => 'ArrayRef' );
 sub BUILDARGS {
     my $class = shift;
 
-    if ( @_ == 1 ) {
+    if ( scalar @_ == 1 && ref( $_[0]) ne 'HASH' ) {
         my $id = $_[0];
         return { item => $id, item_id => $id->id } if ( blessed($id) );
         return { item_id => $id };
@@ -715,6 +726,7 @@ sub BUILDARGS {
 sub BUILD {
     my $self = shift;
 
+    $self->apply_field_traits if $self->has_field_traits;
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && !$self->can('render') );
     $self->_build_fields;    # create the form fields
@@ -729,13 +741,6 @@ sub BUILD {
     }
     $self->dump_fields if $self->verbose;
     return;
-}
-
-sub build_language_handle {
-    my $lh = $ENV{LANGUAGE_HANDLE} ||
-        HTML::FormHandler::I18N->get_handle ||
-        die "Failed call to Locale::Maketext->get_handle";
-    return $lh;
 }
 
 sub process {
@@ -845,12 +850,13 @@ sub setup_form {
     if ( $self->item_id && !$self->item ) {
         $self->item( $self->build_item );
     }
+    $self->clear_result;
     $self->set_active;
     # initialization of Repeatable fields and Select options
     # will be done in _result_from_object when there's an initial object
     # in _result_from_input when there are params
     # and by _result_from_fields for empty forms
-    $self->clear_result;
+
     if ( !$self->did_init_obj ) {
         if ( $self->init_object || $self->item ) {
             my $obj = $self->item ? $self->item : $self->init_object; 
@@ -972,6 +978,14 @@ after 'get_error_fields' => sub {
    }
 };
 
+sub apply_field_traits {
+    my $self = shift; 
+    my $fmeta = HTML::FormHandler::Field->meta;
+    $fmeta->make_mutable;
+    Moose::Util::apply_all_roles( $fmeta, @{$self->field_traits});
+    $fmeta->make_immutable;
+}
+
 =head1 SUPPORT
 
 IRC:
@@ -998,11 +1012,17 @@ L<HTML::FormHandler::Manual::Templates>
 
 L<HTML::FormHandler::Manual::Cookbook>
 
+L<HTML::FormHandler::Manual::Rendering>
+
+L<HTML::FormHandler::Manual::Reference>
+
 L<HTML::FormHandler::Field>
 
 L<HTML::FormHandler::Model::DBIC>
 
 L<HTML::FormHandler::Render::Simple>
+
+L<HTML::FormHandler::Render::Table>
 
 L<HTML::FormHandler::Moose>
 
@@ -1022,6 +1042,8 @@ cubuanic: Oleg Kostyuk E<lt>cub.uanic@gmail.comE<gt>
 rafl: Florian Ragwitz E<lt>rafl@debian.orgE<gt>
 
 mazpe: Lester Ariel Mesa
+
+dew: Dan Thomas
 
 Initially based on the source code of L<Form::Processor> by Bill Moseley
 

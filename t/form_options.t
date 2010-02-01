@@ -17,7 +17,7 @@ use HTML::FormHandler::Field::Text;
                id    => 'f99',
             );
    has_field 'fruit' => ( type => 'Select' );
-   has_field 'vegetables' => ( type => 'Multiple' );
+   has_field 'vegetables' => ( type => 'Multiple', input_without_param => [], not_nullable => 1 );
    has_field 'empty' => ( type => 'Multiple'  );
 
    sub init_value_fruit { 2 }
@@ -25,13 +25,9 @@ use HTML::FormHandler::Field::Text;
    # the following sometimes happens with db options
    sub options_empty { ([]) }
 
-   sub options_fruit {
-       return (
-           1   => 'apples',
-           2   => 'oranges',
-           3   => 'kiwi',
-       );
-   }
+   has 'options_fruit' => ( is => 'rw', traits => ['Array'],
+       default => sub { [1 => 'apples', 2 => 'oranges',
+           3 => 'kiwi'] } );
 
    sub options_vegetables {
        return (
@@ -85,5 +81,12 @@ is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], test_field => '', emp
     'fif is correct');
 is_deeply( $form->values, { fruit => 2, vegetables => [2, 4], empty => undef }, 
     'values are correct');
+
+$params = {
+    fruit => 2, 
+};
+$form->process($params);
+is_deeply( $form->field('vegetables')->value, [], 'value for vegetables correct' );
+
 
 done_testing;

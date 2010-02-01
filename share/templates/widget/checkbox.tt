@@ -1,0 +1,2 @@
+<input type="checkbox" name="[% f.html_name %]" id="[% f.id %] value="[% f.checkbox_value %]" 
+  [% IF f.fif == f.checkbox_value %]selected="selected"[% END %]>

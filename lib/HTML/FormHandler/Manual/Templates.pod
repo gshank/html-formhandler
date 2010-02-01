@@ -130,8 +130,8 @@ with a good solution, please submit a doc patch.)
      [% IF option.value == f.fif %]
         checked="checked"
      [% END %]>
-     [% option.label %]</br>
-     [% END %] 
+     [% option.label %]<br />
+   [% END %] 
    </div>
 
 =head1 AUTHORS
