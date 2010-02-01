@@ -145,12 +145,12 @@ subtype NonEmptySimpleStr,
 
 subtype Password,
     as NonEmptySimpleStr,
-    where { length($_) > 3 },
+    where { length($_) >= 4 && length($_) <= 255 },
     message { "Must be between 4 and 255 chars" };
 
 subtype StrongPassword,
     as Password,
-    where { ( length($_) > 7 ) && (m/[^a-zA-Z]/) },
+    where { ( length($_) >= 8 ) && length($_) <= 255 && (m/[^a-zA-Z]/) },
     message { "Must be between 8 and 255 chars, and contain a non-alpha char" };
 
 subtype NonEmptyStr, as Str, where { length($_) > 0 }, message { "Must not be empty" };
