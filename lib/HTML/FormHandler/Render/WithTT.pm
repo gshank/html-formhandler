@@ -13,6 +13,10 @@ HTML::FormHandler::Render::WithTT
 
 =head1 SYNOPSIS
 
+Warning: this feature is not quite ready for prime time. It has not
+been well tested and the template widgets aren't complete. Contributions
+welcome.
+
 A rendering role for HTML::FormHandler that allows rendering using 
 Template::Toolkit
 
@@ -27,6 +31,7 @@ Template::Toolkit
 
    my $form = MyApp::Form->new( 
    $form->tt_render;
+
 
 =head1 DESCRIPTION
 

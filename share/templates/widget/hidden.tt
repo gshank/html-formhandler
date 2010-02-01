@@ -1,0 +1,1 @@
+<input type="hidden" name="[% f.html_name %]" id="[% f.id %]" value="[% f.fif %]" />

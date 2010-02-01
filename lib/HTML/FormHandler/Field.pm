@@ -766,7 +766,6 @@ has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
 has 'disabled'   => ( isa => 'Bool', is => 'rw' );
 has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
-sub has_static_value { }
 has 'set_validate' => ( isa => 'Str', is => 'ro',);
 sub _can_validate {
     my $self = shift;
