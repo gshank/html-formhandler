@@ -1,7 +1,7 @@
 package HTML::FormHandler::Field::Submit;
 
 use Moose;
-extends 'HTML::FormHandler::Field::Display';
+extends 'HTML::FormHandler::Field::NoValue';
 
 =head1 NAME
 
