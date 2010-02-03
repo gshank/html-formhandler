@@ -61,6 +61,13 @@ ok( $form->field('bax')->value, 'default_bax' );
     has_field 'baz';
     has_field 'bax' => ( default => 'bax_from_default' );
     has '+init_object' => ( default => sub { { bar => 'initbar' } } );
+    has_field 'zero' => ( type => 'PosInteger', default => 0 );
+    has_field 'foo_list' => ( type => 'Multiple', default => [1,3],
+       options => [{ value => 1, label => 'One'}, 
+                   { value => 2, label => 'Two'},
+                   { value => 3, label => 'Three'},
+                  ] 
+    );
 
 }
 
@@ -71,5 +78,7 @@ $form->process( item => $obj, item_id => 1, params => {} );
 is( $form->field('foo')->value, 'myfoo', 'field value from item');
 is( $form->field('bar')->value, 'mybar', 'field value from item');
 is( $form->field('bax')->value, 'bax_from_default', 'non-item field value from default' );
+is( $form->field('zero')->value, 0, 'zero default works');
+is_deeply( $form->field('foo_list')->value, [1,3], 'multiple default works' );
 
 done_testing;
