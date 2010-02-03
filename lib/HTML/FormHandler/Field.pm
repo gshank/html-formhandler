@@ -819,7 +819,7 @@ sub get_default_value {
     if ( my $meth = $self->_can_default ) {
         return $self->form->$meth( $self, $self->form->item );
     }
-    elsif ( $self->default ) {
+    elsif ( defined $self->default ) {
         return $self->default;
     }
     return;
@@ -875,8 +875,8 @@ sub _result_from_fields {
 
     if ( my @values = $self->get_default_value ) {
         my $value = @values > 1 ? \@values : shift @values;
-        $self->init_value($value)   if $value;
-        $result->_set_value($value) if $value;
+        $self->init_value($value)   if defined $value;
+        $result->_set_value($value) if defined $value;
     }
     $self->_set_result($result);
     $result->_set_field_def($self);
