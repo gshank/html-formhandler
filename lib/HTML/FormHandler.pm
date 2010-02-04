@@ -15,7 +15,7 @@ use HTML::FormHandler::Result;
 
 use 5.008;
 
-our $VERSION = '0.29003';
+our $VERSION = '0.30';
 
 =head1 NAME
 
@@ -715,7 +715,7 @@ has 'params_args' => ( is => 'ro', isa => 'ArrayRef' );
 sub BUILDARGS {
     my $class = shift;
 
-    if ( @_ == 1 ) {
+    if ( scalar @_ == 1 && ref( $_[0]) ne 'HASH' ) {
         my $id = $_[0];
         if( !ref($id) && !ref($id) eq 'HASH' ) {
             return { item => $id, item_id => $id->id } if ( blessed($id) );

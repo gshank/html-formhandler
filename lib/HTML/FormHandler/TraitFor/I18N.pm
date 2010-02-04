@@ -14,6 +14,9 @@ a default language handler using L<HTML::FormHandler::I18N>. The
 language handle is used in the field's add_error method to allow
 localizing.
 
+If you do not set the language_handle, then L<Locale::Maketext> and/or
+L<I18N::LangTags> may guess, with unexpected results.
+
 =cut 
 
 has 'language_handle' => (

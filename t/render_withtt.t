@@ -3,9 +3,9 @@ use warnings;
 use Test::More;
 use File::ShareDir;
 
-eval "use Template";
-if( $@ ) {
-  plan skip_all => "Template Toolkit not installed";
+BEGIN {
+    plan skip_all => 'Template Toolkit to rest Render::WithTT'
+       unless eval { require Template };
 }
 
 use_ok('HTML::FormHandler::Render::WithTT');

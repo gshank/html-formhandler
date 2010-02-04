@@ -180,6 +180,10 @@ is_deeply( $form->field( 'foo' )->value, { '' => 'bar', x => 42, y => 23 }, 'ima
 $form = Test::Form->new;
 $form->process( { foo => 'cow', bar => 'horse' } );
 is_deeply( $form->value, { foo => 'bovine', bar => 'horse' }, 'correct value' );
+
+# check for hashref constructor
+$form = HTML::FormHandler->new( { name => 'test_form', field_list => { one => 'Text', two => 'Text' } } );
+ok( $form, 'form connstructed ok' );
      
 ## Same as last but allow hashref args to new() 
 $form = HTML::FormHandler->new({ name => 'baz', html_prefix => 1, field_list => [ 'foo' ] });
