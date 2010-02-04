@@ -365,7 +365,7 @@ in a form you should use an 'around' method modifier and a transaction:
           $orig->($self, @_);
 
           <perform additional updates>
-      };
+      });
   };
 
 =head2 Doing cross validation in roles
