@@ -207,15 +207,42 @@ sub _make_field {
         $do_update = 1;
     }
 
-    my $class =
-        $type =~ s/^\+// ?
-        $self->field_name_space ?
-        $self->field_name_space . "::" . $type :
-            $type :
-        'HTML::FormHandler::Field::' . $type;
-
-    Class::MOP::load_class($class) or
-        die "Could not load field class '$type' $class for field '$name'";
+    my $class;
+    if( $type =~ s/^\+// ) {
+        # type prefixed with '+', not a built-in
+        if( ref $self->field_name_space eq 'ARRAY' ) {
+            my $loaded;
+            foreach my $ns (@{$self->field_name_space}) {
+                $class = $ns . "::" . $type;
+                if( Class::MOP::load_class($class) ) {
+                    $loaded++;
+                    last;
+                }
+            }
+            die "Could not load field class '$type' for field '$name'"
+              unless $loaded;
+        }
+        elsif ( $self->field_name_space ) {
+            $class = $self->field_name_space . "::" . $type;
+            Class::MOP::load_class($class) or
+                   die "Could not load field class '$class' for field '$name'";
+        }
+        else {
+            $class = $type;
+            Class::MOP::load_class($class) or
+                   die "Could not load field class '$class' for field '$name'";
+        }
+    }
+    else {
+        # built-in. look in HTML::FormHandler::Field
+        #              and  HTML::FormHandlerX::Field
+        $class = 'HTML::FormHandler::Field::' . $type;
+        unless( Class::MOP::load_class($class) ) {
+            $class = 'HTML::FormHandlerX::Field::' . $type;
+            Class::MOP::load_class($class) or
+               die "Could not load field class '$type' for field '$name'";
+        }
+    }
 
     $field_attr->{form} = $self->form if $self->form;
     # parent and name correction for names with dots
