@@ -17,7 +17,8 @@ sub get_widget_role {
     my ( $self, $widget_name, $dir ) = @_;
     my $widget_class      = $self->widget_class($widget_name);
     my $ldir              = $dir ? '::' . $dir . '::' : '::';
-    my @name_spaces = ( @{$self->widget_name_space}, 'HTML::FormHandler::Widget' );
+    my @name_spaces = ( @{$self->widget_name_space}, 
+        ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget') );
     my $found;
     foreach my $ns (@name_spaces) {
         my $render_role = $ns . $ldir . $widget_class;
