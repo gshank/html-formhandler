@@ -46,7 +46,7 @@ has '+noupdate' => ( default => 1 );
 
 sub get_default_value {
     my $self = shift;
-$DB::single=1;
+
     my $captcha = $self->form->get_captcha;
     if ($captcha) {
         if ( $captcha->{validated} ) {
@@ -69,7 +69,7 @@ $DB::single=1;
 
 sub validate {
     my $self = shift;
-$DB::single=1;
+
     my $captcha = $self->form->get_captcha;
     unless ( $captcha->{rnd} eq $self->value ) {
         $self->add_error("Verification incorrect. Try again.");
