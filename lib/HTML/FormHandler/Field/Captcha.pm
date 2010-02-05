@@ -51,7 +51,7 @@ sub get_default_value {
     if ($captcha) {
         if ( $captcha->{validated} ) {
             $self->required(0);
-            $self->widget('no-display');
+            $self->widget('no_render');
         }
         else {
             $self->required(1);
