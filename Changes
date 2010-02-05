@@ -1,3 +1,10 @@
+0.30001 Fir Feb 5, 2009
+    Remove unnecessary IO::All use causing dep problems
+    Changes to Turkish messages
+    Russian and Urkainian message files
+    Use HTML::FormHandlerX namespace for fields and widgets
+    Fix bug with defaults set to 0
+
 0.30 Mon Feb 1, 2010
     Improve Display Field, adding more ways to set html
     Add initial pass at more automatic TT rendering

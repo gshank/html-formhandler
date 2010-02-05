@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use IO::All;
 
 use HTML::FormHandler;
 

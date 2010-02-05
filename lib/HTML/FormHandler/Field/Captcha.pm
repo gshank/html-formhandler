@@ -51,7 +51,7 @@ sub get_default_value {
     if ($captcha) {
         if ( $captcha->{validated} ) {
             $self->required(0);
-            $self->widget('no-display');
+            $self->widget('no_render');
         }
         else {
             $self->required(1);
@@ -78,9 +78,10 @@ sub validate {
     else {
         $captcha->{validated} = 1;
     }
-    $self->clear_result;
     return !$self->has_errors;
 }
+
+sub fif { }
 
 sub gen_captcha {
     my $self = shift;
