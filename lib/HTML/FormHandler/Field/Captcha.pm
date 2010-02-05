@@ -78,9 +78,10 @@ sub validate {
     else {
         $captcha->{validated} = 1;
     }
-    $self->clear_result;
     return !$self->has_errors;
 }
+
+sub fif { }
 
 sub gen_captcha {
     my $self = shift;

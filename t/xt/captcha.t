@@ -38,10 +38,7 @@ my $rnd = $ctx->{session}->{captcha}->{rnd};
 ok( $rnd, 'captcha is in session' );
 
 $form->process( ctx => $ctx, params => { some_field => 'test', subject => 'Testing captcha', captcha => '1234' } );
-TODO:{
-   local $TODO = 'not working';
-   ok( !$form->validated, 'form did not validate with wrong captcha');
-}
+ok( !$form->validated, 'form did not validate with wrong captcha');
 
 my $rnd2 = $ctx->{session}->{captcha}->{rnd};
 ok( $rnd ne $rnd2, 'we now have a different captcha');
