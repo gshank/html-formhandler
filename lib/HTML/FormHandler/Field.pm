@@ -560,7 +560,7 @@ has 'input_without_param' => (
 );
 has 'not_nullable' => ( is => 'ro', isa => 'Bool' );
 has 'init_value' => ( is => 'rw', clearer => 'clear_init_value' );
-has 'default' => ( is => 'ro' );
+has 'default' => ( is => 'rw' );
 has 'result' => (
     isa       => 'HTML::FormHandler::Field::Result',
     is        => 'ro',
