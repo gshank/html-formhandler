@@ -729,6 +729,7 @@ over an init_object or model item.)
          }
       }
    );
+   sub init_object { ... }
 
 =head1 Other methods for your form
 
