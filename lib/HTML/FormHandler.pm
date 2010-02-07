@@ -174,7 +174,6 @@ The new constructor takes name/value pairs:
 
     MyForm->new(
         item    => $item,
-        init_object => { name => 'Your name here', username => 'choose' }
     );
 
 No attributes are required on new. The form's fields will be built from
@@ -513,12 +512,22 @@ The default is "form" + a one to three digit random number.
 
 =head3 init_object
 
-If an 'init_object' is supplied on form creation, it will be used instead
-of the 'item' to pre-populate the values in the form. This can be useful
-when populating a form from default values stored in a similar but different
-object than the one the form is creating. The 'init_object' should be either
-a hash or the same type of object that the model uses (a DBIx::Class row for
-the DBIC model).
+An 'init_object' may be used instead of the 'item' to pre-populate the values 
+in the form. This can be useful when populating a form from default values 
+stored in a similar but different object than the one the form is creating. 
+The 'init_object' should be either a hash or the same type of object that 
+the model uses (a DBIx::Class row for the DBIC model). It can be set in a
+variety of ways:
+
+   my $form = MyApp::Form->new( init_object => { .... } );
+   $form->process( init_object => {...}, ... );
+   has '+init_object' => ( default => sub { { .... } } );
+   sub init_object { my $self = shift; .... }
+
+The method version is useful if the organization of data in your form does
+not map to an existing or database object in an automatic way, and you need
+to create a different type of object for initialization. (You might also
+want to do 'update_model' yourself.)
 
 =head3 ctx
 
@@ -735,8 +744,8 @@ sub BUILD {
     $self->build_active if $self->has_active; # set optional fields active
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
-    if ( $self->item || $self->init_object ) {
-        $self->_result_from_object( $self->result, $self->item || $self->init_object );
+    if ( my $init_object = $self->item || $self->init_object ) {
+        $self->_result_from_object( $self->result, $init_object );
     }
     else {
         $self->_result_from_fields( $self->result );
@@ -860,9 +869,8 @@ sub setup_form {
     # and by _result_from_fields for empty forms
 
     if ( !$self->did_init_obj ) {
-        if ( $self->init_object || $self->item ) {
-            my $obj = $self->item ? $self->item : $self->init_object; 
-            $self->_result_from_object( $self->result, $obj ); 
+        if ( my $init_object = $self->item || $self->init_object ) {
+            $self->_result_from_object( $self->result, $init_object ); 
         }
         elsif ( !$self->has_params ) {
             # no initial object. empty form form must be initialized
