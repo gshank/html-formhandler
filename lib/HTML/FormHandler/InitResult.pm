@@ -43,7 +43,7 @@ sub _result_from_input {
     if ( ref $input eq 'HASH' ) {
         foreach my $field ( $self->sorted_fields ) {
             next if ($field->inactive && !$field->_active);
-            my $field_name = $field->name;
+            my $field_name = $field->input_param;
             my $result     = HTML::FormHandler::Field::Result->new(
                 name   => $field_name,
                 parent => $self_result
