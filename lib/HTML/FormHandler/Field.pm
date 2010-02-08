@@ -132,6 +132,11 @@ The field accessor with all parents
 
 The full_name plus the form name if 'html_prefix' is set.
 
+=item input_param
+
+By default we expect an input parameter based on the field name.  This allows
+you to look for a different input parameter.
+
 =back
 
 =head2 Field data
@@ -843,6 +848,17 @@ sub default_trim {
         s/\s+$//;
     }
     return ref $value eq 'ARRAY' ? \@values : $values[0];
+}
+
+has 'input_param' => (
+    is => 'rw',
+    isa => 'Str',
+    lazy_build=>1,
+);
+
+sub _build_input_param {
+    my $self = shift @_;
+    return $self->name;
 }
 
 sub BUILDARGS {

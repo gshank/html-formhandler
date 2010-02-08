@@ -726,8 +726,10 @@ sub BUILDARGS {
 
     if ( scalar @_ == 1 && ref( $_[0]) ne 'HASH' ) {
         my $id = $_[0];
-        return { item => $id, item_id => $id->id } if ( blessed($id) );
-        return { item_id => $id };
+        if( !ref($id) && !ref($id) eq 'HASH' ) {
+            return { item => $id, item_id => $id->id } if ( blessed($id) );
+            return { item_id => $id };
+        }
     }
     return $class->SUPER::BUILDARGS(@_);
 }
