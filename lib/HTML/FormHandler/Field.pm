@@ -850,16 +850,7 @@ sub default_trim {
     return ref $value eq 'ARRAY' ? \@values : $values[0];
 }
 
-has 'input_param' => (
-    is => 'rw',
-    isa => 'Str',
-    lazy_build=>1,
-);
-
-sub _build_input_param {
-    my $self = shift @_;
-    return $self->name;
-}
+has 'input_param' => ( is => 'rw', isa => 'Str' );
 
 sub BUILDARGS {
     my $class = shift;
