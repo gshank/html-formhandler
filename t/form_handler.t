@@ -10,7 +10,6 @@ use_ok('HTML::FormHandler');
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
-   has 'test_attribute' => (is=>'ro', required=>1);
    has '+name'         => ( default  => 'testform_' );
    has_field 'optname' => ( temp     => 'First' );
    has_field 'reqname' => ( required => 1 );
@@ -36,10 +35,7 @@ use_ok('HTML::FormHandler');
    }
 }
 
-my $form = My::Form->new({test_attribute=>100});
-is $form->test_attribute, 100, 'Attribute "test_attribute" is set';
-
-=pod
+my $form = My::Form->new;
 
 is( $form->field('optname')->temp, 'Second', 'got second optname field' );
 
@@ -62,8 +58,6 @@ is( $form->field('my_selected')->value, 0,         'correct value for unselected
 
 ok( !$form->process( {} ), 'form doesn\'t validate with empty params' );
 is( $form->num_errors, 0, 'form doesn\'t have errors with empty params' );
-
-=cut
 
 my $bad_1 = {
    reqname => '',
@@ -89,12 +83,10 @@ my $init_object = {
    optname => 'Over Again'
 };
 
-$form = My::Form->new( init_object => $init_object, test_attribute => 101 );
+$form = My::Form->new( init_object => $init_object );
 is( $form->field('optname')->value, 'Over Again', 'value with int_obj' );
 $form->process( params => {} );
 ok( !$form->validated, 'form validated' );
-is $form->test_attribute, 101, 'Attribute "test_attribute" is set';
-
 
 # it's not crystal clear what the behavior should be here, but I think
 # this is more correct than the previous behavior
@@ -183,30 +175,7 @@ is_deeply( $form->value, { foo => 'bovine', bar => 'horse' }, 'correct value' );
 
 # check for hashref constructor
 $form = HTML::FormHandler->new( { name => 'test_form', field_list => { one => 'Text', two => 'Text' } } );
-ok( $form, 'form connstructed ok' );
+ok( $form, 'form constructed ok' );
      
-## Same as last but allow hashref args to new() 
-$form = HTML::FormHandler->new({ name => 'baz', html_prefix => 1, field_list => [ 'foo' ] });
-eval{  $form->process( params => {  'baz.foo' => 'bar', 'baz.foo.x' => 42, 'baz.foo.y' => 23  } ) };
-ok( !$@, 'image field processed' ) or diag $@;
-is_deeply( $form->field( 'foo' )->value, { '' => 'bar', x => 42, y => 23 }, 'image field' );
 
-{
-    package Test::Form;
-    use HTML::FormHandler::Moose;
-    extends 'HTML::FormHandler';
-    
-    has_field 'foo';
-    has_field 'bar';
-
-    sub validate {
-       my $self = shift;
-       if( $self->field('foo')->value eq 'cow' ) {
-           $self->field('foo')->value('bovine');
-       }
-   }
-}
-$form = Test::Form->new;
-$form->process( { foo => 'cow', bar => 'horse' } );
-is_deeply( $form->value, { foo => 'bovine', bar => 'horse' }, 'correct value' );
 done_testing;
