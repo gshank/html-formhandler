@@ -19,14 +19,13 @@ sub get_widget_role {
     my $ldir              = $dir ? '::' . $dir . '::' : '::';
     my @name_spaces = ( @{$self->widget_name_space}, 
         ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget') );
-    my $found;
     foreach my $ns (@name_spaces) {
         my $render_role = $ns . $ldir . $widget_class;
         if ( eval { Class::MOP::load_class($render_role) } ) {
             return $render_role;
         }
     }
-    die "$dir widget $widget_class not found in " . join ", ", @name_spaces unless $found;
+    die "not able to load $dir widget $widget_class from " . join(", ", @name_spaces);
 }
 
 # this is for compatibility with widget names like 'radio_group'
@@ -34,8 +33,10 @@ sub get_widget_role {
 sub widget_class {
     my ( $self, $widget ) = @_;
     return unless $widget;
-    $widget =~ s/^(\w{1})/\u$1/g;
-    $widget =~ s/_(\w{1})/\u$1/g;
+    if($widget eq lc $widget) {
+        $widget =~ s/^(\w{1})/\u$1/g;
+        $widget =~ s/_(\w{1})/\u$1/g;
+    } 
     return $widget;
 }
 

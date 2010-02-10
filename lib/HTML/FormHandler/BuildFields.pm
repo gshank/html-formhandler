@@ -1,6 +1,7 @@
 package HTML::FormHandler::BuildFields;
 
 use Moose::Role;
+use Try::Tiny;
 
 =head1 NAME
 
@@ -237,11 +238,20 @@ sub _make_field {
         # built-in. look in HTML::FormHandler::Field
         #              and  HTML::FormHandlerX::Field
         $class = 'HTML::FormHandler::Field::' . $type;
-        unless( Class::MOP::load_class($class) ) {
+        my @errors;
+        try {
+            Class::MOP::load_class($class);
+        } catch {
             $class = 'HTML::FormHandlerX::Field::' . $type;
-            Class::MOP::load_class($class) or
-               die "Could not load field class '$type' for field '$name'";
-        }
+            push @errors, $_;
+            try {
+                Class::MOP::load_class($class);
+            } catch {
+                push @errors, $_;
+                die "Could not load field class '$type' for field '$name'.".
+                  join("\n[+] ", @errors);
+            };
+        };
     }
 
     $field_attr->{form} = $self->form if $self->form;
