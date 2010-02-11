@@ -1,4 +1,11 @@
-0.30001 Fir Feb 5, 2009
+0.30001 Thu Feb 11, 2010
+    Don't convert widget names that contain uppercase
+    Better error messages for missing field classes
+    Field attribute 'input_param' to allow input names different than field names
+    Make field 'default' rw
+    Clean up doc on init_object
+
+0.30001 Fri Feb 5, 2009
     Remove unnecessary IO::All use causing dep problems
     Changes to Turkish messages
     Russian and Urkainian message files

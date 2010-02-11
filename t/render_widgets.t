@@ -242,7 +242,7 @@ is( $form->field('omega')->render, '<h1>You got here!</h1>',     'omega rendered
     has_field 'no_widget' => ( widget => 'no_widget' );
 }
 dies_ok( sub { Test::NoWidget->new }, 'dies on no widget' );
-throws_ok( sub { Test::NoWidget->new }, qr/not found in/, 'no widget throws message' );
+throws_ok( sub { Test::NoWidget->new }, qr/not able to load/, 'no widget throws message' );
 
 $form = Test::Form->new( widget_form => 'Table', widget_wrapper => 'Table' );
 ok( $form->can('render'), 'form has table widget' );
