@@ -1,4 +1,4 @@
-package HTML::FormHandler::Role::Captcha;
+package HTML::FormHandler::TraitFor::Captcha;
 
 use HTML::FormHandler::Moose::Role;
 use GD::SecurityImage;
@@ -10,7 +10,7 @@ has_field 'captcha' => ( type => 'Captcha', label => 'Verification' );
 
 =head1 NAME
 
-HTML::FormHandler::Form::Captcha - generate and validate captchas
+HTML::FormHandler::TraitFor::Captcha - generate and validate captchas
 
 =head1 SYNOPSIS
 
@@ -18,7 +18,12 @@ A role to use in a form to implement a captcha field.
 
    package MyApp::Form;
    use HTML::FormHandler::Moose;
-   with 'HTML::FormHandler::Form::Captcha';
+   with 'HTML::FormHandler::TraitFor::Captcha';
+
+or
+
+   my $form = MyApp::Form->new( traits => ['HTML::FormHandler::TraitFor::Captcha'],
+       ctx => $c );
 
 Needs a context object set in the form's 'ctx' attribute which has a session
 hashref in which to store a 'captcha' hashref, such as is provided by Catalyst

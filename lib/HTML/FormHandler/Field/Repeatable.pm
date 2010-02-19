@@ -103,11 +103,6 @@ Will create an 'id' field automatically
 
 =back
 
-sub BUILD {
-    my $self = shift;
-    $self->set_validate; # vivify
-    $self->set_init; # vivify
-}
 
 =cut
 

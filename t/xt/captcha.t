@@ -13,7 +13,7 @@ use_ok( 'HTML::FormHandler::Field::Captcha' );
    package Test::Captcha;
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
-   with 'HTML::FormHandler::Role::Captcha';
+   with 'HTML::FormHandler::TraitFor::Captcha';
    with 'HTML::FormHandler::Render::Simple';
 
    has_field 'some_field';
