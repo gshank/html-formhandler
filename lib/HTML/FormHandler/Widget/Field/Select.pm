@@ -30,7 +30,7 @@ sub render {
                 }
                 foreach my $optval (@fif) {
                     $output .= 'selected="selected"'
-                        if $optval == $option->{value};
+                        if $optval eq $option->{value};
                 }
             }
             else {
