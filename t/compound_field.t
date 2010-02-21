@@ -108,4 +108,53 @@ is_deeply( $form->fif, $params, 'get fif from compound field' );
 $form->process( params => { 'compound.aaa' => undef } );
 ok( !$form->field( 'compound' )->has_errors, 'Not required compound with empty sub values is not checked');
 
+{
+
+    package Compound;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler::Field::Compound';
+
+    has_field 'year' => (
+        type         => 'Integer',
+        required     => 1,
+    );
+
+    has_field 'month' => (
+        type         => 'Integer',
+        range_start  => 1,
+        range_end    => 12,
+    );
+
+    has_field 'day' => (
+        type         => 'Integer',
+        range_start  => 1,
+        range_end    => 31,
+    );
+
+    sub default {
+        return {
+            year  => undef,
+            month => undef,
+            day   => undef
+        };
+    }
+}
+
+{
+
+    package Form;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+    has_field 'date' => ( type => '+Compound', required => 1 );
+    has_field 'foo';
+}
+
+my $f = Form->new;
+$f->process( { 'date.day' => '18', 'date.month' => '2', 'date.year' => '2010' } );
+is_deeply( $f->field('date')->value, { year => 2010, month => 2, day => 18 }, 'correct value' );
+
+my $f = Form->new;
+$f->process( { foo => 'testing' } );
+is_deeply( $f->field('date')->value, { year => undef, month => undef, day => undef }, 'correct default' );
+
 done_testing;

@@ -993,6 +993,8 @@ sub apply_field_traits {
     $fmeta->make_immutable;
 }
 
+sub get_default_value { }
+
 =head1 SUPPORT
 
 IRC:

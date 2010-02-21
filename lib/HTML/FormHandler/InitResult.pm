@@ -26,6 +26,13 @@ sub _result_from_fields {
         $result = $field->_result_from_fields($result);
         $self_result->add_result($result) if $result;
     }
+    # this is for compound fields. form-level would use init_object instead
+    # which is a little strange.
+    if ( my @values = $self->get_default_value ) {
+        my $value = @values > 1 ? \@values : shift @values;
+        $self->init_value($value)   if defined $value;
+        $self_result->_set_value($value) if defined $value;
+    }
     $self->_set_result($self_result);
     $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');
     return $self_result;
