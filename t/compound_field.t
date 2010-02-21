@@ -153,7 +153,7 @@ my $f = Form->new;
 $f->process( { 'date.day' => '18', 'date.month' => '2', 'date.year' => '2010' } );
 is_deeply( $f->field('date')->value, { year => 2010, month => 2, day => 18 }, 'correct value' );
 
-my $f = Form->new;
+$f = Form->new;
 $f->process( { foo => 'testing' } );
 is_deeply( $f->field('date')->value, { year => undef, month => undef, day => undef }, 'correct default' );
 
