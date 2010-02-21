@@ -13,5 +13,3 @@
 ^*.old$
 ^*.new$
 ^dev_notes.txt$
-^*.Captcha.pm$
-^t/captcha.t$
