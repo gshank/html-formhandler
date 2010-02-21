@@ -42,6 +42,8 @@ sub _build_fields {
     $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
     my $flist = $self->has_field_list;
     $self->_process_field_list($flist) if $flist;
+    my $mlist = $self->model_fields if $self->fields_from_model;
+    $self->_process_field_list( $mlist ) if $mlist;
     return unless $self->has_fields;
 
     # order the fields
@@ -76,21 +78,6 @@ sub _process_field_list {
     }
     my %flist_copy = %{$flist};
     $flist = \%flist_copy;
-    # these should go away. not really necessary
-    if ( $flist->{'required'} || $flist->{'optional'} ) {
-        warn
-            "the required => {} and optional => {}  field_list syntax is deprecated. please remove.";
-        $self->_process_field_array( $self->_hashref_fields( $flist->{'required'}, 1 ) )
-            if $flist->{'required'};
-        $self->_process_field_array( $self->_hashref_fields( $flist->{'optional'}, 0 ) )
-            if $flist->{'optional'};
-    }
-    # don't encourage use of these two. functionality too limited.
-    $self->_process_field_array( $self->model_fields ) if $self->fields_from_model;
-    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_required'}, 1 ) )
-        if $flist->{'auto_required'};
-    $self->_process_field_array( $self->_auto_fields( $flist->{'auto_optional'}, 0 ) )
-        if $flist->{'auto_optional'};
 }
 
 # loops through all inherited classes and composed roles
@@ -188,7 +175,6 @@ sub _process_field_array {
         }
         $num_dots++;
     }
-
 }
 
 # Maps the field type to a field class, finds the parent,
