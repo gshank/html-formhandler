@@ -1,4 +1,10 @@
-0.30001 Thu Feb 11, 2010
+0.30003 Sun Feb 21, 2010
+    Partial fix for lack of defaults for compound fields
+    Support for using model_fields roles (DBICFields)
+    Use 'eq' instead of '==' when constructing html for multiple selects
+    Remove deprecated 'auto' syntax
+
+0.30002 Thu Feb 11, 2010
     Don't convert widget names that contain uppercase
     Better error messages for missing field classes
     Field attribute 'input_param' to allow input names different than field names
