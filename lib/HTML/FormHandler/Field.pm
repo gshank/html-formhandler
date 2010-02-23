@@ -510,11 +510,6 @@ A 'deflation' is a coderef that will convert from an inflated value back to a
 flat data representation suitable for displaying in an HTML field.
 If deflation is defined for a field it is automatically used for data that is 
 taken from the database.
-For the fill-in-form value (fif) usually the fif string is taken straight from 
-the input string if it exists, so if you want to use a deflated value instead, set
-the 'fif_from_value' flag on the field. Normally you'd only need to do that if
-you want to 'canonicalize' the entered data, such as if a user enters '09' for
-the year and you want to re-display it as '2009'.
 
    has_field 'my_date_time' => (
       type => 'Compound',
@@ -522,14 +517,19 @@ the year and you want to re-display it as '2009'.
       deflation => sub { { year => $_[0]->year, month => $_[0]->month, day => $_[0]->day } },
       fif_from_value => 1,
    );
-   has_field 'my_date_time.year' => ( fif_from_value => 1 );
+   has_field 'my_date_time.year';
    has_field 'my_date_time.month';
-   has_field 'my_date_time.day' => ( fif_from_value => 1 );
+   has_field 'my_date_time.day';
 
 You can also use a 'deflate' method in a custom field class. See the Date field
 for an example. If the deflation requires data that may vary (such as a format)
 string and thus needs access to 'self', you would need to use the deflate method
 since the deflation coderef is only passed the current value of the field
+
+Normally if you have a deflation, you will need a matching inflation, which can be
+supplied via a 'transform' action. When deflating/inflating values, the 'value' hash
+only contains reliably inflated values after validation has been performed, since
+inflation is performed at validation time.
 
 =head1 Processing and validating the field
 
@@ -642,6 +642,14 @@ sub clear_data  {
     $self->clear_result;
     $self->clear_active;
 }
+# this is a kludge to allow testing field deflation
+sub _deflate_and_set_value {
+    my ( $self, $value ) = @_;
+    if( $self->_can_deflate ) {
+        $value = $self->_apply_deflation($value);
+    }
+    $self->_set_value($value);
+}
 
 sub is_repeatable { }
 has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
@@ -660,25 +668,13 @@ sub fif {
     {
         return defined $lresult->input ? $lresult->input : '';
     }
-    my $parent = $self->parent;
-    if ( defined $parent &&
-        $parent->isa('HTML::FormHandler::Field') &&
-        ( $parent->has_deflation || $parent->can('deflate') ) )
-    {
-        my $parent_fif = $result ? $parent->fif( $result->parent ) : $parent->fif;
-        if ( ref $parent_fif eq 'HASH' &&
-            exists $parent_fif->{ $self->name } )
-        {
-            return $self->_apply_deflation( $parent_fif->{ $self->name } );
-        }
-    }
     if ( defined $lresult->value ) {
-        return $self->_apply_deflation( $lresult->value );
+        return $lresult->value;
     }
     elsif ( defined $self->value ) {
         # this is because checkboxes and submit buttons have their own 'value'
         # needs to be fixed in some better way
-        return $self->_apply_deflation( $self->value );
+        return $self->value;
     }
     return '';
 }
@@ -958,6 +954,10 @@ sub _apply_deflation {
         $value = $self->deflate($value);
     }
     return $value;
+}
+sub _can_deflate {
+    my $self = shift;
+    return $self->has_deflation || $self->can('deflate');
 }
 
 # use Class::MOP to clone

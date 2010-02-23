@@ -99,6 +99,7 @@ sub _result_from_object {
 
 sub _get_value {
     my ( $self, $field, $item ) = @_;
+
     my $accessor = $field->accessor;
     my @values;
     if ( @values = $field->get_default_value ) {
@@ -111,6 +112,9 @@ sub _get_value {
     }
     else {
         return;
+    }
+    if( $field->_can_deflate ) {
+        @values = $field->_apply_deflation(@values);
     }
     my $value = @values > 1 ? \@values : shift @values;
     return $value;

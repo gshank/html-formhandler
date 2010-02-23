@@ -994,6 +994,7 @@ sub apply_field_traits {
 }
 
 sub get_default_value { }
+sub _can_deflate { }
 
 =head1 SUPPORT
 

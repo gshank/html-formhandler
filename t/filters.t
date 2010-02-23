@@ -84,7 +84,7 @@ use Scalar::Util qw(blessed);
    has_field 'date_time_fif' => (
       type => 'Compound',
       apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
-      deflation => sub { { year => 1000, month => 1, day => 1 } },
+      inflation => sub { { year => 1000, month => 1, day => 1 } },
       fif_from_value => 1,
    );
    has_field 'date_time_fif.year' => ( fif_from_value => 1 );
@@ -136,9 +136,10 @@ ok( $form->field('date_coercion_error')->has_errors,     'DateTime coercion erro
 my $message = $form->field('date_coercion_error')->errors->[0];
 is( $message, 'This is not a correct date', 'Error message for coercion' );
 
-is( $form->field( 'date_time_fif.year' )->fif, 1000, 'fif from deflation - year' );
-$params->{'date_time_fif.year'} = 1000;
-$params->{'date_time_fif.day'} = 1;
+is( $form->field( 'date_time_fif.year' )->fif, 2009, 'fif for year' );
+$params->{'date_time_fif.year'} = 2009;
+$params->{'date_time_fif.day'} = 16;
 is_deeply( $form->fif, $params, 'fif is correct' );
+is( $form->value->{date_time_fif}->year, 2009, 'right value' );
 
 done_testing;

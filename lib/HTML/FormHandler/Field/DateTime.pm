@@ -5,7 +5,7 @@ extends 'HTML::FormHandler::Field::Compound';
 
 use DateTime;
 use Try::Tiny;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 NAME
 
@@ -47,9 +47,19 @@ the same terms as Perl itself.
 
 has '+widget' => ( default => 'compound' );
 
+sub deflate {
+    my ( $self, $value ) = @_;
+    return $value unless ref $value eq 'DateTime';
+    my %hash;
+    foreach my $field ( $self->all_fields ) {
+        my $meth = $field->name;
+        $hash{$meth} = $value->$meth;
+    }
+    return \%hash;
+}
+
 sub validate {
     my ($self) = @_;
-
     my @dt_parms;
     foreach my $child ( $self->all_fields ) {
         next unless $child->value;

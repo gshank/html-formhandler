@@ -71,9 +71,9 @@ my $dp_to_dt = {
 };
 
 sub deflate {
-    my $self = shift;
+    my ( $self, $value ) = @_;
 
-    my $value = $self->value;
+    $value ||= $self->value;
     return unless ref $value eq 'DateTime';
     my $format = $self->get_strf_format;
     my $string = $value->strftime($format);
