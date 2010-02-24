@@ -636,8 +636,12 @@ sub build_result {
     }
     return $result;
 }
-has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef', 
-     default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
+
+subtype 'TraitSpec' => as 'HashRef';
+coerce 'TraitSpec' => from 'ArrayRef' => via { +{ 'Field' => $_} };
+has 'field_traits' => ( is => 'ro', traits => ['Hash'], isa => 'TraitSpec', coerce => 1,
+     default => sub { +{} }, handles => { 'has_field_traits' => 'count' } );
+
 has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
@@ -737,7 +741,7 @@ sub BUILD {
     $self->apply_field_traits if $self->has_field_traits;
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && !$self->can('render') );
-    $self->_build_fields;    # create the form fields
+    $self->_build_fields;    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active; # set optional fields active
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)

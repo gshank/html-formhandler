@@ -269,6 +269,11 @@ sub _make_field {
 }
 
 # update, replace, or create field
+# Create makes the field object and passes in the properties as constructor args.
+# Update changes properties on a previously created object.
+# Replace overwrites a field with a different configuration.
+# (The update/replace business is much the same as you'd see with inheritance.)
+# This function populates/updates the base object's 'field' array.
 sub _update_or_create {
     my ( $self, $parent, $field_attr, $class, $do_update ) = @_;
 
