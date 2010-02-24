@@ -32,6 +32,12 @@ sub has_field_list {
     return;
 }
 
+
+# This is the only entry point for this file.  It processes the
+# various methods of field definition (has_field plus the attrs above),
+# creates objects for fields and writes them into the 'fields' attr
+# on the base object.
+#
 # calls routines to process various field lists
 # orders the fields after processing in order to skip
 # fields which have had the 'order' attribute set
