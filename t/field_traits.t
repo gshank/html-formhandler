@@ -54,9 +54,21 @@ ok( $form->field('foo')->got_here  && $form->field('bar')->got_here, 'base field
 
 }
 
+{
+    package MyApp::Widget::Field::Text;
+    use Moose::Role;
+    has 'widget_attr' => ( is => 'rw' );
+    sub render {
+       my $self = shift;
+       return $self->widget_attr || 'empty attr';
+    } 
+}
+
 use HTML::FormHandler;
-$form = HTML::FormHandler->new( field_list => [
-        foo => { type => 'Text', required => 1 },
+$form = HTML::FormHandler->new( 
+    widget_name_space => ['MyApp::Widget'],
+    field_list => [
+        foo => { type => 'Text', required => 1, widget_attr => 'A Test!' },
         baz => { type => 'Display', traits => ['My::Render'], my_attr => 'something' },
         bar => { type => 'Select', options => [{value => 1, label => 'bar1'},
             {value => 2, label => 'bar2' }] },
@@ -66,6 +78,8 @@ $form = HTML::FormHandler->new( field_list => [
 ok( $form, 'dynamic form created' );
 is( $form->field('baz')->my_attr, 'something', 'attribute added by trait was set' );
 is( $form->field('baz')->html, "<h2>Pick something, quick!</h2>", 'new method works' );
+is( $form->field('foo')->widget_attr, 'A Test!', 'widget attribute applied' );
+is( $form->field('foo')->render, 'A Test!', 'widget renders using attribute' );
 
 
 done_testing;
