@@ -67,6 +67,10 @@ $form->field('test_field')->clear_errors;
 $form->field('test_field')->add_error('You won');
 is_deeply($form->field('test_field')->errors, ['You won'], 'error is translated into en_us');
 
+# translating an error with bracket issues
+$form->field('test_field')->clear_errors;
+$form->field('test_field')->add_error('You are not authorized for this archive. See: [<a href="/help/auth">more information</a>],  [<a href="/need_auth">request authorization</a>]');
+is( $form->field('test_field')->errors->[0], 'Error occurred localizing error message for Test field', 'error caught' );
 
 ################ Locale xx_xx set via ENV{LANGUAGE_HANDLE}
 $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('xx_xx');

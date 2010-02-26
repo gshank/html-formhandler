@@ -101,6 +101,7 @@ sub field {
     my $index;
     # if this is a full_name for a compound field
     # walk through the fields to get to it
+    return undef unless ( defined $name );
     if ( $name =~ /\./ ) {
         my @names = split /\./, $name;
         my $f = $self->form || $self;

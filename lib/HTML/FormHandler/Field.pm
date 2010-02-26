@@ -3,6 +3,7 @@ package HTML::FormHandler::Field;
 use HTML::FormHandler::Moose;
 use HTML::FormHandler::Field::Result;
 use HTML::Entities;
+use Try::Tiny;
 
 with 'MooseX::Traits';
 with 'HTML::FormHandler::Validate';
@@ -936,11 +937,18 @@ sub full_accessor {
 sub add_error {
     my ( $self, @message ) = @_;
 
-    my $lh;
     unless ( defined $message[0] ) {
         @message = ('field is invalid');
     }
-    $self->push_errors($self->_localize(@message));
+    my $out;
+    try { 
+        $out = $self->_localize(@message); 
+    }
+    catch {
+        $out = "Error occurred localizing error message for " . $self->label;
+    };
+
+    $self->push_errors($out);
     return;
 }
 
