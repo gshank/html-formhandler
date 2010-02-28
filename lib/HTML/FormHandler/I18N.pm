@@ -2,6 +2,19 @@ package HTML::FormHandler::I18N;
 use strict;
 use warnings;
 use base ('Locale::Maketext');
+use Try::Tiny;
+
+sub maketext {
+    my ( $lh, @message ) = @_;
+    my $out;
+    try { 
+        $out = $lh->SUPER::maketext(@message);
+    }
+    catch {
+        die "Unable to do maketext on: " . $message[0];
+    };
+    return $out;
+}
 
 1;
 

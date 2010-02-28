@@ -945,7 +945,7 @@ sub add_error {
         $out = $self->_localize(@message); 
     }
     catch {
-        $out = "Error occurred localizing error message for " . $self->label;
+        die "Error occurred localizing error message for " . $self->label . ".  $_";
     };
 
     $self->push_errors($out);
