@@ -47,7 +47,7 @@ sub has_field {
     my ( $meta, $name, %options ) = @_;
     my $names = ( ref($name) eq 'ARRAY' ) ? $name : [ ($name) ];
 
-    $meta->add_to_field_list( { name => $name, %options } ) for @$names;
+    $meta->add_to_field_list( { name => $_, %options } ) for @$names;
 }
 
 sub apply {
