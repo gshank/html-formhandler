@@ -45,8 +45,9 @@ sub init_meta {
 
 sub has_field {
     my ( $meta, $name, %options ) = @_;
+    my $names = ( ref($name) eq 'ARRAY' ) ? $name : [ ($name) ];
 
-    $meta->add_to_field_list( { name => $name, %options } );
+    $meta->add_to_field_list( { name => $name, %options } ) for @$names;
 }
 
 sub apply {
