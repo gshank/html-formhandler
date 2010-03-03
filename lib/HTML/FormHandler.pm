@@ -1055,6 +1055,10 @@ mazpe: Lester Ariel Mesa
 
 dew: Dan Thomas
 
+koki: Klaus Ita
+
+jnapiorkowski: John Napiorkowski
+
 Initially based on the source code of L<Form::Processor> by Bill Moseley
 
 =head1 COPYRIGHT
