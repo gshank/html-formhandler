@@ -840,7 +840,7 @@ sub default_trim {
     return unless defined $value;
     my @values = ref $value eq 'ARRAY' ? @$value : ($value);
     for (@values) {
-        next if ref $_;
+        next if ref $_ or !defined;
         s/^\s+//;
         s/\s+$//;
     }

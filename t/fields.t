@@ -295,12 +295,13 @@ is( $field->errors->[0], "'March' is not a valid value", 'is error message' );
 $class = 'HTML::FormHandler::Field::Multiple';
 use_ok( $class );
 $field = $class->new( name    => 'test_field',);
+ok( defined $field,  'new() called' );
 $field->options([
     { value => 1, label => 'one' },
     { value => 2, label => 'two' },
     { value => 3, label => 'three' },
 ]);
-ok( defined $field,  'new() called' );
+ok( $field->options,  'options method called' );
 $field->_set_input( 1 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );
@@ -375,6 +376,7 @@ ok( $field->has_errors, '60 out of range' );
 $class = 'HTML::FormHandler::Field::Select';
 use_ok( $class );
 $field = $class->new( name    => 'test_field',);
+ok( defined $field,  'new() called' );
 ok( $field->options, 'Test for init_options failure in 0.09' );
 my $options = [
     { value => 1, label => 'one' },
@@ -382,7 +384,7 @@ my $options = [
     { value => 3, label => 'three' },
 ];
 $field->options($options);
-ok( defined $field,  'new() called' );
+ok( $field->options, 'Test for set options failure' );
 $field->_set_input( 1 );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 1' );

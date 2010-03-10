@@ -17,6 +17,9 @@ use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
    has_field 'addresses.country';
    has_field 'addresses.sector' => ( type => 'Select' );
 
+   has_field 'apples' => ( type => 'Repeatable' );
+   has_field 'apples.id' => ( type => 'Select' );
+
    sub options_addresses_sector 
    {
       [ 1 => 'East',
@@ -25,6 +28,11 @@ use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
       ]
    }
 
+   sub options_apples_id {
+      [ 1 => 'Red',
+        2 => 'Green',
+      ]
+   }
 }
 
 my $form = Repeatable::Form->new;
@@ -59,6 +67,9 @@ my $init_object = {
          country => 'Atlantis',
          id => 2,
       }
+   ],
+   apples => [
+      {},
    ]
 };
 
@@ -70,6 +81,7 @@ $init_object->{my_test} = undef;
 $init_object->{addresses}->[0]->{sector} = undef;
 $init_object->{addresses}->[1]->{sector} = undef;
 $init_object->{addresses}->[2]->{sector} = undef;
+$init_object->{apples}->[0]->{id} = undef;
 is_deeply( $form->values, $init_object, 'get values back out' );
 delete $init_object->{my_test};
 is_deeply( $form->field('addresses')->value, $init_object->{addresses}, 'hasmany field value');
@@ -96,6 +108,7 @@ my $fif = {
    'addresses.2.id' => '2',
    'addresses.2.sector' => '',
    'my_test' => '',
+   'apples.0.id' => '',
 };
 
 is_deeply( $form->fif, $fif, 'get fill in form');
@@ -104,10 +117,12 @@ $fif->{'addresses.2.country'} = 'Grand Fenwick';
 delete $fif->{my_test};
 $form->clear;
 $form->process($fif);
+ok($form->validated, 'validate fif');
 $fif->{my_test} = '';
 is_deeply( $form->fif, $fif, 'still get right fif');
 $init_object->{addresses}->[0]->{city} = 'Primary City';
 $init_object->{addresses}->[2]->{country} = 'Grand Fenwick';
+$init_object->{apples} = [ undef ];
 is_deeply( $form->values, $init_object, 'still get right values');
 
 $fif = {
@@ -148,8 +163,9 @@ my $values = {
          'id' => 0,
          'street' => 'Main Street',
          'sector' => undef,
-      }
-   ]
+      },
+   ],
+   apples => []
 };
 is_deeply( $form->values, $values, 'get right values' );
 
