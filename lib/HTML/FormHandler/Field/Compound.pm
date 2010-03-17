@@ -13,8 +13,8 @@ HTML::FormHandler::Field::Compound - field consisting of subfields
 =head1 SYNOPSIS
 
 This field class is designed as the base (parent) class for fields with
-multiple subfields. Examples are L<HTML::FormHandler::DateTime>
-and L<HTML::FormHandler::Duration>.
+multiple subfields. Examples are L<HTML::FormHandler::Field::DateTime>
+and L<HTML::FormHandler::Field::Duration>.
 
 A compound parent class requires the use of sub-fields prepended
 with the parent class name plus a dot
