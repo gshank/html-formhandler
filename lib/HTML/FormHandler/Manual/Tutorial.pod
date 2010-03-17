@@ -32,7 +32,7 @@ create the file Book.pm.
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler::Model::DBIC';
 
-   has '+item_class' => ( default =>'Books' );
+   has '+item_class' => ( default => 'Book' );
    has_field 'title' => ( type => 'Text' );
    has_field 'rating' => ( type => 'Integer' );
    has_field 'authors' => ( type => 'Multiple', label_column => 'last_name' );
