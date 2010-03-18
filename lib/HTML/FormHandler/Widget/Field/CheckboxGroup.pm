@@ -22,7 +22,7 @@ sub render {
                 }
                 foreach my $optval (@fif) {
                     $output .= ' checked="checked"'
-                        if $optval == $option->{value};
+                        if $optval eq $option->{value};
                 }
             }
             else {
