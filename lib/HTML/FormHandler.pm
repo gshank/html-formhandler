@@ -637,11 +637,8 @@ sub build_result {
     return $result;
 }
 
-subtype 'TraitSpec' => as 'HashRef';
-coerce 'TraitSpec' => from 'ArrayRef' => via { +{ 'Field' => $_} };
-has 'field_traits' => ( is => 'ro', traits => ['Hash'], isa => 'TraitSpec', coerce => 1,
-     default => sub { +{} }, handles => { 'has_field_traits' => 'count' } );
-
+has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef',
+    default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
 has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
