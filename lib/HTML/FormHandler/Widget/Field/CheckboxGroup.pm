@@ -2,6 +2,8 @@ package HTML::FormHandler::Widget::Field::CheckboxGroup;
 
 use Moose::Role;
 
+with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
+
 sub render {
     my ( $self, $result ) = @_;
 
@@ -22,12 +24,12 @@ sub render {
                 }
                 foreach my $optval (@fif) {
                     $output .= ' checked="checked"'
-                        if $optval eq $option->{value};
+                        if $self->check_selected_option($optval, $option);
                 }
             }
             else {
                 $output .= ' checked="checked"'
-                    if $option->{value} eq $ffif;
+                    if $self->check_selected_option($ffif, $option);
             }
         }
         $output .= ' />';
