@@ -63,6 +63,7 @@ use HTML::FormHandler::Field::Text;
         }
     );
     has_field 'no_render' => ( widget => 'no_render' );
+    has_field 'plain' => ( widget_wrapper => 'None' );
 
     sub options_fruit {
         return (
@@ -99,6 +100,7 @@ my $params = {
     'start_date.year'  => '2006',
     two_errors         => 'aaa',
     opt_in             => 0,
+    plain              => 'No divs!!',
 };
 
 $form->process($params);
@@ -213,6 +215,9 @@ my $output = $form->render;
 ok( $output, 'get rendered output from form' );
 
 is( $form->field('no_render')->render, '', 'no_render' );
+
+is( $form->field('plain')->render, '<input type="text" name="plain" id="plain" value="No divs!!" />', 'renders without wrapper');
+
 
 {
 
