@@ -12,7 +12,7 @@ HTML::FormHandler::Field::Select
 =head1 DESCRIPTION
 
 This is a field that includes a list of possible valid options.
-This can be used for select and mulitple-select fields.
+This can be used for select and multiple-select fields.
 Widget type is 'select'.
 
 This field type can also be used for fields that use the
