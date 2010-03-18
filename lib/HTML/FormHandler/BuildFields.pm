@@ -32,6 +32,12 @@ sub has_field_list {
     return;
 }
 
+
+# This is the only entry point for this file.  It processes the
+# various methods of field definition (has_field plus the attrs above),
+# creates objects for fields and writes them into the 'fields' attr
+# on the base object.
+#
 # calls routines to process various field lists
 # orders the fields after processing in order to skip
 # fields which have had the 'order' attribute set
@@ -263,6 +269,11 @@ sub _make_field {
 }
 
 # update, replace, or create field
+# Create makes the field object and passes in the properties as constructor args.
+# Update changes properties on a previously created object.
+# Replace overwrites a field with a different configuration.
+# (The update/replace business is much the same as you'd see with inheritance.)
+# This function populates/updates the base object's 'field' array.
 sub _update_or_create {
     my ( $self, $parent, $field_attr, $class, $do_update ) = @_;
 
