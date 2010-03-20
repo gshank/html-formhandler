@@ -2,6 +2,8 @@ package HTML::FormHandler::Widget::Field::RadioGroup;
 
 use Moose::Role;
 
+with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
+
 sub render {
     my ( $self, $result ) = @_;
 
@@ -11,7 +13,7 @@ sub render {
     foreach my $option ( @{ $self->options } ) {
         $output .= '<input type="radio" value="' . $option->{value} . '"';
         $output .= ' name="' . $self->html_name . '" id="' . $self->id . ".$index\"";
-        $output .= ' checked="checked"' if $option->{value} eq $result->fif;
+        $output .= ' checked="checked"' if $self->check_selected_option($result->fif, $option);
         $output .= ' />';
         $output .= $option->{label} . '<br />';
         $index++;

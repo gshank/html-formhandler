@@ -5,12 +5,13 @@ use namespace::autoclean;
 
 sub check_selected_option {
     my ( $self, $fif, $option ) = @_;
-    my $selected_key = $option->{'selected'} || $option->{'checked'};
-    my $eq_values = $fif eq $option->{'value'};
+    my $selected_key = defined($option->{'selected'}) ?
+        $option->{'selected'}
+        : $option->{'checked'};
     if ( defined $selected_key ) {
-        return $selected_key && $eq_values;
+        return $selected_key;
     } else {
-        return $eq_values;
+        return $fif eq $option->{'value'};
     }
 }
 
