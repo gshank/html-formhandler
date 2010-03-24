@@ -32,26 +32,39 @@ use Try::Tiny;
 
 }
 
-my $form = SignupForm->new(
-    {
-        check_name_availability => sub {
-            my $name = shift;
-            return try { &username_available($name) } catch { 0 };
-        },
-    }
-);
+{
+    package MyApp::Signup;
+    use Moose;
 
-ok( $form, 'form built' );
+    has 'form' => ( is => 'ro', builder => 'build_form' );
+    sub build_form {
+        my $self = shift;
+        return SignupForm->new(
+            {
+                check_name_availability => sub {
+                    my $name = shift;
+                    return $self->username_available($name);
+                },
+            }
+        );
+
+    }
+    sub username_available {
+        my ( $self, $name ) = @_;
+        return $name eq 'Sam' ? 1 : 0;
+    }
+
+}
+
+my $obj = MyApp::Signup->new; 
+
+ok( $obj->form, 'form built' );
 
 my $params = { name => 'Sam', email => 'sam@gmail.com' };
 
-$form->process( params => $params );
-ok( $form->validated, 'form validated' );
+$obj->form->process( params => $params );
+ok( $obj->form->validated, 'form validated' );
 
-sub username_available {
-    my $name = shift;
-    return $name eq 'Sam' ? 1 : 0;
-}
 
 
 done_testing;
