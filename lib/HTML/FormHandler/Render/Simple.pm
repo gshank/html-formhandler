@@ -268,6 +268,7 @@ sub render_select {
     $output .= ' id="' . $field->id . '"';
     $output .= ' multiple="multiple"' if $field->multiple == 1;
     $output .= ' size="' . $field->size . '"' if $field->size;
+    $output .= $self->_add_html_attributes( $field );
     $output .= '>';
     my $index = 0;
     if( $field->empty_select ) {
