@@ -65,6 +65,8 @@ my $params = { name => 'Sam', email => 'sam@gmail.com' };
 $obj->form->process( params => $params );
 ok( $obj->form->validated, 'form validated' );
 
-
+$params->{name} = 'Jane';
+$obj->form->process( params => $params );
+ok( !$obj->form->validated, 'form did not validate' );
 
 done_testing;

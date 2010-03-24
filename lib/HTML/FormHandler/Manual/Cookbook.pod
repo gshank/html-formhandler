@@ -420,6 +420,68 @@ In a Moose role you would need to use a method modifier instead.
 Don't forget the dependency list, which is used for cases where if any of one
 of a group of fields has a value, all of the fields are required.
 
+=head2 Supply an external coderef for validation
+
+There are situations in which you need to use a subroutine for validation
+which is not logically part of the form. It's possible to pass in a context
+or other sort of pointer and call the routine in the form's validation
+routine, but that makes the architecture muddy and is not a clear separation
+of concerns.
+
+This is an example of how to supply a coderef when constructing the form that
+performs validation and can be used to set an appropriate error
+using L<Moose::Meta::Attribute::Native::Trait::Code>.
+(Thanks to Florian Ragwitz for this excellent idea...)
+
+Here's the form:
+
+    package SignupForm;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has check_name_availability => (
+        traits   => ['Code'],
+        isa      => 'CodeRef',
+        required => 1,
+        handles  => { name_available => 'execute', },
+    );
+
+    has_field 'name';
+    has_field 'email';
+
+    sub validate {
+        my $self = shift;
+        my $name = $self->value->{name};
+        if ( defined $name && length $name && !$self->name_available($name) ) {
+            $self->field('name')->add_error('That name is taken already');
+        }
+    }
+    1;
+
+And here's where the coderef is passed in to the form.
+
+    package MyApp::Signup;
+    use Moose;
+
+    has 'form' => ( is => 'ro', builder => 'build_form' );
+    sub build_form {
+        my $self = shift;
+        return SignupForm->new(
+            {
+                check_name_availability => sub {
+                    my $name = shift;
+                    return $self->username_available($name);
+                },
+            }
+        );
+
+    }
+    sub username_available {
+        my ( $self, $name ) = @_;
+        # perform some sort of username availability checks 
+    }
+    1;
+
 =head1 AUTHOR
 
 Gerda Shank, gshank@cpan.org
