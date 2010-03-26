@@ -32,14 +32,16 @@ sub render {
                 }
                 foreach my $optval (@fif) {
                     $output .= 'selected="selected"'
-                        if $self->check_selected_option($optval, $option);
+                        if $self->check_selected_option($option, $optval);
                 }
             }
             else {
                 $output .= 'selected="selected"'
-                    if $self->check_selected_option($ffif, $option);
+                    if $self->check_selected_option($option, $ffif);
             }
         }
+        $output .= 'selected="selected"'
+            if $self->check_selected_option($option);
         $output .= '>' . $option->{label} . '</option>';
         $index++;
     }

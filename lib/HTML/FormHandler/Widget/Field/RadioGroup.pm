@@ -13,7 +13,7 @@ sub render {
     foreach my $option ( @{ $self->options } ) {
         $output .= '<input type="radio" value="' . $option->{value} . '"';
         $output .= ' name="' . $self->html_name . '" id="' . $self->id . ".$index\"";
-        $output .= ' checked="checked"' if $self->check_selected_option($result->fif, $option);
+        $output .= ' checked="checked"' if $self->check_selected_option($option, $result->fif);
         $output .= ' />';
         $output .= $option->{label} . '<br />';
         $index++;

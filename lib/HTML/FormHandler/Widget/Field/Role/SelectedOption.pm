@@ -4,14 +4,16 @@ use Moose::Role;
 use namespace::autoclean;
 
 sub check_selected_option {
-    my ( $self, $fif, $option ) = @_;
+    my ( $self, $option, $fif ) = @_;
     my $selected_key = defined($option->{'selected'}) ?
         $option->{'selected'}
         : $option->{'checked'};
     if ( defined $selected_key ) {
         return $selected_key;
-    } else {
+    } elsif ( defined $fif ) {
         return $fif eq $option->{'value'};
+    } else {
+        return;
     }
 }
 

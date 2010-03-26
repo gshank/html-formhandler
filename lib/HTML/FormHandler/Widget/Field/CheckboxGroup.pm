@@ -24,14 +24,16 @@ sub render {
                 }
                 foreach my $optval (@fif) {
                     $output .= ' checked="checked"'
-                        if $self->check_selected_option($optval, $option);
+                        if $self->check_selected_option($option, $optval);
                 }
             }
             else {
                 $output .= ' checked="checked"'
-                    if $self->check_selected_option($ffif, $option);
+                    if $self->check_selected_option($option, $ffif);
             }
         }
+        $output .= ' checked="checked"'
+            if $self->check_selected_option($option);
         $output .= ' />';
         $output .= $option->{label} . '<br />';
         $index++;
