@@ -237,6 +237,7 @@ sub _result_from_object {
 
     return $self->_result_from_fields( $result ) 
         if ( $self->num_when_empty > 0 && !$values );
+    $self->item($values);
     $self->init_state;
     $self->_set_result($result);
     # Create field instances and fill with values

@@ -60,6 +60,7 @@ Widget type is 'compound'
 
 has '+widget' => ( default => 'compound' );
 has 'is_compound' => ( is => 'ro', isa => 'Bool', default => 1 );
+has 'item' => ( is => 'rw', clearer => 'clear_item' );
 
 has '+field_name_space' => (
     default => sub {
@@ -95,6 +96,19 @@ sub test_validate_field {
         }
     }
 }
+
+around '_result_from_object' => sub {
+    my $orig = shift;
+    my $self = shift;
+    my ( $self_result, $item ) = @_;
+    $self->item($item) if $item;
+    $self->$orig(@_);
+};
+
+after 'clear_data' => sub {
+    my $self = shift;
+    $self->clear_item;
+};
 
 around '_result_from_input' => sub {
     my $orig = shift;
