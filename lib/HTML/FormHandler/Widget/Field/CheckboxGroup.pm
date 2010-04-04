@@ -4,6 +4,9 @@ use Moose::Role;
 
 with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
 
+has 'input_without_param' => ( is => 'ro', default => sub {[]} );
+has 'not_nullable' => ( is => 'ro', default => 1 );
+
 sub render {
     my ( $self, $result ) = @_;
 

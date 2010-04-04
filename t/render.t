@@ -22,6 +22,10 @@ use HTML::FormHandler::Field::Text;
    has_field 'vegetables' => ( type => 'Multiple' );
    has_field 'opt_in' => ( type => 'Select', widget => 'radio_group',
       options => [{ value => 0, label => 'No'}, { value => 1, label => 'Yes'} ] );
+   has_field 'starch' => ( type => 'Multiple', widget => 'checkbox_group',
+      options => [{ value => 1, label => 'One'}, { value => 2, label => 'Two'},
+                  { value => 3, label => 'Three' },
+      ] );
    has_field 'active' => ( type => 'Checkbox' );
    has_field 'comments' => ( type => 'TextArea' );
    has_field 'hidden' => ( type => 'Hidden' );
@@ -85,6 +89,10 @@ my $params = {
 };
 
 $form->process( $params );
+
+is_deeply( $form->field('starch')->input_without_param, [], 'checkbox group settings' );
+is( $form->field('starch')->not_nullable, 1, 'checkbox group settings' );
+is_deeply( $form->value->{starch}, [], 'checkbox group value' );
 
 is( $form->render_field( $form->field('number') ),
     '
