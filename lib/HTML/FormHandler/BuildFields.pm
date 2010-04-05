@@ -207,10 +207,11 @@ sub _make_field {
             my $loaded;
             foreach my $ns (@{$self->field_name_space}) {
                 $class = $ns . "::" . $type;
-                if( Class::MOP::load_class($class) ) {
+                try { 
+                    Class::MOP::load_class($class);
                     $loaded++;
-                    last;
-                }
+                };
+                last if $loaded;
             }
             die "Could not load field class '$type' for field '$name'"
               unless $loaded;

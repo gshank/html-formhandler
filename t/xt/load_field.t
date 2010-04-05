@@ -1,4 +1,6 @@
-use Test::More tests => 6;
+use strict;
+use warnings;
+use Test::More;
 use lib 't/lib';
 
 
@@ -37,3 +39,26 @@ is( $form->field('field_two')->errors->[0],
 
 ok( !$form->field('field_three')->has_errors, 'field three has no error');
 
+{
+    package Field::Text;
+    use Moose;
+    extends 'HTML::FormHandler::Field::Text';
+    has 'my_attr' => ( is => 'rw' );
+}
+
+{
+   package Test::Form;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   # this form specifies the form name
+   has '+field_name_space' => ( default => sub { ['Test', 'Field', 'FieldX']} );
+
+   has_field 'field_text'   => ( type => '+Text', my_attr => 'test' );
+
+}
+
+$form = Test::Form->new;
+is( $form->field('field_text')->my_attr, 'test', 'finds right field' );
+
+done_testing;
