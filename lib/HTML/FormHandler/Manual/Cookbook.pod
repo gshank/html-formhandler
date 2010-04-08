@@ -398,7 +398,7 @@ You can use a method modifier before 'validate_form':
       my $self = shift;
       my $required = 0;
       $required = 1
-         if( $self->params('field_name') eq 'something' ); 
+         if( $self->params->{field_name} eq 'something' ); 
       $self->field('some_field')->required($required);
    };
 
