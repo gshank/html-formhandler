@@ -20,8 +20,7 @@ has 'required_message' => (
     is      => 'rw',
     lazy    => 1,
     default => sub { 
-        my ($self) = @_;
-        return $self->_localize( '[_1] field is required', $self->label );
+        return [ '[_1] field is required', shift->label ];
     }
 );
 has 'unique'            => ( isa => 'Bool', is => 'rw', predicate => 'has_unique' );
@@ -68,7 +67,15 @@ sub validate_field {
     $field->clear_errors;    # this is only here for testing convenience
                              # See if anything was submitted
     if ( $field->required && ( !$field->has_input || !$field->input_defined ) ) {
-        $field->add_error( $field->required_message ) if ( $field->required );
+        if ($field->required) {
+            my $msg = $field->required_message;
+            if ( ref $msg eq 'ARRAY' ) {
+                $field->add_error( @$msg );
+            }
+            else {
+                $field->add_error( $msg );
+            }
+        }
         if( $field->has_input ) {
            $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);
         }
