@@ -16,10 +16,13 @@ use Carp;
 
 has 'required' => ( isa => 'Bool', is => 'rw', default => '0' );
 has 'required_message' => (
-    isa     => 'Str',
+    isa     => 'ArrayRef|Str',
     is      => 'rw',
     lazy    => 1,
-    default => sub { shift->label . ' field is required' }
+    default => sub { 
+        my ($self) = @_;
+        return $self->_localize( '[_1] field is required', $self->label );
+    }
 );
 has 'unique'            => ( isa => 'Bool', is => 'rw', predicate => 'has_unique' );
 has 'unique_message'    => ( isa => 'Str',  is => 'rw' );
