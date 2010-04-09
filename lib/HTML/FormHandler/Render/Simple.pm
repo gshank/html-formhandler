@@ -128,7 +128,8 @@ has 'label_types' => (
             checkbox    => 'label',
             textarea    => 'label',
             radio_group => 'label',
-            compound    => 'legend'
+            compound    => 'legend',
+            upload      => 'label',
         };
     },
     handles   => { get_label_type => 'get' },
@@ -346,6 +347,17 @@ sub render_textarea {
         . encode_entities($fif)
         . q(</textarea>);
 
+    return $output;
+}
+
+sub render_upload {
+    my ( $self, $field ) = @_;
+
+    my $output;
+    $output = '<input type="file" name="';
+    $output .= $field->html_name . '"';
+    $output .= ' id="' . $field->id . '"/>';
+    $output .= $self->_add_html_attributes( $field );
     return $output;
 }
 
