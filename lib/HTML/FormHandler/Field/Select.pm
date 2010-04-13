@@ -229,7 +229,8 @@ sub _can_form_options {
 sub _form_options {
     my $self = shift;
     return unless (my $meth = $self->_can_form_options);
-    if( $self->form->meta->has_attribute( $meth ) ) {
+    my $attr = $self->form->meta->find_method_by_name( $meth );
+    if ( $attr and $attr->isa('Moose::Meta::Method::Accessor') ) {
         return $self->form->$meth;
     }
     else {
