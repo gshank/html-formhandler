@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Field::Checkbox;
 
 use Moose::Role;
 use HTML::Entities;
+with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
 sub render {
     my ( $self, $result ) = @_;
@@ -12,6 +13,7 @@ sub render {
     $output .= $self->html_name . '" id="' . $self->id . '"';
     $output .= ' value="' . encode_entities($self->checkbox_value) . '"';
     $output .= ' checked="checked"' if $fif eq $self->checkbox_value;
+    $output .= $self->_add_html_attributes;
     $output .= ' />';
     return $self->wrap_field( $result, $output );
 }

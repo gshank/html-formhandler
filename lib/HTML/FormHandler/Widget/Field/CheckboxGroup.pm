@@ -3,6 +3,7 @@ package HTML::FormHandler::Widget::Field::CheckboxGroup;
 use Moose::Role;
 
 with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
+with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
 has 'input_without_param' => ( is => 'ro', default => sub {[]} );
 has 'not_nullable' => ( is => 'ro', default => 1 );
@@ -37,6 +38,7 @@ sub render {
         }
         $output .= ' checked="checked"'
             if $self->check_selected_option($option);
+        $output .= $self->_add_html_attributes;
         $output .= ' />';
         $output .= $option->{label} . '<br />';
         $index++;

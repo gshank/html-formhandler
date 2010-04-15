@@ -356,8 +356,9 @@ sub render_upload {
     my $output;
     $output = '<input type="file" name="';
     $output .= $field->html_name . '"';
-    $output .= ' id="' . $field->id . '"/>';
+    $output .= ' id="' . $field->id . '"';
     $output .= $self->_add_html_attributes( $field );
+    $output .= ' />';
     return $output;
 }
 

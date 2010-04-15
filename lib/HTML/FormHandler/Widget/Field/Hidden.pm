@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Field::Hidden;
 
 use Moose::Role;
 use HTML::Entities;
+with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
 sub render {
     my ( $self, $result ) = @_;
@@ -11,8 +12,9 @@ sub render {
     $output .= '<input type="hidden" name="';
     $output .= $self->html_name . '"';
     $output .= ' id="' . $self->id . '"';
-    $output .= ' value="' . encode_entities($result->fif) . '" />';
-    $output .= "\n";
+    $output .= ' value="' . encode_entities($result->fif) . '"';
+    $output .= $self->_add_html_attributes;
+    $output .= " />\n";
 
     return $output;
 }

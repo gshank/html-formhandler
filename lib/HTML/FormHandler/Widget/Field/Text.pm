@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Field::Text;
 
 use Moose::Role;
 use HTML::Entities;
+with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
 sub render {
     my ( $self, $result ) = @_;
@@ -12,7 +13,9 @@ sub render {
     $output .= ' id="' . $self->id . '"';
     $output .= ' size="' . $self->size . '"' if $self->size;
     $output .= ' maxlength="' . $self->maxlength . '"' if $self->maxlength;
-    $output .= ' value="' . encode_entities($result->fif) . '" />';
+    $output .= ' value="' . encode_entities($result->fif) . '"';
+    $output .= $self->_add_html_attributes;
+    $output .= ' />';
     return $self->wrap_field( $result, $output );
 }
 

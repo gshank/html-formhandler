@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Field::Textarea;
 
 use Moose::Role;
 use HTML::Entities;
+with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
 sub render {
     my ( $self, $result ) = @_;
@@ -14,7 +15,11 @@ sub render {
     my $name = $self->html_name;
 
     my $output =
-        qq(<textarea name="$name" id="$id" ) . qq(rows="$rows" cols="$cols">$fif</textarea>);
+        qq(<textarea name="$name" id="$id" )
+        . $self->_add_html_attributes
+        . qq(rows="$rows" cols="$cols">)
+        . encode_entities($fif)
+        . q(</textarea>);
 
     return $self->wrap_field( $result, $output );
 }

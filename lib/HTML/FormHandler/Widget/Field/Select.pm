@@ -4,6 +4,7 @@ use Moose::Role;
 use HTML::Entities;
 
 with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
+with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
 sub render {
     my ( $self, $result ) = @_;
@@ -13,6 +14,7 @@ sub render {
     $output .= ' id="' . $self->id . '"';
     $output .= ' multiple="multiple"' if $self->multiple == 1;
     $output .= ' size="' . $self->size . '"' if $self->size;
+    $output .= $self->_add_html_attributes;
     $output .= '>';
     my $index = 0;
     if( $self->empty_select ) {
