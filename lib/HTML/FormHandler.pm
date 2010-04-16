@@ -262,7 +262,7 @@ Params can either be in the form of CGI/HTTP style params:
       'addresses.0.country' => "UT",
       'addresses.0.address_id' => "1",
       'addresses.1.street' => "333 Valencia Street",
-      'addresses.1.city' => "San Franciso",
+      'addresses.1.city' => "San Francisco",
       'addresses.1.country' => "UT",
       'addresses.1.address_id' => "2",
    }
