@@ -1,7 +1,6 @@
 package HTML::FormHandler::Widget::Field::Select;
 
 use Moose::Role;
-use HTML::Entities;
 
 with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
 with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';

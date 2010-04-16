@@ -2,7 +2,6 @@ package HTML::FormHandler::Field;
 
 use HTML::FormHandler::Moose;
 use HTML::FormHandler::Field::Result;
-use HTML::Entities;
 use Try::Tiny;
 
 with 'MooseX::Traits';

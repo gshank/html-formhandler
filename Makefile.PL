@@ -18,7 +18,6 @@ requires 'Carp';
 requires 'Moose'              => '0.90';
 requires 'Locale::Maketext'   => '1.09';
 requires 'DateTime';
-requires 'HTML::Entities';
 requires 'MooseX::Getopt' => '0.16';
 requires 'MooseX::Types' => '0.20';
 requires 'MooseX::Types::Common';

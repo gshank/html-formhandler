@@ -1,7 +1,6 @@
 package HTML::FormHandler::Widget::Field::Text;
 
 use Moose::Role;
-use HTML::Entities;
 with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
 sub render {
