@@ -33,7 +33,7 @@ In your custom field class:
 
     has 'my_attribute' => ( isa => 'Str', is => 'rw' );
 
-    apply [ { transform => sub {...} },
+    apply [ { transform => sub { ... } },
             { check => ['fighter', 'bard', 'mage' ], message => '....' }
           ];
     1;
@@ -124,7 +124,7 @@ The name of the field with all parents:
 
    'event.start_date.month'
 
-=item full_accesor
+=item full_accessor
 
 The field accessor with all parents
 
@@ -363,7 +363,10 @@ Use the 'apply' keyword to specify an ArrayRef of constraints and coercions to
 be executed on the field at validate_field time.
 
    has_field 'test' => (
-      apply => [ 'MooseType', { check => sub {...}, message => { } } ],
+      apply => [ 'MooseType', 
+                 { check => sub {...}, message => { } } 
+                 { transform => sub { ... lc(shift) ... } } 
+               ],
    );
 
 In general the action can be of three types: a Moose type (which is
@@ -476,7 +479,7 @@ A 'check' regular expression:
 A 'check' array of valid values:
 
   has_field 'more_text' => (
-      aply => [ { check => ['aaa', 'bbb'], message => 'Must be aaa or bbb' } ]
+      apply => [ { check => ['aaa', 'bbb'], message => 'Must be aaa or bbb' } ]
   );
 
 A simple transformation uses the 'transform' keyword and a coderef.
