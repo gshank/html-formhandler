@@ -14,6 +14,18 @@ a default language handler using L<HTML::FormHandler::I18N>. The
 language handle is used in the field's add_error method to allow
 localizing.
 
+You can pass in an existing L<Locale::MakeText> subclass instance
+or create one in a builder.
+
+In a form class:
+
+    sub _build_language_handle { MyApp::I18N::abc_de->new }
+
+Passed into new or process:
+
+    my $lh = MyApp::I18N::abc_de->new;
+    my $form = MyApp::Form->new( language_handle => $lh );
+
 If you do not set the language_handle, then L<Locale::Maketext> and/or
 L<I18N::LangTags> may guess, with unexpected results.
 
