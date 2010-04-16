@@ -364,7 +364,7 @@ be executed on the field at validate_field time.
 
    has_field 'test' => (
       apply => [ 'MooseType', 
-                 { check => sub {...}, message => { } } 
+                 { check => sub {...}, message => { } },
                  { transform => sub { ... lc(shift) ... } } 
                ],
    );
