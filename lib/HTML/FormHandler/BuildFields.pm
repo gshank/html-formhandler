@@ -313,8 +313,10 @@ sub new_field_with_traits {
     my $widget = $field_attr->{widget};
     my $field;
     unless( $widget ) {
-        my $attr = $class->meta->get_attribute('widget');
-        $widget = $class->meta->get_attribute('widget')->default if $attr;
+        my $attr = $class->meta->find_attribute_by_name( 'widget' );
+        if ( $attr ) {
+            $widget = $attr->default;
+        }
     }
     my $widget_wrapper = $field_attr->{widget_wrapper};
     $widget_wrapper ||= $field_attr->{form}->widget_wrapper if $field_attr->{form};

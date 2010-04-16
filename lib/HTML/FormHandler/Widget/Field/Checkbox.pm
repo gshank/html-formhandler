@@ -11,7 +11,7 @@ sub render {
     my $fif    = $result->fif;
     my $output = '<input type="checkbox" name="';
     $output .= $self->html_name . '" id="' . $self->id . '"';
-    $output .= ' value="' . encode_entities($self->checkbox_value) . '"';
+    $output .= ' value="' . $self->html_filter($self->checkbox_value) . '"';
     $output .= ' checked="checked"' if $fif eq $self->checkbox_value;
     $output .= $self->_add_html_attributes;
     $output .= ' />';

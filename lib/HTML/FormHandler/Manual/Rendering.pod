@@ -136,6 +136,25 @@ attributes in the form, or do it on new:
 
    my $form = MyApp::Form->new( widget_form => 'Table', widget_wrapper => 'Table' );
 
+=head2 Rendering filter for fill-in-form values
+
+The base field class has a 'render_filter' attribute which is a coderef used to
+clean the values used to fill in the form for Render::Simple and the Widgets.
+The default filter changes quote, ampersand, <, and > to the equivalent html
+entities. If you wish to use some other sort of filtering, you can set use
+'render_filter' method in your form, or set a coderef on individual field
+objects. 
+
+    sub render_filter {
+        my ( $self, $string ) = @_;
+        $string =~ s/my/MY/g; # perform some kind of transformation
+        return $string;
+    }
+    -- or --
+    has_field 'foo' => ( render_filter => sub { ... } );
+
+The filter is called in Render::Simple in the widgets with as 
+C<< $self->html_filter( $fif ) or $field->html_filter( $fif ) >>.
 
 =head2 Customized Widgets
 

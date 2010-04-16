@@ -13,7 +13,7 @@ sub render {
     $output .= ' id="' . $self->id . '"';
     $output .= ' size="' . $self->size . '"' if $self->size;
     $output .= ' maxlength="' . $self->maxlength . '"' if $self->maxlength;
-    $output .= ' value="' . encode_entities($result->fif) . '"';
+    $output .= ' value="' . $self->html_filter($result->fif) . '"';
     $output .= $self->_add_html_attributes;
     $output .= ' />';
     return $self->wrap_field( $result, $output );

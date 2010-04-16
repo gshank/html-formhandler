@@ -12,7 +12,7 @@ sub render {
     $output .= '<input type="hidden" name="';
     $output .= $self->html_name . '"';
     $output .= ' id="' . $self->id . '"';
-    $output .= ' value="' . encode_entities($result->fif) . '"';
+    $output .= ' value="' . $self->html_filter($result->fif) . '"';
     $output .= $self->_add_html_attributes;
     $output .= " />\n";
 

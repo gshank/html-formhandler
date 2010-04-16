@@ -23,7 +23,7 @@ sub render {
     foreach my $option ( @{ $self->{options} } ) {
         $output .= '<option value="' . $option->{value} . '" ';
         $output .= 'id="' . $self->id . ".$index\" ";
-        if ( my $ffif = encode_entities($result->fif) ) {
+        if ( my $ffif = $self->html_filter($result->fif) ) {
             if ( $self->multiple == 1 ) {
                 my @fif;
                 if ( ref $ffif ) {

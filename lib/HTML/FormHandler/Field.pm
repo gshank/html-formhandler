@@ -846,6 +846,37 @@ sub default_trim {
     }
     return ref $value eq 'ARRAY' ? \@values : $values[0];
 }
+has 'render_filter' => (
+     traits => ['Code'],
+     is     => 'ro',
+     isa    => 'CodeRef',
+     builder => 'build_render_filter',
+     handles => { html_filter => 'execute' },
+);
+
+sub build_render_filter {
+    my $self = shift;
+    if( $self->form && $self->form->can('render_filter') ) {
+        return sub {
+            my $name = shift;
+            return $self->form->render_filter($name);
+        }
+    }
+    else {
+        return sub {
+            my $name = shift;
+            return $self->default_render_filter($name);
+        }  
+    }
+}
+sub default_render_filter {
+    my ( $self, $string ) = @_;
+    $string =~ s/&/&amp;/g;
+    $string =~ s/</&lt;/g;
+    $string =~ s/>/&gt;/g;
+    $string =~ s/"/&quot;/g;
+    return $string;
+}
 
 has 'input_param' => ( is => 'rw', isa => 'Str' );
 
