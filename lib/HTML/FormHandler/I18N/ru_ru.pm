@@ -83,6 +83,7 @@ our %Lexicon = (
     'value must be between [_1] and [_2]'         => 'значение должно быть между [_1] и [_2]',
     'value must be greater than or equal to [_1]' => 'значение должно быть больше или равно [_1]',
     'value must be less than or equal to [_1]'    => 'значение должно быть меньше или равно [_1]',
+    '[_1] field is required'                      => 'поле [_1] является обязательным',
 
     # Other
     'Your datetime does not match your pattern.' => 'Введённые дата/время не совпадают с вашим шаблоном.',
