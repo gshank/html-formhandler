@@ -19,7 +19,7 @@ our %Lexicon = (
     'Not a valid DateTime' => 'Невірна дата/час',
 
     # H::F::Field::Email
-    'Email should be of the format [_1]' => 'Адреса электроної поши має бути у форматі [_1]',
+    'Email should be of the format [_1]' => 'Адреса электроної пошти має бути у форматі [_1]',
 
     # H::F::Field::Integer
     'Value must be an integer' => 'Значення має бути цілим числом',
@@ -75,18 +75,19 @@ our %Lexicon = (
     'Field must contain a single word'                          => 'Поле має містити одне слово',
 
     # H:: F:: Validate:: Actions
-    'Wrong value' => 'Неправильне значення',
-    # # # Not translatable: ' "$ value" does not match' =>'',
-    # # # Not translatable: ' "$ value" not allowed' =>'',
+    'Wrong value'         => 'Неправильне значення',
+    '[_1] does not match' => 'не співпадає з [_1]',
+    '[_1] not allowed'    => '[_1] не дозволяється',
 
     # H:: F:: Validate
     'value must be between [_1] and [_2]'         => 'значення повинне бути між [_1] та [_2]',
     'value must be greater than or equal to [_1]' => 'значення повинне бути більше або дорівнювати [_1]',
-    'value must be less than or equal to [_1]'    => 'значення повинно бути менше або дорівнювати [_1]',
+    'value must be less than or equal to [_1]'    => 'значення повинне бути менше або дорівнювати [_1]',
     '[_1] field is required'                      => 'поле [_1] є обов\x{02BC}язковим',
 
     # Other
     'Your datetime does not match your pattern.' => 'Введені дата/час не співпадають з вашим шаблоном.',
+    'error occurred'                             => 'трапилась помилка',
 );
 
 1;

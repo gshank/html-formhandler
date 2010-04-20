@@ -32,7 +32,7 @@ use lib 't/lib';
       apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
    );
    has_field 'regex_error' => (
-      apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
+      apply => [ { check => qr/xyz/ } ],
    );
    has_field 'regex_correct' => (
       apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],

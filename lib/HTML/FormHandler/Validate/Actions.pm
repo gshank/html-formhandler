@@ -105,12 +105,12 @@ sub _apply_actions {
         }
         elsif ( ref $action->{check} eq 'Regexp' ) {
             if ( $value !~ $action->{check} ) {
-                $error_message = "\"$value\" does not match";
+                $error_message = ["[_1] does not match", $value];
             }
         }
         elsif ( ref $action->{check} eq 'ARRAY' ) {
             if ( !grep { $value eq $_ } @{ $action->{check} } ) {
-                $error_message = "\"$value\" not allowed";
+                $error_message = ["[_1] not allowed", $value];
             }
         }
         elsif ( ref $action->{transform} eq 'CODE' ) {
@@ -126,7 +126,7 @@ sub _apply_actions {
             }
         }
         if ( defined $error_message ) {
-            my @message = ($error_message);
+            my @message = ref $error_message eq 'ARRAY' ? @$error_message : ($error_message);
             if ( defined $action->{message} ) {
                 my $act_msg = $action->{message};
                 if ( ref $act_msg eq 'CODEREF' ) {
