@@ -1,3 +1,7 @@
+0.31001 Tues Apr 20, 2010
+    Use full length version number
+    Updates to translated messages & messages in Validate::Actions
+
 0.31 Fri Apr 16, 2010
     Remove use of HTML::Entities for filtering. New render_filter coderef for filering.
     Minor doc fixes for typos

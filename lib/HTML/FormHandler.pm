@@ -15,7 +15,8 @@ use HTML::FormHandler::Result;
 
 use 5.008;
 
-our $VERSION = '0.31';
+# always use 5 digits after decimal because of toolchain issues
+our $VERSION = '0.31001';
 
 =head1 NAME
 
