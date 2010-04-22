@@ -54,4 +54,30 @@ ok( $form, 'form builds' );
 ok( $form->field('my_date'), 'the field is there' );
 is( $form->field('my_date')->render, '<p>Create your rendering here...</p>', 'renders ok' );
 
+{
+    package Test2::Widget::Field::SimpleWidget;
+    use Moose::Role;
+    sub render { "I'am simple widget" }
+}
+{
+    package Test2::Field::CustomWidgetCompoundField;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler::Field::Compound';
+    has_field 'my_text' => ( type => 'Text', widget => 'SimpleWidget' );
+}
+{
+    package Test2::Form::Compound;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+    has '+field_name_space' => ( default => sub { 'Test2::Field' } );
+    has '+widget_name_space' => ( default => sub { ['Test2::Widget'] } );
+    has_field 'test' => ( type => '+CustomWidgetCompoundField' );
+}
+{
+    my $form = Test2::Form::Compound->new;
+    ok( $form, 'form builds' );
+    ok( $form->field('test.my_text'), 'the field is there' );
+    is( $form->field('test.my_text')->render, "I'am simple widget", 'renders ok');
+}
+
 done_testing;
