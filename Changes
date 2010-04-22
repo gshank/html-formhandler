@@ -1,3 +1,7 @@
+0.31002 Wed Apr 21, 2010
+    Remove unused HTML::Entities from Simple form widget
+    Move locale test file into xt because of env variable issues in test
+
 0.31001 Tues Apr 20, 2010
     Use full length version number
     Updates to translated messages & messages in Validate::Actions
