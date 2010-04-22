@@ -7,8 +7,9 @@ use HTML::FormHandler::Field::Text;
 use lib ('t/lib');
 
 # ensure $ENV is properly set up
-delete $ENV{$_}
-    for qw(LANGUAGE_HANDLE HTTP_ACCEPT_LANGUAGE LANG LANGUAGE);
+my @LH_VARS = ('LANGUAGE_HANDLE', 'HTTP_ACCEPT_LANGUAGE', 'LANG', 'LANGUAGE' );
+my %LOC_ENV;
+$LOC_ENV{$_} = delete $ENV{$_} for @LH_VARS;
 
 # a primitive translation package
 {
@@ -36,6 +37,8 @@ my $form;
 
 
 ################ Locale -none-
+
+$ENV{LANGUAGE} = 'en-US';
 
 # create form w/o locale must work
 lives_ok { $form = Test::Form->new } 'create form w/o locale lives';
@@ -115,5 +118,7 @@ ok( $form, 'form built' );
 $form->process( params => { foo => 'test' } );
 is( $form->field('foo')->errors->[0], 'Loser! coin needed', 'right message' );
 is( ref $form->language_handle, 'MyApp::I18N::abc_de', 'using right lh');
+
+$ENV{$_} = 'en-US' for @LH_VARS;
 
 done_testing;

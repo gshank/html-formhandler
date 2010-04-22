@@ -1,7 +1,6 @@
 package HTML::FormHandler::Widget::Form::Simple;
 
 use Moose::Role;
-use HTML::Entities;
 
 our $VERSION = 0.01;
 
