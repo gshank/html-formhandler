@@ -3,6 +3,7 @@ package HTML::FormHandler::Widget::ApplyRole;
 use Moose::Role;
 use File::Spec;
 use Class::MOP;
+use Try::Tiny;
 
 our $ERROR;
 
@@ -21,11 +22,10 @@ sub get_widget_role {
         ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget') );
     foreach my $ns (@name_spaces) {
         my $render_role = $ns . $ldir . $widget_class;
-        if ( eval { Class::MOP::load_class($render_role) } ) {
-            return $render_role;
-        }
+        try { Class::MOP::load_class($render_role) } catch { die $_ unless $_ =~ /^Can't locate/; };
+        return $render_role if Class::MOP::is_class_loaded($render_role);
     }
-    die "not able to load $dir widget $widget_class from " . join(", ", @name_spaces);
+    die "Can't find $dir widget $widget_class from " . join(", ", @name_spaces);
 }
 
 # this is for compatibility with widget names like 'radio_group'
