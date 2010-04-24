@@ -4,7 +4,7 @@ use Moose::Role;
 
 sub render_label {
     my $self = shift;
-    return '<label class="label" for="' . $self->id . '">' . $self->label . ': </label>';
+    return '<label class="label" for="' . $self->id . '">' . $self->loc_label . ': </label>';
 }
 
 sub render_class {

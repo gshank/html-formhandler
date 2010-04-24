@@ -93,7 +93,7 @@ $form->field('test_field')->add_error('You won');
 is_deeply($form->field('test_field')->errors, ['You won'], 'error is translated into xx_xx');
 
 # translating a known label
-is($form->field('test_field')->label, 'Grfg svryq', 'label rot13 to xx_xx');
+is($form->field('test_field')->loc_label, 'Grfg svryq', 'label rot13 to xx_xx');
 
 # remove from environment variable, so we can use builder
 delete $ENV{LANGUAGE_HANDLE};

@@ -368,7 +368,7 @@ sub render_upload {
 sub _label {
     my ( $self, $field ) = @_;
     return '<label class="label" for="' . $field->id . '">' . 
-        $field->html_filter($field->label)
+        $field->html_filter($field->loc_label)
         . ': </label>';
 }
 

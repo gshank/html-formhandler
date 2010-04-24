@@ -712,7 +712,11 @@ sub build_label {
     my $label = $self->name;
     $label =~ s/_/ /g;
     $label = ucfirst($label);
-    return $self->_localize($label);
+    return $label;
+}
+sub loc_label {
+    my $self = shift;
+    return $self->_localize($self->label);
 }
 has 'title'     => ( isa => 'Str',               is => 'rw' );
 has 'style'     => ( isa => 'Str',               is => 'rw' );
