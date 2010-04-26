@@ -71,14 +71,6 @@ has '+field_name_space' => (
     },
 );
 
-has '+widget_name_space' => (
-    default => sub {
-        my $self = shift;
-        return $self->form->widget_name_space if $self->form;
-        return [];
-    },
-);
-
 sub BUILD {
     my $self = shift;
     $self->_build_fields;

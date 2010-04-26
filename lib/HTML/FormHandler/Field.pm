@@ -901,6 +901,7 @@ sub BUILD {
 
     $self->_set_default( $self->_comp_default_meth )
         if( $self->form && $self->form->can( $self->_comp_default_meth ) );
+    $self->add_widget_name_space( @{$self->form->widget_name_space} ) if $self->form;
     # widgets will already have been applied by BuildFields, but this allows
     # testing individual fields
     $self->apply_rendering_widgets unless ($self->can('render') );
@@ -1080,9 +1081,6 @@ sub dump {
 sub apply_rendering_widgets {
     my $self = shift;
 
-    if( $self->form ) {
-        $self->add_widget_name_space( @{$self->form->widget_name_space} );
-    }
     if ( $self->widget ) {
         $self->apply_widget_role( $self, $self->widget, 'Field' );
     }
