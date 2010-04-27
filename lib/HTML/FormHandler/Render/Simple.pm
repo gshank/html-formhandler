@@ -214,7 +214,7 @@ sub render_field_struct {
     }
     elsif ( $l_type eq 'legend' ) {
         $output .= '<fieldset class="' . $field->html_name . '">';
-        $output .= '<legend>' . $field->html_filter($field->label) . '</legend>';
+        $output .= '<legend>' . $field->html_filter($field->loc_label) . '</legend>';
     }
     $output .= $rendered_field;
     foreach my $error ($field->all_errors){

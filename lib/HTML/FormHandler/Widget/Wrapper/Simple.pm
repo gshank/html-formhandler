@@ -34,7 +34,7 @@ sub wrap_field {
     my $output = "\n" . $start_tag; 
     if ( $self->has_flag('is_compound') ) {
         $output .= '<fieldset class="' . $self->html_name . '">';
-        $output .= '<legend>' . $self->label . '</legend>';
+        $output .= '<legend>' . $self->loc_label . '</legend>';
     }
     elsif ( !$self->has_flag('no_render_label') && $self->label ) {
         $output .= $self->render_label;
