@@ -18,7 +18,7 @@ Subfield names:
 
 For example:
 
-   has 'duration' => ( type => 'Compound' );
+   has 'duration' => ( type => 'Duration' );
    has 'duration.hours' => ( type => 'Int', range_start => 0,
         range_end => 23 );
    has 'duration.minutes' => ( type => 'Int', range_start => 0,
