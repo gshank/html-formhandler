@@ -8,6 +8,8 @@ BEGIN {
    plan skip_all => 'DateTime::Format::Strptime required' if $@;
 }
 
+$ENV{LANG} = 'en_us'; # in case user has LANG set
+
 #
 # DateMDY
 #

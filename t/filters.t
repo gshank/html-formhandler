@@ -7,6 +7,8 @@ use lib 't/lib';
 use DateTime;
 use Scalar::Util qw(blessed);
 
+$ENV{LANG} = 'en_us'; # in case user has LANG set
+
 {
    package My::Form;
    use HTML::FormHandler::Moose;
