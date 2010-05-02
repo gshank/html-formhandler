@@ -96,7 +96,7 @@ and Table).  The form widget is specified in the form with 'widget_form'.
 
    package MyApp::Form;
    ....
-   has '+widget_form' => ( widget_form => 'Simple' ); 
+   has '+widget_form' => ( default => 'Simple' ); 
    ...
 
 The 'wrapper' for field rendering can also be specified with 'widget_wrapper'. 
@@ -108,12 +108,15 @@ You can specify a wrapper class for all the fields in the form by setting
 'widget_wrapper' in the form class, or you can set them individually by setting
 'widget_wrapper' on individual fields.
 
-   has 'some_field' => ( widget_wrapper => 'MyWrapper' );
+   has_field 'some_field' => ( widget_wrapper => 'MyWrapper' );
  
 The 'widget' attribute is set to a default in FormHandler fields, or you can 
 set it to a different widget in your field declarations.
 
-   has 'another_field' => ( widget => 'MyWidget', widget_wrapper => 'MyWrapper' ); 
+   has_field 'another_field' => (
+     widget => 'MyWidget',
+     widget_wrapper => 'MyWrapper'
+   ); 
 
 Can be set in the form:
 
@@ -134,7 +137,10 @@ By default, a form will use the Form::Simple and Wrapper::Simple widgets. If you
 want to use the table format you can change the 'widget_form' and 'widget_wrapper'
 attributes in the form, or do it on new:
 
-   my $form = MyApp::Form->new( widget_form => 'Table', widget_wrapper => 'Table' );
+   my $form = MyApp::Form->new(
+     widget_form => 'Table',
+     widget_wrapper => 'Table'
+   );
 
 =head2 Rendering filter for fill-in-form values
 
