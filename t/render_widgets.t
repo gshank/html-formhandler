@@ -109,7 +109,7 @@ my $params = {
     fruit              => 2,
     vegetables         => [ 2, 4 ],
     active             => 'now',
-    comments           => 'Four score and seven years ago...',
+    comments           => 'Four score and seven years ago...</textarea>',
     hidden             => '1234',
     selected           => '1',
     'start_date.month' => '7',
@@ -170,7 +170,7 @@ my $output5 = $form->field('comments')->render;
 is(
     $output5,
     '
-<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...</textarea></div>
+<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...&lt;/textarea&gt;</textarea></div>
 ',
     'output from textarea'
 );
