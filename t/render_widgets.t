@@ -27,15 +27,24 @@ use HTML::FormHandler::Field::Text;
         widget  => 'radio_group',
         options => [
             {
-                value => 0,
-                label => 'No',
+                value => 'no & never',
+                label => 'No & Never',
                 # this can depend on something else,
                 # with fixed value will cause field be
                 # always checked even after process
                 checked => 1,
             },
-            { value => 1, label => 'Yes' },
+            { value => '"yes"', label => 'Yes' },
         ]
+    );
+    has_field 'comedians' => (
+        type => 'Multiple',
+        widget => 'checkbox_group',
+        options => [
+            { value => 'keaton', label => 'Buster Keaton'},
+            { value => 'chaplin', label => 'Charly Chaplin'},
+            { value => 'laurel & hardy', label => 'Stan Laurel & Oliver Hardy' },
+        ],
     );
     has_field 'active'     => ( type => 'Checkbox' );
     has_field 'comments'   => ( type => 'TextArea' );
@@ -65,7 +74,8 @@ use HTML::FormHandler::Field::Text;
         ]
     );
 
-    has_field 'submit' => ( type => 'Submit', value => 'Update' );
+    has_field 'submit' => ( type => 'Submit', value => '>>> Update' );
+    has_field 'reset' => ( type => 'Reset', value => '<<< Reset' );
 
     has '+dependency' => (
         default => sub {
@@ -77,18 +87,18 @@ use HTML::FormHandler::Field::Text;
 
     sub options_fruit {
         return (
-            1 => 'apples',
-            2 => 'oranges',
-            3 => 'kiwi',
+            '"apples"' => '"apples"',
+	    '<oranges>' => '<oranges>',
+            '&kiwi&' => '&kiwi&',
         );
     }
 
     sub options_vegetables {
         return (
-            1 => 'lettuce',
-            2 => 'broccoli',
-            3 => 'carrots',
-            4 => 'peas',
+            '<lettuce>' => '<lettuce>',
+            'broccoli' => 'broccoli',
+            'carrots' => 'carrots',
+            '& peas' => '& peas',
         );
     }
 }
@@ -99,15 +109,22 @@ ok( $form, 'create form' );
 my $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />No<br /><input type="radio" value="1" name="opt_in" id="opt_in.1" />Yes<br /></div>
+<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never<br /><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes<br /></div>
 ', 'output from radio group'
+);
+
+my $output12 = $form->field('comedians')->render;
+is(
+    $output12, '
+<div><label class="label" for="comedians">Comedians: </label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" />Stan Laurel &amp; Oliver Hardy<br /></div>
+', 'output from checkbox group'
 );
 
 my $params = {
     test_field         => 'something',
     number             => 0,
-    fruit              => 2,
-    vegetables         => [ 2, 4 ],
+    fruit              => '<oranges>',
+    vegetables         => [ 'broccoli', '& peas' ],
     active             => 'now',
     comments           => 'Four score and seven years ago...</textarea>',
     hidden             => '1234',
@@ -116,8 +133,9 @@ my $params = {
     'start_date.day'   => '14',
     'start_date.year'  => '2006',
     two_errors         => 'aaa',
-    opt_in             => 0,
+    opt_in             => 'no & never',
     plain              => 'No divs!!',
+    comedians         => [ 'chaplin', 'laurel & hardy' ],
 };
 
 $form->process($params);
@@ -143,7 +161,7 @@ my $output2 = $form->field('fruit')->render;
 is(
     $output2,
     '
-<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0" >apples</option><option value="2" id="fruit.1" selected="selected">oranges</option><option value="3" id="fruit.2" >kiwi</option></select></div>
+<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="&quot;apples&quot;" id="fruit.0">&quot;apples&quot;</option><option value="&lt;oranges&gt;" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="&amp;kiwi&amp;" id="fruit.2">&amp;kiwi&amp;</option></select></div>
 ',
     'output from select field'
 );
@@ -152,7 +170,7 @@ my $output3 = $form->field('vegetables')->render;
 is(
     $output3,
     '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0" >lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2" >carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
+<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="&lt;lettuce&gt;" id="vegetables.0">&lt;lettuce&gt;</option><option value="broccoli" id="vegetables.1" selected="selected">broccoli</option><option value="carrots" id="vegetables.2">carrots</option><option value="&amp; peas" id="vegetables.3" selected="selected">&amp; peas</option></select></div>
 ',
     'output from select multiple field'
 );
@@ -211,14 +229,21 @@ is(
 my $output9 = $form->field('submit')->render;
 is(
     $output9, '
-<div><input type="submit" name="submit" id="submit" value="Update" /></div>
+<div><input type="submit" name="submit" id="submit" value="&gt;&gt;&gt; Update" /></div>
 ', 'output from Submit'
 );
+my $output9a = $form->field('reset')->render;
+is(
+    $output9a, '
+<div><input type="reset" name="reset" id="reset" value="&lt;&lt;&lt; Reset" /></div>
+', 'output from Reset'
+);
+
 
 $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />No<br /><input type="radio" value="1" name="opt_in" id="opt_in.1" />Yes<br /></div>
+<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never<br /><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes<br /></div>
 ', 'output from radio group'
 );
 
@@ -226,6 +251,15 @@ my $output11 = $form->render_start;
 is(
     $output11, '<form id="testform" method="post" >
 <fieldset class="main_fieldset">', 'Form start OK'
+);
+
+$output12 = $form->field('comedians')->render;
+is(
+    $output12,
+    '
+<div><label class="label" for="comedians">Comedians: </label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" checked="checked" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" checked="checked" />Stan Laurel &amp; Oliver Hardy<br /></div>
+',
+    'output from checkbox group'
 );
 
 my $output = $form->render;
