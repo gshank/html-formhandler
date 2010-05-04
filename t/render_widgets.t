@@ -324,6 +324,8 @@ ok( $outputT, 'output from table rendering' );
     );
     has_field 'bar' => ( widget_tags => 
          {wrapper_start => '<span>', wrapper_end => '</span>'});
+    has_field 'baz' => ( widget_tags => 
+         {wrapper_start => '', wrapper_end => ''});
 }
 
 $form = Test::Tags->new;
@@ -335,5 +337,9 @@ is( $form->field('foo')->render, '
 is( $form->field('bar')->render, '
 <span><label class="label" for="bar">Bar: </label><input type="text" name="bar" id="bar" value="" /></span>
 ', 'field renders with custom widget_tags' );
+
+is( $form->field('baz')->render, '
+<label class="label" for="baz">Baz: </label><input type="text" name="baz" id="baz" value="" />
+', 'field renders with empty widget_tags' );
 
 done_testing;

@@ -1,6 +1,8 @@
 package HTML::FormHandler::Widget::Wrapper::Simple;
 
 use Moose::Role;
+use namespace::autoclean;
+
 with 'HTML::FormHandler::Widget::Wrapper::Base';
 
 =head1 NAME
@@ -27,27 +29,33 @@ in paragraph tags instead:
 
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
-
-    my $start_tag = $self->get_tag('wrapper_start') || '<div<%class%>>';
+    my $t;
+    my $start_tag = defined($t = $self->get_tag('wrapper_start')) ?
+        $t : '<div<%class%>>';
+    my $is_compound = $self->has_flag('is_compound');
     my $class  = $self->render_class($result);
+    my $output = "\n";
+
     $start_tag =~ s/<%class%>/$class/g;
-    my $output = "\n" . $start_tag; 
-    if ( $self->has_flag('is_compound') ) {
+    $output .= $start_tag; 
+
+    if ( $is_compound ) {
         $output .= '<fieldset class="' . $self->html_name . '">';
         $output .= '<legend>' . $self->loc_label . '</legend>';
     }
     elsif ( !$self->has_flag('no_render_label') && $self->label ) {
         $output .= $self->render_label;
     }
+
     $output .= $rendered_widget;
-    $output .= qq{\n<span class="error_message">$_</span>} for $result->all_errors;
-    if ( $self->has_flag('is_compound') ) {
-        $output .= '</fieldset>';
-    }
-    my $end_tag = $self->get_tag('wrapper_end') || '</div>';
-    $output .= $end_tag . "\n";
-    return $output;
+    $output .= qq{\n<span class="error_message">$_</span>}
+        for $result->all_errors;
+    $output .= '</fieldset>'
+        if $is_compound;
+
+    $output .= defined($t = $self->get_tag('wrapper_end')) ? $t : '</div>';
+
+    return "$output\n";
 }
 
-no Moose::Role;
 1;
