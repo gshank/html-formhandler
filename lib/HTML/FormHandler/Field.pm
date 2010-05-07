@@ -916,6 +916,9 @@ sub _result_from_fields {
     my ( $self, $result ) = @_;
 
     if ( my @values = $self->get_default_value ) {
+        if ( $self->_can_deflate ) {
+            @values = $self->_apply_deflation(@values);
+        }
         my $value = @values > 1 ? \@values : shift @values;
         $self->init_value($value)   if defined $value;
         $result->_set_value($value) if defined $value;

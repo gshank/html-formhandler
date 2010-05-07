@@ -48,4 +48,30 @@ is_deeply( $form->value, { bar => 'aabbcc', foo => 'one-x-two-xx-three-xxx' }, '
 is( $form->field('foo.one')->fif, 'x', 'correct fif' );
 is( $form->field('foo')->value, 'one-x-two-xx-three-xxx', 'right value for foo field' );
 
+{
+    package Test::Deflate;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo' => (
+        default => 'deflate me!',
+        deflation => sub {
+            my ( $value ) = @_;
+
+            if ( $value eq 'deflate me!' ) {
+                return 'deflated value';
+            } else {
+                return 'unexpected value';
+            }
+        }
+    );
+    
+}
+
+$form = Test::Deflate->new;
+ok( $form, 'form builds' );
+
+is( $form->field('foo')->value, 'deflated value', 'default values should be deflated too' );
+
+
 done_testing;
