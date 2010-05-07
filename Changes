@@ -1,3 +1,14 @@
+0.31003 Fri May 7, 2010
+    Change precedence of defaults over item/init_object; add 'default_over_obj' for
+       cases where that behavior is desired.
+    Fix errors in filtering HTML in rendering
+    Call deflation in InitResult::_result_from_obj
+    Split localization of labels into separate 'loc_label' method
+       Call loc_label where label is used in error messages
+    Enable empty strings for wrapper_start and wrapper_end
+    Set locale to en_us where needed in test
+    Fix widget_name_space use in fields
+
 0.31002 Wed Apr 21, 2010
     Remove unused HTML::Entities from Simple form widget
     Move locale test file into xt because of env variable issues in test
