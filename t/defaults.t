@@ -102,4 +102,24 @@ $form = Test::Form->new;
 is( $form->field('foo')->value, 'some_quux', 'field initialized by init_object' );
 
 
+{
+    package Mock::Object;
+    use Moose;
+    has 'meow' => ( is => 'rw' );
+}
+{
+    package Test::Object;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+    with 'HTML::FormHandler::Model::Object';
+    has_field 'meow' => ( default => 'this_should_get_overridden' );
+
+}
+
+$obj = Mock::Object->new( meow => 'the_real_meow' );
+
+$form = Test::Object->new;
+$form->process( item => $obj, item_id => 1, params => {} );
+is( $form->field('meow')->value, 'the_real_meow', 'defaults should not override actual item values');
+
 done_testing;

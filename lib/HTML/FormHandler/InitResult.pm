@@ -102,13 +102,16 @@ sub _get_value {
 
     my $accessor = $field->accessor;
     my @values;
-    if ( @values = $field->get_default_value ) {
+    if( defined $field->default_over_obj ) {
+        @values = $field->default_over_obj;
     }
     elsif ( blessed($item) && $item->can($accessor) ) {
         @values = $item->$accessor;
     }
     elsif ( exists $item->{$accessor} ) {
         @values = $item->{$accessor};
+    }
+    elsif ( @values = $field->get_default_value ) {
     }
     else {
         return;
