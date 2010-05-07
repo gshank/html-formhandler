@@ -20,7 +20,7 @@ has 'required_message' => (
     is      => 'rw',
     lazy    => 1,
     default => sub { 
-        return [ '[_1] field is required', shift->label ];
+        return [ '[_1] field is required', shift->loc_label ];
     }
 );
 has 'unique'            => ( isa => 'Bool', is => 'rw', predicate => 'has_unique' );
