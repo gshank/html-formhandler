@@ -15,6 +15,7 @@ use lib 't/lib';
    has_field 'field_one'   => ( type => '+AltText', another_attribute => 'one' );
    has_field 'field_two'   => ( type => '+AltText', another_attribute => 'two' );
    has_field 'field_three' => ( type => '+AltText', another_attribute => 'three' );
+   has_field 'field_four'  => ( type => 'AltText',  another_attribute => 'four' );
 
 }
 
@@ -25,6 +26,7 @@ my $params = {
    field_one => 'one two three four',
    field_two => 'one three four',
    field_three => 'one three four',
+   field_four => 'four',
 };
 
 $form->process( $params );
@@ -38,6 +40,7 @@ is( $form->field('field_two')->errors->[0],
    'Fails AltText validation', 'get error message' );
 
 ok( !$form->field('field_three')->has_errors, 'field three has no error');
+ok( !$form->field('field_four')->has_errors, 'field four has no error');
 
 {
     package Field::Text;

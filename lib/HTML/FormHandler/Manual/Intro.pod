@@ -528,13 +528,18 @@ Field errors are in C<< $field->errors >>.
 
 The fields are assumed to be in the HTML::FormHandler::Field name
 space.  If you want to explicitly list the field's package, prefix it
-with a plus sign. The field name space for "+" prefixed fields can
-be set with the form's "field_name_space" attribute:
+with a plus sign. The field_name_space plus the default name spaces
+'HTML::FormHandler::Field' and 'HTML::FormHandlerX::Field' will be
+searched for fields.
  
     has '+field_name_space' => ( default => 'MyApp::Form::Field' );
 
     has_field 'name' => ( type => 'Text' ); # HTML::FormHandler::Field::Text
+    has_field 'name' => ( type => '+My::FieldType' ); # My::Fieldtype
     has_field 'foo'  => ( type => +Foo' );  # MyApp::Form::Field::Foo
+      or
+    has_field 'foo'  => ( type => 'Foo' );  # MyApp::Form::Field::Foo
+   
 
 The most basic type is "Text", which takes a single scalar value. (If the
 type of a field is not specified, it will be set to 'Text'.)  A "Select"

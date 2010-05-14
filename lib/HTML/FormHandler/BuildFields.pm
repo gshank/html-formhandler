@@ -199,53 +199,32 @@ sub _make_field {
         $field_attr->{name} = $name = $1;
         $do_update = 1;
     }
-
+    my $field_ns = $self->field_name_space;
+    my @field_name_space = ref $field_ns eq 'ARRAY' ? @$field_ns : $field_ns;
+    my @classes;
+    # '+'-prefixed fields could be full namespaces
+    if ( $type =~ s/^\+// )
+    {
+        push @classes, $type;
+    }
+    foreach my $ns ( @field_name_space, 'HTML::FormHandler::Field', 'HTML::FormHandlerX::Field' )
+    {
+        push @classes, $ns . "::" . $type;
+    }
+    # look for Field in possible namespaces 
+    my $loaded;
     my $class;
-    if( $type =~ s/^\+// ) {
-        # type prefixed with '+', not a built-in
-        if( ref $self->field_name_space eq 'ARRAY' ) {
-            my $loaded;
-            foreach my $ns (@{$self->field_name_space}) {
-                $class = $ns . "::" . $type;
-                try { 
-                    Class::MOP::load_class($class);
-                    $loaded++;
-                };
-                last if $loaded;
-            }
-            die "Could not load field class '$type' for field '$name'"
-              unless $loaded;
-        }
-        elsif ( $self->field_name_space ) {
-            $class = $self->field_name_space . "::" . $type;
-            Class::MOP::load_class($class) or
-                   die "Could not load field class '$class' for field '$name'";
-        }
-        else {
-            $class = $type;
-            Class::MOP::load_class($class) or
-                   die "Could not load field class '$class' for field '$name'";
-        }
-    }
-    else {
-        # built-in. look in HTML::FormHandler::Field
-        #              and  HTML::FormHandlerX::Field
-        $class = 'HTML::FormHandler::Field::' . $type;
-        my @errors;
-        try {
-            Class::MOP::load_class($class);
-        } catch {
-            $class = 'HTML::FormHandlerX::Field::' . $type;
-            push @errors, $_;
-            try {
-                Class::MOP::load_class($class);
-            } catch {
-                push @errors, $_;
-                die "Could not load field class '$type' for field '$name'.".
-                  join("\n[+] ", @errors);
-            };
+    foreach my $try ( @classes ) {
+        try { 
+            Class::MOP::load_class($try);
+            $loaded++;
+            $class = $try;
         };
+        last if $loaded;
     }
+    die "Could not load field class '$type' for field '$name'"
+       unless $loaded;
+
 
     $field_attr->{form} = $self->form if $self->form;
     # parent and name correction for names with dots
