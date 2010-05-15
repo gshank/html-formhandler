@@ -389,7 +389,7 @@ sub render_submit {
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
     $output .= $self->_add_html_attributes( $field );
-    $output .= ' value="' . $field->html_filter($field->value) . '" />';
+    $output .= ' value="' . $field->html_filter($field->_localize($field->value)) . '" />';
     return $output;
 }
 
