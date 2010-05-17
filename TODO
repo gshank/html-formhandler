@@ -1,12 +1,7 @@
-  result refactoring tasks
-    Handle dynamic selection lists in result rendering
-    api for result
-    put back empty related fields for fif (to allow filling in if empty)
+  Improve TT rendering
+  Refactor messages to set in one place and make translations easier
   Unique support for non-top-level fields?
-  Create multibox widget & rendering for checkbox group for multiple select
   Improve example of Repeatable form (BookDB, User) to do adds & deletes with js
   Create more usable 'add_field' routine that will handle ordering, parent,
       and form attributes. Use in create_instance.
-  add Rendering modules: TT using Data::Section? using HTML::Dom or Treebuilder?, Reaction?
-  improve auto field support 
   investigate a Catalyst View to provide better template support (like Reaction)
