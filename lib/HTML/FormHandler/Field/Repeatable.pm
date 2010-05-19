@@ -32,7 +32,7 @@ database relationship) use the 'contains' pseudo field name:
                     message => 'Not a valid tag' } ]
   );
 
-or use 'contains' withsingle fields which are compound fields:
+or use 'contains' with single fields which are compound fields:
 
   has_field 'addresses' => ( type => 'Repeatable' );
   has_field 'addresses.contains' => ( type => '+MyAddress' );
@@ -210,11 +210,22 @@ sub _result_from_input {
     $self->_set_result($result);
     # if Repeatable has array input, need to build instances
     $self->fields( [] );
+    # get primary keys
+    my @pk_elems = map { $_->accessor } grep {  $_->can('is_primary_key') && $_->is_primary_key } 
+        $self->contains->all_fields
+        if $self->contains->has_flag('is_compound');
     if ( ref $input eq 'ARRAY' ) {
         # build appropriate instance array
         my $index = 0;
         foreach my $element ( @{$input} ) {
             next unless $element;
+            if( ref $element eq 'HASH' ) {
+                foreach my $pk ( @pk_elems ) {
+                    delete $element->{$pk}
+                       if exists $element->{$pk} && (!defined $element->{$pk} || $element->{$pk} eq '');
+                }
+                next unless keys %$element;
+            }
             my $result = HTML::FormHandler::Field::Result->new(
                 name   => $index,
                 parent => $self->result
