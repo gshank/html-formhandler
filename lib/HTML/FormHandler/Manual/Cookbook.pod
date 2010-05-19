@@ -362,7 +362,7 @@ in a form you should use an 'around' method modifier and a transaction:
       my $item = $self->item;
 
       $self->schema->txn_do( sub {
-          $orig->($self, @_);
+          $self->$orig->(@_);
 
           <perform additional updates>
       });
