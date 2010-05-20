@@ -1107,7 +1107,7 @@ sub peek {
     if( $self->has_flag('has_contains') ) {
         $string .= $indent . "contains: \n";
         my $lindent = $indent . '  ';
-        foreach my $field ( $self->sorted_fields ) {
+        foreach my $field ( $self->contains->sorted_fields ) {
             $string .= $field->peek( $lindent );
         }
     }
