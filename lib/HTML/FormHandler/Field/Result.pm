@@ -34,6 +34,23 @@ sub render {
     return $self->field_def->render($self);
 }
 
+
+sub peek {
+    my ( $self, $indent ) = @_;
+    $indent ||= '';
+    my $name = $self->field_def ? $self->field_def->full_name : $self->name;
+    my $type = $self->field_def ? $self->field_def->type : 'unknown';
+    my $string = $indent . "result " . $name . "  type: " . $type . "\n";
+    if( $self->has_results ) {
+        $indent .= '  ';
+        foreach my $res ( $self->results ) {
+            $string .= $res->peek( $indent );
+        }
+    }
+    return $string;
+}
+
+
 =head1 AUTHORS
 
 HTML::FormHandler Contributors; see HTML::FormHandler

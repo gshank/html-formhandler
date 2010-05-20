@@ -1099,6 +1099,28 @@ sub apply_rendering_widgets {
 
 }
 
+sub peek {
+    my ( $self, $indent ) = @_;
+
+    $indent ||= '';
+    my $string = $indent . 'field: "' . $self->name . '"  type: ' . $self->type . "\n";
+    if( $self->has_flag('has_contains') ) {
+        $string .= $indent . "contains: \n";
+        my $lindent = $indent . '  ';
+        foreach my $field ( $self->sorted_fields ) {
+            $string .= $field->peek( $lindent );
+        }
+    }
+    if( $self->has_fields ) {
+        $string .= $indent . 'subfields of "' . $self->name . '": ' . $self->num_fields . "\n";
+        my $lindent = $indent . '  ';
+        foreach my $field ( $self->sorted_fields ) {
+            $string .= $field->peek( $lindent );
+        }
+    }
+    return $string;
+}
+
 =head1 AUTHORS
 
 HTML::FormHandler Contributors; see HTML::FormHandler

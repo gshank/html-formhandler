@@ -969,6 +969,16 @@ sub _clear_dependency {
     $self->clear_required;
 }
 
+sub peek {
+    my $self = shift;
+    my $string = "Form " . $self->name . "\n";
+    my $indent = '  ';
+    foreach my $field ( $self->sorted_fields ) {
+        $string .= $field->peek( $indent );
+    }
+    return $string;
+}
+
 sub _munge_params {
     my ( $self, $params, $attr ) = @_;
     my $_fix_params = $self->params_class->new( @{ $self->params_args || [] } );

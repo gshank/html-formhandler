@@ -151,7 +151,8 @@ sub create_element {
     my $instance = Instance->new(
         name   => 'contains',
         parent => $self,
-        form   => $self->form
+        form   => $self->form,
+        type   => 'Repeatable::Instance',
     );
     # copy the fields from this field into the instance
     $instance->add_field( $self->all_fields );
@@ -167,36 +168,27 @@ sub create_element {
 }
 
 sub clone_element {
-    my ( $self, $result, $index ) = @_;
+    my ( $self, $index ) = @_;
 
     my $field = $self->contains->clone( errors => [], error_fields => [] );
     $field->name($index);
     $field->parent($self);
-    $field->_set_result($result);
-    $field->result->_set_field_def($field);
     if ( $field->has_fields ) {
-        $self->clone_fields( $result, $field, [ $field->all_fields ] );
+        $self->clone_fields( $field, [ $field->all_fields ] );
     }
     return $field;
 }
 
 sub clone_fields {
-    my ( $self, $parent_result, $parent, $fields ) = @_;
+    my ( $self, $parent, $fields ) = @_;
     my @field_array;
     $parent->fields( [] );
     foreach my $field ( @{$fields} ) {
-        my $result = HTML::FormHandler::Field::Result->new(
-            name   => $field->name,
-            parent => $parent_result
-        );
         my $new_field = $field->clone( errors => [], error_fields => [] );
         if ( $new_field->has_fields ) {
-            $self->clone_fields( $result, $new_field, [ $new_field->all_fields ] );
+            $self->clone_fields( $new_field, [ $new_field->all_fields ] );
         }
         $new_field->parent($parent);
-        $new_field->_set_result($result);
-        $new_field->result->_set_field_def($new_field);
-        $parent_result->add_result($result);
         $parent->add_field($new_field);
     }
 }
@@ -215,11 +207,11 @@ sub _result_from_input {
         my $index = 0;
         foreach my $element ( @{$input} ) {
             next unless $element;
+            my $field = $self->clone_element( $index );
             my $result = HTML::FormHandler::Field::Result->new(
                 name   => $index,
                 parent => $self->result
             );
-            my $field = $self->clone_element( $result, $index );
             $result = $field->_result_from_input( $result, $element, 1 );
             $self->result->add_result($result);
             $self->add_field($field);
@@ -247,9 +239,9 @@ sub _result_from_object {
     $values = [$values] if ( $values && ref $values ne 'ARRAY' );
     foreach my $element ( @{$values} ) {
         next unless $element;
+        my $field = $self->clone_element( $index );
         my $result =
             HTML::FormHandler::Field::Result->new( name => $index, parent => $self->result );
-        my $field = $self->clone_element( $result, $index );
         $result = $field->_result_from_object( $result, $element );
         push @new_values, $result->value;
         $self->add_field($field);
@@ -274,9 +266,9 @@ sub _result_from_fields {
     # build empty instance
     $self->fields( [] );
     while ( $count > 0 ) {
+        my $field = $self->clone_element( $index );
         my $result =
             HTML::FormHandler::Field::Result->new( name => $index, parent => $self->result );
-        my $field = $self->clone_element( $result, $index );
         $result = $field->_result_from_fields($result);
         $result->add_result( $field->result ) if $result;
         $self->add_field($field);
@@ -290,8 +282,7 @@ sub _result_from_fields {
 
 before 'value' => sub {
     my $self = shift;
-    my @pk_elems = map { $_->accessor } grep {  $_->can('is_primary_key') && $_->is_primary_key } 
-        $self->contains->all_fields
+    my @pk_elems = map { $_->accessor } grep { $_->has_flag('is_primary_key') } $self->contains->all_fields
         if $self->contains->has_flag('is_compound');
     my $value = $self->result->value;
     my @new_value;

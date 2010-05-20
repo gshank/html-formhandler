@@ -63,6 +63,16 @@ sub fif {
     $self->form->fields_fif($self);
 }
 
+sub peek {
+    my $self = shift;
+    my $string = "Form Result " . $self->name . "\n";
+    my $indent = '  ';
+    foreach my $res ( $self->results ) {
+        $string .= $res->peek( $indent );
+    }
+    return $string;
+}
+
 =head1 AUTHORS
 
 HTML::FormHandler Contributors; see HTML::FormHandler
