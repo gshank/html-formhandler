@@ -2,6 +2,7 @@ package HTML::FormHandler::TraitFor::I18N;
 
 use HTML::FormHandler::I18N;
 use Moose::Role;
+use Moose::Util::TypeConstraints;
 
 =head3 language_handle, _build_language_handle
 
@@ -31,7 +32,7 @@ L<I18N::LangTags> may guess, with unexpected results.
 =cut 
 
 has 'language_handle' => (
-    isa => 'Locale::Maketext',
+    isa => duck_type( [ qw(maketext) ] ),
     is => 'rw',
     lazy_build => 1,
     required => 1,
@@ -51,5 +52,7 @@ sub _localize {
     $self->language_handle->maketext(@message);
 }
 
+no Moose::Role;
+no Moose::Util::TypeConstraints;
 
 1;
