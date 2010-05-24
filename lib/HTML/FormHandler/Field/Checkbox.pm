@@ -45,8 +45,8 @@ has '+input_without_param' => ( default => 0 );
 
 sub value {
     my $field = shift;
-    return $field->SUPER::value(@_) if @_;
-    my $v = $field->SUPER::value;
+    return $field->next::method(@_) if @_;
+    my $v = $field->next::method();
     return defined $v ? $v : 0;
 }
 

@@ -309,7 +309,7 @@ sub _inner_validate_field {
 sub _result_from_object {
     my ( $self, $result, $item ) = @_;
 
-    $result = $self->SUPER::_result_from_object( $result, $item );
+    $result = $self->next::method( $result, $item );
     $self->_load_options;
     return $result;
 }
@@ -317,7 +317,7 @@ sub _result_from_object {
 sub _result_from_fields {
     my ( $self, $result ) = @_;
 
-    $result = $self->SUPER::_result_from_fields($result);
+    $result = $self->next::method($result);
     $self->_load_options;
     return $result;
 }
@@ -325,7 +325,7 @@ sub _result_from_fields {
 sub _result_from_input {
     my ( $self, $result, $input, $exists ) = @_;
 
-    $result = $self->SUPER::_result_from_input( $result, $input, $exists );
+    $result = $self->next::method( $result, $input, $exists );
     $self->_load_options;
     return $result;
 }

@@ -18,7 +18,7 @@ Similar to Checkbox, except only returns values of 1 or 0.
 sub value {
     my $self = shift;
 
-    my $v = $self->SUPER::value(@_);
+    my $v = $self->next::method(@_);
 
     return $v ? 1 : 0;
 }

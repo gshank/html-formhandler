@@ -829,10 +829,13 @@ Override the model's 'update_model' method to do additional updates.
 
    sub update_model {
       my $self = shift;
-      $self->SUPER::update_model;
+      $self->next::method;
       my $event = $self->item;
       $event->update( ... );
    }
+
+You may want to use DBIC's 'txn_do' to keep updates in the same transaction.
+See L<HTML::FormHandler::Manual::Cookbook> for an example.
 
 =back
 
@@ -919,7 +922,7 @@ has lots of examples. Here is an example of a test script for a DBIC form:
    ok ($book, 'get book object from form');
    my $num_genres = $book->genres->count;
    is( $num_genres, 2, 'multiple select list updated ok');
-   is( $form->value('format'), 2, 'get value for format' );
+   is( $form->field('format')->value, 2, 'get value for format' );
 
    my $bad_1 = {
        notitle => 'not req',

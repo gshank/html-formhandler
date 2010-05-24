@@ -1,6 +1,44 @@
+use strict;
+use warnings;
 use Test::More;
 use lib 't/lib';
 
+{
+    package Test::Defaults;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo' => ( default => 'default_foo' );
+    has_field 'bar' => ( default => '' );
+    has_field 'bax' => ( default => 'default_bax' );
+}
+
+my $form = Test::Defaults->new;
+my $cmp_fif = {
+    foo => 'default_foo',
+    bar => '',
+    bax => 'default_bax',
+};
+is_deeply( $form->fif, $cmp_fif, 'fif has right defaults' );
+$form->process( params => {} );
+is_deeply( $form->fif, $cmp_fif, 'fif has right defaults' );
+
+my $init_obj = { foo => '', bar => 'testing', bax => '' };
+$form->process( init_object => $init_obj, params => {} );
+is_deeply( $form->fif, { foo => '', bar => 'testing', bax => '' }, 'object overrides defaults');
+
+{
+    package Test::DefaultsX;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo' => ( default => 'default_foo', default_over_obj => 'default_foo' );
+    has_field 'bar' => ( default => '', default_over_obj => '' );
+    has_field 'bax' => ( default => 'default_bax', default_over_obj => 'default_bax' );
+}
+$form = Test::DefaultsX->new;
+$form->process( init_object => $init_obj, params => {} );
+is_deeply( $form->fif, $cmp_fif, 'fif uses defaults overriding object' );
 
 {
    package My::Form;
@@ -14,7 +52,7 @@ use lib 't/lib';
 }
 
 
-my $form = My::Form->new( init_object => {reqname => 'Starting Perl',
+$form = My::Form->new( init_object => {reqname => 'Starting Perl',
                                        optname => 'Over Again' } );
 ok( $form, 'non-db form created OK');
 is( $form->field('optname')->value, 'Over Again', 'get right value from form');

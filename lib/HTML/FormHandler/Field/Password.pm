@@ -58,7 +58,7 @@ sub validate {
     my $self = shift;
 
     $self->noupdate(0);
-    return unless $self->SUPER::validate;
+    return unless $self->next::method;
 
     my $value = $self->value;
     if ( $self->form && $self->ne_username ) {

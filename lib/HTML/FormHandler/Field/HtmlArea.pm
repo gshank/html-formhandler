@@ -13,7 +13,7 @@ has '+widget' => ( default => 'textarea' );
 sub validate {
     my $field = shift;
 
-    return unless $field->SUPER::validate;
+    return unless $field->next::method;
 
     $tidy ||= $field->tidy;
     $tidy->clear_messages;

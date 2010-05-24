@@ -19,6 +19,7 @@ or the field's 'html' attribute.
 
 or in a form:
 
+  has_field 'explanation' => ( type => 'Display' );
   sub html_explanation {
      my ( $self, $field ) = @_;
      if( $self->something ) {
@@ -28,6 +29,13 @@ or in a form:
         return '<p>Another type of explanation...</p>';
      }
   }
+  #----
+  has_field 'username' => ( type => 'Display' );
+  sub html_username {
+      my ( $self, $field ) = @_;
+      return '<div><b>User:&nbsp;</b>' . $field->value . '</div>';
+  }
+  
 
 or set the name of the rendering method:
 
@@ -35,6 +43,9 @@ or set the name of the rendering method:
    sub my_explanation {
      ....
    }
+
+You can also supply an 'html' method with a trait or a custom field. See examples
+in t/field_traits.t and t/xt/display.t of the distribution.
 
 =cut
 
@@ -79,6 +90,19 @@ sub render {
     }
     return '';
 }
+
+sub _result_from_object {
+    my ( $self, $result, $value ) = @_;
+    $self->_set_result($result);
+    $self->value($value);
+    $result->_set_field_def($self);
+    return $result;
+}
+
+after 'clear_data' => sub {
+    my $self = shift;
+    $self->clear_value;
+};
 
 __PACKAGE__->meta->make_immutable;
 1;

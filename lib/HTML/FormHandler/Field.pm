@@ -311,6 +311,32 @@ declaration:
 
   has_field 'bax' => ( default => 'Default bax' );
 
+FormHandler has flipped back and forth a couple of times about whether a default
+specified in the has_field definition should override values provided in an
+initial item or init_object. Sometimes people want one behavior, and sometimes
+the other. Now 'default' does *not* override.
+
+If you pass in a model object with C<< item => $row >> or an initial object
+with C<< init_object => {....} >> the values in that object will be used instead
+of values provided in the field definition with 'default' or 'default_fieldname'.
+
+If you *want* values that override the item/init_object, you can use the field
+attribute 'default_over_obj'. 
+
+However you might want to consider putting your defaults into your row or init_object
+instead. 
+
+=item default_over_obj
+
+Allows setting defaults which will override values provided with an item/init_object.
+
+   has_field 'quux' => ( default_over_obj => 'default quux' );
+
+At this time there is no equivalent of 'set_default', but the type of the attribute
+is not defined so you can provide default values in a variety of other ways, 
+including providing a trait which does 'build_default_over_obj'. For examples,
+see tests in the distribution.
+
 =back
 
 =head1 Constraints and Validations

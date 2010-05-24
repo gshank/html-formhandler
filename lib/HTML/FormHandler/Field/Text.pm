@@ -34,7 +34,7 @@ has '+widget' => ( default => 'text' );
 sub validate {
     my $field = shift;
 
-    return unless $field->SUPER::validate;
+    return unless $field->next::method;
     my $value = $field->input;
     # Check for max length
     if ( my $maxlength = $field->maxlength ) {

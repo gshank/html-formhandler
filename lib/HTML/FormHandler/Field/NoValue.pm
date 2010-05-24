@@ -19,6 +19,7 @@ has 'html' => ( is => 'rw', isa => 'Str', default => '' );
 has 'value' => (
     is        => 'rw',
     predicate => 'has_value',
+    clearer   => 'clear_value',
 );
 
 sub _result_from_fields {
@@ -50,7 +51,7 @@ has '+noupdate'  => ( default => 1 );
 
 sub validate_field { }
 
-sub clear_value { }
+#sub clear_value { }
 
 sub render {
     my $self = shift;

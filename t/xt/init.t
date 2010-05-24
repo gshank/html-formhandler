@@ -21,6 +21,7 @@ use Test::More;
    has_field 'reqname' => ( required => 1, default_over_obj => 'From Attribute' ); 
    has_field 'altname' => ( traits => ['My::Default'] );
    has_field 'somename';
+   has_field 'extraname' => ( default_over_obj => '' );
 
    sub default_somename {
       my $self = shift;
@@ -28,7 +29,9 @@ use Test::More;
    }
 }
 
-my $init_object = { reqname => 'Starting Perl', optname => 'Over Again', altname => 'test' };
+my $init_object = { reqname => 'Starting Perl', optname => 'Over Again', altname => 'test',
+    extraname => 'not_empty',
+};
 my $form = My::Other::Form->new;
 ok( $form, 'get form' );
 my $params = { reqname => 'Sweet', optname => 'Charity', somename => 'Exists' };
@@ -40,6 +43,7 @@ is(  $form->field('optname')->init_value, 'Over Again', 'correct init_value no m
 is( $form->field('altname')->init_value, 'From Method', 'correct init_value from trait');
 is( $form->field('somename')->init_value, 'SN from meth', 'correct for init_obj undef');
 is( $form->field('somename')->value, 'Exists', 'correct value for init_obj undef');
+is( $form->field('extraname')->init_value, '', 'correct value for empty string default');
 
 $form = My::Other::Form->new( init_object => $init_object );
 is( $form->field('somename')->init_value, 'SN from meth', 'correct init_value new w init_obj');
