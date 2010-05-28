@@ -13,22 +13,23 @@ use_ok('HTML::FormHandler::Field::Upload');
 
     has filename => ( is => 'rw' );
     has size     => ( is => 'rw' );
-    has tempname => ( is => 'rw' );
+    has tempname => ( is => 'rw', lazy_build => 1 );
     has basename => ( is => 'ro', lazy_build => 1 );
-    has fh => (
-        is       => 'rw',
-        required => 1,
-        lazy     => 1,
-        default  => sub {
-            my $self = shift;
-            my $fh = IO::File->new( $self->tempname, IO::File::O_RDONLY );
-            unless ( defined $fh ) {
-                my $filename = $self->tempname;
-                die "Can't open '$filename': '$!'";
-            }
-            return $fh;
-        },
-    );
+    has tmpdir   => ( is => 'ro', default => '' );
+    has fh       => ( is => 'rw', required => 1, lazy_build => 1 );
+    sub _build_fh {
+        my $self = shift;
+        my $fh = IO::File->new( $self->tempname, IO::File::O_RDONLY );
+        unless ( defined $fh ) {
+            my $filename = $self->tempname;
+            die "Can't open '$filename': '$!'";
+        }
+        return $fh;
+    }
+    sub _build_tempname {
+        my $self = shift;
+        return $self->tmpdir . $self->basename;
+    }
 
     sub _build_basename {
         my $self     = shift;
@@ -91,6 +92,23 @@ $upload->size( 20000000 );
 $form->process( params => { file => $upload } );
 ok( !$form->validated, 'form did not validate' );
 
+# file exists, is empty
+open ( my $fh, '>', 'temp.txt' );
+$form->process( params => { file => 'temp.txt' } );
+my @errors = $form->errors;
+is( $errors[0], 'File uploaded is empty', 'empty file fails' );
 
+# file exists, is not empty
+print {$fh} 'testing';
+close( $fh );
+$form->process( params => { file => 'temp.txt' } );
+ok( $form->validated, 'form validated' );
+
+# file doesn't exist 
+$form->process( params => { file => 'not_there.txt' } );
+@errors = $form->errors;
+is( $errors[0], 'File not found for upload field', 'error when file does not exist' );
+
+unlink('temp.txt');
 
 done_testing;

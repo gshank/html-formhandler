@@ -13,8 +13,11 @@ HTML::FormHandler::Field::Upload - File upload field
 
 =head1 DESCRIPTION
 
-This field is designed to be used with L<Catalyst::Request::Upload>.
-Validates that the input is an uploaded file.
+This field is designed to be used with a blessed object with a 'size' method,
+such as L<Catalyst::Request::Upload>, or a filehandle/file name (something
+on which the file test operator -s will work).
+Validates that the file is not empty and is within the 'min_size'
+and 'max_size' limits (limits are in bytes).
 A form containing this field must have the enctype set.
 
     package My::Form::Upload;
@@ -23,7 +26,7 @@ A form containing this field must have the enctype set.
 
     has '+enctype' => ( default => 'multipart/form-data');
 
-    has_field 'file' => ( type => 'Upload' );
+    has_field 'file' => ( type => 'Upload', max_size => '2000000' );
     has_field 'submit' => ( type => 'Submit', value => 'Upload' );
 
 In your controller:
@@ -51,16 +54,23 @@ sub validate {
     my $self   = shift;
 
     my $upload = $self->value;
-    blessed($upload) and
-        $upload->size > 0 or
+    my $size = 0;
+    if( blessed $upload && $upload->can('size') ) {
+        $size = $upload->size;
+    }
+    else {
+        $size = -s $upload;
+        unless( defined $size ) {
+            return $self->add_error('File not found for upload field');
+        }
+    }
+    $size > 0 or
         return $self->add_error('File uploaded is empty');
 
-    my $size = $upload->size;
-
-    $upload->size >= $self->min_size or
+    $size >= $self->min_size or
         return $self->add_error( 'File is too small (< [_1] bytes)', $self->min_size );
 
-    $upload->size <= $self->max_size or
+    $size <= $self->max_size or
         return $self->add_error( 'File is too big (> [_1] bytes)', $self->max_size );
 }
 
