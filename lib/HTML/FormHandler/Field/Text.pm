@@ -12,22 +12,6 @@ has 'maxlength_message' => ( isa => 'Str', is => 'rw',
 has 'minlength' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has 'minlength_message' => ( isa => 'Str', is => 'rw', 
     default => 'Field must be at least [quant,_1,character]. You entered [_2]' );
-has 'min_length' => (
-    isa     => 'Int|Undef',
-    is      => 'rw',
-    default => '0',
-    reader  => '_min_length_r',
-    writer  => '_min_length_w'
-);    # for backcompat
-
-sub min_length {
-    my ( $self, $value ) = @_;
-    warn "Please use the 'minlength' attribute - 'min_length' is deprecated";
-    if ($value) {
-        $self->_min_length_w($value);
-    }
-    return $self->_min_length_r;
-}
 
 has '+widget' => ( default => 'text' );
 
@@ -44,7 +28,7 @@ sub validate {
     }
 
     # Check for min length
-    if ( my $minlength = $field->minlength || $field->_min_length_r ) {
+    if ( my $minlength = $field->minlength ) {
         return $field->add_error(
             $field->minlength_message,
             $minlength, length $value, $field->loc_label )
