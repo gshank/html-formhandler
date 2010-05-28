@@ -1076,7 +1076,9 @@ sub has_some_value {
         }
         return 0;
     }
-    return blessed($x);    # true if blessed, otherwise false
+    return 1 if blessed($x);    # true if blessed, otherwise false
+    return 1 if ref( $x );
+    return;
 }
 
 sub input_defined {

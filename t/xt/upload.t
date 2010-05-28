@@ -76,7 +76,9 @@ use_ok('HTML::FormHandler::Field::Upload');
     has_field 'submit' => ( type => 'Submit', value => 'Upload' );
 }
 
+
 my $form = My::Form::Upload->new;
+
 ok( $form, 'created form with upload field' );
 
 is( $form->field('file')->render, '
@@ -93,15 +95,17 @@ $form->process( params => { file => $upload } );
 ok( !$form->validated, 'form did not validate' );
 
 # file exists, is empty
+`touch temp.txt`;
 open ( my $fh, '>', 'temp.txt' );
-$form->process( params => { file => 'temp.txt' } );
+$form->process( params => { file => $fh } );
 my @errors = $form->errors;
 is( $errors[0], 'File uploaded is empty', 'empty file fails' );
 
 # file exists, is not empty
-print {$fh} 'testing';
+print {$fh} "testing\n";
 close( $fh );
-$form->process( params => { file => 'temp.txt' } );
+open ( $fh, '<', 'temp.txt' );
+$form->process( params => { file => $fh } );
 ok( $form->validated, 'form validated' );
 
 # file doesn't exist 

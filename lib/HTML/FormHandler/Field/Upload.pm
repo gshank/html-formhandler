@@ -14,8 +14,7 @@ HTML::FormHandler::Field::Upload - File upload field
 =head1 DESCRIPTION
 
 This field is designed to be used with a blessed object with a 'size' method,
-such as L<Catalyst::Request::Upload>, or a filehandle/file name (something
-on which the file test operator -s will work).
+such as L<Catalyst::Request::Upload>, or a filehandle.
 Validates that the file is not empty and is within the 'min_size'
 and 'max_size' limits (limits are in bytes).
 A form containing this field must have the enctype set.
@@ -58,11 +57,11 @@ sub validate {
     if( blessed $upload && $upload->can('size') ) {
         $size = $upload->size;
     }
-    else {
+    elsif( is_real_fh( $upload ) ) {
         $size = -s $upload;
-        unless( defined $size ) {
-            return $self->add_error('File not found for upload field');
-        }
+    }
+    else {
+        return $self->add_error('File not found for upload field');
     }
     $size > 0 or
         return $self->add_error('File uploaded is empty');
@@ -72,6 +71,26 @@ sub validate {
 
     $size <= $self->max_size or
         return $self->add_error( 'File is too big (> [_1] bytes)', $self->max_size );
+}
+
+# stolen from Plack::Util::is_real_fh
+sub is_real_fh {
+    my $fh = shift;
+
+    my $reftype = Scalar::Util::reftype($fh) or return;
+    if( $reftype eq 'IO' 
+            or $reftype eq 'GLOB' && *{$fh}{IO} ){
+        my $m_fileno = $fh->fileno;
+        return unless defined $m_fileno;
+        return unless $m_fileno >= 0;
+        my $f_fileno = fileno($fh);
+        return unless defined $f_fileno;
+        return unless $f_fileno >= 0;
+        return 1;
+    }
+    else {
+        return;
+    }
 }
 
 __PACKAGE__->meta->make_immutable;
