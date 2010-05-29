@@ -49,7 +49,8 @@ sub _build_language_handle {
 
 sub _localize {
     my ($self, @message) = @_;
-    $self->language_handle->maketext(@message);
+    my $message = $self->language_handle->maketext(@message);
+    return $message;
 }
 
 no Moose::Role;

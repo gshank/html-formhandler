@@ -12,6 +12,7 @@ with 'MooseX::Traits';
 use Carp;
 use Class::MOP;
 use HTML::FormHandler::Result;
+use Try::Tiny;
 
 use 5.008;
 
@@ -479,6 +480,10 @@ more than one field.
 
 =head2 Accessing errors
 
+Set an error in a field with C<< $field->add_error('some error string'); >>.
+Set a form error not tied to a specific field with
+C<< $self->add_form_error('another error string'); >>.
+
   has_errors - returns true or false
   error_fields - returns list of fields with errors
   errors - returns array of error messages for the entire form
@@ -625,7 +630,9 @@ has 'result' => (
         'input',      '_set_input', '_clear_input', 'has_input',
         'value',      '_set_value', '_clear_value', 'has_value',
         'add_result', 'results',    'validated',    'ran_validation',
-        'is_valid'
+        'is_valid',
+        'form_errors', 'all_form_errors', 'push_form_errors', 'clear_form_errors',
+        'has_form_errors', 'num_form_errors',
     ],
 );
 
@@ -807,7 +814,9 @@ sub error_field_names {
 sub errors {
     my $self         = shift;
     my @error_fields = $self->error_fields;
-    return map { $_->all_errors } @error_fields;
+    my @errors = $self->all_form_errors;
+    push @errors,  map { $_->all_errors } @error_fields;
+    return @errors;
 }
 
 sub uuid {
@@ -835,8 +844,14 @@ sub validate_form {
 
 sub validate { 1 }
 
-sub has_errors { shift->has_error_fields }
-sub num_errors { shift->num_error_fields }
+sub has_errors { 
+    my $self = shift;
+    return $self->has_error_fields || $self->has_form_errors;
+}
+sub num_errors { 
+    my $self = shift;
+    return $self->num_error_fields + $self->num_form_errors;
+}
 
 sub after_update_model {
     my $self = shift;
@@ -996,6 +1011,23 @@ after 'get_error_fields' => sub {
        $self->result->push_errors($err_res->all_errors);
    }
 };
+
+sub add_form_error {
+    my ( $self, @message ) = @_;
+
+    unless ( defined $message[0] ) {
+        @message = ('form is invalid');
+    }
+    my $out;
+    try { 
+        $out = $self->_localize(@message); 
+    }
+    catch {
+        die "Error occurred localizing error message for " . $self->name . ".  $_";
+    };
+    $self->push_form_errors($out);
+    return;
+}
 
 sub apply_field_traits {
     my $self = shift; 

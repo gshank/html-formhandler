@@ -56,6 +56,22 @@ has 'form' => (
     #  handles => ['render' ]
 );
 
+has 'form_errors' => (
+    traits     => ['Array'],
+    is         => 'rw',
+    isa        => 'ArrayRef[Str]',
+    default    => sub { [] },
+    handles   => {
+        all_form_errors  => 'elements',
+        push_form_errors => 'push',
+        num_form_errors => 'count',
+        has_form_errors => 'count',
+        clear_form_errors => 'clear',
+    }
+);
+
+sub validated { !$_[0]->has_error_results && $_[0]->has_input && !$_[0]->has_form_errors }
+
 has 'ran_validation' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub fif {
