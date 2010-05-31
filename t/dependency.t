@@ -74,7 +74,7 @@ foreach my $field (@error_fields)
     has 'dog' => ( is => 'ro' );
 }
 
-my $form = Test::Form->new;
+$form = Test::Form->new;
 my $obj = Test::Obj->new( fox => 'test' );
 $form->process( params => { foo => $obj } );
 ok( !$form->validated, 'form did not validate' );
