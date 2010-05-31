@@ -482,6 +482,148 @@ And here's where the coderef is passed in to the form.
     }
     1;
 
+=head2 Example of a form with custom database interface 
+
+The default DBIC model requires that the form structure match the database
+structure. If that doesn't work - you need to present the form in a different
+way - you may need to fudge it by creating your own 'init_object' and doing
+the database updates in the 'update_model' method.
+
+Here is a working example for a 'family' object (equivalent to a 'user'
+record') that has a relationship to permission type roles in a relationship
+'user_roles'.
+
+    package My::Form::AdminRoles;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has 'schema' => ( is => 'ro', required => 1 );  # Note 1
+    has '+widget_wrapper' => ( default => 'None' ); # Note 2
+
+    has_field 'admin_roles' => ( type => 'Repeatable' ); # Note 3
+    has_field 'admin_roles.family'    => ( type => 'Hidden' ); # Note 4
+    has_field 'admin_roles.family_id' => ( type => 'PrimaryKey' ); # Note 5
+    has_field 'admin_roles.admin_flag' => ( type => 'Boolean', label => 'Admin' );
+
+    # Note 6
+    sub init_object {
+        my $self = shift;
+
+        my @is_admin;
+        my @is_not_admin;
+        my $active_families = $self->schema->resultset('Family')->search( { active => 1 } );
+        while ( my $fam = $active_families->next ) {
+            my $admin_flag = 
+                 $fam->search_related('user_roles', { role_id => 2 } )->count > 0 ? 1 : 0;
+            my $family_name = $fam->name1 . ", " . $fam->name2;
+            my $elem =  { family => $family_name, family_id => $fam->family_id, 
+                 admin_flag => $admin_flag };
+            if( $admin_flag ) {
+                push @is_admin, $elem;
+            }
+            else {
+                push @is_not_admin, $elem;
+            }
+        } 
+        # Note 7
+        # sort into admin flag first, then family_name
+        @is_admin = sort { $a->{family} cmp $b->{family} } @is_admin;
+        @is_not_admin = sort { $a->{family} cmp $b->{family} } @is_not_admin;
+        return { admin_roles => [@is_admin, @is_not_admin] };
+    }
+
+    # Note 8
+    sub update_model {
+        my $self = shift;
+
+        my $families = $self->schema->resultset('Family');
+        my $family_roles = $self->value->{admin_roles};
+        foreach my $elem ( @{$family_roles} ) {
+            my $fam = $families->find( $elem->{family_id} );
+            my $has_admin_flag = $fam->search_related('user_roles', { role_id => 2 } )->count > 0;
+            if( $elem->{admin_flag} == 1 && !$has_admin_flag ) {
+                $fam->create_related('user_roles', { role_id => 2 } );
+            }
+            elsif( $elem->{admin_flag} == 0 && $has_admin_flag ) {
+                $fam->delete_related('user_roles', { role_id => 2 } );
+            }
+        }  
+    }
+
+Note 1: This form creates its own 'schema' attribute. You could inherit from
+L<HTML::FormHandler::Model::DBIC>, but you won't be using its update code, so
+it wouldn't add much.
+
+Note 2: The form will be displayed with a template that uses 'bare' form input
+fields, so 'widget_wrapper' is set to 'None' to skip wrapping the form inputs with
+divs or table elements.
+
+Note 3: This form consists of an array of elements, so there will be a single
+Repeatable form field with subfields. If you wanted to use automatic rendering, you would 
+also need to create a 'submit' field, but in this case it will just be done 
+in the template.
+
+Note 4: This field is actually going to be used for display purposes only, but it's
+a hidden field because otherwise the information would be lost when displaying
+the form from parameters. For this case there is no real 'validation' so it
+might not be necessary, but it would be required if the form needed to be
+re-displayed with error messages.
+
+Note 5: The 'family_id' is the primary key field, necessary for updating the
+correct records.
+
+Note 6: 'init_object' method: This is where the initial object is created, which 
+takes the place of a database row for form creation.
+
+Note 7: The entries with the admin flag turned on are sorted into the beginning
+of the list. This is entirely a user interface choice.
+
+Note 8: 'update_model' method: This is where the database updates are performed.
+
+
+The Template Toolkit template for this form:
+
+    <h1>Update admin status for members</h1>
+    <form name="adminroles" method="POST" action="[% c.uri_for('admin_roles') %]">
+      <input class="submit" name="submit" value="Save" type="submit">
+    <table border="1">
+      <th>Family</th><th>Admin</th>
+      [% FOREACH f IN form.field('admin_roles').sorted_fields %]
+         <tr>
+         <td><b>[% f.field('family').fif %]</b>[% f.field('family').render %]
+         [% f.field('family_id').render %]</td><td> [% f.field('admin_flag').render %]</td>
+         </tr>
+      [% END %]
+    </table> 
+      <input class="submit" name="submit" value="Save" type="submit">
+    </form
+
+The form is rendered in a simple table, with each field rendered using the
+automatically installed rendering widgets with no wrapper (widget_wrapper => 'None').
+There are two hidden fields here, so what is actually seen is two columns, one with
+the user (family) name, the other with a checkbox showing whether the user has
+admin status. Notice that the 'family' field information is rendered twice: once
+as a hidden field that will allow it to be preserved in params, once as a label.
+
+The Catalyst controller action to execute the form:
+
+    sub admin_roles : Local {
+        my ( $self, $c ) = @_;
+
+        my $schema = $c->model('DB')->schema;
+        my $form = My::Form::AdminRoles->new( schema => $schema );
+        $form->process( params => $c->req->params );
+        # re-process if form validated to reload from db and re-sort
+        $form->process( params => {}) if $form->validated;
+        $c->stash( form => $form, template => 'admin/admin_roles.tt' );
+        return;
+    }
+
+Rather than redirect to some other page after saving the form, the form is redisplayed. 
+If the form has been validated (i.e. the 'update_model' method has been run), the 
+'process' call is run again in order to re-sort the displayed list with admin users at 
+the top. That could have also been done in the 'update_model' method.
+
 =head1 AUTHOR
 
 Gerda Shank, gshank@cpan.org
