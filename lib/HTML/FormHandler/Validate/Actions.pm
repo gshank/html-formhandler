@@ -144,6 +144,30 @@ sub _apply_actions {
     }
 }
 
+# this is here because it needs to be in some role that is included
+# in both HFH and HFH::Field. If a better place shows up, move it.
+sub has_some_value {
+    my $x = shift;
+
+    return unless defined $x;
+    return $x =~ /\S/ if !ref $x;
+    if ( ref $x eq 'ARRAY' ) {
+        for my $elem (@$x) {
+            return 1 if has_some_value($elem);
+        }
+        return 0;
+    }
+    if ( ref $x eq 'HASH' ) {
+        for my $key ( keys %$x ) {
+            return 1 if has_some_value( $x->{$key} );
+        }
+        return 0;
+    }
+    return 1 if blessed($x);    # true if blessed, otherwise false
+    return 1 if ref( $x );
+    return;
+}
+
 =head1 AUTHORS
 
 HTML::FormHandler Contributors; see HTML::FormHandler

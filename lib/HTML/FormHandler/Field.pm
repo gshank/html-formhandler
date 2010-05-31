@@ -1059,28 +1059,6 @@ sub value_changed {
 
 sub required_text { shift->required ? 'required' : 'optional' }
 
-sub has_some_value {
-    my $x = shift;
-
-    return unless defined $x;
-    return $x =~ /\S/ if !ref $x;
-    if ( ref $x eq 'ARRAY' ) {
-        for my $elem (@$x) {
-            return 1 if has_some_value($elem);
-        }
-        return 0;
-    }
-    if ( ref $x eq 'HASH' ) {
-        for my $key ( keys %$x ) {
-            return 1 if has_some_value( $x->{$key} );
-        }
-        return 0;
-    }
-    return 1 if blessed($x);    # true if blessed, otherwise false
-    return 1 if ref( $x );
-    return;
-}
-
 sub input_defined {
     my ($self) = @_;
     return unless $self->has_input;

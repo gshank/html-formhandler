@@ -49,4 +49,36 @@ foreach my $field (@error_fields)
    is( $field->errors->[0], $field->label . ' field is required', "required field: $name");
 }
 
+{
+    package Test::Form;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo';
+    has_field 'bar';
+    has_field 'baz';
+
+   has '+dependency' => ( default => sub {
+         [
+            [ 'foo', 'bar' ],
+         ]
+      }
+   );
+
+}
+
+{
+    package Test::Obj;
+    use Moose;
+    has 'fox' => ( is => 'ro' );
+    has 'dog' => ( is => 'ro' );
+}
+
+my $form = Test::Form->new;
+my $obj = Test::Obj->new( fox => 'test' );
+$form->process( params => { foo => $obj } );
+ok( !$form->validated, 'form did not validate' );
+my @errors = $form->errors;
+is( $errors[0], 'Bar field is required', 'dependency error is correct');
+
 done_testing;

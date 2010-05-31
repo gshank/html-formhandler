@@ -958,13 +958,7 @@ sub _set_dependency {
             # This is to allow requiring a field when a boolean is true.
             my $field = $self->field($name);
             next if $self->field($name)->type eq 'Boolean' && $value == 0;
-            if ( ref $value ) {
-                # at least one value is non-blank
-                next unless grep { /\S/ } @$value;
-            }
-            else {
-                next unless $value =~ /\S/;
-            }
+            next unless has_some_value($value);
             # one field was found non-blank, so set all to required
             for (@$group) {
                 my $field = $self->field($_);
