@@ -18,6 +18,10 @@ a form with C<< $form->render >>.
 
 Uses the 'submit' widget.
 
+If you have multiple submit buttons, currently the only way to test
+which one has been clicked is with C<< $field->intput >>. The 'value'
+attribute is used for the HTML input field 'value'. 
+
 =cut
 
 has '+value'  => ( default => 'Save' );
