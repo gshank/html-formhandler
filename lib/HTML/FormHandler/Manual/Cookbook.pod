@@ -624,11 +624,51 @@ If the form has been validated (i.e. the 'update_model' method has been run), th
 'process' call is run again in order to re-sort the displayed list with admin users at 
 the top. That could have also been done in the 'update_model' method.
 
+=head2 A form that takes a resultset, with custom update_model
+
+For updating a Repeatable field that is filled from a Resultset, and not a 
+relationship on a single row. Creates a 'resultset' attribute to pass in
+a resultset. Massages the data into an array that's pointed to by an
+'employers' hash key, and does the reverse in the 'update_model' method.
+Yes, it's a kludge, but it could be worse. If you want to impement a more
+general solution, patches welcome.
+
+    package Test::Resultset;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler::Model::DBIC';
+
+    has '+item_class' => ( default => 'Employer' );
+    has 'resultset' => ( isa => 'DBIx::Class::ResultSet', is => 'rw', trigger => sub { shift->set_resultset(@_) } );
+    sub set_resultset {
+        my ( $self, $resultset ) = @_;
+        $self->schema( $resultset->result_source->schema );
+    }
+    sub init_object {
+        my $self = shift;
+        my $rows = [$self->resultset->all];
+        return { employers => $rows };
+    }
+    has_field 'employers' => ( type => 'Repeatable' );
+    has_field 'employers.employer_id' => ( type => 'PrimaryKey' );
+    has_field 'employers.name';
+    has_field 'employers.category';
+    has_field 'employers.country';
+
+    sub update_model {
+        my $self = shift;
+        my $values = $self->values->{employers};
+        foreach my $row (@$values) {
+            delete $row->{employer_id} unless defined $row->{employer_id};
+            $self->resultset->update_or_create( $row );
+        }
+    }
+
+
 =head1 AUTHOR
 
 Gerda Shank, gshank@cpan.org
 
-=head1 COPYRIGHT
+=head1 LICENSE
 
 This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
