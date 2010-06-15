@@ -214,6 +214,7 @@ sub BUILD {
     my $self = shift;
 
     $self->options_from('build') if $self->options && $self->has_options;
+    $self->input_without_param; # vivify
 }
 
 has 'set_options' => ( isa => 'Str', is => 'ro');
@@ -255,6 +256,17 @@ has 'auto_widget_size' => ( isa => 'Int',       is => 'rw', default => '0' );
 has 'sort_column'      => ( isa => 'Str',       is => 'rw' );
 has '+widget'          => ( default => 'select' );
 has 'empty_select'     => ( isa => 'Str',       is => 'rw' );
+has '+input_without_param' => ( lazy => 1, builder => 'build_input_without_param' );
+sub build_input_without_param {
+    my $self = shift;
+    if( $self->multiple ) {
+        $self->not_nullable(1);
+        return [];
+    }
+    else {
+        return '';
+    }
+}
 
 sub select_widget {
     my $field = shift;
@@ -372,6 +384,14 @@ sub _load_options {
 }
 
 sub sort_options { shift; return shift; }
+
+before 'value' => sub {
+    my $self = shift;
+    my $value = $self->result->value;
+    if( $self->multiple && (!defined $value || $value eq '') ) {
+        $self->_set_value([]);
+    }
+};
 
 =head1 AUTHORS
 

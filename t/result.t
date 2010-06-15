@@ -115,7 +115,7 @@ my $values = {
    'my_selected' => 0,
    'optname' => 'Over Again',
    'reqname' => 'Starting Perl',
-   'somename' => undef
+   'somename' => undef,
 };
 is_deeply( $result->value, $values, 'get right values from form' );
 
@@ -123,6 +123,7 @@ $init_object->{my_selected} = 0;
 $init_object->{must_select} = 1;
 $result = $form->run($init_object);
 ok( $result->validated, 'form validates with params' );
+$init_object->{fruit} = undef;
 is_deeply( $result->value, $init_object, 'get right values from result' );
 
 ok( !$form->has_value, 'Form value cleared' );

@@ -592,7 +592,7 @@ has 'input_without_param' => (
     is        => 'rw',
     predicate => 'has_input_without_param'
 );
-has 'not_nullable' => ( is => 'ro', isa => 'Bool' );
+has 'not_nullable' => ( is => 'rw', isa => 'Bool' );
 has 'init_value' => ( is => 'rw', clearer => 'clear_init_value' );
 has 'default' => ( is => 'rw' );
 has 'default_over_obj' => ( is => 'rw', builder => 'build_default_over_obj' );

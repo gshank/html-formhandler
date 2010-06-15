@@ -115,6 +115,7 @@ $fif{must_select} = 1;
 ok( $form->process($init_object), 'form validates with params' );
 #my %init_obj_value = (%$init_object, fruit => undef );
 #is_deeply( $form->value, \%init_obj_value, 'value init obj' );
+$init_object->{fruit} = undef;
 is_deeply( $form->value, $init_object, 'value init obj' );
 is_deeply( $form->fif, \%fif, 'get right fif with init_object' );
 
