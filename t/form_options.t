@@ -88,7 +88,6 @@ is_deeply( $field_options, $build_attr_options,
 my $params = {
    fruit => 2,
    vegetables => [2,4],
-   empty => '',
 };
 
 is( $form->field('fruit')->value, 2, 'initial value ok');
@@ -111,7 +110,7 @@ ok( $form->validated, 'form validated' );
 is( $form->field('fruit')->value, 2, 'fruit value is correct');
 is_deeply( $form->field('vegetables')->value, [2,4], 'vegetables value is correct');
 
-is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], test_field => '', empty => '', build_attr => '' }, 
+is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], test_field => '', build_attr => '' }, 
     'fif is correct');
 is_deeply( $form->values, { fruit => 2, vegetables => [2, 4], empty => [], build_attr => undef }, 
     'values are correct');

@@ -15,8 +15,16 @@ This is a field that includes a list of possible valid options.
 This can be used for select and multiple-select fields.
 Widget type is 'select'.
 
+Because select lists and checkbox_groups do not return an HTTP
+parameter when the entire list is unselected, the Select field
+must assume that the lack of a param means unselection. So to
+avoid setting a Select field, it must be set to inactive, not
+merely not included in the HTML for a form.
+
 This field type can also be used for fields that use the
-'radio_group' widget.
+'radio_group' widget, and the 'checkbox_group' widget (for
+selects with multiple flag turned on, or that use the Multiple
+field).
 
 The 'options' array can come from four different places.
 The options attribute itself, either declaratively or using a

@@ -6,9 +6,6 @@ use namespace::autoclean;
 with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
 with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
-has 'input_without_param' => ( is => 'ro', default => sub {[]} );
-has 'not_nullable' => ( is => 'ro', default => 1 );
-
 sub render {
     my $self = shift;
     my $result = shift || $self->result;
