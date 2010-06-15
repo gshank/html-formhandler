@@ -42,9 +42,14 @@ my $init_object = { foo => 'one-1-two-2-three-3', bar => 'xxyyzz' };
 $form->process( init_object => $init_object, params => {} );
 is_deeply( $form->value, { foo => { one => 1, two => 2, three => 3 },
         bar => 'xxyyzz' }, 'value is correct?' );
-$form->process( params => { bar => 'aabbcc', 'foo.one' => 'x', 'foo.two' => 'xx', 'foo.three' => 'xxx' } );
+is_deeply( $form->fif, { 'foo.one' => 1, 'foo.two' => 2, 'foo.three' => 3, bar => 'xxyyzz' }, 
+    'fif is correct' );  
+
+my $fif =  { bar => 'aabbcc', 'foo.one' => 'x', 'foo.two' => 'xx', 'foo.three' => 'xxx' };
+$form->process( params => $fif ); 
 ok( $form->validated, 'form validated' );
 is_deeply( $form->value, { bar => 'aabbcc', foo => 'one-x-two-xx-three-xxx' }, 'right value' );
+is_deeply( $form->fif, $fif, 'right fif' ); 
 is( $form->field('foo.one')->fif, 'x', 'correct fif' );
 is( $form->field('foo')->value, 'one-x-two-xx-three-xxx', 'right value for foo field' );
 
@@ -70,7 +75,6 @@ is( $form->field('foo')->value, 'one-x-two-xx-three-xxx', 'right value for foo f
 
 $form = Test::Deflate->new;
 ok( $form, 'form builds' );
-
 is( $form->field('foo')->value, 'deflated value', 'default values should be deflated too' );
 
 
@@ -82,6 +86,7 @@ is( $form->field('foo')->value, 'deflated value', 'default values should be defl
     has_field 'bullets' => ( type => 'Text', 
         apply => [ { transform => \&string_to_array } ],
         deflation => \&array_to_string,
+        deflate_to => 'fif',
     );
     sub array_to_string {
        my ( $value ) = @_;
@@ -100,15 +105,12 @@ is( $form->field('foo')->value, 'deflated value', 'default values should be defl
 }
 
 $init_object = { bullets => [{ text => 'one'}, { text => 'two' }, { text => 'three'}] }; 
-my $fif = { bullets => 'one;two;three' };
+$fif = { bullets => 'one;two;three' };
 $form = Test::Deflate2->new;
 ok( $form, 'form built');
 $form->process( init_object => $init_object, params => {} );
 is_deeply( $form->fif, $fif, 'right fif' );
-TODO: {
-    local $TODO = 're-inflation to value not working';
-    is_deeply( $form->value, $init_object, 'right value' );
-};
+is_deeply( $form->value, $init_object, 'right value' );
 
 $form->process( params => $fif );
 is_deeply( $form->fif, $fif, 'right fif' );

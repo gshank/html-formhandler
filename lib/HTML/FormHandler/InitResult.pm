@@ -116,7 +116,7 @@ sub _get_value {
     else {
         return;
     }
-    if( $field->_can_deflate ) {
+    if( $field->_can_deflate && $field->deflate_to eq 'value' ) {
         @values = $field->_apply_deflation(@values);
     }
     my $value = @values > 1 ? \@values : shift @values;

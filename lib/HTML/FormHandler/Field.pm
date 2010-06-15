@@ -163,7 +163,9 @@ hash. Validation and constraints act on 'value'.
 =item fif
 
 Values used to fill in the form. Read only. Use a deflation to get
-from 'value' to 'fif' if the an inflator was used.
+from 'value' to 'fif' if an inflator was used. (Deflations can be
+done in two different places. Set 'deflate_to' => 'fif' to deflate
+in fillinform'.)
 
    [% form.field('title').fif %]
 
@@ -556,9 +558,14 @@ string and thus needs access to 'self', you would need to use the deflate method
 since the deflation coderef is only passed the current value of the field
 
 Normally if you have a deflation, you will need a matching inflation, which can be
-supplied via a 'transform' action. When deflating/inflating values, the 'value' hash
-only contains reliably inflated values after validation has been performed, since
+supplied via a 'transform' action. When using a 'transform', the 'value' hash only
+contains reliably inflated values after validation has been performed, since
 inflation is performed at validation time.
+
+Deflation can be done at two different places: transforming the value that's saved
+from the initial_object/item, or when retrieving the 'fif' (fill-in-form) value that's
+displayed in the HTML form. The default is C<< deflate_to => 'value' >>. To deflate
+when getting the 'fif' value set 'deflate_to' to 'fif'. (See t/deflate.t for examples.)
 
 =head1 Processing and validating the field
 
@@ -700,7 +707,12 @@ sub fif {
         return defined $lresult->input ? $lresult->input : '';
     }
     if ( defined $lresult->value ) {
-        return $lresult->value;
+        if( $self->deflate_to eq 'fif' && $self->_can_deflate ) {
+            return $self->_apply_deflation($lresult->value);
+        }
+        else {
+            return $lresult->value;
+        }
     }
     elsif ( defined $self->value ) {
         # this is because checkboxes and submit buttons have their own 'value'
@@ -864,6 +876,8 @@ has 'deflation' => (
     is        => 'rw',
     predicate => 'has_deflation',
 );
+# deflate_to either 'value' or 'fif'
+has 'deflate_to' => ( is => 'rw', default => 'value' );
 has 'trim' => (
     is      => 'rw',
     default => sub { { transform => \&default_trim } }
@@ -944,7 +958,7 @@ sub _result_from_fields {
     my ( $self, $result ) = @_;
 
     if ( my @values = $self->get_default_value ) {
-        if ( $self->_can_deflate ) {
+        if ( $self->_can_deflate && $self->deflate_to eq 'value' ) {
             @values = $self->_apply_deflation(@values);
         }
         my $value = @values > 1 ? \@values : shift @values;
