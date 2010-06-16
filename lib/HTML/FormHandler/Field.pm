@@ -227,7 +227,9 @@ Compound fields will have an array of errors from the subfields.
    title       - Place to put title for field.
    style       - Place to put field style string
    css_class   - For a css class name (string; could be several classes,
-                 separated by spaces or commas)
+                 separated by spaces or commas). Used in wrapper for input field.
+   input_class - class attribute on the 'input' field. applied with
+                 '_apply_html_attribute' along with disabled/readonly/javascript
    id          - Useful for javascript (default is html_name. to prefix with
                  form name, use 'html_prefix' in your form)
    disabled    - for the HTML flag
@@ -761,6 +763,7 @@ sub loc_label {
 has 'title'     => ( isa => 'Str',               is => 'rw' );
 has 'style'     => ( isa => 'Str',               is => 'rw' );
 has 'css_class' => ( isa => 'Str',               is => 'rw' );
+has 'input_class' => ( isa => 'Str',             is => 'rw' );
 has 'form'      => ( 
     isa => 'HTML::FormHandler',
     is => 'rw',

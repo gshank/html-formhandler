@@ -94,6 +94,12 @@ ok( $form->field('bax')->value, 'default_bax' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
     with 'HTML::FormHandler::Model::Object';
+
+    sub BUILD {
+        my $self = shift;
+$DB::single=1;
+        my $var = 'test';
+    }
     has_field 'foo';
     has_field 'bar';
     has_field 'baz';
@@ -107,7 +113,9 @@ ok( $form->field('bax')->value, 'default_bax' );
     );
 
     sub init_object {
-        { bar => 'initbar' }
+        my $self = shift;
+$DB::single=1;
+        return { bar => 'initbar' };
     }
 
 }

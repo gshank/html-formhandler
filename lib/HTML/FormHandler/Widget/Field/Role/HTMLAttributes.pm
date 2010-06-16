@@ -10,6 +10,9 @@ sub _add_html_attributes {
         $output .= ( $self->$attr ? qq{ $attr="} . $self->$attr . '"' : '' );
     }
     $output .= ($self->javascript ? ' ' . $self->javascript : '');
+    if( $self->input_class ) {
+        $output .= ' class="' . $self->input_class . '"';
+    }
     return $output;
 }
 

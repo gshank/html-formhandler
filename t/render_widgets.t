@@ -18,6 +18,7 @@ use HTML::FormHandler::Field::Text;
         size  => 20,
         label => 'TEST',
         id    => 'f99',
+        input_class => 'test123',
     );
     has_field 'number';
     has_field 'fruit'      => ( type => 'Select' );
@@ -152,7 +153,7 @@ my $output1 = $form->field('test_field')->render;
 is(
     $output1,
     '
-<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" /></div>
+<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" class="test123" /></div>
 ',
     'output from text field'
 );

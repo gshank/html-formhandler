@@ -13,6 +13,7 @@ use HTML::FormHandler::Field::Text;
 
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
+               input_class => 'test123',
                size => 20,
                label => 'TEST',
                id    => 'f99',
@@ -104,7 +105,7 @@ is( $form->render_field( $form->field('number') ),
 my $output1 = $form->render_field( $form->field('test_field') );
 is( $output1,
    '
-<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" /></div>
+<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" class="test123" /></div>
 ',
    'output from text field');
 

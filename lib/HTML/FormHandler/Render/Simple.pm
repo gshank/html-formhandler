@@ -412,6 +412,9 @@ sub _add_html_attributes {
         $output .= ( $field->$attr ? qq{ $attr="} . $field->$attr . '"' : '' );
     }
     $output .= ($field->javascript ? ' ' . $field->javascript : '');
+    if( $field->input_class ) {
+        $output .= ' class="' . $field->input_class . '"';
+    }
     return $output;
 }
 
