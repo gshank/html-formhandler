@@ -3,7 +3,8 @@ use warnings;
 
 use Test::More;
 
-$ENV{LANG} = 'en_us'; # in case user has set LANG to de_de
+use HTML::FormHandler::I18N;
+$ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
 
 #
 # Boolean

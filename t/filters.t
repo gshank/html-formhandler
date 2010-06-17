@@ -7,7 +7,8 @@ use lib 't/lib';
 use DateTime;
 use Scalar::Util qw(blessed);
 
-$ENV{LANG} = 'en_us'; # in case user has LANG set
+use HTML::FormHandler::I18N;
+$ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
 
 {
    package My::Form;
