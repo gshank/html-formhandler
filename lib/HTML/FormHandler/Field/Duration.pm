@@ -32,8 +32,8 @@ sub validate {
 
     my @dur_parms;
     foreach my $child ( $self->all_fields ) {
-        unless ( $child->value =~ /^\d+$/ ) {
-            $self->add_error( "Invalid value for [1_] [2_]", $self->loc_label, $child->loc_label );
+        unless ( $child->has_value && $child->value =~ /^\d+$/ ) {
+            $self->add_error( "Invalid value for [_1]: [_2]", $self->loc_label, $child->loc_label );
             next;
         }
         push @dur_parms, ( $child->accessor => $child->value );
