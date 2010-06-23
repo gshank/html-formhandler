@@ -45,7 +45,6 @@ ok( $form->validated, 'form validated' );
 
 is_deeply($form->fif, $params, 'get fif with right value');
 is( $form->field('duration')->value->hours, 2, 'duration value is correct');
-$DB::single=1;
 $form->process( params => { name => 'Testing', 'duration.hours' => 'abc', 'duration.inutes' => 'xyz' } );
 ok( $form->has_errors, 'form does not validate' );
 my @errors = $form->errors;

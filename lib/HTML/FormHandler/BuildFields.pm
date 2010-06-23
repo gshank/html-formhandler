@@ -72,8 +72,6 @@ sub _build_fields {
     }
 }
 
-# process all the stupidly many different formats for field_list
-# remove undocumented syntaxes after a while
 sub _process_field_list {
     my ( $self, $flist ) = @_;
 
@@ -112,38 +110,6 @@ sub _build_meta_field_list {
         }
     }
     return \@field_list if scalar @field_list;
-}
-
-# munges the field_list auto fields into an array of field attributes
-sub _auto_fields {
-    my ( $self, $fields, $required ) = @_;
-
-    my @new_fields;
-    foreach my $name (@$fields) {
-        push @new_fields,
-            {
-            name     => $name,
-            type     => $self->guess_field_type($name),
-            required => $required
-            };
-    }
-    return \@new_fields;
-}
-
-# munges the field_list hashref fields into an array of field attributes
-sub _hashref_fields {
-    my ( $self, $fields, $required ) = @_;
-    my @new_fields;
-    while ( my ( $key, $value ) = each %{$fields} ) {
-        unless ( ref $value eq 'HASH' ) {
-            $value = { type => $value };
-        }
-        if ( defined $required ) {
-            $value->{required} = $required;
-        }
-        push @new_fields, { name => $key, %$value };
-    }
-    return \@new_fields;
 }
 
 # munges the field_list array into an array of field attributes

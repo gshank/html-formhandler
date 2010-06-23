@@ -224,6 +224,10 @@ care whether most parameters are set on new or process or update,
 but a 'field_list' argument must be passed in on 'new' since the
 fields are built at construction time.
 
+If you want to update field attributes on the 'process' call, you can
+use an 'update_field_list' hashref attribute, or subclass
+update_fields in your form.
+
 =head2 Processing the form
 
 =head3 process
@@ -368,6 +372,28 @@ add fields to the form depending on some other state.
       }
       return \@field_list;
    }
+
+=head3 update_field_list
+
+Used to dynamically set particular field attributes on the 'process' (or
+'run') call.
+
+    $form->process( update_field_list => { 
+       foo_date => { format => '%m/%e/%Y', date_start => '10-01-01' } }, 
+       params => $params );
+
+The 'update_field_list' is processed by the 'update_fields' form method,
+which can also be used in a form to do specific field updates:
+
+    sub update_fields {
+        my $self = shift;
+        $self->field('foo')->temp( 'foo_temp' );
+        $self->field('bar')->default( 'foo_value' );
+    }
+
+(Note that you can't set a field's 'value' directly here, since it will
+be overwritten by the validation process. Set the value in a field
+validation method.)
 
 =head3 active
 
@@ -665,6 +691,15 @@ has 'active' => (
 
 # object with which to initialize
 has 'init_object'         => ( is => 'rw', clearer => 'clear_init_object' );
+has 'update_field_list'   => ( is => 'rw', 
+    isa => 'HashRef', 
+    default => sub {{}},
+    traits => ['Hash'],
+    handles => {
+        clear_update_field_list => 'clear',
+        has_update_field_list => 'count',
+    },
+); 
 has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 # flags
 has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
@@ -877,6 +912,7 @@ sub setup_form {
     }
     $self->clear_result;
     $self->set_active;
+    $self->update_fields;
     # initialization of Repeatable fields and Select options
     # will be done in _result_from_object when there's an initial object
     # in _result_from_input when there are params
@@ -1033,6 +1069,24 @@ sub apply_field_traits {
 
 sub get_default_value { }
 sub _can_deflate { }
+
+sub update_fields {
+    my $self = shift;
+    return unless $self->has_update_field_list;
+    my $fields = $self->update_field_list;
+    foreach my $key ( keys %$fields ) {
+        my $field = $self->field($key);
+        unless( $field ) {
+            die "Field $key is not found and cannot be updated by update_fields";
+        }
+        while ( my ( $attr_name, $attr_value ) = each %{$fields->{$key}} ) {
+            confess "invalid attribute '$attr_name' passed to update_field_list"
+                unless $field->can($attr_name);
+            $field->$attr_name($attr_value);
+        }
+    }
+    $self->clear_update_field_list;
+}
 
 =head1 SUPPORT
 
