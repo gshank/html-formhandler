@@ -52,7 +52,16 @@ sub value {
 
 sub validate {
     my $self = shift;
-    $self->add_error( $self->required_message ) if ( $self->required && !$self->value );
+    if( $self->required && !$self->value ) {
+        my $msg = $self->required_message;
+        if ( ref $msg eq 'ARRAY' ) {
+            $self->add_error( @$msg );
+        }
+        else {
+            $self->add_error( $msg );
+        }
+    }    
+    return;
 }
 
 =head1 AUTHORS

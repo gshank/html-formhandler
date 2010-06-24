@@ -6,7 +6,8 @@ use Moose::Util::TypeConstraints;
 
 =head3 language_handle, _build_language_handle
 
-Holds a Locale::Maketext language handle
+Holds a Locale::Maketext (or other duck_type class with a 'maketext'
+method) language handle
 
 The builder for this attribute gets the Locale::Maketext language
 handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates
@@ -28,6 +29,10 @@ Passed into new or process:
 
 If you do not set the language_handle, then L<Locale::Maketext> and/or
 L<I18N::LangTags> may guess, with unexpected results.
+
+You can use non-Locale::Maketext language handles, such as L<Data::Localize>.
+There's an example of building a L<Data::Localize> language handle
+in t/xt/locale_data_localize.t in the distribution.
 
 =cut 
 

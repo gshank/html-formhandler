@@ -721,6 +721,7 @@ has 'widget_tags'         => (
     },
 );
 has 'action' => ( is => 'rw' );
+has 'posted' => ( is => 'rw', isa => 'Bool', clearer => 'clear_posted' );
 has 'params' => (
     traits     => ['Hash'],
     isa        => 'HashRef',
@@ -906,6 +907,10 @@ sub setup_form {
                 unless $self->can($key);
             $self->$key($value);
         }
+    }
+    if( $self->posted ) {
+        $self->set_param('__posted' => 1);
+        $self->clear_posted;
     }
     if ( $self->item_id && !$self->item ) {
         $self->item( $self->build_item );
