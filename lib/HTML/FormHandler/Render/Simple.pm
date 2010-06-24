@@ -300,7 +300,8 @@ sub render_select {
                     if $option->{value} eq $field->fif;
             }
         }
-        $output .= '>' . $field->html_filter($option->{label}) . '</option>';
+        my $label = $field->localize_labels ? $field->_localize($option->{label}) : $option->{label};
+        $output .= '>' . $field->html_filter($label) . '</option>';
         $index++;
     }
     $output .= '</select>';

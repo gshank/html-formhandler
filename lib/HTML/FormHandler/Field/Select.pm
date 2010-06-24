@@ -149,6 +149,11 @@ object class for the label for select lists.
 
 Defaults to "name"
 
+=head2 localize_labels
+
+For the renderers: whether or not to call the localize method on the select
+labels. Default is off.
+
 =head2 active_column
 
 Sets or returns the name of a boolean column that is used as a flag to indicate that
@@ -259,6 +264,7 @@ sub _form_options {
 has 'multiple'         => ( isa => 'Bool', is => 'rw', default => '0' );
 has 'size'             => ( isa => 'Int|Undef', is => 'rw' );
 has 'label_column'     => ( isa => 'Str',       is => 'rw', default => 'name' );
+has 'localize_labels'  => ( isa => 'Bool', is => 'rw' );
 has 'active_column'    => ( isa => 'Str',       is => 'rw', default => 'active' );
 has 'auto_widget_size' => ( isa => 'Int',       is => 'rw', default => '0' );
 has 'sort_column'      => ( isa => 'Str',       is => 'rw' );
