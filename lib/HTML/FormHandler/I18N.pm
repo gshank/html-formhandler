@@ -6,6 +6,7 @@ use Try::Tiny;
 
 sub maketext {
     my ( $lh, @message ) = @_;
+    return unless scalar @message;
     my $out;
     try { 
         $out = $lh->SUPER::maketext(@message);

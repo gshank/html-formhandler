@@ -20,8 +20,10 @@ sub render {
     $output .= $self->_add_html_attributes;
     $output .= '>';
 
-    $t = $self->empty_select
-        and $output .= qq{<option value="">$t</option>};
+    if( $self->empty_select ) {
+        $t = $self->_localize($self->empty_select);
+        $output .= qq{<option value="">$t</option>};
+    }
 
     foreach my $option ( @{ $self->{options} } ) {
         $output .= '<option value="'
