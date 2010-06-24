@@ -85,6 +85,7 @@ use HTML::FormHandler::Field::Text;
     );
     has_field 'no_render' => ( widget => 'no_render' );
     has_field 'plain' => ( widget_wrapper => 'None' );
+    has_field 'boxed' => ( widget_wrapper => 'Fieldset' );
 
     sub options_fruit {
         return (
@@ -137,6 +138,7 @@ my $params = {
     opt_in             => 'no & never',
     plain              => 'No divs!!',
     comedians         => [ 'chaplin', 'laurel & hardy' ],
+    boxed              => 'Testing single fieldset',
 };
 
 $form->process($params);
@@ -270,6 +272,8 @@ is( $form->field('no_render')->render, '', 'no_render' );
 
 is( $form->field('plain')->render, '<input type="text" name="plain" id="plain" value="No divs!!" />', 'renders without wrapper');
 
+is( $form->field('boxed')->render, '<fieldset class="boxed"><legend>Boxed</legend><input type="text" name="boxed" id="boxed" value="Testing single fieldset" /></fieldset>
+', 'fieldset wrapper renders' );
 
 {
 
