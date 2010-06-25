@@ -336,6 +336,20 @@ and set the 'fif' hash in the 'fillinform' stash variable:
     $c->stash( fillinform => $self->form->fif );
     return unless $form->validated;
  
+Note that FormHandler by default uses empty params as a signal that the
+form has not actually been posted, and so will not attempt to validate
+a form with empty params. Most of the time this works OK, but if you 
+have a small form with only the controls that do not return a post
+parameter if unselected (checkboxes and select lists), then the form
+will not be validated if everything is unselected. For this case you
+can either add a hidden field, or use the 'posted' flag:
+
+   $form->process( posted => ($c->req->method eq 'POST', params => ... );
+
+The corollary is that you will confuse FormHandler if you add extra params.
+It's often a better idea to add Moose attributes to the form rather than
+'dummy' fields if the data is not coming from a form control.
+
 =head1 Form generator
 
 A DBIC form generator is installed with the L<HTML::FormHandler::Model::DBIC>

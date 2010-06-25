@@ -1,3 +1,28 @@
+0.32000 Fri June 25, 2010
+    Accept arrayref messages in add_error
+    Add initial fieldset wrapper
+    Flag (localize_labels) in Select field for rendering; localize empty_select
+    Add posted flag for forms containing only fields with no params when unselected
+    Add 'update_fields' methods and 'update_field_list' for preference-type field updates
+    Fix incorrect error message in duration field
+    Use LANGUAGE_HANDLE instead of LANG in tests
+    Add 'input_class' for class attribute on input fields
+    Allow deflation in fif, flag 'deflate_to' => 'value'/'fif'
+    Fix bug with unselected Select field (move input_without_param & not_nullable into field)
+    Add resultset example to cookbook
+    Doc to look at input for multiple submit fields
+    Fix bug in _set_dependency; use 'has_some_value' to determine emptiness
+    Add form_errors for non-field errors
+    Remove deprecated 'min_length' attribute ('minlength' is supported)
+    Allow upload field to be passed a file handle
+    Pass values to Display field (for display-only db fields)
+    Change I18N to allow duck_type classes; add test for Data::Localize
+    Added 'peek' diagnostic function for viewing field & result trees
+    Fix bug with extra results in repeatable elements
+    Strip empty pks and empty elements from repeatable values (avoid DB errors)
+    Localize value of submit button
+    Make '+' unnecessary in front of field name space types
+    
 0.31003 Fri May 7, 2010
     Change precedence of defaults over item/init_object; add 'default_over_obj' for
        cases where that behavior is desired.
