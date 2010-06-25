@@ -67,15 +67,7 @@ sub validate_field {
     $field->clear_errors;    # this is only here for testing convenience
                              # See if anything was submitted
     if ( $field->required && ( !$field->has_input || !$field->input_defined ) ) {
-        if ($field->required) {
-            my $msg = $field->required_message;
-            if ( ref $msg eq 'ARRAY' ) {
-                $field->add_error( @$msg );
-            }
-            else {
-                $field->add_error( $msg );
-            }
-        }
+        $field->add_error( $field->required_message );
         if( $field->has_input ) {
            $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);
         }

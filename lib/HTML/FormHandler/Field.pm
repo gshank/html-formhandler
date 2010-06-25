@@ -1026,6 +1026,7 @@ sub add_error {
     unless ( defined $message[0] ) {
         @message = ('field is invalid');
     }
+    @message = @{$message[0]} if ref $message[0] eq 'ARRAY';
     my $out;
     try { 
         $out = $self->_localize(@message); 
