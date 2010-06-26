@@ -3,11 +3,6 @@ use warnings;
 use Test::More;
 
 
-BEGIN {
-   eval "use DateTime::Format::Strptime";
-   plan skip_all => 'DateTime::Format::Strptime required' if $@;
-}
-
 use HTML::FormHandler::I18N;
 $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
 

@@ -18,6 +18,7 @@ requires 'Carp';
 requires 'Moose'              => '0.90';
 requires 'Locale::Maketext'   => '1.09';
 requires 'DateTime';
+requires 'DateTime::Format::Strptime';
 requires 'MooseX::Getopt' => '0.16';
 requires 'MooseX::Types' => '0.20';
 requires 'MooseX::Types::Common';
@@ -27,6 +28,7 @@ requires 'File::Spec';
 requires 'File::ShareDir';
 requires 'Try::Tiny';
 requires 'namespace::autoclean' => '0.09';
+requires 'Email::Valid';
 
 # things the tests need
 test_requires 'Test::More'      => '0.88';

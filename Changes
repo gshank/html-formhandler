@@ -1,3 +1,6 @@
+0.32001 Fri June 25, 2010
+    Add prereqs for DateTime::Format::Strptime and Email::Valid
+
 0.32000 Fri June 25, 2010
     Accept arrayref messages in add_error
     Add initial fieldset wrapper

@@ -70,17 +70,14 @@ is( $field->errors->[0], 'Not a valid state', 'correct error message for State' 
 $field->_set_input('NY');
 ok( $field->validate_field, 'state field validated');
 # Email
-SKIP: {
-   eval { require Email::Valid };
-   skip "Email::Valid not installed", 3 if $@;
-   $field = HTML::FormHandler::Field->new( name => 'Test', apply => [ Email ] );
-   $field->_set_input('gail@gmail.com');
-   ok( $field->validate_field, 'email field validated' );
-   ok( !$field->has_errors, 'email field is valid');
-   $field->_set_input('not_an_email');
-   $field->validate_field;
-   is( $field->errors->[0], 'Email is not valid', 'error from Email' );
-}
+$field = HTML::FormHandler::Field->new( name => 'Test', apply => [ Email ] );
+$field->_set_input('gail@gmail.com');
+ok( $field->validate_field, 'email field validated' );
+ok( !$field->has_errors, 'email field is valid');
+$field->_set_input('not_an_email');
+$field->validate_field;
+is( $field->errors->[0], 'Email is not valid', 'error from Email' );
+
 my @test = (
     IPAddress => \&IPAddress =>
 	[qw(0.0.0.0 01.001.0.00 198.168.0.101 255.255.255.255)],
