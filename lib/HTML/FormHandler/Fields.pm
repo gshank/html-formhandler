@@ -230,5 +230,13 @@ sub dump_validated {
     }
 }
 
+=head1 COPYRIGHT
+
+Copyright (c) 2008 - 2010 Gerda Shank 
+
+=head1 LICENSE
+
+=cut
+
 use namespace::autoclean;
 1;

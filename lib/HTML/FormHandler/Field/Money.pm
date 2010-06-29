@@ -41,6 +41,10 @@ Gerda Shank
 
 =head1 COPYRIGHT
 
+Copyright (c) 2008 - 2010 Gerda Shank 
+
+=head1 LICENSE
+
 This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
 

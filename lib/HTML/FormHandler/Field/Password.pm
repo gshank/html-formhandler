@@ -75,7 +75,9 @@ Gerda Shank
 
 =head1 COPYRIGHT
 
-See L<HTML::FormHandler> for copyright.
+Copyright (c) 2008 - 2010 Gerda Shank 
+
+=head1 LICENSE
 
 This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.

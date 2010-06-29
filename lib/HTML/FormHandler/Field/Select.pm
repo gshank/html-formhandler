@@ -415,6 +415,10 @@ Based on the original source code of L<Form::Processor::Field::Select> by Bill M
 
 =head1 COPYRIGHT
 
+Copyright (c) 2008 - 2010 Gerda Shank 
+
+=head1 LICENSE
+
 This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
 

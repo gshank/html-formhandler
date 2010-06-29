@@ -244,12 +244,16 @@ coerce Trim,
 
 =head1 AUTHORS
 
-  HTML::FormHandler Contributors; see HTML::FormHandler
+HTML::FormHandler Contributors; see HTML::FormHandler
 
 =head1 COPYRIGHT
 
-  This library is free software, you can redistribute it and/or modify it under
-  the same terms as Perl itself.
+Copyright (c) 2008 - 2010 Gerda Shank 
+
+=head1 LICENSE
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself.
 
 =cut
 
