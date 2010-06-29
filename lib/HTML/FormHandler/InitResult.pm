@@ -4,7 +4,7 @@ use Moose::Role;
 
 =head1 NAME
 
-HTML::FormHandler::InitResult
+HTML::FormHandler::InitResult - internal code
 
 =head1 SYNOPSIS
 

@@ -4,7 +4,7 @@ use Moose::Role;
 
 =head1 NAME
 
-HTML::FormHandler::Fields;
+HTML::FormHandler::Fields - internal role for form and compound fields 
 
 =head1 SYNOPSIS
 

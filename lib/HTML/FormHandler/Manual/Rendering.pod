@@ -1,6 +1,6 @@
 =head1 NAME
 
-HTML::FormHandler::Manual::Rendering
+HTML::FormHandler::Manual::Rendering - How to render with FormHandler
 
 =head1 SYNOPSIS
 

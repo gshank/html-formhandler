@@ -2,7 +2,7 @@ package HTML::FormHandler::Validate;
 
 =head1 NAME
 
-HTML::FormHandler::Validate
+HTML::FormHandler::Validate - validation role (internal)
 
 =head1 SYNOPSIS
 

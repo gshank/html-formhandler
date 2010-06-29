@@ -7,7 +7,7 @@ with 'HTML::FormHandler::Widget::Wrapper::Base';
 
 =head1 NAME
 
-HTML::FormHandler::Widget::Wrapper::Fieldset
+HTML::FormHandler::Widget::Wrapper::Fieldset - fieldset field wrapper
 
 =head1 SYNOPSIS
 

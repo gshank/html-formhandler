@@ -18,7 +18,7 @@ use MooseX::Types::Moose ( 'Str', 'Num', 'Int' );
 
 =head1 NAME
 
-HTML::FormHandler::Types
+HTML::FormHandler::Types - Moose type constraints
 
 =head1 SYNOPSIS
 

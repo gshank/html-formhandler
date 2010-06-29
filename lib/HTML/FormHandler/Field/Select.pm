@@ -7,7 +7,7 @@ our $VERSION = '0.03';
 
 =head1 NAME
 
-HTML::FormHandler::Field::Select
+HTML::FormHandler::Field::Select - select fields
 
 =head1 DESCRIPTION
 

@@ -4,6 +4,10 @@ use HTML::FormHandler::I18N;
 use Moose::Role;
 use Moose::Util::TypeConstraints;
 
+=head1 NAME
+
+HTML::FormHandler::TraitFor::I18N - localization
+
 =head3 language_handle, _build_language_handle
 
 Holds a Locale::Maketext (or other duck_type class with a 'maketext'

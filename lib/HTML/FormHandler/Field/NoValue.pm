@@ -5,7 +5,7 @@ extends 'HTML::FormHandler::Field';
 
 =head1 NAME
 
-HTML::FormHandler::Field::NoValue 
+HTML::FormHandler::Field::NoValue - base class for submit field
 
 =head1 SYNOPSIS
 

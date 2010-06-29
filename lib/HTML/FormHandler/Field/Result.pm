@@ -5,7 +5,7 @@ with 'HTML::FormHandler::Result::Role';
 
 =head1 NAME
 
-HTML::FormHandler::Field::Result
+HTML::FormHandler::Field::Result - result class for fields
 
 =head1 SYNOPSIS
 

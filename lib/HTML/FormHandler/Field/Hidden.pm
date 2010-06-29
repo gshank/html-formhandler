@@ -8,7 +8,7 @@ has '+widget' => ( default => 'hidden' );
 
 =head1 NAME
 
-HTML::FormHandler::Field::Hidden
+HTML::FormHandler::Field::Hidden - hidden field
 
 =head1 DESCRIPTION
 

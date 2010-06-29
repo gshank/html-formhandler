@@ -9,7 +9,7 @@ requires 'form';
 
 =head1 NAME
 
-HTML::FormHandler::Render::WithTT
+HTML::FormHandler::Render::WithTT - tt rendering
 
 =head1 SYNOPSIS
 

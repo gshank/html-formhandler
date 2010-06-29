@@ -7,7 +7,7 @@ use HTTP::Date;
 
 =head1 NAME
 
-HTML::FormHandler::Field::Captcha
+HTML::FormHandler::Field::Captcha - captch field with GD::SecurityImage
 
 =head1 SYNOPSIS
 

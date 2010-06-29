@@ -6,7 +6,7 @@ use namespace::autoclean;
 
 =head1 NAME
 
-HTML::FormHandler::Field::Display 
+HTML::FormHandler::Field::Display - display only field
 
 =head1 SYNOPSIS
 

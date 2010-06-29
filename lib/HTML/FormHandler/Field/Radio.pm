@@ -5,7 +5,7 @@ extends 'HTML::FormHandler::Field';
 
 =head1 NAME
 
-HTML::FormHandler::Field::Radio
+HTML::FormHandler::Field::Radio - not used
 
 =head1 SYNOPSIS
 

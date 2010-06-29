@@ -5,7 +5,7 @@ use Moose::Role;
 
 =head1 NAME
 
-HTML::FormHandler::Meta::Role
+HTML::FormHandler::Meta::Role - field_list & apply_list
 
 =head1 SYNOPSIS
 

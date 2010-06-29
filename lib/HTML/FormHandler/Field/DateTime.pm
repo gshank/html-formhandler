@@ -9,7 +9,7 @@ our $VERSION = '0.04';
 
 =head1 NAME
 
-HTML::FormHandler::Field::DateTime
+HTML::FormHandler::Field::DateTime - compound DateTime field
 
 =head1 DESCRIPTION
 

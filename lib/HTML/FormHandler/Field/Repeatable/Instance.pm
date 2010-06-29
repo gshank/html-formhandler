@@ -6,7 +6,7 @@ extends 'HTML::FormHandler::Field::Compound';
 
 =head1 NAME
 
-HTML::FormHandler::Field::Repeatable::Instance
+HTML::FormHandler::Field::Repeatable::Instance - used internally by repeatable fields
 
 =head1 SYNOPSIS
 

@@ -6,7 +6,7 @@ with 'MooseX::Traits';
 
 =head1 NAME
 
-HTML::FormHandler::Result
+HTML::FormHandler::Result - form result object
 
 =head1 SYNOPSIS
 

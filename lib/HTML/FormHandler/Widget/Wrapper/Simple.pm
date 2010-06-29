@@ -7,7 +7,7 @@ with 'HTML::FormHandler::Widget::Wrapper::Base';
 
 =head1 NAME
 
-HTML::FormHandler::Widget::Wrapper::Simple
+HTML::FormHandler::Widget::Wrapper::Simple - simple field wrapper
 
 =head1 SYNOPSIS
 

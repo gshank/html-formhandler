@@ -4,7 +4,7 @@ use Moose::Role;
 
 =head1 NAME
 
-FormHandler::Validate::Actions
+FormHandler::Validate::Actions - internal role; validates actions
 
 =head1 SYNOPSIS
 

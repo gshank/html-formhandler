@@ -7,7 +7,7 @@ has '+format' => ( default => '%m/%d/%Y' );
 
 =head1 NAME
 
-HTML::FormHandler::Field::DateMDY
+HTML::FormHandler::Field::DateMDY - m/d/y date field
 
 =head1 SYNOPSIS
 

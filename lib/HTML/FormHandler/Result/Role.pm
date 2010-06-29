@@ -4,7 +4,7 @@ use Moose::Role;
 
 =head1 NAME
 
-HTML::FormHandler::Role::Result
+HTML::FormHandler::Result::Role - common code for form & field results
 
 =head1 SYNOPSIS
 
