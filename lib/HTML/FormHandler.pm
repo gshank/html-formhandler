@@ -709,6 +709,9 @@ has 'html_prefix'   => ( isa => 'Bool', is  => 'ro' );
 has 'active_column' => ( isa => 'Str',  is  => 'ro' );
 has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
+has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
+has 'style'     =>     ( isa => 'Str',  is => 'rw' );
+
 has 'widget_tags'         => ( 
     traits => ['Hash'],
     isa => 'HashRef', 

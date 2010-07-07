@@ -4,6 +4,7 @@ use Moose::Role;
 
 requires( 'sorted_fields', 'field' );
 
+with 'HTML::FormHandler::Widget::Form::Role::HTMLAttributes';
 our $VERSION = 0.01;
 
 =head1 NAME
@@ -152,14 +153,13 @@ sub render {
 
 sub render_start {
     my $self   = shift;
-    my $output = '<form ';
-    $output .= 'action="' . $self->action . '" '      if $self->action;
-    $output .= 'id="' . $self->name . '" '            if $self->name;
-    $output .= 'method="' . $self->http_method . '" ' if $self->http_method;
-    $output .= 'enctype="' . $self->enctype . '" '    if $self->enctype;
-    $output .= '>' . "\n";
-    $output .= '<fieldset class="main_fieldset">'     if $self->auto_fieldset;
-    return $output;
+
+    my $output = $self->html_form_tag;
+
+    $output .= '<fieldset class="main_fieldset">'
+        if $self->form->auto_fieldset;
+
+    return $output
 }
 
 sub render_end {

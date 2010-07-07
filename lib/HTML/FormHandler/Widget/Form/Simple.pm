@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Form::Simple;
 
 use Moose::Role;
 
+with 'HTML::FormHandler::Widget::Form::Role::HTMLAttributes';
 our $VERSION = 0.01;
 
 =head1 NAME
@@ -34,7 +35,8 @@ sub render {
     my $output = $form->render_start;
 
     foreach my $fld_result ( $result->results ) {
-        die "no field in result for " . $fld_result->name unless $fld_result->field_def;
+        die "no field in result for " . $fld_result->name
+            unless $fld_result->field_def;
         $output .= $fld_result->render;
     }
 
@@ -43,15 +45,14 @@ sub render {
 }
 
 sub render_start {
-    my $self   = shift;
-    my $output = '<form ';
-    $output .= 'action="' . $self->action . '" '      if $self->action;
-    $output .= 'id="' . $self->name . '" '            if $self->name;
-    $output .= 'method="' . $self->http_method . '" ' if $self->http_method;
-    $output .= 'enctype="' . $self->enctype . '" '    if $self->enctype;
-    $output .= '>' . "\n";
-    $output .= '<fieldset class="main_fieldset">'     if $self->form->auto_fieldset;
-    return $output;
+    my $self = shift;
+
+    my $output = $self->html_form_tag;
+
+    $output .= '<fieldset class="main_fieldset">'
+        if $self->form->auto_fieldset;
+
+    return $output
 }
 
 sub render_end {
