@@ -1,11 +1,8 @@
 package HTML::FormHandler::Field::Reset;
+# ABSTRACT: reset field
 
 use Moose;
 extends 'HTML::FormHandler::Field::NoValue';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Reset - reset field
 
 =head1 SYNOPSIS
 

@@ -1,12 +1,9 @@
 package    # hide from Pause
     HTML::FormHandler::Field::Repeatable::Instance;
+# ABSTRACT: used internally by repeatable fields
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Repeatable::Instance - used internally by repeatable fields
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,5 @@
-=head1 NAME
-
-HTML::FormHandler::Manual::Tutorial - use FormHandler with Catalyst
+package HTML::FormHandler::Manual::Tutorial;
+# ABSTRACT: how to use FormHandler with Catalyst
 
 =head1 DESCRIPTION
 
@@ -11,9 +10,9 @@ A tutorial for beginners to L<HTML::FormHandler>
 This tutorial demonstrates how you can use L<HTML::FormHandler>
 to manage forms, validate form input, and interface your forms with the database.
 
-=head1 Installation 
+=head1 Installation
 
-Use CPAN to install L<HTML::FormHandler> 
+Use CPAN to install L<HTML::FormHandler>
 
 =head1 Use the Tutorial application
 
@@ -24,7 +23,7 @@ code repository. (See L<Catalyst::Manual::Tutorial::Intro>.)
 
 =head2 Create an HTML::FormHandler form
 
-Untar the tutorial and make a lib/MyApp/Form directory. In that directory 
+Untar the tutorial and make a lib/MyApp/Form directory. In that directory
 create the file Book.pm.
 
    package MyApp::Form::Book;
@@ -43,28 +42,28 @@ create the file Book.pm.
 
 This is your Form class. The form initializes the 'item_class' to the
 source name of your DBIx::Class result class. The form's fields are defined
-with the 'has_field' sugar, or in a 'field_list'. The names of the fields 
-should match a column, relationship, or other accessor in your DBIx::Class 
+with the 'has_field' sugar, or in a 'field_list'. The names of the fields
+should match a column, relationship, or other accessor in your DBIx::Class
 result class.
 
 The basic fields have only a 'type', such as
-'Text', or 'Integer'. These types are actually the names of 
-L<HTML::FormHandler::Field> classes. 
-'Text' and 'Integer' are types that are provided by HTML::FormHandler, 
-in L<HTML::FormHandler::Field::Text> and L<HTML::FormHandler::Field::Integer>. 
+'Text', or 'Integer'. These types are actually the names of
+L<HTML::FormHandler::Field> classes.
+'Text' and 'Integer' are types that are provided by HTML::FormHandler,
+in L<HTML::FormHandler::Field::Text> and L<HTML::FormHandler::Field::Integer>.
 
-The 'Multiple' type will allow you to easily create a multiple select 
+The 'Multiple' type will allow you to easily create a multiple select
 list from the 'authors' relationship.  The 'label_column' attribute
-must be defined because the column in the 'authors' table which is used 
+must be defined because the column in the 'authors' table which is used
 to create the select list does not have the default column name ('name').
 
 The 'submit' field is necessary if you are going to use FormHandler to
 render your form. It wouldn't be necessary for hand-built templates or HTML.
 
-Eventually you will want to create your own field classes, but for 
+Eventually you will want to create your own field classes, but for
 this simple form the default types are adequate.
 
-=head2 Connect HTML::FormHandler to your controller 
+=head2 Connect HTML::FormHandler to your controller
 
 Edit lib/MyApp/Controller/Books.pm.  Add use Moose:
 
@@ -86,12 +85,12 @@ In C<lib/MyApp/Controller/Books.pm> add the following method:
         my ( $self, $c, $book_id ) = @_;
 
         $c->stash( template => 'books/edit.tt2',
-                   form => $self->form ); 
+                   form => $self->form );
 
-        # Validate and insert/update database 
+        # Validate and insert/update database
         return unless $self->form->process( item_id => $book_id,
            params => $c->req->parameters,
-           schema => $c->model('DB')->schema ); 
+           schema => $c->model('DB')->schema );
 
         # Form validated, return to the books list
         $c->flash->{status_msg} = 'Book saved';
@@ -102,7 +101,7 @@ This will handle both creating new books, and updating old books.
 If $book_id is undefined, then HTML::FormHandler will create
 a new book from your form. If you pass in a DBIx::Class row
 object instead of a primary key, you don't need to specify the
-schema. 
+schema.
 
 =head2 Render the form
 
@@ -111,9 +110,9 @@ To use simple rendering, add a line to your form class:
    with 'HTML::FormHandler::Render::Simple';
 
 Then save a copy of C<root/src/books/edit.tt2> and create a new file that
-contains only: 
+contains only:
 
-   [% form.render %] 
+   [% form.render %]
 
 =head2 Alternative hand-built Template for the form (optional)
 
@@ -127,7 +126,7 @@ and build custom divs or tables or whatever around it:
 
   <div class="mycustomclass">
   [% form.render_field('book') %]
-  </div> 
+  </div>
 
 If you don't want to play with HTML at this point, you can skip ahead
 to the next section.
@@ -136,7 +135,7 @@ You could also use TT macros to do pretty sophisticated
 template generation. But for now, we'll stick to a straightforward TT
 template:
 
-Delete the single statement in C<root/src/books/edit.tt2>, and enter 
+Delete the single statement in C<root/src/books/edit.tt2>, and enter
 or copy the following:
 
    [% META title = 'Book Form' %]
@@ -148,8 +147,8 @@ or copy the following:
      [% END %]
    [% END %]
 
-   <form name="[% form.name %]" 
-         action="[% c.uri_for('edit', form.item_id) %]" 
+   <form name="[% form.name %]"
+         action="[% c.uri_for('edit', form.item_id) %]"
          method="post">
    <p>
    [% f = form.field('title') %]
@@ -166,17 +165,17 @@ or copy the following:
    <label class="label" for="[% f.name %]">[% f.label %]:</label>
    <select name="[% f.name %]" multiple="multiple" size="[% f.size %]">
      [% FOR option IN f.options %]
-       <option value="[% option.value %]" 
+       <option value="[% option.value %]"
          [% FOREACH selval IN f.fif %]
              [% IF selval == option.value %]selected="selected"[% END %]
          [% END %]>
        [% option.label | html %]</option>
-     [% END %] 
+     [% END %]
    </select>
    </p>
    <input class="button" name="submit" type="submit" value="Submit" />
    </form>
-    
+
    <p><a href="[% c.uri_for('list') %]">Return to book list</a></p>
 
 
@@ -190,8 +189,8 @@ list:
       <a href="[% c.uri_for('delete', book.id) %]">Delete</a>|
       <a href="[% c.uri_for('edit', book.id) %]">Edit</a>
    </td>
-      
-Change the link to create a book at the bottom of the file: 
+
+Change the link to create a book at the bottom of the file:
 
     <p>
       <a href="[% c.uri_for('edit') %]">Create book</a>
@@ -205,9 +204,9 @@ Start up the server for MyApp:
 
     $ script/myapp_server.pl
 
-(You'll need to login with test01/mypass if you're using the packaged 
-tutorial.) Click the new "Create book" link at the bottom to display 
-the form.  Fill in the fields and click submit.  You should be 
+(You'll need to login with test01/mypass if you're using the packaged
+tutorial.) Click the new "Create book" link at the bottom to display
+the form.  Fill in the fields and click submit.  You should be
 returned to the Book List page with a "Book saved" message.
 
 Magic! A new book has been created and saved to the database
@@ -218,15 +217,15 @@ should be saved and displayed properly. Try to add an alphabetic
 character to the rating field. You should get an error message.
 
 
-=head2 Add additional attributes to your form's fields 
+=head2 Add additional attributes to your form's fields
 
-We'll add a couple of 'label' attribute to the fields: 
+We'll add a couple of 'label' attribute to the fields:
 
    has_field 'title' => ( type => 'Text', label => 'Title of a Book' );
    has_field 'rating' => ( type => 'Integer', label => 'Rating (1-5)' );
    has_field 'authors' => ( type => 'Multiple', label_column => 'last_name' );
 
-If you want a new attribute in your fields, it's very easy to add it to your 
+If you want a new attribute in your fields, it's very easy to add it to your
 custom Field classes.
 
    package MyApp::Form::Field::Extra;
@@ -237,16 +236,16 @@ custom Field classes.
 
    1;
 
-Now if your Field classes inherit from this, you can have a 'my_attribute' 
-attribute for all your fields. Or use a Moose role instead of inheritance. 
+Now if your Field classes inherit from this, you can have a 'my_attribute'
+attribute for all your fields. Or use a Moose role instead of inheritance.
 
 You can also add attributes to the base FormHandler field class using Moose.
 This technique is described in L<HTML::FormHandler::Manual::Cookbook>.
 
-=head1 L<HTML::FormHandler> Validation 
+=head1 L<HTML::FormHandler> Validation
 
 Now we'll add more validation to ensure that users
-are entering correct data. 
+are entering correct data.
 
 Update the fields in the form file:
 
@@ -259,7 +258,7 @@ Update the fields in the form file:
       required => 1 );
 
 We've made all the fields required.
-We added 'size' and 'minlength' attributes to the 'title' field. These 
+We added 'size' and 'minlength' attributes to the 'title' field. These
 are attributes of the 'Text' Field, which will use them to validate.
 We've added 'range_start' and 'range_end' attributes to the 'rating' field.
 Numbers entered in the form will be checked to make sure they fall within
@@ -268,11 +267,11 @@ field type, which makes it easy to create a select list of numbers.)
 
 =head2 Add customized validation
 
-Usually you would create a Field class for validation that will 
+Usually you would create a Field class for validation that will
 be performed on more than one field, but it is easy to perform
 custom validation on a per-field basis.
 
-This form doesn't really require any customized validation, 
+This form doesn't really require any customized validation,
 so we'll add a silly field constraint.  Add the following to the form:
 
    sub validate_title {
@@ -283,11 +282,11 @@ so we'll add a silly field constraint.  Add the following to the form:
 
 You can also apply Moose constraints and transforms. Validation can also
 be performed in a form 'validate_<field_name' method, in a 'validate_model'
-routine, and in a custom field class. 
+routine, and in a custom field class.
 You can validate that the field is unique, or use a dependency list to make
 more fields required if one is updated.
 
-=head2 Check out the validation 
+=head2 Check out the validation
 
 Restart the development server, login, and try adding books with
 various errors: title length less than 5 or more than 40, rating
@@ -300,23 +299,10 @@ You should get error messages for every error.
 
 Although you can do database specific actions in a form class, you
 should limit this to actions that won't be required for anything
-except for your HTML forms. Other actions should be done in your 
+except for your HTML forms. Other actions should be done in your
 L<DBIx::Class> classes. L<HTML::FormHandler::Model::DBIC> allows
 the use of custom accessors, making it easier to keep the code
 in the right place.
-
-=head1 AUTHORS
-
-Gerda Shank, gshank@cpan.org
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

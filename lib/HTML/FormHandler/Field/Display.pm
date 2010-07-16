@@ -1,12 +1,9 @@
 package HTML::FormHandler::Field::Display;
+# ABSTRACT: display only field
 
 use Moose;
 extends 'HTML::FormHandler::Field::NoValue';
 use namespace::autoclean;
-
-=head1 NAME
-
-HTML::FormHandler::Field::Display - display only field
 
 =head1 SYNOPSIS
 
@@ -35,7 +32,7 @@ or in a form:
       my ( $self, $field ) = @_;
       return '<div><b>User:&nbsp;</b>' . $field->value . '</div>';
   }
-  
+
 
 or set the name of the rendering method:
 
@@ -49,7 +46,7 @@ in t/field_traits.t and t/xt/display.t of the distribution.
 
 =cut
 
-has 'html' => ( is => 'rw', isa => 'Str', builder => 'build_html' ); 
+has 'html' => ( is => 'rw', isa => 'Str', builder => 'build_html' );
 sub build_html {''}
 has 'set_html' => ( isa => 'Str', is => 'ro');
 sub _set_html_meth {

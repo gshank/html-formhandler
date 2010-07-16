@@ -1,13 +1,10 @@
 package HTML::FormHandler::Widget::Form::Simple;
+# ABSTRACT: widget to render a form with divs
 
 use Moose::Role;
 
 with 'HTML::FormHandler::Widget::Form::Role::HTMLAttributes';
 our $VERSION = 0.01;
-
-=head1 NAME
-
-HTML::FormHandler::Widget::Form::Simple - render a form with divs
 
 =head1 SYNOPSIS
 
@@ -62,17 +59,6 @@ sub render_end {
     $output .= "</form>\n";
     return $output;
 }
-
-=head1 AUTHORS
-
-See CONTRIBUTORS in L<HTML::FormHandler>
-
-=head1 COPYRIGHT
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

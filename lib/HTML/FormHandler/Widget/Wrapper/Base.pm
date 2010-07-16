@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Wrapper::Base;
+# ABSTRACT: commong methods for widget wrappers
 
 use Moose::Role;
 

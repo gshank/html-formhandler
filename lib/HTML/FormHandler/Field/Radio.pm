@@ -1,11 +1,8 @@
 package HTML::FormHandler::Field::Radio;
+# ABSTRACT: not used
 
 use Moose;
 extends 'HTML::FormHandler::Field';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Radio - not used
 
 =head1 SYNOPSIS
 
@@ -30,21 +27,6 @@ See synopsis. Sets the value used in the radio button.
 has 'radio_value' => ( is => 'rw', default => 1 );
 
 has '+widget' => ( default => 'radio' );
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

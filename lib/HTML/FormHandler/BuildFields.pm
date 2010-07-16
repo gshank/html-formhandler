@@ -1,15 +1,12 @@
 package HTML::FormHandler::BuildFields;
+# ABSTRACT: role to build field array
 
 use Moose::Role;
 use Try::Tiny;
 
-=head1 NAME
-
-HTML::FormHandler::BuildFields - role to build field array
-
 =head1 SYNOPSIS
 
-These are the methods that are necessary to build the fields arrays 
+These are the methods that are necessary to build the fields arrays
 in a form. This is a role which is composed into L<HTML::FormHandler>.
 
 Internal code only. This role has no user interfaces.
@@ -177,11 +174,11 @@ sub _make_field {
     {
         push @classes, $ns . "::" . $type;
     }
-    # look for Field in possible namespaces 
+    # look for Field in possible namespaces
     my $loaded;
     my $class;
     foreach my $try ( @classes ) {
-        try { 
+        try {
             Class::MOP::load_class($try);
             $loaded++;
             $class = $try;
@@ -281,9 +278,9 @@ sub new_field_with_traits {
         push @traits, $widget_role, $wrapper_role;
     }
     if( @traits ) {
-        $field = $class->new_with_traits( traits => \@traits, %{$field_attr} ); 
+        $field = $class->new_with_traits( traits => \@traits, %{$field_attr} );
     }
-    else { 
+    else {
         $field = $class->new( %{$field_attr} );
     }
     if( $field->form ) {
@@ -294,21 +291,6 @@ sub new_field_with_traits {
     }
     return $field;
 }
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

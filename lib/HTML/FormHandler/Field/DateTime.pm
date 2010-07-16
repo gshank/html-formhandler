@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::DateTime;
+# ABSTRACT: compound DateTime field
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
@@ -6,10 +7,6 @@ extends 'HTML::FormHandler::Field::Compound';
 use DateTime;
 use Try::Tiny;
 our $VERSION = '0.04';
-
-=head1 NAME
-
-HTML::FormHandler::Field::DateTime - compound DateTime field
 
 =head1 DESCRIPTION
 
@@ -33,15 +30,6 @@ If you want simple input fields:
          range_end => 12 );
     has_field 'my_date.day' => ( type => 'Integer', range_start => 1,
          range_end => 31 );
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 
@@ -74,7 +62,7 @@ sub validate {
     catch {
         $self->add_error('Not a valid DateTime');
     };
-    if( $dt ) { 
+    if( $dt ) {
         $self->_set_value($dt);
     }
     else {

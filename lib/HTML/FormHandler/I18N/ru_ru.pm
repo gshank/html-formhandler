@@ -1,4 +1,6 @@
 package HTML::FormHandler::I18N::ru_ru;
+# ABSTRACT: Russian message file
+
 use strict;
 use warnings;
 use utf8;

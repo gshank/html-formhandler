@@ -1,12 +1,9 @@
 package HTML::FormHandler::Field::Boolean;
+# ABSTRACT: a true or false field
 
 use Moose;
 extends 'HTML::FormHandler::Field::Checkbox';
 our $VERSION = '0.03';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Boolean - A true or false field
 
 =head1 DESCRIPTION
 
@@ -22,21 +19,6 @@ sub value {
 
     return $v ? 1 : 0;
 }
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

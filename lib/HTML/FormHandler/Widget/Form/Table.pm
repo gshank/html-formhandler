@@ -1,12 +1,9 @@
 package HTML::FormHandler::Widget::Form::Table;
+# ABSTRACT: render a form with a table layout
 
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Form::Simple' =>
     { excludes => [ 'render_start', 'render_end' ] };
-
-=head1 NAME
-
-HTML::FormHandler::Widget::Form::Table - render a form with a table layout
 
 =head1 SYNOPSIS
 
@@ -31,17 +28,6 @@ sub render_end {
     $output .= "</form>\n";
     return $output;
 }
-
-=head1 AUTHORS
-
-HFH Contributors, see L<HTML::FormHandler>
-
-=head1 COPYRIGHT
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

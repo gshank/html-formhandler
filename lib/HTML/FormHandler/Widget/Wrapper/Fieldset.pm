@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Wrapper::Fieldset;
+# ABSTRACT: fieldset field wrapper
 
 use Moose::Role;
 use namespace::autoclean;
@@ -12,7 +13,7 @@ HTML::FormHandler::Widget::Wrapper::Fieldset - fieldset field wrapper
 =head1 SYNOPSIS
 
 Wraps a single field in a fieldset.
-    
+
 =cut
 
 sub wrap_field {

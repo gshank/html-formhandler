@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::PosInteger;
+# ABSTRACT: positive integer field
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Integer';
@@ -13,26 +14,9 @@ apply(
     ]
 );
 
-=head1 NAME
-
-HTML::FormHandler::Field::PosInteger - Validates input is a positive integer
-
 =head1 DESCRIPTION
 
 Tests that the input is an integer and has a postive value.
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

@@ -1,11 +1,8 @@
 package HTML::FormHandler::Moose::Role;
+# ABSTRACT: to add sugar to roles
 
 use Moose::Role;
 use Moose::Exporter;
-
-=head1 NAME
-
-HTML::FormHandler::Moose::Role - to add FormHandler sugar to Roles
 
 =head1 SYNOPSIS
 
@@ -50,21 +47,6 @@ sub apply {
     my ( $class, $arrayref ) = @_;
     $class->meta->add_to_apply_list( @{$arrayref} );
 }
-
-=head1 AUTHOR
-
-Gerda Shank, gshank@cpan.org
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

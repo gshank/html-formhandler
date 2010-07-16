@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::RadioGroup;
+# ABSTRACT: radio group rendering widget
 
 use Moose::Role;
 use namespace::autoclean;

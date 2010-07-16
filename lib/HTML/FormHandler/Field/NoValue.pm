@@ -1,16 +1,13 @@
 package HTML::FormHandler::Field::NoValue;
+# ABSTRACT: base class for submit field
 
 use Moose;
 extends 'HTML::FormHandler::Field';
 
-=head1 NAME
-
-HTML::FormHandler::Field::NoValue - base class for submit field
-
 =head1 SYNOPSIS
 
 This is the base class for the Submit field. It can be used for fields that
-are do not produce valid 'values'. It should not be used for fields that 
+are do not produce valid 'values'. It should not be used for fields that
 produce a value or need validating.
 
 =cut

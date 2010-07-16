@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Email;
+# ABSTRACT: validates email using Email::Valid
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
@@ -17,10 +18,6 @@ apply(
     ]
 );
 
-=head1 NAME
-
-HTML::FormHandler::Field::Email - Validates email uisng Email::Valid
-
 =head1 DESCRIPTION
 
 Validates that the input looks like an email address uisng L<Email::Valid>.
@@ -29,19 +26,6 @@ Widget type is 'text'.
 =head1 DEPENDENCIES
 
 L<Email::Valid>
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

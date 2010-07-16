@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field;
+# ABSTRACT: base class for fields
 
 use HTML::FormHandler::Moose;
 use HTML::FormHandler::Field::Result;
@@ -11,10 +12,6 @@ with 'HTML::FormHandler::Widget::ApplyRole';
 with 'HTML::FormHandler::TraitFor::I18N';
 
 our $VERSION = '0.02';
-
-=head1 NAME
-
-HTML::FormHandler::Field - Base class for HTML::FormHandler Fields
 
 =head1 SYNOPSIS
 
@@ -89,7 +86,7 @@ Inheritance hierarchy of the distribution's field classes:
    DateMDY
    DateTime
    Email
-   PrimaryKey 
+   PrimaryKey
 
 See the documentation or source for the individual fields.
 
@@ -261,10 +258,10 @@ Widget types for the provided field classes:
     ---------------:-----------------------------------
     text (Text)            : Text, Integer
     checkbox (Checkbox)    : Checkbox, Boolean
-    radio_group 
+    radio_group
        (RadioGroup)        : Select, Multiple, IntRange (etc)
     select (Select)        : Select, Multiple, IntRange (etc)
-    checkbox_group 
+    checkbox_group
        (CheckboxGroup)     : Multiple select
     textarea (Textarea)    : TextArea, HtmlArea
     compound (Compound)    : Compound, Repeatable, DateTime
@@ -325,10 +322,10 @@ with C<< init_object => {....} >> the values in that object will be used instead
 of values provided in the field definition with 'default' or 'default_fieldname'.
 
 If you *want* values that override the item/init_object, you can use the field
-attribute 'default_over_obj'. 
+attribute 'default_over_obj'.
 
 However you might want to consider putting your defaults into your row or init_object
-instead. 
+instead.
 
 =item default_over_obj
 
@@ -337,7 +334,7 @@ Allows setting defaults which will override values provided with an item/init_ob
    has_field 'quux' => ( default_over_obj => 'default quux' );
 
 At this time there is no equivalent of 'set_default', but the type of the attribute
-is not defined so you can provide default values in a variety of other ways, 
+is not defined so you can provide default values in a variety of other ways,
 including providing a trait which does 'build_default_over_obj'. For examples,
 see tests in the distribution.
 
@@ -393,9 +390,9 @@ Use the 'apply' keyword to specify an ArrayRef of constraints and coercions to
 be executed on the field at validate_field time.
 
    has_field 'test' => (
-      apply => [ 'MooseType', 
+      apply => [ 'MooseType',
                  { check => sub {...}, message => { } },
-                 { transform => sub { ... lc(shift) ... } } 
+                 { transform => sub { ... lc(shift) ... } }
                ],
    );
 
@@ -527,8 +524,8 @@ this contains a transform to strip beginning and trailing spaces.
 Set this attribute to null to skip trimming, or supply a different
 transform.
 
-  trim => { transform => sub { 
-      my $string = shift; 
+  trim => { transform => sub {
+      my $string = shift;
       $string =~ s/^\s+//;
       $string =~ s/\s+$//;
       return $string;
@@ -539,9 +536,9 @@ Trimming is performed before any other defined actions.
 
 =head2 deflation, deflate
 
-A 'deflation' is a coderef that will convert from an inflated value back to a 
+A 'deflation' is a coderef that will convert from an inflated value back to a
 flat data representation suitable for displaying in an HTML field.
-If deflation is defined for a field it is automatically used for data that is 
+If deflation is defined for a field it is automatically used for data that is
 taken from the database.
 
    has_field 'my_date_time' => (
@@ -656,7 +653,7 @@ sub input {
     # but just in case resetting for safety
     unless ( $result ) {
         $self->clear_result;
-        $result = $self->result; 
+        $result = $self->result;
     }
     return $result->_set_input(@_) if @_;
     return $result->input;
@@ -677,7 +674,7 @@ sub value {
 # for compatibility. deprecate and remove at some point
 sub clear_input { shift->_clear_input }
 sub clear_value { shift->_clear_value }
-sub clear_data  { 
+sub clear_data  {
     my $self = shift;
     $self->clear_result;
     $self->clear_active;
@@ -764,7 +761,7 @@ has 'title'     => ( isa => 'Str',               is => 'rw' );
 has 'style'     => ( isa => 'Str',               is => 'rw' );
 has 'css_class' => ( isa => 'Str',               is => 'rw' );
 has 'input_class' => ( isa => 'Str',             is => 'rw' );
-has 'form'      => ( 
+has 'form'      => (
     isa => 'HTML::FormHandler',
     is => 'rw',
     weak_ref => 1,
@@ -784,9 +781,9 @@ sub build_html_name {
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
 has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw' );
-has 'widget_tags'         => ( 
+has 'widget_tags'         => (
     traits => ['Hash'],
-    isa => 'HashRef', 
+    isa => 'HashRef',
     is => 'ro',
     default => sub {{}},
     handles => {
@@ -795,14 +792,14 @@ has 'widget_tags'         => (
       tag_exists => 'exists',
     },
 );
-has 'widget_name_space' => ( 
+has 'widget_name_space' => (
     traits => ['Array'],
-    isa => 'ArrayRef[Str]',  
+    isa => 'ArrayRef[Str]',
     is => 'ro',
     default => sub {[]},
     handles => {
         add_widget_name_space => 'push',
-    }, 
+    },
 );
 has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 # 'inactive' is set in the field declaration, and is static. Default status.
@@ -843,7 +840,7 @@ sub _validate {
 has 'set_default' => ( isa => 'Str', is => 'ro', writer => '_set_default');
 sub _can_default {
     my $self = shift;
-    my $set_default = $self->_set_default_meth; 
+    my $set_default = $self->_set_default_meth;
     return
         unless $self->form &&
             $set_default &&
@@ -917,7 +914,7 @@ sub build_render_filter {
         return sub {
             my $name = shift;
             return $self->default_render_filter($name);
-        }  
+        }
     }
 }
 sub default_render_filter {
@@ -1028,8 +1025,8 @@ sub add_error {
     }
     @message = @{$message[0]} if ref $message[0] eq 'ARRAY';
     my $out;
-    try { 
-        $out = $self->_localize(@message); 
+    try {
+        $out = $self->_localize(@message);
     }
     catch {
         die "Error occurred localizing error message for " . $self->label . ".  $_";
@@ -1144,23 +1141,6 @@ sub peek {
     }
     return $string;
 }
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-Initially based on the original source code of L<Form::Processor::Field> by Bill Moseley
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

@@ -1,4 +1,6 @@
 package HTML::FormHandler::I18N;
+# ABSTRACT: internationalization
+
 use strict;
 use warnings;
 use base ('Locale::Maketext');
@@ -8,7 +10,7 @@ sub maketext {
     my ( $lh, @message ) = @_;
     return unless scalar @message;
     my $out;
-    try { 
+    try {
         $out = $lh->SUPER::maketext(@message);
     }
     catch {

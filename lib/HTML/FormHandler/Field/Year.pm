@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Year;
+# ABSTRACT: year selection list
 
 use Moose;
 extends 'HTML::FormHandler::Field::IntRange';
@@ -18,27 +19,10 @@ has '+range_end' => (
     }
 );
 
-=head1 NAME
-
-HTML::FormHandler::Field::Year - Select a recent year.
-
 =head1 DESCRIPTION
 
 Provides a list of years starting five years back and extending 10 years into
 the future.
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

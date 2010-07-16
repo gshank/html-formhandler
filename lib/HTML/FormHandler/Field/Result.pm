@@ -1,11 +1,8 @@
 package HTML::FormHandler::Field::Result;
+# ABSTRACT: result class for fields
 
 use Moose;
 with 'HTML::FormHandler::Result::Role';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Result - result class for fields
 
 =head1 SYNOPSIS
 
@@ -49,22 +46,6 @@ sub peek {
     }
     return $string;
 }
-
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

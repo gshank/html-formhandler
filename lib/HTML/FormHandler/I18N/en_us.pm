@@ -1,4 +1,6 @@
 package HTML::FormHandler::I18N::en_us;
+# ABSTRACT: base message file
+
 use strict;
 use warnings;
 use base 'HTML::FormHandler::I18N';

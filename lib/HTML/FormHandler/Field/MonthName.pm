@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::MonthName;
+# ABSTRACT: select list with month names
 
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
@@ -23,26 +24,9 @@ sub build_options {
     return [ map { { value => $i++, label => $_ } } @months ];
 }
 
-=head1 NAME
-
-HTML::FormHandler::Field::MonthName - Select list for month names
-
 =head1 DESCRIPTION
 
 Generates a list of English month names.
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

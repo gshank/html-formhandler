@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::Text;
+# ABSTRACT: text field rendering widget
 
 use Moose::Role;
 use namespace::autoclean;

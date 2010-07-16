@@ -1,5 +1,6 @@
 package    # hide from Pause
     HTML::FormHandler::Model::CDBI;
+# ABSTRACT: Class::DBI model class (non-functioning)
 
 use Moose;
 use Carp;
@@ -7,10 +8,6 @@ use Data::Dumper;
 extends 'HTML::FormHandler';
 
 our $VERSION = '0.02';
-
-=head1 NAME
-
-HTML::FormHandler::Model::CDBI - Class::DBI model class for HTML::FormHandler
 
 =head1 SYNOPSIS
 
@@ -405,23 +402,6 @@ sub obj_key {
     return join '|', $item->table,
         map { $_ . '=' . ( $item->$_ || '.' ) } $item->primary_columns;
 }
-
-=head1 AUTHOR
-
-Gerda Shank, gshank@cpan.org
-
-Based on the original source code of L<Form::Processor::Model::CDBI> by Bill Moseley
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 no Moose;

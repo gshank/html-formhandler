@@ -1,14 +1,11 @@
 package HTML::FormHandler::Field::Compound;
+# ABSTRACT: field consisting of subfields
 
 use Moose;
 extends 'HTML::FormHandler::Field';
 with 'HTML::FormHandler::Fields';
 with 'HTML::FormHandler::BuildFields';
 with 'HTML::FormHandler::InitResult';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Compound - field consisting of subfields
 
 =head1 SYNOPSIS
 

@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Hidden;
+# ABSTRACT: hidden field
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';
@@ -6,27 +7,10 @@ our $VERSION = '0.01';
 
 has '+widget' => ( default => 'hidden' );
 
-=head1 NAME
-
-HTML::FormHandler::Field::Hidden - hidden field
-
 =head1 DESCRIPTION
 
 This is a text field that uses the 'hidden' widget type, for HTML
 of type 'hidden'.
-
-=head1 AUTHORS
-
-Zbigniew Lukasiak
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

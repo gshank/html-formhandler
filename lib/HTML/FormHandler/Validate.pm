@@ -1,8 +1,5 @@
 package HTML::FormHandler::Validate;
-
-=head1 NAME
-
-HTML::FormHandler::Validate - validation role (internal)
+# ABSTRACT: validation role (internal)
 
 =head1 SYNOPSIS
 
@@ -19,7 +16,7 @@ has 'required_message' => (
     isa     => 'ArrayRef|Str',
     is      => 'rw',
     lazy    => 1,
-    default => sub { 
+    default => sub {
         return [ '[_1] field is required', shift->loc_label ];
     }
 );
@@ -103,21 +100,6 @@ sub validate_field {
 sub _inner_validate_field { }
 
 sub validate { 1 }
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

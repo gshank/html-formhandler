@@ -1,10 +1,7 @@
 package HTML::FormHandler::Fields;
+# ABSTRACT: internal role for form and compound fields
 
 use Moose::Role;
-
-=head1 NAME
-
-HTML::FormHandler::Fields - internal role for form and compound fields 
 
 =head1 SYNOPSIS
 
@@ -14,7 +11,7 @@ to L<HTML::FormHandler> and L<HTML::FormHandler::Field::Compound>.
 =head2 fields
 
 The field definitions as built from the field_list and the 'has_field'
-declarations. This provides clear_fields, add_field, remove_last_field, 
+declarations. This provides clear_fields, add_field, remove_last_field,
 num_fields, has_fields, and set_field_at methods.
 
 =head2 field( $full_name )
@@ -124,7 +121,7 @@ sub field {
 sub sorted_fields {
     my $self = shift;
 
-    my @fields = sort { $a->order <=> $b->order } 
+    my @fields = sort { $a->order <=> $b->order }
         grep { !$_->inactive || ($_->inactive && $_->_active) } $self->all_fields;
     return wantarray ? @fields : \@fields;
 }
@@ -147,7 +144,7 @@ sub _fields_validate {
 }
 
 sub fields_set_value {
-    my $self = shift; 
+    my $self = shift;
     my %value_hash;
     foreach my $field ( $self->all_fields ) {
         next if ( ($field->inactive && !$field->_active) || !$field->has_result );
@@ -229,14 +226,6 @@ sub dump_validated {
             ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";
     }
 }
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-=cut
 
 use namespace::autoclean;
 1;

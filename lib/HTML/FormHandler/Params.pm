@@ -1,5 +1,6 @@
 package    # hide from Pause
     HTML::FormHandler::Params;
+# ABSTRACT: params handling
 
 use Moose;
 use Carp;

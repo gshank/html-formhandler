@@ -1,13 +1,10 @@
 package  HTML::FormHandler::Moose;
+# ABSTRACT: to add FormHandler sugar
 
 use Moose;
 use Moose::Exporter;
 use Moose::Util::MetaRole;
 use HTML::FormHandler::Meta::Role;
-
-=head1 NAME
-
-HTML::FormHandler::Moose - to add FormHandler sugar
 
 =head1 SYNOPSIS
 
@@ -55,21 +52,6 @@ sub apply {
 
     $meta->add_to_apply_list( @{$arrayref} );
 }
-
-=head1 AUTHOR
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

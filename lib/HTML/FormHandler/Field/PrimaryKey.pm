@@ -1,12 +1,8 @@
 package HTML::FormHandler::Field::PrimaryKey;
+# ABSTRACT: primary key field
 
 use Moose;
 extends 'HTML::FormHandler::Field';
-
-=head1 NAME
-
-HTML::FormHandler::Field::PrimaryKey - field for primary keys for
-Repeatable related fields.
 
 =head1 SYNOPSIS
 

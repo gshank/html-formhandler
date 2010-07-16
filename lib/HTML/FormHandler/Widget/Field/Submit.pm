@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::Submit;
+# ABSTRACT: submit field rendering widget
 
 use Moose::Role;
 use namespace::autoclean;

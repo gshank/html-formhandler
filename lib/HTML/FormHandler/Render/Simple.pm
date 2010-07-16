@@ -1,4 +1,5 @@
 package HTML::FormHandler::Render::Simple;
+# ABSTRACT: simple rendering role
 
 use Moose::Role;
 
@@ -6,10 +7,6 @@ requires( 'sorted_fields', 'field' );
 
 with 'HTML::FormHandler::Widget::Form::Role::HTMLAttributes';
 our $VERSION = 0.01;
-
-=head1 NAME
-
-HTML::FormHandler::Render::Simple - Simple rendering routine
 
 =head1 SYNOPSIS
 
@@ -121,7 +118,7 @@ Renders field with 'submit' widget
 
 has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', default => 1 );
 has 'label_types' => (
-    traits    => ['Hash'], 
+    traits    => ['Hash'],
     isa       => 'HashRef[Str]',
     is        => 'rw',
     default   => sub {
@@ -276,7 +273,7 @@ sub render_select {
     $output .= '>';
     my $index = 0;
     if( $field->empty_select ) {
-        $output .= '<option value="">' . $field->_localize($field->empty_select) . '</option>'; 
+        $output .= '<option value="">' . $field->_localize($field->empty_select) . '</option>';
     }
     foreach my $option ( @{ $field->options } ) {
         $output .= '<option value="' . $field->html_filter($option->{value}) . '" ';
@@ -368,7 +365,7 @@ sub render_upload {
 
 sub _label {
     my ( $self, $field ) = @_;
-    return '<label class="label" for="' . $field->id . '">' . 
+    return '<label class="label" for="' . $field->id . '">' .
         $field->html_filter($field->loc_label)
         . ': </label>';
 }
@@ -418,21 +415,6 @@ sub _add_html_attributes {
     }
     return $output;
 }
-
-=head1 AUTHORS
-
-See CONTRIBUTORS in L<HTML::FormHandler>
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

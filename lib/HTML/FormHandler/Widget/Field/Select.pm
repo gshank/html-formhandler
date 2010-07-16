@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::Select;
+# ABSTRACT: select field rendering widget
 
 use Moose::Role;
 use namespace::autoclean;

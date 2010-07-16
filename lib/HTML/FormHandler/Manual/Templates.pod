@@ -1,6 +1,5 @@
-=head1 NAME
-
-HTML::FormHandler::Manual::Templates - using templates
+package HTML::FormHandler::Manual::Templates;
+# ABSTRACT: using templates
 
 =head1 SYNOPSIS
 
@@ -11,7 +10,7 @@ Documentation on templates to use with L<HTML::FormHandler>
 There are lots of different ways to set up templates. One way is to
 create a 'widget' directory, and store template snippets there.
 
-You can use the default 'widget' for the field class, or set the 'widget' 
+You can use the default 'widget' for the field class, or set the 'widget'
 for the field in your form:
 
    fields => [
@@ -69,28 +68,28 @@ Single select:
    <label class="label" for="[% f.id %]">[% f.label %]</label>
    <select name="[% f.html_name %]" id="[% f.id %]>
      [% FOR option IN f.options %]
-       <option value="[% option.value %]" 
+       <option value="[% option.value %]"
        [% IF option.value == f.fif %]
           selected="selected"
        [% END %]>
        [% option.label %]</option>
-     [% END %] 
+     [% END %]
    </select>
 
 Multiple select:
 
    <label class="label" for="[% f.id %]">[% f.label %]</label>
-   <select name="[% f.html_name %]" id="[% f.id %] 
+   <select name="[% f.html_name %]" id="[% f.id %]
              multiple="multiple" size="[% f.size %]">
      [% FOR option IN f.options %]
-       <option value="[% option.value %]" 
+       <option value="[% option.value %]"
        [% FOREACH optval IN f.value %]
           [% IF optval == option.value %]
              selected="selected"
           [% END %]
        [% END %]>
        [% option.label %]</option>
-     [% END %] 
+     [% END %]
    </select>
 
 Warning: TT has problems with single element arrays. If you are likely
@@ -107,17 +106,17 @@ with a good solution, please submit a doc patch.)
 =head2 Textarea
 
    <div><label class="label" for="[% f.id %]">[% f.label %]" </label>
-   <textarea name="[% f.html_name %]" id="[% f.id %]" 
+   <textarea name="[% f.html_name %]" id="[% f.id %]"
         rows="[% f.rows %]" cols="[% f.cols %]">[% f.fif %]</textarea></div>
 
 =head2 Hidden
 
-   <div><input type="hidden" name="[% f.html_name %]" id="[% f.id %]" 
+   <div><input type="hidden" name="[% f.html_name %]" id="[% f.id %]"
        value="[% f.fif %]" /></div>
 
 =head2 Submit
 
-   <div><input type="submit" name="[% f.html_name %]" id="[% f.id %]" 
+   <div><input type="submit" name="[% f.html_name %]" id="[% f.id %]"
        value="[% f.value %]" /></div>
 
 =head2 Radio group
@@ -125,26 +124,13 @@ with a good solution, please submit a doc patch.)
    <div>
    <label class="label" for="[% f.id %]">[% f.label %]</label>
    [% FOR option IN f.options %]
-     <input type="radio" value="[% option.value %]" 
+     <input type="radio" value="[% option.value %]"
         name="[% f.name %]"
      [% IF option.value == f.fif %]
         checked="checked"
      [% END %]>
      [% option.label %]<br />
-   [% END %] 
+   [% END %]
    </div>
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut

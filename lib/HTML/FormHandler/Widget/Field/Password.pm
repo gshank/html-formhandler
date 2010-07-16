@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::Password;
+# ABSTRACT: password rendering widget
 
 use Moose::Role;
 use namespace::autoclean;

@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Money;
+# ABSTRACT: US currency-like values
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
@@ -24,29 +25,12 @@ apply(
     ]
 );
 
-=head1 NAME
-
-HTML::FormHandler::Field::Money - Input US currency-like values.
-
 =head1 DESCRIPTION
 
 Validates that a postive or negative real value is entered.
 Formatted with two decimal places.
 
 Uses a period for the decimal point. Widget type is 'text'.
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

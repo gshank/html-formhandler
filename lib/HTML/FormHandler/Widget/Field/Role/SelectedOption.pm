@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::Role::SelectedOption;
+# ABSTRACT: allow setting options from options keys
 
 use Moose::Role;
 use namespace::autoclean;

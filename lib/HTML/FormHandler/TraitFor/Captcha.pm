@@ -1,4 +1,5 @@
 package HTML::FormHandler::TraitFor::Captcha;
+# ABSTRACT: generate and validate captchas
 
 use HTML::FormHandler::Moose::Role;
 use GD::SecurityImage;
@@ -7,10 +8,6 @@ use HTTP::Date;
 requires('ctx');
 
 has_field 'captcha' => ( type => 'Captcha', label => 'Verification' );
-
-=head1 NAME
-
-HTML::FormHandler::TraitFor::Captcha - generate and validate captchas
 
 =head1 SYNOPSIS
 

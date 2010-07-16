@@ -1,11 +1,8 @@
 package    # hide from Pause
     HTML::FormHandler::Meta::Role;
+# ABSTRACT: field_list and apply_list
 
 use Moose::Role;
-
-=head1 NAME
-
-HTML::FormHandler::Meta::Role - field_list & apply_list
 
 =head1 SYNOPSIS
 
@@ -36,21 +33,6 @@ has 'apply_list' => (
         clear_apply_list => 'clear',
     }
 );
-
-=head1 AUTHOR
-
-Gerda Shank, gshank@cpan.org
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Wrapper::Table;
+# ABSTRACT: wrapper class for table layout
 
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Wrapper::Base';

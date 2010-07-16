@@ -1,7 +1,5 @@
-
-=head1 NAME
-
-HTML::FormHandler::Manual::Catalyst - Using HFH forms in Catalyst controllers
+package HTML::FormHandler::Manual::Catalyst;
+# ABSTRACT: using HFH forms in Catalyst
 
 =head1 SYNOPSIS
 
@@ -76,16 +74,16 @@ by both the create and edit actions.
 
    1;
 
-=head2 Another way to set up your form 
+=head2 Another way to set up your form
 
 If you are setting the schema or other form attributes (such as the user_id,
-or other attributes) on your form you could create a base controller that would set 
-these in the form on each call using L<Catalyst::Component::InstancePerContext>,  
-or set them in a base Chained method. 
+or other attributes) on your form you could create a base controller that would set
+these in the form on each call using L<Catalyst::Component::InstancePerContext>,
+or set them in a base Chained method.
 
    sub book_base : Chained PathPart('book') CaptureArgs(0) {
       my ( $self, $c ) = @_;
-      my $form = MyApp::Form->new;  
+      my $form = MyApp::Form->new;
       $form->schema( $c->model('DB')->schema );
       $form->params( $c->req->parameters );
       $form->user_id( $c->user->id );
@@ -98,7 +96,7 @@ Then you could just pass in the item_id when the form is processed.
 
 =head2 Using  HTML::FillInForm
 
-If you want to use L<HTML::FillInForm> to fill in values instead of the 
+If you want to use L<HTML::FillInForm> to fill in values instead of the
 doing it in directly in a template using either the field or the form 'fif'
 methods, you can use L<Catalyst::View::FillInForm> on your view class:
 
@@ -144,7 +142,7 @@ Then just pass the attributes in on new:
 
     my $form => MyApp::Form->new( user_id => $c->user->id, hostname => $c->req->host,
         captcha_store => $c->{session}->{captcha} );
-   
+
 Or set them using accessors:
 
     $form->user_id( $c->user->id );

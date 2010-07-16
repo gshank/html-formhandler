@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Integer;
+# ABSTRACT: validate an integer value
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
@@ -22,28 +23,11 @@ apply(
     ]
 );
 
-=head1 NAME
-
-HTML::FormHandler::Field::Integer - validate an integer value
-
 =head1 DESCRIPTION
 
 This accpets a positive or negative integer.  Negative integers may
 be prefixed with a dash.  By default a max of eight digits are accepted.
 Widget type is 'text'.
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

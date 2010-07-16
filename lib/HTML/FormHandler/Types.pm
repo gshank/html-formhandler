@@ -1,4 +1,5 @@
 package HTML::FormHandler::Types;
+# ABSTRACT: Moose type constraints
 
 use strict;
 use warnings;
@@ -15,10 +16,6 @@ use MooseX::Types -declare => [
 ];
 
 use MooseX::Types::Moose ( 'Str', 'Num', 'Int' );
-
-=head1 NAME
-
-HTML::FormHandler::Types - Moose type constraints
 
 =head1 SYNOPSIS
 
@@ -239,23 +236,8 @@ subtype Trim,
 coerce Trim,
    from Str,
    via { s/^\s+// &&
-         s/\s+$//; 
+         s/\s+$//;
          return $_;  };
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 1;
 

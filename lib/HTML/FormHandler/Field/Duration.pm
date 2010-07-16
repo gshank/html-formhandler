@@ -1,14 +1,11 @@
 package HTML::FormHandler::Field::Duration;
+# ABSTRACT: DateTime::Duration from HTML form values
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
 use DateTime;
 
 our $VERSION = '0.01';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Duration -  DateTime::Duration from HTML form values
 
 =head1 SubFields
 

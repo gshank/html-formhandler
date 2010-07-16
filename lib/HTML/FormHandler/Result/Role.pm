@@ -1,4 +1,5 @@
 package HTML::FormHandler::Result::Role;
+# ABSTRACT: role with common code for form & field results
 
 use Moose::Role;
 
@@ -38,7 +39,7 @@ has '_results' => (
     is         => 'rw',
     default    => sub { [] },
     handles   => {
-        results => 'elements', 
+        results => 'elements',
         add_result => 'push',
         num_results => 'count',
         has_results => 'count',
@@ -100,21 +101,6 @@ sub field {
     return unless $die;
     die "Field '$name' not found in '$self'";
 }
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

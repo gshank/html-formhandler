@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::Compound;
+# ABSTRACT: compound field widget
 
 use Moose::Role;
 

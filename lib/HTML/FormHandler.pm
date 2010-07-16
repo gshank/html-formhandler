@@ -1,5 +1,5 @@
-# ABSTRACT: HTML forms using Moose
 package HTML::FormHandler;
+# ABSTRACT: HTML forms using Moose
 
 use Moose;
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
@@ -20,10 +20,6 @@ use 5.008;
 # always use 5 digits after decimal because of toolchain issues
 our $VERSION = '0.32001';
 
-=head1 NAME
-
-HTML::FormHandler - form handler written in Moose
-
 =head1 SYNOPSIS
 
     use HTML::FormHandler; # or a custom form: use MyApp::Form::User;
@@ -36,7 +32,7 @@ HTML::FormHandler - form handler written in Moose
     else {
         # perform non-validated actions
     }
-    
+
 Or, if you want to use a form 'result' (which contains only the form
 values and error messages) instead:
 
@@ -89,7 +85,7 @@ field declaration sugar):
     1;
 
 
-A dynamic form - one that does not use a custom form class - may be 
+A dynamic form - one that does not use a custom form class - may be
 created in using the 'field_list' attribute to set fields:
 
     my $form = HTML::FormHandler->new(
@@ -98,7 +94,7 @@ created in using the 'field_list' attribute to set fields:
         field_list => [
             'username' => {
                 type  => 'Text',
-                apply => [ { check => qr/^[0-9a-z]*/, 
+                apply => [ { check => qr/^[0-9a-z]*/,
                    message => 'Contains invalid characters' } ],
             },
             'select_bar' => {
@@ -132,8 +128,8 @@ be used for both database and non-database forms, and will
 automatically update or create rows in a database. It can be used
 to process structured data that doesn't come from an HTML form.
 
-One of its goals is to keep the controller/application program interface as 
-simple as possible, and to minimize the duplication of code. In most cases, 
+One of its goals is to keep the controller/application program interface as
+simple as possible, and to minimize the duplication of code. In most cases,
 interfacing your controller to your form is only a few lines of code.
 
 With FormHandler you'll never spend hours trying to figure out how to make a
@@ -152,11 +148,11 @@ a lot of flexibility in what you can do.
 
 HTML::FormHandler provides rendering through roles which are applied to
 form and field classes (although there's no reason you couldn't write
-a renderer as an external object either).  There are currently two flavors: 
-all-in-one solutions like L<HTML::FormHandler::Render::Simple> and 
-L<HTML::FormHandler::Render::Table> that contain methods for rendering 
-field widget classes, and the L<HTML::FormHandler::Widget> roles, which are 
-more atomic roles which are automatically applied to fields and form if a 
+a renderer as an external object either).  There are currently two flavors:
+all-in-one solutions like L<HTML::FormHandler::Render::Simple> and
+L<HTML::FormHandler::Render::Table> that contain methods for rendering
+field widget classes, and the L<HTML::FormHandler::Widget> roles, which are
+more atomic roles which are automatically applied to fields and form if a
 'render' method does not already exist. See
 L<HTML::FormHandler::Manual::Rendering> for more details.
 (And you can easily use hand-build forms - FormHandler doesn't care.)
@@ -379,8 +375,8 @@ add fields to the form depending on some other state.
 Used to dynamically set particular field attributes on the 'process' (or
 'run') call.
 
-    $form->process( update_field_list => { 
-       foo_date => { format => '%m/%e/%Y', date_start => '10-01-01' } }, 
+    $form->process( update_field_list => {
+       foo_date => { format => '%m/%e/%Y', date_start => '10-01-01' } },
        params => $params );
 
 The 'update_field_list' is processed by the 'update_fields' form method,
@@ -545,10 +541,10 @@ The default is "form" + a one to three digit random number.
 
 =head3 init_object
 
-An 'init_object' may be used instead of the 'item' to pre-populate the values 
-in the form. This can be useful when populating a form from default values 
-stored in a similar but different object than the one the form is creating. 
-The 'init_object' should be either a hash or the same type of object that 
+An 'init_object' may be used instead of the 'item' to pre-populate the values
+in the form. This can be useful when populating a form from default values
+stored in a similar but different object than the one the form is creating.
+The 'init_object' should be either a hash or the same type of object that
 the model uses (a DBIx::Class row for the DBIC model). It can be set in a
 variety of ways:
 
@@ -686,21 +682,21 @@ has 'active' => (
         add_active => 'push',
         has_active => 'count',
         clear_active => 'clear',
-    } 
+    }
 );
-   
+
 
 # object with which to initialize
 has 'init_object'         => ( is => 'rw', clearer => 'clear_init_object' );
-has 'update_field_list'   => ( is => 'rw', 
-    isa => 'HashRef', 
+has 'update_field_list'   => ( is => 'rw',
+    isa => 'HashRef',
     default => sub {{}},
     traits => ['Hash'],
     handles => {
         clear_update_field_list => 'clear',
         has_update_field_list => 'count',
     },
-); 
+);
 has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 # flags
 has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
@@ -713,9 +709,9 @@ has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
 
-has 'widget_tags'         => ( 
+has 'widget_tags'         => (
     traits => ['Hash'],
-    isa => 'HashRef', 
+    isa => 'HashRef',
     is => 'ro',
     default => sub {{}},
     handles => {
@@ -884,11 +880,11 @@ sub validate_form {
 
 sub validate { 1 }
 
-sub has_errors { 
+sub has_errors {
     my $self = shift;
     return $self->has_error_fields || $self->has_form_errors;
 }
-sub num_errors { 
+sub num_errors {
     my $self = shift;
     return $self->num_error_fields + $self->num_form_errors;
 }
@@ -929,7 +925,7 @@ sub setup_form {
 
     if ( !$self->did_init_obj ) {
         if ( my $init_object = $self->item || $self->init_object ) {
-            $self->_result_from_object( $self->result, $init_object ); 
+            $self->_result_from_object( $self->result, $init_object );
         }
         elsif ( !$self->has_params ) {
             # no initial object. empty form form must be initialized
@@ -937,7 +933,7 @@ sub setup_form {
         }
     }
     # There's some weirdness here because of trying to support supplying
-    # the db object in the ->new. May change to not support that? 
+    # the db object in the ->new. May change to not support that?
     my %params = ( %{ $self->params } );
     if ( $self->has_params ) {
         $self->clear_result;
@@ -975,7 +971,7 @@ sub build_active {
         }
     }
     $self->clear_active;
-} 
+}
 
 sub fif { shift->fields_fif(@_) }
 
@@ -1058,8 +1054,8 @@ sub add_form_error {
         @message = ('form is invalid');
     }
     my $out;
-    try { 
-        $out = $self->_localize(@message); 
+    try {
+        $out = $self->_localize(@message);
     }
     catch {
         die "Error occurred localizing error message for " . $self->name . ".  $_";
@@ -1069,7 +1065,7 @@ sub add_form_error {
 }
 
 sub apply_field_traits {
-    my $self = shift; 
+    my $self = shift;
     my $fmeta = HTML::FormHandler::Field->meta;
     $fmeta->make_mutable;
     Moose::Util::apply_all_roles( $fmeta, @{$self->field_traits});
@@ -1161,15 +1157,6 @@ koki: Klaus Ita
 jnapiorkowski: John Napiorkowski
 
 Initially based on the source code of L<Form::Processor> by Bill Moseley
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

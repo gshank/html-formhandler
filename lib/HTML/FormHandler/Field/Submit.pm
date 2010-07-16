@@ -1,11 +1,8 @@
 package HTML::FormHandler::Field::Submit;
+# ABSTRACT: submit field
 
 use Moose;
 extends 'HTML::FormHandler::Field::NoValue';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Submit - submit field
 
 =head1 SYNOPSIS
 
@@ -20,7 +17,7 @@ Uses the 'submit' widget.
 
 If you have multiple submit buttons, currently the only way to test
 which one has been clicked is with C<< $field->input >>. The 'value'
-attribute is used for the HTML input field 'value'. 
+attribute is used for the HTML input field 'value'.
 
 =cut
 

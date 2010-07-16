@@ -1,13 +1,10 @@
 package HTML::FormHandler::Field::Repeatable;
+# ABSTRACT: repeatable (array) field
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
 
 use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Repeatable - Repeatable (array) field
 
 =head1 SYNOPSIS
 
@@ -79,7 +76,7 @@ containing references to the fields that contain errors.
 
 Note that after updates to the database the fields will be reloaded. This means
 that the array indexes ( the '3' in C<< $form->field('addresses.3') >> ) may
-not be the same if there have been changes since the fields were initially 
+not be the same if there have been changes since the fields were initially
 loaded.
 
 =head1 ATTRIBUTES
@@ -123,7 +120,7 @@ sub _fields_validate {
     # loop through array of fields and validate
     my @value_array;
     foreach my $field ( $self->all_fields ) {
-        next if ( $field->inactive && !$field->_active ); 
+        next if ( $field->inactive && !$field->_active );
         # Validate each field and "inflate" input -> value.
         $field->validate_field;    # this calls the field's 'validate' routine
         push @value_array, $field->value;
@@ -227,7 +224,7 @@ sub _result_from_input {
 sub _result_from_object {
     my ( $self, $result, $values ) = @_;
 
-    return $self->_result_from_fields( $result ) 
+    return $self->_result_from_fields( $result )
         if ( $self->num_when_empty > 0 && !$values );
     $self->item($values);
     $self->init_state;

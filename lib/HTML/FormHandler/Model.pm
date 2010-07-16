@@ -1,11 +1,8 @@
 package HTML::FormHandler::Model;
+# ABSTRACT: default model base class
 
 use Moose::Role;
 use Carp;
-
-=head1 NAME
-
-HTML::FormHandler::Model - default model base class
 
 =head1 SYNOPSIS
 
@@ -166,23 +163,6 @@ Update the model with validated fields
 =cut
 
 sub update_model { }
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-Initially based on the original source code of L<Form::Processor::Model> by Bill Moseley
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

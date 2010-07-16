@@ -1,6 +1,5 @@
-=head1 NAME
-
-HTML::FormHandler::Manual::Cookbook - FormHandler use recipes
+package HTML::FormHandler::Manual::Cookbook;
+# ABSTRACT: FormHandler use recipes
 
 =head1 SYNOPSIS
 
@@ -10,18 +9,18 @@ Collection of use recipes for L<HTML::FormHandler>
 
 I had to create a tiny little form this week for admins to enter a comment, and
 it seemed silly to have to create a form file and a template file. I remembered
-that you can set the TT 'template' to a a string reference and not use a template 
-at all, which is nice when FormHandler will create the form HTML for you anyway. 
+that you can set the TT 'template' to a a string reference and not use a template
+at all, which is nice when FormHandler will create the form HTML for you anyway.
 
     sub comment : Chained('base_sub') PathPart('comment') Args(0) {
         my ( $self, $c ) = @_;
-        
-        my $form = HTML::FormHandler->new( field_list => 
-            [ comment => { type => 'Text', size => 60 }, 
+
+        my $form = HTML::FormHandler->new( field_list =>
+            [ comment => { type => 'Text', size => 60 },
               submit => {type => 'Submit'} ] );
         $form->process($c->req->params);
         if ( $form->validated ) {
-            $self->admin_log( $c, "Admin::Queue", "admin comment", 
+            $self->admin_log( $c, "Admin::Queue", "admin comment",
                   $form->field('comment')->value );
             $c->flash( message => 'Comment added' );
             $c->res->redirect( $c->stash->{urilist}->{view} );
@@ -30,15 +29,15 @@ at all, which is nice when FormHandler will create the form HTML for you anyway.
         $c->stash( template => \$rendered_form );
     }
 
-This creates the form on the fly with a comment field and a submit button, 
+This creates the form on the fly with a comment field and a submit button,
 renders it using the default TT wrappers, then logs the comment. No other files
 at all....
 
-FormHandler isn't really necessary for validation here, but it does make it 
+FormHandler isn't really necessary for validation here, but it does make it
 possible to have a simple, standalone method.
 
 
-=head2 Dynamically change the active fields 
+=head2 Dynamically change the active fields
 
 A common use case is for forms with some fields that should be displayed in
 some circumstances and not in others. There are a number of ways to do this.
@@ -75,8 +74,8 @@ Or on the 'process' call:
 
    $form->process( params => $params, active => ['foo', 'bar'] );
 
-Fields set to active with the form's 'active' modifier (but not on new) will 
-be automatically set back to inactive when the form is cleared, so there's no 
+Fields set to active with the form's 'active' modifier (but not on new) will
+be automatically set back to inactive when the form is cleared, so there's no
 need to reset.
 
 If you want the fields activated for the life of an object, set active on new:
@@ -87,7 +86,7 @@ If you want the fields activated for the life of an object, set active on new:
 
 If you want to add custom attributes to the FormHandler fields but don't want
 to subclass all the fields, you can apply a role containing the new
-attributes to an L<HTML::FormHandler::Field> in your form. 
+attributes to an L<HTML::FormHandler::Field> in your form.
 
 Use the form attribute 'field_traits' to apply a role to the base field class.
 Use 'traits' on the individual fields to apply a role to field instances.
@@ -98,13 +97,13 @@ Use 'traits' on the individual fields to apply a role to field instances.
 
     has_field 'foo' => ( traits => ['MyApp::TraitFor::Test'] );
     has '+field_traits' => ( default => sub { ['Some::Trait', 'Another::Trait'] } );
-     
+
 Or set the traits on new:
 
     my $form = MyApp::Form::User->new( field_traits => ['MyApp::TraitFor::Test'] );
-    my $form = MyApp::Form::User->new( 
+    my $form = MyApp::Form::User->new(
              field_list => [ '+foo' => { traits => [...] } ]);
-  
+
 
 =head2 Select lists
 
@@ -113,7 +112,7 @@ default):
 
    sub default_license {
       my ( $self, $field, $item ) = @_;
-      return 0 unless $item && $item->license_id; 
+      return 0 unless $item && $item->license_id;
       return $item->license_id;
    }
 
@@ -124,16 +123,16 @@ a 'no choice' choice, in your template:
    <select id="select_sc" name="[% f.name %]">
      <option value="">--- Choose Subject Class---</option>
      [% FOR option IN f.options %]
-       <option value="[% option.value %]" 
+       <option value="[% option.value %]"
           [% IF option.value == f.fif %]selected="selected"[% END %]>
           [% option.label | html %]</option>
-     [% END %] 
+     [% END %]
    </select>
 
 Or customize the select list in an 'options_' method:
 
    sub options_country {
-      my $self = shift; 
+      my $self = shift;
       return unless $self->schema;
       my @rows =
          $self->schema->resultset( 'Country' )->
@@ -141,7 +140,7 @@ Or customize the select list in an 'options_' method:
       return [ map { $_->digraph, $_->country_name } @rows ];
    }
 
-=head2 The database and FormHandler forms 
+=head2 The database and FormHandler forms
 
 If you have to process the input data before saving to the database, and
 this is something that would be useful in other places besides your form,
@@ -155,9 +154,9 @@ the pre-processing, and then updating the database yourself.
 
 The 'noupdate' flag is set in order to skip an attempt to update the database
 for this field (it would not be necessary if the field doesn't actually exist
-in the database...).  You can process the input for the non-updatable field 
-field in a number of different places, depending on what is most logical. 
-Some of the choices are: 
+in the database...).  You can process the input for the non-updatable field
+field in a number of different places, depending on what is most logical.
+Some of the choices are:
 
    1) validate (for the form or field)
    2) validate_model
@@ -224,13 +223,13 @@ Or you can make these customizations Moose roles.
    use Moose;
    with 'MyApp::Form::Role::Base';
    ...
-   
+
 =head2 Split up your forms into reusable pieces
 
 A person form:
 
    package Form::Person;
-   use HTML::FormHandler::Moose; 
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
    has_field 'name';
@@ -247,7 +246,7 @@ A person form:
 An address form:
 
    package Form::Address;
-   use HTML::FormHandler::Moose; 
+   use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler';
 
    has_field 'street';
@@ -268,14 +267,14 @@ A form that extends them both:
    use Moose;
    extends ('Form::Person', 'Form::Address');
 
-   use namespace::autoclean; 
+   use namespace::autoclean;
    1;
 
 Or if you don't need to use the pieces of your forms as forms themself, you can
 use roles;
 
    package Form::Role::Address;
-   use HTML::FormHandler::Moose::Role; 
+   use HTML::FormHandler::Moose::Role;
 
    has_field 'street';
    has_field 'city';
@@ -303,27 +302,27 @@ You could make roles that are collections of validations:
 
    1;
 
-And if the validations apply to fields with different names, specify the 
+And if the validations apply to fields with different names, specify the
 'set_validate' on the fields:
-  
+
    with 'Form::Role::Member';
    has_field 'zip' => ( type => 'Integer', set_validate => 'check_zip' );
- 
 
-=head2 Access a user record in the form 
+
+=head2 Access a user record in the form
 
 You might need the user_id to create specialized select lists, or do other form processing. Add a user_id attribute to your form:
 
   has 'user_id' => ( isa => 'Int', is => 'rw' );
- 
+
 Then pass it in when you process the form:
 
   $form->process( item => $item, params => $c->req->parameters, user_id = $c->user->user_id );
 
 =head2 Handle extra database fields
 
-If there is another database field that needs to be updated when a row is 
-created, add an attribute to the form, and then process it with 
+If there is another database field that needs to be updated when a row is
+created, add an attribute to the form, and then process it with
 C< before 'update_model' >.
 
 In the form:
@@ -339,7 +338,7 @@ Then just use an additional parameter when you create/process your form:
 
     $form->process( item => $item, params => $params, hostname => $c->req->host );
 
-=head2 Record the user update 
+=head2 Record the user update
 
 Use the 'before' or 'after' method modifiers for 'update_model', to flag a record
 as updated by the user, for example:
@@ -398,7 +397,7 @@ You can use a method modifier before 'validate_form':
       my $self = shift;
       my $required = 0;
       $required = 1
-         if( $self->params->{field_name} eq 'something' ); 
+         if( $self->params->{field_name} eq 'something' );
       $self->field('some_field')->required($required);
    };
 
@@ -414,7 +413,7 @@ to do these sort of checks in the form's 'validate' routine.
    }
 
 In a Moose role you would need to use a method modifier instead.
-  
+
    after 'validate' => sub { ... };
 
 Don't forget the dependency list, which is used for cases where if any of one
@@ -478,11 +477,11 @@ And here's where the coderef is passed in to the form.
     }
     sub username_available {
         my ( $self, $name ) = @_;
-        # perform some sort of username availability checks 
+        # perform some sort of username availability checks
     }
     1;
 
-=head2 Example of a form with custom database interface 
+=head2 Example of a form with custom database interface
 
 The default DBIC model requires that the form structure match the database
 structure. If that doesn't work - you need to present the form in a different
@@ -513,10 +512,10 @@ record') that has a relationship to permission type roles in a relationship
         my @is_not_admin;
         my $active_families = $self->schema->resultset('Family')->search( { active => 1 } );
         while ( my $fam = $active_families->next ) {
-            my $admin_flag = 
+            my $admin_flag =
                  $fam->search_related('user_roles', { role_id => 2 } )->count > 0 ? 1 : 0;
             my $family_name = $fam->name1 . ", " . $fam->name2;
-            my $elem =  { family => $family_name, family_id => $fam->family_id, 
+            my $elem =  { family => $family_name, family_id => $fam->family_id,
                  admin_flag => $admin_flag };
             if( $admin_flag ) {
                 push @is_admin, $elem;
@@ -524,7 +523,7 @@ record') that has a relationship to permission type roles in a relationship
             else {
                 push @is_not_admin, $elem;
             }
-        } 
+        }
         # Note 7
         # sort into admin flag first, then family_name
         @is_admin = sort { $a->{family} cmp $b->{family} } @is_admin;
@@ -547,7 +546,7 @@ record') that has a relationship to permission type roles in a relationship
             elsif( $elem->{admin_flag} == 0 && $has_admin_flag ) {
                 $fam->delete_related('user_roles', { role_id => 2 } );
             }
-        }  
+        }
     }
 
 Note 1: This form creates its own 'schema' attribute. You could inherit from
@@ -559,8 +558,8 @@ fields, so 'widget_wrapper' is set to 'None' to skip wrapping the form inputs wi
 divs or table elements.
 
 Note 3: This form consists of an array of elements, so there will be a single
-Repeatable form field with subfields. If you wanted to use automatic rendering, you would 
-also need to create a 'submit' field, but in this case it will just be done 
+Repeatable form field with subfields. If you wanted to use automatic rendering, you would
+also need to create a 'submit' field, but in this case it will just be done
 in the template.
 
 Note 4: This field is actually going to be used for display purposes only, but it's
@@ -572,7 +571,7 @@ re-displayed with error messages.
 Note 5: The 'family_id' is the primary key field, necessary for updating the
 correct records.
 
-Note 6: 'init_object' method: This is where the initial object is created, which 
+Note 6: 'init_object' method: This is where the initial object is created, which
 takes the place of a database row for form creation.
 
 Note 7: The entries with the admin flag turned on are sorted into the beginning
@@ -594,7 +593,7 @@ The Template Toolkit template for this form:
          [% f.field('family_id').render %]</td><td> [% f.field('admin_flag').render %]</td>
          </tr>
       [% END %]
-    </table> 
+    </table>
       <input class="submit" name="submit" value="Save" type="submit">
     </form
 
@@ -619,14 +618,14 @@ The Catalyst controller action to execute the form:
         return;
     }
 
-Rather than redirect to some other page after saving the form, the form is redisplayed. 
-If the form has been validated (i.e. the 'update_model' method has been run), the 
-'process' call is run again in order to re-sort the displayed list with admin users at 
+Rather than redirect to some other page after saving the form, the form is redisplayed.
+If the form has been validated (i.e. the 'update_model' method has been run), the
+'process' call is run again in order to re-sort the displayed list with admin users at
 the top. That could have also been done in the 'update_model' method.
 
 =head2 A form that takes a resultset, with custom update_model
 
-For updating a Repeatable field that is filled from a Resultset, and not a 
+For updating a Repeatable field that is filled from a Resultset, and not a
 relationship on a single row. Creates a 'resultset' attribute to pass in
 a resultset. Massages the data into an array that's pointed to by an
 'employers' hash key, and does the reverse in the 'update_model' method.
@@ -663,18 +662,5 @@ general solution, patches welcome.
         }
     }
 
-
-=head1 AUTHOR
-
-Gerda Shank, gshank@cpan.org
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut

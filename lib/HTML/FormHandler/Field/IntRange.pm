@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::IntRange;
+# ABSTRACT: integer range in select list
 
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
@@ -27,10 +28,6 @@ sub build_options {
             $self->range_start .. $self->range_end ];
 }
 
-=head1 NAME
-
-HTML::FormHandler::Field::IntRange - Select an integer range in a select list
-
 =head1 DESCRIPTION
 
 This field generates a select list of numbers from 1 to 10. Override the
@@ -40,19 +37,6 @@ range_start and range_end for a select list with a different range.
                range_start => 0, range_end => 100 );
 
 Widget type is 'select'.
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

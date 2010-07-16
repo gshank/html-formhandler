@@ -1,13 +1,10 @@
 package HTML::FormHandler::Field::Captcha;
+# ABSTRACT: captcha field with GD::SecurityImage
 
 use Moose;
 extends 'HTML::FormHandler::Field';
 use GD::SecurityImage;
 use HTTP::Date;
-
-=head1 NAME
-
-HTML::FormHandler::Field::Captcha - captch field with GD::SecurityImage
 
 =head1 SYNOPSIS
 

@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::Hidden;
+# ABSTRACT: hidden field rendering widget
 
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';

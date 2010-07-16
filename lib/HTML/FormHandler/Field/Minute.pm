@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Minute;
+# ABSTRACT: input range from 0 to 59
 
 use Moose;
 extends 'HTML::FormHandler::Field::IntRange';
@@ -8,27 +9,10 @@ has '+range_start'  => ( default => 0 );
 has '+range_end'    => ( default => 59 );
 has '+label_format' => ( default => '%02d' );
 
-=head1 NAME
-
-HTML::FormHandler::Field::Minute - input range from 0 to 59
-
 =head1 DESCRIPTION
 
 Generate a select list for entering a minute value.
 Widget type is 'select'.
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

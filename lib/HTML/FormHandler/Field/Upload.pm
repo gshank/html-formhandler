@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Upload;
+# ABSTRACT: file upload field
 
 use Moose;
 use Moose::Util::TypeConstraints;
@@ -6,10 +7,6 @@ use Moose::Util::TypeConstraints;
 extends 'HTML::FormHandler::Field';
 
 our $VERSION = '0.02';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Upload - File upload field
 
 =head1 DESCRIPTION
 
@@ -30,8 +27,8 @@ A form containing this field must have the enctype set.
 
 In your controller:
 
-    my $form = My::Form::Upload->new; 
-    my @params = ( file => $c->req->upload('file') ) 
+    my $form = My::Form::Upload->new;
+    my @params = ( file => $c->req->upload('file') )
              if $c->req->method eq 'POST';
     $form->process( params => { @params } );
     return unless ( $form->validated );
@@ -78,7 +75,7 @@ sub is_real_fh {
     my $fh = shift;
 
     my $reftype = Scalar::Util::reftype($fh) or return;
-    if( $reftype eq 'IO' 
+    if( $reftype eq 'IO'
             or $reftype eq 'GLOB' && *{$fh}{IO} ){
         my $m_fileno = $fh->fileno;
         return unless defined $m_fileno;
@@ -92,25 +89,6 @@ sub is_real_fh {
         return;
     }
 }
-
-__PACKAGE__->meta->make_immutable;
-
-=head1 AUTHOR
-
-Bernhard Graf & Oleg Kostyuk
-
-and FormHandler contributors
-
-=head1 LICENSE
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

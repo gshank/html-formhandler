@@ -1,12 +1,9 @@
 package HTML::FormHandler::Field::PasswordConf;
+# ABSTRACT: password confirmation
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.03';
-
-=head1 NAME
-
-HTML::FormHandler::Field::PasswordConf - Password confirmation
 
 =head1 DESCRIPTION
 
@@ -42,21 +39,6 @@ sub validate {
     }
     return 1;
 }
-
-=head1 AUTHORS
-
-See L<HTML::FormHandler> for authors.
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

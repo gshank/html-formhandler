@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Multiple;
+# ABSTRACT: multiple select list
 
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
@@ -24,10 +25,6 @@ sub sort_options {
     return $options;
 }
 
-=head1 NAME
-
-HTML::FormHandler::Field::Multiple - Select one or more options
-
 =head1 DESCRIPTION
 
 This inherits from the Select field,
@@ -35,19 +32,6 @@ and sets the "multiple" flag true to accept multiple options.
 
 The currently selected items will be put at the top of the list.
 Widget type is 'select'.
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

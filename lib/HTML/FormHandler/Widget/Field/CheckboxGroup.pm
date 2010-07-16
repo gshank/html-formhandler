@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::CheckboxGroup;
+# ABSTRACT: checkbox group field role
 
 use Moose::Role;
 use namespace::autoclean;
@@ -12,7 +13,7 @@ sub render {
     my $output = " <br />";
     my $index  = 0;
     my $id = $self->id;
-    my $html_attributes = $self->_add_html_attributes;	# does that make sense?
+    my $html_attributes = $self->_add_html_attributes;
 
     foreach my $option ( @{ $self->options } ) {
         $output .= '<input type="checkbox" value="'

@@ -1,10 +1,7 @@
 package HTML::FormHandler::InitResult;
+# ABSTRACT: internal code
 
 use Moose::Role;
-
-=head1 NAME
-
-HTML::FormHandler::InitResult - internal code
 
 =head1 SYNOPSIS
 
@@ -50,7 +47,7 @@ sub _result_from_input {
     if ( ref $input eq 'HASH' ) {
         foreach my $field ( $self->sorted_fields ) {
             next if ($field->inactive && !$field->_active);
-            my $field_name = $field->name; 
+            my $field_name = $field->name;
             my $result     = HTML::FormHandler::Field::Result->new(
                 name   => $field_name,
                 parent => $self_result
@@ -122,21 +119,6 @@ sub _get_value {
     my $value = @values > 1 ? \@values : shift @values;
     return $value;
 }
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

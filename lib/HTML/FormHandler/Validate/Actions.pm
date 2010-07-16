@@ -1,10 +1,7 @@
 package HTML::FormHandler::Validate::Actions;
+# ABSTRACT: internal role to validate actions
 
 use Moose::Role;
-
-=head1 NAME
-
-FormHandler::Validate::Actions - internal role; validates actions
 
 =head1 SYNOPSIS
 
@@ -167,21 +164,6 @@ sub has_some_value {
     return 1 if ref( $x );
     return;
 }
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 use namespace::autoclean;
 1;

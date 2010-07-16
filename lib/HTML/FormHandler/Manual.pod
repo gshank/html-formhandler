@@ -1,13 +1,12 @@
-=head1 NAME 
-
-HTML::FormHandler::Manual - Index of the Manual
+package HTML::FormHandler::Manual
+# ABSTRACT: index of the manual
 
 =head1 DESCRIPTION
 
 This is the L<HTML::FormHandler> users manual. HTML::FormHandler is
 an HTML form handling class written in Moose. It provides facilities
 to write classes that represent HTML forms, and retrieves and loads
-data from the database. 
+data from the database.
 
 =head1 SECTIONS
 
@@ -48,3 +47,4 @@ gshank: Gerda Shank <gshank@cpan.org>
 
 =cut
 
+1;

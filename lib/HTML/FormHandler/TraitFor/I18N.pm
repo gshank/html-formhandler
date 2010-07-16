@@ -1,12 +1,9 @@
 package HTML::FormHandler::TraitFor::I18N;
+# ABSTRACT: localization
 
 use HTML::FormHandler::I18N;
 use Moose::Role;
 use Moose::Util::TypeConstraints;
-
-=head1 NAME
-
-HTML::FormHandler::TraitFor::I18N - localization
 
 =head3 language_handle, _build_language_handle
 
@@ -38,7 +35,7 @@ You can use non-Locale::Maketext language handles, such as L<Data::Localize>.
 There's an example of building a L<Data::Localize> language handle
 in t/xt/locale_data_localize.t in the distribution.
 
-=cut 
+=cut
 
 has 'language_handle' => (
     isa => duck_type( [ qw(maketext) ] ),

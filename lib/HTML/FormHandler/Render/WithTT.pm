@@ -1,15 +1,12 @@
 package HTML::FormHandler::Render::WithTT;
+# ABSTRACT: tt rendering
 
 use Moose::Role;
 use File::ShareDir;
 use Template;
-use namespace::autoclean; 
+use namespace::autoclean;
 
 requires 'form';
-
-=head1 NAME
-
-HTML::FormHandler::Render::WithTT - tt rendering
 
 =head1 SYNOPSIS
 
@@ -17,7 +14,7 @@ Warning: this feature is not quite ready for prime time. It has not
 been well tested and the template widgets aren't complete. Contributions
 welcome.
 
-A rendering role for HTML::FormHandler that allows rendering using 
+A rendering role for HTML::FormHandler that allows rendering using
 Template::Toolkit
 
    package MyApp::Form;
@@ -29,7 +26,7 @@ Template::Toolkit
    sub build_tt_include_path { 'root/templates' }
    ....< define form >....
 
-   my $form = MyApp::Form->new( 
+   my $form = MyApp::Form->new(
    $form->tt_render;
 
 
@@ -45,7 +42,7 @@ has 'tt_include_path' => (
     is => 'rw',
     isa => 'ArrayRef',
     lazy => 1,
-    builder => 'build_tt_include_path', 
+    builder => 'build_tt_include_path',
 );
 sub build_tt_include_path {[]}
 
@@ -55,18 +52,18 @@ has 'tt_config' => (
     lazy => 1,
     builder => 'build_tt_config',
 );
-sub build_tt_config { 
+sub build_tt_config {
     my $self = shift;
     return {
-        INCLUDE_PATH => [ 
+        INCLUDE_PATH => [
            @{ $self->tt_include_path },
-           File::ShareDir::dist_dir('HTML-FormHandler') . '/templates/' 
+           File::ShareDir::dist_dir('HTML-FormHandler') . '/templates/'
         ]
     };
 }
 
 # either file name string or string ref?
-has 'tt_template' => ( is => 'rw', isa => 'Str', lazy => 1, 
+has 'tt_template' => ( is => 'rw', isa => 'Str', lazy => 1,
    builder => 'build_tt_template' );
 sub build_tt_template { 'form.tt' }
 
@@ -91,7 +88,7 @@ sub build_default_tt_vars {
     return { form => $self->form };
 }
 
-has 'tt_default_options' => ( 
+has 'tt_default_options' => (
     traits => ['Hash'],
     is => 'rw',
     isa => 'HashRef',

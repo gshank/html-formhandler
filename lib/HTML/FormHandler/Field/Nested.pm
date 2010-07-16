@@ -1,11 +1,8 @@
 package HTML::FormHandler::Field::Nested;
+# ABSTRACT: for nested elements of compound fields
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Nested - for nested elements of compound fields
 
 =head1 SYNOPSIS
 

@@ -1,12 +1,9 @@
 package HTML::FormHandler::Field::Checkbox;
+# ABSTRACT: a checkbox field type
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field';
 our $VERSION = '0.02';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Checkbox - A checkbox field type
 
 =head1 DESCRIPTION
 
@@ -55,21 +52,6 @@ sub validate {
     $self->add_error($self->required_message) if( $self->required && !$self->value );
     return;
 }
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

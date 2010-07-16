@@ -1,13 +1,10 @@
 package HTML::FormHandler::Field::Select;
+# ABSTRACT: select fields
 
 use Moose;
 extends 'HTML::FormHandler::Field';
 use Carp;
 our $VERSION = '0.03';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Select - select fields
 
 =head1 DESCRIPTION
 
@@ -67,9 +64,9 @@ In a form:
    has 'options_fruit' => ( is => 'rw', traits => ['Array'],
        default => sub { [1 => 'apples', 2 => 'oranges',
            3 => 'kiwi'] } );
- 
-Notice that, as a convenience, you can return a simple array (or arrayref) 
-for the options array in the 'options_field_name' method. The hashrefs with 
+
+Notice that, as a convenience, you can return a simple array (or arrayref)
+for the options array in the 'options_field_name' method. The hashrefs with
 'value' and 'label' keys will be constructed for you by FormHandler. The
 arrayref of hashrefs format can be useful if you want to add another key
 to the hashes that you can use in creating the HTML:
@@ -78,19 +75,19 @@ to the hashes that you can use in creating the HTML:
    {
       my $self = shift;
       return unless $self->schema;
-      my $licenses = $self->schema->resultset('License')->search({active => 1}, 
+      my $licenses = $self->schema->resultset('License')->search({active => 1},
            {order_by => 'sequence'});
       my @selections;
       while ( my $license = $licenses->next ) {
-         push @selections, { value => $license->id, label => $license->label, 
+         push @selections, { value => $license->id, label => $license->label,
               note => $license->note };
       }
-      return @selections; 
+      return @selections;
    }
 
 
-The final source of the options array is a database when the name of the 
-accessor is a relation to the table holding the information used to construct 
+The final source of the options array is a database when the name of the
+accessor is a relation to the table holding the information used to construct
 the select list.  The primary key is used as the value. The other columns used are:
 
     label_column  --  Used for the labels in the options (default 'name')
@@ -103,7 +100,7 @@ See also L<HTML::FormHandler::Model::DBIC>, the 'lookup_options' method.
 If the options come from the options_<fieldname> method or the database, they
 will be reloaded every time the form is reloaded because the available options
 may have changed. To prevent this from happening when the available options are
-known to be static, set the 'do_not_reload' flag, and the options will not be 
+known to be static, set the 'do_not_reload' flag, and the options will not be
 reloaded after the first time
 
 The sorting of the options may be changed using a 'sort_options' method in a
@@ -136,7 +133,7 @@ Set to the string value of the select label if you want the renderer
 to create an empty select value. This only affects rendering - it does
 not add an entry to the list of options.
 
-   has_field 'fruit' => ( type => 'Select, 
+   has_field 'fruit' => ( type => 'Select,
         empty_select => '---Choose a Fruit---' );
 
 =head2 label_column
@@ -406,23 +403,6 @@ before 'value' => sub {
         $self->_set_value([]);
     }
 };
-
-=head1 AUTHORS
-
-Gerda Shank, gshank@cpan.org
-
-Based on the original source code of L<Form::Processor::Field::Select> by Bill Moseley
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

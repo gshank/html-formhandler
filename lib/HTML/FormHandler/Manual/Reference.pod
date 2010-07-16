@@ -1,14 +1,13 @@
-=head1 NAME
-
-HTML::FormHandler::Manual::Reference - concise reference
+package HTML::FormHandler::Manual::Reference;
+# ABSTRACT: concise reference
 
 =head1 DESCRIPTION
 
 This is a concise reference of HTML::FormHandler.
 
 HTML::FormHandler has a lot of options and many ways to customize your forms.
-More complete documentation can be found at L<HTML::FormHandler>, 
-L<HTML::FormHandler::Field>, L<HTML::FormHandler::Model::DBIC>, 
+More complete documentation can be found at L<HTML::FormHandler>,
+L<HTML::FormHandler::Field>, L<HTML::FormHandler::Model::DBIC>,
 L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
 =head1 Fields
@@ -21,19 +20,19 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    set_validate  Name of validation method in form. Default is validate_$fieldname
    set_init      Name of the form method used to initialize a field
    required      Field is required
-   required_message  If this field is required, the message to display on failure 
+   required_message  If this field is required, the message to display on failure
    id            Useful for javascript that requires unique id. Set in Field.
-   label         Text label. Not used by FormHandler, but useful in templates 
-   order         Set the order for fields. Used by sorted_fields, templates. 
+   label         Text label. Not used by FormHandler, but useful in templates
+   order         Set the order for fields. Used by sorted_fields, templates.
    widget        Used by templates to decide widget usage. Set by field classes.
    style         Style to use for css formatting. Not used by FormHandler; for templates.
    title         For HTML titles. Not used by FormHandler.
-   password      Remove from params and do not display in forms. 
+   password      Remove from params and do not display in forms.
    disabled      HTML hint to not do updates (for templates) Init: 0
-   readonly      HTML hint to make the field readonly (for templates) Init: 0 
+   readonly      HTML hint to make the field readonly (for templates) Init: 0
    noupdate      Don't update this field in the database
    writeonly     Do not retrieve initial values
-   errors        Errors associated with this field 
+   errors        Errors associated with this field
                  (also num_errors, clear_errors, has_errors, add_error)
    label_column  Select lists: column to use for labels (default: name)
    active_column Select lists: which values to list
@@ -41,9 +40,9 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    size          Text & select fields.
    maxlength     Text fields. Validated.
    minlength     Text fields. Used in validation
-   range_start   Range start for number fields 
-   range_end     Range end for number fields    
-   unique        Field should be unique in the database 
+   range_start   Range start for number fields
+   range_end     Range end for number fields
+   unique        Field should be unique in the database
    unique_message If field is not unique, error message.
    apply         Array of constraint/coercion/transformation actions
    value_changed Has the field's value changed from the init_value?
@@ -56,7 +55,7 @@ These attributes are usually accessed in a subroutine or in a template.
    init_value    Initial value from the database
    value         The value of your field.
    input         Input value from parameter or initial value from database
-   fif           Retrieve (do not set) values for filling in a form 
+   fif           Retrieve (do not set) values for filling in a form
    options       Select lists. Sorted array of hashes, keys: "value", "label"
 
 =head1 Forms
@@ -64,13 +63,13 @@ These attributes are usually accessed in a subroutine or in a template.
 =head2 Attributes to pass to new or set in form
 
    item_class    Class of db item
-   item_id       Primary key of db item 
+   item_id       Primary key of db item
    schema        Schema of item
    item          DB row object
    init_object   For default values instead of $item
    dependency    Array of arrays of field names. If one name has a value, all
                        fields in the list are set to 'required'
-   
+
 =head2 Other Form attributes
 
    name           Form name
@@ -78,51 +77,51 @@ These attributes are usually accessed in a subroutine or in a template.
    ran_validation Flag that validation has already been run
    field_name_space  Where to look for your fields
    num_errors     Number of errors
-   language handle  For MakeText 
-   params         HTTP parameters 
+   language handle  For MakeText
+   params         HTTP parameters
    fields         Field array
-   parent         For compound/related fields: parent field reference 
+   parent         For compound/related fields: parent field reference
    html_prefix    Flag to prefix html field names with the form name
    ctx            Application context for your use
-    
-    
+
+
 =head2 Form methods
 
    has_field       Moose-y sugar for declaring fields
-   clear           Resets state. Used in persistent forms. 
+   clear           Resets state. Used in persistent forms.
 
    fields          The array of fields
    sorted_fields   The sorted array of fields
    field( $name )  Returns a field object
    value           Returns a hashref of values (with accessor keys)
-   fif             Returns a hashref for filling in form  
+   fif             Returns a hashref for filling in form
 
-   has_errors      True if any field has errors 
+   has_errors      True if any field has errors
    num_errors      The number of fields with errors
    error_fields    An array of fields with errors
-   errors          Returns an array of all errors 
+   errors          Returns an array of all errors
    error_field_names Returns an array of field names with errors
 
    uuid            Creates an HTML element 'form_uuid'
 
-   process         Sets up form, validated, updates model 
-   
+   process         Sets up form, validated, updates model
+
 =head2  Subroutines for your form
 
    options_$fieldname       Provides a list of key value pairs for select lists
-   validate_$fieldname      Validation routine for field 
+   validate_$fieldname      Validation routine for field
    default_$fieldname       Default value for the field in an initial form
-   validate                 For validation after individual fields are validated 
-   
+   validate                 For validation after individual fields are validated
+
 =head2 Methods from HTML::FormHandler::Model::DBIC for method modifiers
 
    validate_model    Add additional database type validation
    update_model      To perform additional database actions update
-     
+
 =head1 Useful in a template
 
    $form->has_errors    [% IF form.has_errors %]
-   $field->has_errors   [% IF field.has_errors %] 
+   $field->has_errors   [% IF field.has_errors %]
    $form->error_fields  [% FOREACH field IN form.error_fields %]
    $form->error_field_names   [% FOREACH name IN form.error_field_names %]
    $form->errors        Array of error messages for all fields
@@ -137,20 +136,7 @@ These attributes are usually accessed in a subroutine or in a template.
    uuid              subroutine that returns a uuid
    $form->fif        value="[% form.fif.title %]"
    $field->fif       value="[% field.fif %]
-   
-    
-=head1 AUTHORS
 
-Gerda Shank, gshank@cpan.org
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

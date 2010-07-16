@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Field::NoRender;
+# ABSTRACT: no rendering widget
 
 use Moose::Role;
 

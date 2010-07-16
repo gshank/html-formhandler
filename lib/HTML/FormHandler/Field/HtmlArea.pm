@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::HtmlArea;
+# ABSTRACT: input HTML in a textarea
 
 use Moose;
 extends 'HTML::FormHandler::Field::TextArea';
@@ -67,10 +68,6 @@ EOF
 
 }
 
-=head1 NAME
-
-HTML::FormHandler::Field::HtmlArea - Input HTML in a textarea
-
 =head1 SYNOPSIS
 
 See L<HTML::FormHandler>
@@ -84,19 +81,6 @@ Widget type is 'textarea'.
 =head1 DEPENDENCIES
 
 L<HTML::Tidy>  L<File::Temp>
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
 
 =cut
 

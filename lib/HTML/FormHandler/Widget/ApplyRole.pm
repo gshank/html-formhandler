@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::ApplyRole;
+# ABSTRACT: role to apply widgets
 
 use Moose::Role;
 use File::Spec;
@@ -18,7 +19,7 @@ sub get_widget_role {
     my ( $self, $widget_name, $dir ) = @_;
     my $widget_class      = $self->widget_class($widget_name);
     my $ldir              = $dir ? '::' . $dir . '::' : '::';
-    my @name_spaces = ( @{$self->widget_name_space}, 
+    my @name_spaces = ( @{$self->widget_name_space},
         ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget') );
     foreach my $ns (@name_spaces) {
         my $render_role = $ns . $ldir . $widget_class;
@@ -36,7 +37,7 @@ sub widget_class {
     if($widget eq lc $widget) {
         $widget =~ s/^(\w{1})/\u$1/g;
         $widget =~ s/_(\w{1})/\u$1/g;
-    } 
+    }
     return $widget;
 }
 

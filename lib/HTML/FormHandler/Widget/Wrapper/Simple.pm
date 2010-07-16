@@ -1,13 +1,10 @@
 package HTML::FormHandler::Widget::Wrapper::Simple;
+# ABSTRACT: simple field wrapper
 
 use Moose::Role;
 use namespace::autoclean;
 
 with 'HTML::FormHandler::Widget::Wrapper::Base';
-
-=head1 NAME
-
-HTML::FormHandler::Widget::Wrapper::Simple - simple field wrapper
 
 =head1 SYNOPSIS
 
@@ -24,7 +21,7 @@ in paragraph tags instead:
       wrapper_start => '<p>',
       wrapper_end   => '</p>' }
    );
-    
+
 =cut
 
 sub wrap_field {
@@ -37,7 +34,7 @@ sub wrap_field {
     my $output = "\n";
 
     $start_tag =~ s/<%class%>/$class/g;
-    $output .= $start_tag; 
+    $output .= $start_tag;
 
     if ( $is_compound ) {
         $output .= '<fieldset class="' . $self->html_name . '">';

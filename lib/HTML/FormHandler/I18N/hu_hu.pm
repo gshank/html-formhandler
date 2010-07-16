@@ -1,4 +1,6 @@
 package HTML::FormHandler::I18N::hu_hu;
+# ABSTRACT: Hungarian message file
+
 use strict;
 use warnings;
 use utf8;

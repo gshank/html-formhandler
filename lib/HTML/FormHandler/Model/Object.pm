@@ -1,4 +1,5 @@
 package HTML::FormHandler::Model::Object;
+# ABSTRACT: stub for Object model
 
 use Moose::Role;
 

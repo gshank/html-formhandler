@@ -1,14 +1,11 @@
 package HTML::FormHandler::Field::Date;
+# ABSTRACT: a date field with formats
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';
 use DateTime;
 use DateTime::Format::Strptime;
 our $VERSION = '0.03';
-
-=head1 NAME
-
-HTML::FormHandler::Field::Date - a date field with formats 
 
 =head1 SUMMARY
 
@@ -29,9 +26,9 @@ or DateTime strftime formats. (Default format is format => '%Y-%m-%d'.)
    MM - "%B" - month name long
    y  - "%y" - year (two digit)
    yy - "%Y" - year (four digit)
-   @  - "%s" - Unix timestamp (ms since 01/01/1970) 
+   @  - "%s" - Unix timestamp (ms since 01/01/1970)
 
-For example:  
+For example:
 
    has_field 'start_date' => ( type => 'Date', format => "dd/mm/y" );
 

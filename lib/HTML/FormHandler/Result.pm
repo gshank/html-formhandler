@@ -1,12 +1,9 @@
 package HTML::FormHandler::Result;
+# ABSTRACT: form result object
 
 use Moose;
 with 'HTML::FormHandler::Result::Role';
 with 'MooseX::Traits';
-
-=head1 NAME
-
-HTML::FormHandler::Result - form result object
 
 =head1 SYNOPSIS
 
@@ -38,11 +35,11 @@ a form:
 However there are still open questions about how much of the form/field
 should be forwarded to the result. At this point, the number of forwarded
 methods is minimal. Mechanisms to make this more customizable are being
-considered. 
+considered.
 
 Dynamic select lists are not supported yet. Static select lists
 (that are the same for every form execution) should work fine, but lists
-that are different depending on some field value will not. 
+that are different depending on some field value will not.
 
 Most of this object is implemented in L<HTML::FormHandler::Role::Result>,
 because it is shared with L<HTML::FormHandler::Field::Result>.
@@ -88,21 +85,6 @@ sub peek {
     }
     return $string;
 }
-
-=head1 AUTHORS
-
-HTML::FormHandler Contributors; see HTML::FormHandler
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

@@ -1,4 +1,6 @@
 package HTML::FormHandler::I18N::ua_ua;
+# ABSTRACT: Ukrainian message file
+
 use strict;
 use warnings;
 use utf8;

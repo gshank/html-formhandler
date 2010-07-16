@@ -1,4 +1,6 @@
 package HTML::FormHandler::I18N::de_de;
+# ABSTRACT: German message translations
+
 use strict;
 use warnings;
 use base 'HTML::FormHandler::I18N';
@@ -49,7 +51,7 @@ our %Lexicon = (
 
     # H::F::Field
     'field is invalid' => 'Feld ist ungültig',
-    
+
     # H::F::Model
     'Value must be unique in the database' => 'Wert existiert bereits in der Datenbank',
 
@@ -71,7 +73,7 @@ our %Lexicon = (
     'Must not be all digits' => 'Darf nicht nur Ziffern enthalten',
     'Field contains non-printable characters' => 'Feld enthält nicht druckbare Zeichen',
     'Field must contain a single word' => 'Feld muss ein einzelnes Wort enthalten',
-    
+
     # H::F::Validate::Actions
     'Wrong value' => 'Ungültiger Wert',
     '[_1] does not match' => '[_1] ist kein gültiger Wert',

@@ -1,4 +1,5 @@
 package HTML::FormHandler::Widget::Form::Role::HTMLAttributes;
+# ABSTRACT: set HTML attributes on the form tag
 
 use Moose::Role;
 

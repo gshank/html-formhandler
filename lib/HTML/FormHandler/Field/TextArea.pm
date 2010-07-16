@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::TextArea;
+# ABSTRACT: textarea input
 
 use Moose;
 extends 'HTML::FormHandler::Field';
@@ -8,22 +9,9 @@ has '+widget' => ( default => 'textarea' );
 has 'cols'    => ( isa     => 'Int', is => 'rw' );
 has 'rows'    => ( isa     => 'Int', is => 'rw' );
 
-=head1 NAME
+=head1 Summary
 
-HTML::FormHandler::Field::TextArea - Multiple line input
-
-=head1 AUTHORS
-
-Gerda Shank
-
-=head1 COPYRIGHT
-
-Copyright (c) 2008 - 2010 Gerda Shank 
-
-=head1 LICENSE
-
-This library is free software, you can redistribute it and/or modify it under
-the same terms as Perl itself.
+For HTML textarea. Uses 'textarea' widget. Set cols/row.
 
 =cut
 
