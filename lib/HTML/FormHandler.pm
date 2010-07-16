@@ -1,3 +1,4 @@
+# ABSTRACT: HTML forms using Moose
 package HTML::FormHandler;
 
 use Moose;
