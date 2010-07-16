@@ -11,12 +11,12 @@ sub validate
    my $field = shift;
 
    return unless $field->SUPER::validate;
-   
+
    my $input = $field->input;
    my $check = $field->another_attribute;
    # do something silly
    return $field->add_error('Fails AltText validation')
-       unless $input =~ m/$check/; 
+       unless $input =~ m/$check/;
 
    return 1;
 }

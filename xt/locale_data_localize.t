@@ -24,7 +24,7 @@ BEGIN {
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub _build_language_handle { 
+    sub _build_language_handle {
         my $class = Moose::Meta::Class->create_anon_class(
             superclasses => [ 'Data::Localize' ],
             methods => {

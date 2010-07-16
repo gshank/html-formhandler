@@ -11,19 +11,19 @@ use Test::More;
     has_field 'two';
     has_field 'three';
 
-    has '+deflation' => ( default => sub { 
-        sub { 
+    has '+deflation' => ( default => sub {
+        sub {
             my %hash = split(/-/, $_[0]);
             return \%hash;
-        } 
+        }
     });
     apply ( [ { transform  => sub {
                 my $value = shift;
                 my $string = 'one-' . $value->{one};
                 $string .= '-two-' . $value->{two};
                 $string .= '-three-' . $value->{three};
-                return $string; 
-           } 
+                return $string;
+           }
        } ]
     );
 }
@@ -42,14 +42,14 @@ my $init_object = { foo => 'one-1-two-2-three-3', bar => 'xxyyzz' };
 $form->process( init_object => $init_object, params => {} );
 is_deeply( $form->value, { foo => { one => 1, two => 2, three => 3 },
         bar => 'xxyyzz' }, 'value is correct?' );
-is_deeply( $form->fif, { 'foo.one' => 1, 'foo.two' => 2, 'foo.three' => 3, bar => 'xxyyzz' }, 
-    'fif is correct' );  
+is_deeply( $form->fif, { 'foo.one' => 1, 'foo.two' => 2, 'foo.three' => 3, bar => 'xxyyzz' },
+    'fif is correct' );
 
 my $fif =  { bar => 'aabbcc', 'foo.one' => 'x', 'foo.two' => 'xx', 'foo.three' => 'xxx' };
-$form->process( params => $fif ); 
+$form->process( params => $fif );
 ok( $form->validated, 'form validated' );
 is_deeply( $form->value, { bar => 'aabbcc', foo => 'one-x-two-xx-three-xxx' }, 'right value' );
-is_deeply( $form->fif, $fif, 'right fif' ); 
+is_deeply( $form->fif, $fif, 'right fif' );
 is( $form->field('foo.one')->fif, 'x', 'correct fif' );
 is( $form->field('foo')->value, 'one-x-two-xx-three-xxx', 'right value for foo field' );
 
@@ -70,7 +70,7 @@ is( $form->field('foo')->value, 'one-x-two-xx-three-xxx', 'right value for foo f
             }
         }
     );
-    
+
 }
 
 $form = Test::Deflate->new;
@@ -83,7 +83,7 @@ is( $form->field('foo')->value, 'deflated value', 'default values should be defl
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has_field 'bullets' => ( type => 'Text', 
+    has_field 'bullets' => ( type => 'Text',
         apply => [ { transform => \&string_to_array } ],
         deflation => \&array_to_string,
         deflate_to => 'fif',
@@ -94,7 +94,7 @@ is( $form->field('foo')->value, 'deflated value', 'default values should be defl
        my $sep = '';
        for ( @$value ) {
            $string .= $sep . $_->{text};
-           $sep = ';'; 
+           $sep = ';';
        }
        return $string;
     }
@@ -104,7 +104,7 @@ is( $form->field('foo')->value, 'deflated value', 'default values should be defl
     }
 }
 
-$init_object = { bullets => [{ text => 'one'}, { text => 'two' }, { text => 'three'}] }; 
+$init_object = { bullets => [{ text => 'one'}, { text => 'two' }, { text => 'three'}] };
 $fif = { bullets => 'one;two;three' };
 $form = Test::Deflate2->new;
 ok( $form, 'form built');

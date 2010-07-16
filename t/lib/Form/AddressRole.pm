@@ -1,6 +1,6 @@
 package Form::AddressRole;
 
-use HTML::FormHandler::Moose::Role; 
+use HTML::FormHandler::Moose::Role;
 
 has_field 'street';
 has_field 'city';

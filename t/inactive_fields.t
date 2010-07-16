@@ -37,6 +37,6 @@ is_deeply( $active, ['foo'], 'active hashref still there' );
 ok( $form->validated, 'form validated' );
 is_deeply( $form->fif, $fif, 'fif is correct' );
 is_deeply( $form->value, $fif, 'value is correct' );
- 
+
 
 done_testing;

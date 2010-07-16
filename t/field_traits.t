@@ -29,7 +29,7 @@ use lib ('t/lib');
    has 'bar_attr' => ( isa => 'Str', is => 'rw' );
 }
 
-{ 
+{
     package MyApp::Field::Test;
     use Moose::Role;
     sub got_here { 1 }
@@ -49,7 +49,7 @@ ok( $form->field('foo')->got_here  && $form->field('bar')->got_here, 'base field
     has 'my_attr' => ( is => 'rw', isa => 'Str' );
     sub html {
         my $self = shift;
-        return "<h2>Pick something, quick!</h2>"; 
+        return "<h2>Pick something, quick!</h2>";
     }
 
 }
@@ -61,11 +61,11 @@ ok( $form->field('foo')->got_here  && $form->field('bar')->got_here, 'base field
     sub render {
        my $self = shift;
        return $self->widget_attr || 'empty attr';
-    } 
+    }
 }
 
 use HTML::FormHandler;
-$form = HTML::FormHandler->new( 
+$form = HTML::FormHandler->new(
     widget_name_space => ['MyApp::Widget'],
     field_list => [
         foo => { type => 'Text', required => 1, widget_attr => 'A Test!' },

@@ -193,7 +193,7 @@ is( $form->render_field( $form->field('no_render')), '', 'no_render' );
     has_field 'between' => ( type => 'Display', set_html => 'between_html' );
 
     sub html_explanation {
-       my ( $self, $field ) = @_; 
+       my ( $self, $field ) = @_;
        return "<p>I have an explanation somewhere around here...</p>";
     }
 

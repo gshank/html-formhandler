@@ -144,7 +144,7 @@ is( $field->fif, $date_hash, 'Correct value' );
 }
 $form = Test::DateTime->new;
 my $dt = DateTime->new( year => '2010', month => '02', day => '22' );
-$form->process( init_object => { foo => 'abc', my_date => $dt } ); 
+$form->process( init_object => { foo => 'abc', my_date => $dt } );
 is_deeply( $form->field('my_date')->fif, { year => '2010', month => '2', day => '22' },
     'right fif from obj with date' );
 my $fif = $form->fif;

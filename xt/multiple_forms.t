@@ -29,11 +29,11 @@ ok( $form1, 'get first form' );
    has '+html_prefix' => ( default => 1 );
 
    sub field_list {
-       [ 
+       [
             field_one => 'Text',
             field_two => 'Text',
             field_three => 'Text',
-       ] 
+       ]
    }
 }
 my $form2 = My::Form::Two->new;
@@ -43,11 +43,11 @@ my $params = {
    'One.field_one' => 'First field in first form',
    'One.field_two' => 'Second field in first form',
    'One.field_three' => 'Third field in first form',
-   $form2->field('field_one')->html_name => 
+   $form2->field('field_one')->html_name =>
              'First field in second form',
-   $form2->field('field_two')->html_name => 
+   $form2->field('field_two')->html_name =>
               'Second field in second form',
-   $form2->field('field_three')->html_name => 
+   $form2->field('field_three')->html_name =>
               'Third field in second form',
 };
 $form1->process( $params );

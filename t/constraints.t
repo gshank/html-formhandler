@@ -27,7 +27,7 @@ use lib 't/lib';
    enum 'RGBColors' => qw(red green blue);
 
    no Moose::Util::TypeConstraints;
-  
+
    has_field 'empty_field' => (
       apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
    );

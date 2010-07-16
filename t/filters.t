@@ -42,13 +42,13 @@ $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
       apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
    );
    has_field 'regex_trim' => (
-       trim => { transform => sub { 
+       trim => { transform => sub {
                my $string = shift;
                $string =~ s/^\s+//;
                $string =~ s/\s+$//;
                return $string;
         }}
-   ); 
+   );
    has_field 'date_time_error' => (
       apply => [ { transform => sub{ DateTime->new( $_[0] ) },
                    message => 'Not a valid DateTime' } ],

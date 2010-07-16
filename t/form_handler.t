@@ -93,7 +93,7 @@ ok( !$form->validated, 'form validated' );
 
 # it's not crystal clear what the behavior should be here, but I think
 # this is more correct than the previous behavior
-# it fills in the missing fields, which is what always happened for an 
+# it fills in the missing fields, which is what always happened for an
 # initial object (as opposed to hash), but it used to behave
 # differently for a hash, which seems wrong
 # TODO verify behavior is correct
@@ -162,7 +162,7 @@ is_deeply( $form->field( 'foo' )->value, { '' => 'bar', x => 42, y => 23 }, 'ima
     package Test::Form;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    
+
     has_field 'foo';
     has_field 'bar';
 
@@ -180,6 +180,6 @@ is_deeply( $form->value, { foo => 'bovine', bar => 'horse' }, 'correct value' );
 # check for hashref constructor
 $form = HTML::FormHandler->new( { name => 'test_form', field_list => { one => 'Text', two => 'Text' } } );
 ok( $form, 'form constructed ok' );
-     
+
 
 done_testing;

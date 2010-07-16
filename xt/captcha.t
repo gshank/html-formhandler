@@ -51,14 +51,14 @@ ok( $rnd ne $rnd2, 'we now have a different captcha');
 ok( !$form->field('captcha')->fif, 'no fif for captcha' );
 $params->{captcha} = $rnd2;
 $params->{subject} = 'Incorrect';
-$form->process( ctx => $ctx, params => $params ); 
+$form->process( ctx => $ctx, params => $params );
 # valid captcha, invalid subject
 ok( !$form->validated, 'form did not validate: valid captcha, invalid field' );
-ok( $rnd2 == $ctx->{session}->{captcha}->{rnd}, 'captcha has not changed' ); 
+ok( $rnd2 == $ctx->{session}->{captcha}->{rnd}, 'captcha has not changed' );
 
 $params->{subject} = 'Correct';
 $form->process( ctx => $ctx, params => $params );
-ok( $form->validated, 'form validated; old captcha, valid fields' ); 
+ok( $form->validated, 'form validated; old captcha, valid fields' );
 
 my $render = $form->render_field('captcha');
 is( $render, '

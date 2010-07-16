@@ -47,7 +47,7 @@ like( $form->field('foo')->render, qr/MY/, 'rendering was filters' );
 }
 
 $form = Test::FieldFilter->new;
-$form->process( params => { foo => "What's mine is yours", bar => '<what a hoot>' } );  
+$form->process( params => { foo => "What's mine is yours", bar => '<what a hoot>' } );
 is( $form->field('bar')->render, '
 <div><label class="label" for="bar">Bar: </label><input type="text" name="bar" id="bar" value="<what a hoot>" /></div>
 ', 'renders ok' );

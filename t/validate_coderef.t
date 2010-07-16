@@ -56,7 +56,7 @@ use Try::Tiny;
 
 }
 
-my $obj = MyApp::Signup->new; 
+my $obj = MyApp::Signup->new;
 
 ok( $obj->form, 'form built' );
 

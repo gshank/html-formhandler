@@ -45,7 +45,7 @@ my $rendered_form = $form->render;
 
     has '+field_name_space' => ( default => 'Test::Field' );
     has '+widget_name_space' => ( default => sub { ['Test::Widget'] } );
-    has_field 'my_date' => ( type => '+MonthYear', widget => 'MonthYear' ); 
+    has_field 'my_date' => ( type => '+MonthYear', widget => 'MonthYear' );
 
 }
 

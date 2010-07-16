@@ -18,7 +18,7 @@ use Test::More;
 
    has '+name' => ( default => 'testform_' );
    has_field 'optname' => ( temp => 'First' );
-   has_field 'reqname' => ( required => 1, default_over_obj => 'From Attribute' ); 
+   has_field 'reqname' => ( required => 1, default_over_obj => 'From Attribute' );
    has_field 'altname' => ( traits => ['My::Default'] );
    has_field 'somename';
    has_field 'extraname' => ( default_over_obj => '' );
@@ -36,7 +36,7 @@ my $form = My::Other::Form->new;
 ok( $form, 'get form' );
 my $params = { reqname => 'Sweet', optname => 'Charity', somename => 'Exists' };
 
-$form->process( init_object => $init_object, params => $params ); 
+$form->process( init_object => $init_object, params => $params );
 ok( $form->validated, 'form with init_obj & params validated' );
 is( $form->field('reqname')->init_value, 'From Attribute', 'correct init_value');
 is(  $form->field('optname')->init_value, 'Over Again', 'correct init_value no meth');

@@ -19,7 +19,7 @@ use lib 't/lib';
 
 }
 
-my $form = My::Form->new; 
+my $form = My::Form->new;
 ok( $form, 'get form' );
 
 my $params = {
@@ -36,7 +36,7 @@ ok( !$form->validated, 'form validated' );
 ok( !$form->field('field_one')->has_errors, 'field one has no error');
 
 is( $form->field('field_two')->has_errors, 1, 'field two has one error');
-is( $form->field('field_two')->errors->[0], 
+is( $form->field('field_two')->errors->[0],
    'Fails AltText validation', 'get error message' );
 
 ok( !$form->field('field_three')->has_errors, 'field three has no error');

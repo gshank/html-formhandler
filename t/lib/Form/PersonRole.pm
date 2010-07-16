@@ -1,6 +1,6 @@
 package Form::PersonRole;
 
-use HTML::FormHandler::Moose::Role; 
+use HTML::FormHandler::Moose::Role;
 
 has_field 'name';
 has_field 'telephone';

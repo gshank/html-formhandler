@@ -58,7 +58,7 @@ ok( $form, 'non-db form created OK');
 is( $form->field('optname')->value, 'Over Again', 'get right value from form');
 $form->process({});
 ok( !$form->validated, 'form validated' );
-is( $form->field('reqname')->fif, 'Starting Perl', 
+is( $form->field('reqname')->fif, 'Starting Perl',
                       'get right fif with init_object');
 
 {
@@ -106,10 +106,10 @@ $DB::single=1;
     has_field 'bax' => ( default => 'bax_from_default' );
     has_field 'zero' => ( type => 'PosInteger', default => 0 );
     has_field 'foo_list' => ( type => 'Multiple', default => [1,3],
-       options => [{ value => 1, label => 'One'}, 
+       options => [{ value => 1, label => 'One'},
                    { value => 2, label => 'Two'},
                    { value => 3, label => 'Three'},
-                  ] 
+                  ]
     );
 
     sub init_object {

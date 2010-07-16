@@ -327,9 +327,9 @@ ok( $outputT, 'output from table rendering' );
             };
         }
     );
-    has_field 'bar' => ( widget_tags => 
+    has_field 'bar' => ( widget_tags =>
          {wrapper_start => '<span>', wrapper_end => '</span>'});
-    has_field 'baz' => ( widget_tags => 
+    has_field 'baz' => ( widget_tags =>
          {wrapper_start => '', wrapper_end => ''});
 }
 

@@ -1,6 +1,6 @@
 package Form::Address;
 
-use HTML::FormHandler::Moose; 
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';
 
 has_field 'street';

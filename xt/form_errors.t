@@ -11,7 +11,7 @@ use Test::More;
 
     has_field 'foo';
     has_field 'bar';
-  
+
     sub validate_foo {
         my ( $self, $field ) = @_;
         $field->add_error('Not a valid foo')
@@ -25,7 +25,7 @@ use Test::More;
     sub validate {
         my $self = shift;
         $self->add_form_error('Try again')
-           if( $self->field('foo')->value ne $self->secret ); 
+           if( $self->field('foo')->value ne $self->secret );
     }
 }
 
@@ -35,7 +35,7 @@ $form->process( params => {} );
 my $params = {
     foo => 'test',
     bar => 'bad_bar',
-}; 
+};
 $form->process( secret => 'yikes', params => $params );
 ok( !$form->validated, 'form did not validate' );
 $form->process( secret => 'my_bar', params => { bar => 'my_bar', foo => 'my_foo' } );
@@ -44,5 +44,5 @@ is( $errors[0], 'Try again', 'form error' );
 $form->process( secret => 'my_foo', params => { bar => 'my_bar', foo => 'my_foo' } );
 ok( $form->validated, 'form validated' );
 ok( !$form->has_form_errors, 'form errors are gone' );
-    
+
 done_testing;

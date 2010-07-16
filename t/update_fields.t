@@ -9,7 +9,7 @@ use Test::More;
 
     has_field 'foo';
     has_field 'foo_date' => ( type => 'Date' );
-    
+
 }
 
 my $form = Test::Dates->new;

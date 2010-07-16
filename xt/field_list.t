@@ -12,7 +12,7 @@ my $field_list = [
    submit => 'Submit',
 ];
 
-my $form = HTML::FormHandler->new( field_list => $field_list ); 
+my $form = HTML::FormHandler->new( field_list => $field_list );
 
 ok( $form, 'created form OK the first time');
 ok( $form->field('id'), 'id field exists' );

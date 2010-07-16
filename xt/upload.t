@@ -89,7 +89,7 @@ is( $form->field('file')->render, '
 
 my $upload = Mock::Upload->new( filename => 'test.txt', size => 1024 );
 
-$form->process( params => { file => $upload } ); 
+$form->process( params => { file => $upload } );
 ok( $form->validated, 'form validated' );
 
 $upload->size( 20000000 );
@@ -110,7 +110,7 @@ open ( $fh, '<', 'temp.txt' );
 $form->process( params => { file => $fh } );
 ok( $form->validated, 'form validated' );
 
-# file doesn't exist 
+# file doesn't exist
 $form->process( params => { file => 'not_there.txt' } );
 @errors = $form->errors;
 is( $errors[0], 'File not found for upload field', 'error when file does not exist' );

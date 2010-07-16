@@ -17,7 +17,7 @@ use_ok( 'HTML::FormHandler::Field::Repeatable::Instance' );
    has_field 'addresses.country';
    has_field 'addresses.sector' => ( type => 'Select' );
 
-   sub options_addresses_sector 
+   sub options_addresses_sector
    {
       [ 1 => 'East',
         2 => 'West',
@@ -65,7 +65,7 @@ my $init_object = {
 $form = Repeatable::Form->new( init_object => $init_object );
 ok( $form, 'created form from initial object' );
 
-# add in fields in form not in init_object 
+# add in fields in form not in init_object
 $init_object->{my_test} = undef;
 $init_object->{addresses}->[0]->{sector} = undef;
 $init_object->{addresses}->[1]->{sector} = undef;
@@ -188,7 +188,7 @@ my $unemployed_params = {
 };
 $form->process( $unemployed_params);
 ok( $form->validated, "User with empty employer validates" );
-is_deeply( $form->value, { employers => [], user_name => 'No Employer', occupation => 'Unemployed' }, 
+is_deeply( $form->value, { employers => [], user_name => 'No Employer', occupation => 'Unemployed' },
     'creates right value for empty repeatable' );
 is_deeply( $form->fif, $unemployed_params, 'right fif for empty repeatable' );
 
