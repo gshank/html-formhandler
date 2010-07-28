@@ -5,6 +5,7 @@ use Moose;
 use Moose::Exporter;
 use Moose::Util::MetaRole;
 use HTML::FormHandler::Meta::Role;
+use constant HAS_MOOSE_V109_METAROLE => ($Moose::VERSION >= 1.09);
 
 =head1 SYNOPSIS
 
@@ -33,10 +34,20 @@ sub init_meta {
 
     my %options = @_;
     Moose->init_meta(%options);
-    my $meta = Moose::Util::MetaRole::apply_metaclass_roles(
-        for_class       => $options{for_class},
-        metaclass_roles => ['HTML::FormHandler::Meta::Role'],
-    );
+    my $meta;
+    if (HAS_MOOSE_V109_METAROLE) {
+        $meta = Moose::Util::MetaRole::apply_metaroles(
+            for             => $options{for_class},
+            class_metaroles => {
+                class => [ 'HTML::FormHandler::Meta::Role' ]
+            }
+        );
+    } else {
+        $meta = Moose::Util::MetaRole::apply_metaclass_roles(
+            for_class       => $options{for_class},
+            metaclass_roles => ['HTML::FormHandler::Meta::Role'],
+        );
+    }
     return $meta;
 }
 
