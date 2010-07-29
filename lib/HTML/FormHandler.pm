@@ -18,7 +18,7 @@ use Try::Tiny;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.32001';
+our $VERSION = '0.32002';
 
 =head1 SYNOPSIS
 
