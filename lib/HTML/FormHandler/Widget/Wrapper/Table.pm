@@ -12,7 +12,7 @@ sub wrap_field {
     if ( $self->has_flag('is_compound') ) {
         $output .= '<td>' . $self->render_label . '</td></tr>';
     }
-    elsif ( !$self->has_flag('no_render_label') && $self->label ) {
+    elsif ( !$self->has_flag('no_render_label') && defined( $self->label ) ) {
         $output .= '<td>' . $self->render_label . '</td>';
     }
     if ( !$self->has_flag('is_compound') ) {
