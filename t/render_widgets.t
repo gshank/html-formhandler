@@ -47,6 +47,14 @@ use HTML::FormHandler::Field::Text;
             { value => 'laurel & hardy', label => 'Stan Laurel & Oliver Hardy' },
         ],
     );
+    has_field hobbies => (
+        type => 'Repeatable',
+        num_when_empty => 1,
+    );
+
+    has_field 'hobbies.contains' => (
+        type => 'Text',
+    );
     has_field 'active'     => ( type => 'Checkbox' );
     has_field 'comments'   => ( type => 'TextArea' );
     has_field 'hidden'     => ( type => 'Hidden' );
@@ -90,7 +98,7 @@ use HTML::FormHandler::Field::Text;
     sub options_fruit {
         return (
             '"apples"' => '"apples"',
-	    '<oranges>' => '<oranges>',
+            '<oranges>' => '<oranges>',
             '&kiwi&' => '&kiwi&',
         );
     }
@@ -122,6 +130,15 @@ is(
 ', 'output from checkbox group'
 );
 
+my $output13 = $form->field('hobbies')->render;
+is(
+    $output13, '
+<div><fieldset class="hobbies"><legend>Hobbies</legend>
+<div><label class="label" for="hobbies.0">0: </label><input type="text" name="hobbies.0" id="hobbies.0" value="" /></div>
+</fieldset></div>
+', 'output from repeatable with num_when_empty == 1'
+);
+
 my $params = {
     test_field         => 'something',
     number             => 0,
@@ -137,7 +154,8 @@ my $params = {
     two_errors         => 'aaa',
     opt_in             => 'no & never',
     plain              => 'No divs!!',
-    comedians         => [ 'chaplin', 'laurel & hardy' ],
+    comedians          => [ 'chaplin', 'laurel & hardy' ],
+    hobbies            => [ 'eating', 'sleeping', 'not chasing mice' ],
     boxed              => 'Testing single fieldset',
 };
 
@@ -263,6 +281,19 @@ is(
 <div><label class="label" for="comedians">Comedians: </label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" checked="checked" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" checked="checked" />Stan Laurel &amp; Oliver Hardy<br /></div>
 ',
     'output from checkbox group'
+);
+
+$output13 = $form->field('hobbies')->render;
+is(
+    $output13, '
+<div><fieldset class="hobbies"><legend>Hobbies</legend>
+<div><label class="label" for="hobbies.0">0: </label><input type="text" name="hobbies.0" id="hobbies.0" value="eating" /></div>
+
+<div><label class="label" for="hobbies.1">1: </label><input type="text" name="hobbies.1" id="hobbies.1" value="sleeping" /></div>
+
+<div><label class="label" for="hobbies.2">2: </label><input type="text" name="hobbies.2" id="hobbies.2" value="not chasing mice" /></div>
+</fieldset></div>
+', 'output from repeatable after processing result with 3 items'
 );
 
 my $output = $form->render;
