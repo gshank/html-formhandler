@@ -40,7 +40,7 @@ sub wrap_field {
         $output .= '<fieldset class="' . $self->html_name . '">';
         $output .= '<legend>' . $self->loc_label . '</legend>';
     }
-    elsif ( !$self->has_flag('no_render_label') && defined( $self->label ) ) {
+    elsif ( !$self->has_flag('no_render_label') && length( $self->label ) > 0 ) {
         $output .= $self->render_label;
     }
 
