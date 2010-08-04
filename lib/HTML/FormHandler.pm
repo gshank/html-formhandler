@@ -190,7 +190,7 @@ in the form class:
 
    item_class  - source name of row
    dependency  - (see dependency)
-   field_list  - and array of field definitions
+   field_list  - an array of field definitions
    init_object - a hashref or object to provide initial values
 
 Examples of creating a form object with new:

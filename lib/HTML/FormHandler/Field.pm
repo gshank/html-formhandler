@@ -919,6 +919,7 @@ sub build_render_filter {
 }
 sub default_render_filter {
     my ( $self, $string ) = @_;
+    return if (!defined $string);
     $string =~ s/&/&amp;/g;
     $string =~ s/</&lt;/g;
     $string =~ s/>/&gt;/g;
