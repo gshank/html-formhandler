@@ -117,4 +117,20 @@ is( $errors[0], 'File not found for upload field', 'error when file does not exi
 
 unlink('temp.txt');
 
+{
+    package My::Form::Upload::NoSize;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has '+enctype' => ( default => 'multipart/form-data');
+
+    has_field 'file' => ( type => 'Upload', min_size => undef, max_size => undef );
+    has_field 'submit' => ( type => 'Submit', value => 'Upload' );
+}
+
+$form = My::Form::Upload::NoSize->new;
+$upload = Mock::Upload->new( filename => 'test.txt', size => 4000000 );
+$form->process( params => { file => $upload } );
+ok( $form->validated, 'form validated with no size limit' );
+
 done_testing;

@@ -1180,6 +1180,8 @@ diegok: Diego Kuperman
 
 ijw: Ian Wells
 
+amiri: Amiri Barksdale
+
 Initially based on the source code of L<Form::Processor> by Bill Moseley
 
 =cut

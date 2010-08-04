@@ -42,8 +42,8 @@ Widget type is 'upload'
 =cut
 
 has '+widget' => ( default => 'upload', );
-has min_size   => ( is      => 'rw', isa => 'Int', default => 1 );
-has max_size   => ( is      => 'rw', isa => 'Int', default => 1048576 );
+has min_size   => ( is      => 'rw', isa => 'Maybe[Int]', default => 1 );
+has max_size   => ( is      => 'rw', isa => 'Maybe[Int]', default => 1048576 );
 
 
 sub validate {
@@ -60,14 +60,17 @@ sub validate {
     else {
         return $self->add_error('File not found for upload field');
     }
-    $size > 0 or
-        return $self->add_error('File uploaded is empty');
+    return $self->add_error('File uploaded is empty')
+        unless $size > 0;
 
-    $size >= $self->min_size or
-        return $self->add_error( 'File is too small (< [_1] bytes)', $self->min_size );
+    if( defined $self->min_size && $size < $self->min_size ) {
+        $self->add_error( 'File is too small (< [_1] bytes)', $self->min_size );
+    }
 
-    $size <= $self->max_size or
-        return $self->add_error( 'File is too big (> [_1] bytes)', $self->max_size );
+    if( defined $self->max_size && $size > $self->max_size ) {
+        $self->add_error( 'File is too big (> [_1] bytes)', $self->max_size );
+    }
+    return;
 }
 
 # stolen from Plack::Util::is_real_fh
