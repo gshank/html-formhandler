@@ -1156,6 +1156,30 @@ koki: Klaus Ita
 
 jnapiorkowski: John Napiorkowski
 
+lestrrat: Daisuke Maki
+
+hobbs: Andrew Rodland
+
+Andy Clayton
+
+boghead: Bryan Beeley
+
+Csaba Hetenyi
+
+Eisuke Oishi
+
+Lian Wan Situ
+
+Murray
+
+Nick Logan
+
+Vladimir Timofeev
+
+diegok: Diego Kuperman
+
+ijw: Ian Wells
+
 Initially based on the source code of L<Form::Processor> by Bill Moseley
 
 =cut
