@@ -55,7 +55,7 @@ sub page {
     }
     else    # not a compound name
     {
-        for my $page ( $self->all_paages ) {
+        for my $page ( $self->all_pages ) {
             return $page if ( $page->name eq $name );
         }
     }

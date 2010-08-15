@@ -6,5 +6,6 @@ extends 'HTML::FormHandler';
 
 with ('HTML::FormHandler::BuildPages', 'HTML::FormHandler::Pages' );
 
+sub is_wizard {1}
 
 1;

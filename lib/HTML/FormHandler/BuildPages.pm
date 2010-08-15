@@ -1,8 +1,23 @@
 package HTML::FormHandler::BuildPages;
 
 use Moose::Role;
+use Try::Tiny;
 
-has 'page_list' => ( isa => 'HashRef|ArrayRef', is => 'rw', default => sub { {} } );
+has 'page_list' => ( 
+    isa => 'ArrayRef', 
+    is => 'rw', 
+    traits => ['Array'],
+    default => sub { [] },
+);
+
+sub has_page_list {
+    my ( $self ) = @_;
+    
+    my $page_list = $self->page_list;
+    return unless $page_list && ref $page_list eq 'ARRAY';
+    return $page_list if ( scalar @{$page_list} );
+    return;
+}
 
 after '_build_fields' => sub {
     my $self = shift;
@@ -72,8 +87,11 @@ sub _make_page {
         $page_attr->{name} = $name = $1;
         $do_update = 1;
     }
+    my @page_name_space;
     my $page_ns = $self->page_name_space;
-    my @page_name_space = ref $page_ns eq 'ARRAY' ? @$page_ns : $page_ns;
+    if( $page_ns ) {
+        @page_name_space = ref $page_ns eq 'ARRAY' ? @$page_ns : $page_ns;
+    }
     my @classes;
     # '+'-prefixed fields could be full namespaces
     if ( $type =~ s/^\+// )
@@ -97,7 +115,6 @@ sub _make_page {
     }
     die "Could not load page class '$type' for field '$name'"
        unless $loaded;
-
 
     $page_attr->{form} = $self->form if $self->form;
     # parent and name correction for names with dots
