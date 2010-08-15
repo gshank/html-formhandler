@@ -34,5 +34,17 @@ has 'apply_list' => (
     }
 );
 
+has 'page_list' => (
+    traits    => ['Array'],
+    is        => 'rw',
+    isa       => 'ArrayRef',
+    default   => sub { [] },
+    handles  => {
+        add_to_page_list => 'push',
+        has_page_list => 'count',
+        clear_page_list => 'clear',
+    }
+);
+
 use namespace::autoclean;
 1;
