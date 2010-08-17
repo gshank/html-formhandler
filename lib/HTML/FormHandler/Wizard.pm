@@ -10,6 +10,7 @@ sub is_wizard {1}
 has_field 'page_num' => ( type => 'Hidden', default => 1 );
 
 has 'on_last_page' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'stash' => ( is => 'rw', isa => 'HashRef' );
 
 sub validated { 
     my $self = shift;
@@ -55,13 +56,19 @@ sub set_active {
 
 after 'validate_form' => sub {
     my $self = shift;
-    if( $self->page_validated && $self->field('page_num')->value < $self->num_pages ) {
-        my $new_page_num = $self->field('page_num')->value + 1;
-        $self->clear_page;
-        $self->set_active( $new_page_num ); 
-        $self->_result_from_fields( $self->result );
-        $self->field('page_num')->value($new_page_num);
-        $self->on_last_page(1) if $new_page_num == $self->num_pages;
+    if( $self->page_validated ) { 
+        $self->save_page;
+        if( $self->field('page_num')->value < $self->num_pages ) {
+            my $new_page_num = $self->field('page_num')->value + 1;
+            $self->clear_page;
+            $self->set_active( $new_page_num ); 
+            $self->_result_from_fields( $self->result );
+            $self->field('page_num')->value($new_page_num);
+            $self->on_last_page(1) if $new_page_num == $self->num_pages;
+        }
+        elsif( $self->field('page_num')->value == $self->num_pages ) {
+            $self->_set_value( $self->stash );
+        }
     }
 };
 
@@ -72,6 +79,15 @@ sub clear_page {
     $self->processed(0);
 #   $self->did_init_obj(0);
     $self->clear_result;
+}
+
+sub save_page {
+    my $self = shift;
+
+    my $stash = $self->stash;
+    while ( my ($key, $value) = each %{$self->value}) {
+        $stash->{$key} = $value;
+    }
 }
 
 1;
