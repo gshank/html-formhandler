@@ -15,6 +15,7 @@ has 'pages' => (
         num_pages => 'count',
         has_pages => 'count',
         set_page_at => 'set',
+        get_page => 'get',
     }
 );
 

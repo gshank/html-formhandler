@@ -1,11 +1,77 @@
 package HTML::FormHandler::Wizard;
 # ABSTRACT: create a multi-page form
 
-use Moose;
+use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';
-
 with ('HTML::FormHandler::BuildPages', 'HTML::FormHandler::Pages' );
 
 sub is_wizard {1}
+
+has_field 'page_num' => ( type => 'Hidden', default => 1 );
+
+has 'on_last_page' => ( is => 'rw', isa => 'Bool', default => 0 );
+
+sub validated { 
+    my $self = shift;
+    return $self->next::method && $self->on_last_page;
+}
+
+sub page_validated {
+    my $self = shift;
+    return $self->SUPER::validated;
+}
+
+sub build_active {
+    my $self = shift;
+
+    my @page_fields;
+    foreach my $page ( $self->all_pages ) {
+        push @page_fields, $page->all_fields;
+    }
+    foreach my $field_name ( @page_fields ) {
+        $self->field($field_name)->inactive(1);
+    } 
+}
+
+
+sub set_active {
+    my ( $self, $current_page ) = @_;;
+
+    $current_page ||= $self->get_param('page_num') || 1;
+    return if $current_page > $self->num_pages;
+    $self->on_last_page(1) if $current_page == $self->num_pages;
+    my $page = $self->get_page( $current_page - 1 );
+
+    foreach my $fname ( $page->all_fields ) { 
+        my $field = $self->field($fname);
+        if ( $field ) {
+            $field->_active(1);
+        }
+        else {
+            warn "field $fname not found for page " . $page->name;
+        }
+    }
+}
+
+after 'validate_form' => sub {
+    my $self = shift;
+    if( $self->page_validated && $self->field('page_num')->value < $self->num_pages ) {
+        my $new_page_num = $self->field('page_num')->value + 1;
+        $self->clear_page;
+        $self->set_active( $new_page_num ); 
+        $self->_result_from_fields( $self->result );
+        $self->field('page_num')->value($new_page_num);
+        $self->on_last_page(1) if $new_page_num == $self->num_pages;
+    }
+};
+
+sub clear_page {
+    my $self = shift;
+    $self->clear_data;
+    $self->clear_params;
+    $self->processed(0);
+#   $self->did_init_obj(0);
+    $self->clear_result;
+}
 
 1;

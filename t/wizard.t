@@ -47,4 +47,16 @@ is( $wizard->num_pages, 3, 'right number of pages' );
 ok( $wizard->page('one')->has_fields, 'first page has a field' );
 is( $wizard->page('one')->field('foo')->name, 'foo', 'field object from page' );
 
+$wizard->process( params => {} );
+like( $wizard->render, qr/\<input type="hidden" name="page_num" id="page_num" value="1" \/\>/, 'renders ok' );
+is( $wizard->field('page_num')->value, 1, 'wizard is on first page' );
+$wizard->process( params => { foo => 'test123', page_num => 1 } );
+is( $wizard->field('page_num')->value, 2, 'wizard is on second page' );
+like( $wizard->render, qr/\<input type="hidden" name="page_num" id="page_num" value="2" \/\>/, 'renders ok' );
+$wizard->process( params => { bar => 'xxxxx', page_num => 2 } );
+is( $wizard->field('page_num')->value, 3, 'wizard is on third page' );
+like( $wizard->render, qr/\<input type="hidden" name="page_num" id="page_num" value="3" \/\>/, 'renders ok' );
+$wizard->process( params => { zed => 'omega', page_num => 3 } );
+ok( $wizard->validated, 'wizard validated on last page' );
+
 done_testing;
