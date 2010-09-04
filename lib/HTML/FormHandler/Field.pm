@@ -828,8 +828,10 @@ sub _set_validate_meth {
     my $self = shift;
     return $self->set_validate if $self->set_validate;
     my $name = $self->full_name;
-    $name =~ s/\./_/g;
-    $name =~ s/_\d+_/_/g; # remove repeatable field instances
+    if( $name =~ /\./ ) {
+        $name =~ s/\.\d+\./_/g;
+        $name =~ s/\./_/g;
+    }
     return 'validate_' . $name;
 }
 sub _validate {
@@ -850,16 +852,20 @@ sub _can_default {
 sub _comp_default_meth {
     my $self = shift;
     my $name = $self->full_name;
-    $name =~ s/\./_/g;
-    $name =~ s/_\d+_/_/g;
+    if( $name =~ /\./ ) {
+        $name =~ s/\.\d+\./_/g;
+        $name =~ s/\./_/g;
+    }
     return 'init_value_' . $name;
 }
 sub _set_default_meth {
     my $self = shift;
     return $self->set_default if $self->set_default;
     my $name = $self->full_name;
-    $name =~ s/\./_/g;
-    $name =~ s/_\d_/_/g;
+    if( $name =~ /\./ ) {
+        $name =~ s/\.\d+\./_/g;
+        $name =~ s/\./_/g;
+    }
     return 'default_' . $name;
 }
 sub get_default_value {
