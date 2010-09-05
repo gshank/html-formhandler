@@ -77,11 +77,17 @@ use lib 't/lib';
    has_field 'callback_pass' => (
       apply => [
          {
-             check => sub { if ( $_[0] =~ /(\d+)/ ) { return $1 > 10 } },
+             check => \&check_callback_pass,
              message => 'Must contain number greater than 10',
          }
       ]
    );
+   sub check_callback_pass {
+       my ( $value, $field ) = @_;
+       if( $value =~ /(\d+)/ ) {
+           return $1 > 10;
+       }
+   }
    has_field 'less_than_ten_error' => (
       apply => [ 'NaturalLessThanTen' ]
    );
