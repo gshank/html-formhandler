@@ -37,10 +37,23 @@ use lib 't/lib';
    has_field 'regex_correct' => (
       apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
    );
+   has_field 'message_sub' => (
+      apply => [
+         {
+            check   => [ 'abc' ],
+            message => \&err_message
+         }
+      ]
+   );
+   sub err_message {
+       my ($field, $value ) = @_;
+       return $field->name . ': Must be "abc"';
+   }
+
    has_field 'set_error' => (
       apply => [
          {
-            check   => [ 'aaa', 'bbb' ],
+            check   => [ 'abc', 'bbb' ],
             message => 'Must be "aaa" or "bbb"'
          }
       ]
@@ -88,14 +101,16 @@ my $params = {
       set_correct              => 'aaa',
       callback_error           => 'asdf 2',
       callback_pass            => 'asdf 20 asd',
-      less_than_ten_error => 10,
-      less_than_ten_pass  => 9,
+      less_than_ten_error      => 10,
+      less_than_ten_pass       => 9,
+      message_sub              => 'xyz',
 };
 $form->process($params);
 # ok( $form->field('empty_field')->has_errors, 'empty does not pass required constraint' );
 ok( $form->field('regex_error')->has_errors,    'regexp constraint - error' );
 ok( !$form->field('regex_correct')->has_errors, 'regexp constraint - pass' );
 ok( $form->field('regex_correct')->has_value,   'constraints passed - has_value is true' );
+is( $form->field('message_sub')->errors->[0], 'message_sub: Must be "abc"',    'error from message sub' );
 ok( !$form->field('set_correct')->has_errors,              'set correct' );
 ok( $form->field('set_error')->has_errors,                 'set error' );
 ok( $form->field('callback_error')->has_errors,            'callback constraint - error' );

@@ -439,8 +439,18 @@ To declare actions inside a field class use L<HTML::FormHandler::Moose> and
 Actions specified with apply are cumulative. Actions may be specified in
 field classes and additional actions added in the 'has_field' declaration.
 
+In addition to being a string, Messages may be arrayrefs, for localization, 
+or coderefs, which will be passed a reference to the field and the original value.
+
+   apply [ { check => ['abc'], message => \&err_message } ];
+   sub err_message {
+      my ( $field, $value ) = @_;
+      return $field->name . ": must .... ";
+   }
+
 You can see examples of field classes with 'apply' actions in the source for
-L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>.
+L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>, and
+in t/constraints.t.
 
 =head2 Moose types for constraints and transformations
 
