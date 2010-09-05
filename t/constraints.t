@@ -46,7 +46,7 @@ use lib 't/lib';
       ]
    );
    sub err_message {
-       my ($field, $value ) = @_;
+       my ($value, $field ) = @_;
        return $field->name . ': Must be "abc"';
    }
 

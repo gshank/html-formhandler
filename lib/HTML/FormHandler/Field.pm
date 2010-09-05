@@ -444,7 +444,7 @@ or coderefs, which will be passed a reference to the field and the original valu
 
    apply [ { check => ['abc'], message => \&err_message } ];
    sub err_message {
-      my ( $field, $value ) = @_;
+      my ( $value, $field ) = @_;
       return $field->name . ": must .... ";
    }
 
