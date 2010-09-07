@@ -13,6 +13,7 @@ with 'MooseX::Traits';
 use Carp;
 use Class::MOP;
 use HTML::FormHandler::Result;
+use HTML::FormHandler::Field;
 use Try::Tiny;
 
 use 5.008;
@@ -490,8 +491,6 @@ If the field name has dots they should be replaced with underscores.
 
 =head3 validate
 
-(This method used to be called 'cross_validate'. It was renamed to 'validate'
-to make the api more consistent.)
 This is a form method that is useful for cross checking values after they have
 been saved as their final validated value, and for performing more complex
 dependency validation. It is called after all other field validation is done,

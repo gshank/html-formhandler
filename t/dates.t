@@ -90,12 +90,14 @@ is( $field->fif, '07-07-09', 'fif ok');
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Render::Simple';
 
-   has_field 'end_date' => ( type => 'Date' );
+   has_field 'end_date' => ( type => 'Date', required => 1 );
 }
 
 my $form = Test::Date->new;
 ok( $form, 'form with date created' );
 ok( $form->render_field('end_date'), 'date field renders' );
+$DB::single=1;
+$form->process( params => { end_date => '' } );
 
 #
 # DateTime
