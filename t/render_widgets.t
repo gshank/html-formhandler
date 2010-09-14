@@ -56,7 +56,7 @@ use HTML::FormHandler::Field::Text;
         type => 'Text',
     );
     has_field 'active'     => ( type => 'Checkbox' );
-    has_field 'comments'   => ( type => 'TextArea' );
+    has_field 'comments'   => ( type => 'TextArea', cols => 40, rows => 3 );
     has_field 'hidden'     => ( type => 'Hidden' );
     has_field 'selected'   => ( type => 'Boolean' );
     has_field 'start_date' => ( type => 'DateTime' );
@@ -209,7 +209,7 @@ my $output5 = $form->field('comments')->render;
 is(
     $output5,
     '
-<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...&lt;/textarea&gt;</textarea></div>
+<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="3" cols="40">Four score and seven years ago...&lt;/textarea&gt;</textarea></div>
 ',
     'output from textarea'
 );
