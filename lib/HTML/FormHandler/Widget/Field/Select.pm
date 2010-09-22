@@ -30,7 +30,8 @@ sub render {
         $output .= '<option value="'
             . $self->html_filter($option->{value})
             . qq{" id="$id.$index"};
-        if ( my $ffif = $result->fif ) {
+        my $ffif = $result->fif;
+        if ( defined $ffif ) {
             if ( $multiple ) {
                 my @fif;
                 if ( ref $ffif ) {
