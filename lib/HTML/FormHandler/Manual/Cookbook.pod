@@ -327,7 +327,7 @@ C< before 'update_model' >.
 
 In the form:
 
-    has 'hostname' => ( isa => 'Int', is => 'ro' );
+    has 'hostname' => ( isa => 'Int', is => 'rw' );
 
     before 'update_model' => sub {
        my $self = shift;
