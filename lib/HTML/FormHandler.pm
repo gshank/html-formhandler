@@ -412,6 +412,11 @@ those fields will be active for the life of the form object. Fields specified as
 active on 'process' will have the field's '_active' flag set just for the life of the
 request.
 
+The 'sorted_fields' method returns only active fields. The 'fields' method returns
+all fields. 
+
+   foreach my $field ( $self->sorted_fields ) { ... } 
+
 =head3 field_name_space
 
 Use to set the name space used to locate fields that
@@ -425,6 +430,11 @@ name.
 The array of fields, objects of L<HTML::FormHandler::Field> or its subclasses.
 A compound field will itself have an array of fields,
 so this is a tree structure.
+
+=head3 sorted_fields
+
+Returns those fields from the fields array which are currently active. This
+is the method that returns the fields that are looped through when rendering. 
 
 =head3 field($name)
 
