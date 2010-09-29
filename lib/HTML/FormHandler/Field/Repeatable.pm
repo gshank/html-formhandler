@@ -100,6 +100,7 @@ Will create an 'id' field automatically
 
 =back
 
+Initial idea based on L<HTML::FormFu::Element::Repeatable>.
 
 =cut
 
