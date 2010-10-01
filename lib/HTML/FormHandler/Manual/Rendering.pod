@@ -47,6 +47,9 @@ FormHandler to display the field elements:
 
    [% form.field('title').render %]
 
+If you wish to loop through the fields yourself, use the 'sorted_fields'
+method.
+
 FormHandler is not a template system, so unless your form is very simple,
 rendering the entire form page only with FormHandler may not be the best solution.
 It's great for scaffolding, or simple admin forms, but user facing forms

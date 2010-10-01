@@ -164,7 +164,7 @@ is( $output9, q{
 
 my $output10 = $form->render_field( $form->field('opt_in') );
 is( $output10, q{
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />&lt;No&gt;<br /><input type="radio" value="1" name="opt_in" id="opt_in.1" />&lt;Yes&gt;<br /></div>
+<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />&lt;No&gt;</label><br /><label for="opt_in.1"><input type="radio" value="1" name="opt_in" id="opt_in.1" />&lt;Yes&gt;</label><br /></div>
 }, 'output from radio group' );
 
 my $output11 = $form->render_start;

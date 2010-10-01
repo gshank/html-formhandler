@@ -119,7 +119,7 @@ ok( $form, 'create form' );
 my $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never<br /><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes<br /></div>
+<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
 ', 'output from radio group'
 );
 
@@ -264,7 +264,7 @@ is(
 $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never<br /><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes<br /></div>
+<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
 ', 'output from radio group'
 );
 
