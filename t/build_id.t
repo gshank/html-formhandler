@@ -42,7 +42,7 @@ use Test::More;
     extends 'HTML::FormHandler';
 
 
-    # function with lexical variable 
+    # function with lexical variable
     my $name = 'test_form';
     my $create_id = sub {
         my $field_name = shift;
@@ -71,7 +71,7 @@ use Test::More;
 my $form = Test::Form->new;
 ok( $form, 'form built' );
 is( $form->field('foo')->id, 'form.foo', 'id attribute works' );
-is( $form->field('bar')->id, 'my_form.bar', 'id function works' ); 
+is( $form->field('bar')->id, 'my_form.bar', 'id function works' );
 is( $form->field('dux')->id, 'meth_role.dux', 'build_id role works' );
 is( $form->field('pax')->id, 'mm_role.pax', 'role with meth modifier around build_id works' );
 is( $form->field('mon')->id, 'test_form.mon', 'build_id function with var' );

@@ -413,9 +413,9 @@ active on 'process' will have the field's '_active' flag set just for the life o
 request.
 
 The 'sorted_fields' method returns only active fields. The 'fields' method returns
-all fields. 
+all fields.
 
-   foreach my $field ( $self->sorted_fields ) { ... } 
+   foreach my $field ( $self->sorted_fields ) { ... }
 
 =head3 field_name_space
 
@@ -434,7 +434,7 @@ so this is a tree structure.
 =head3 sorted_fields
 
 Returns those fields from the fields array which are currently active. This
-is the method that returns the fields that are looped through when rendering. 
+is the method that returns the fields that are looped through when rendering.
 
 =head3 field($name)
 

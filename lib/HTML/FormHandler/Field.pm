@@ -444,7 +444,7 @@ To declare actions inside a field class use L<HTML::FormHandler::Moose> and
 Actions specified with apply are cumulative. Actions may be specified in
 field classes and additional actions added in the 'has_field' declaration.
 
-In addition to being a string, Messages may be arrayrefs, for localization, 
+In addition to being a string, Messages may be arrayrefs, for localization,
 or coderefs, which will be passed a reference to the field and the original value.
 
    apply [ { check => ['abc'], message => \&err_message } ];
@@ -823,11 +823,11 @@ has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inacti
 has '_active'         => ( isa => 'Bool', is => 'rw', clearer => 'clear_active' );
 sub is_active {
     my $self = shift;
-    return ! $self->is_inactive; 
+    return ! $self->is_inactive;
 }
 sub is_inactive {
     my $self = shift;
-    return ($self->inactive && !$self->_active); 
+    return ($self->inactive && !$self->_active);
 }
 has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id { shift->html_name }

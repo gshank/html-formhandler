@@ -33,7 +33,7 @@ In your controller:
     $form->process( params => { @params } );
     return unless ( $form->validated );
 
-You can set the min_size and max_size limits to undef if you don't want them to be validated. 
+You can set the min_size and max_size limits to undef if you don't want them to be validated.
 
 =head1 DEPENDENCIES
 
@@ -98,4 +98,3 @@ sub is_real_fh {
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
 1;
-
