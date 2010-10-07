@@ -96,7 +96,6 @@ is( $field->fif, '07-07-09', 'fif ok');
 my $form = Test::Date->new;
 ok( $form, 'form with date created' );
 ok( $form->render_field('end_date'), 'date field renders' );
-$DB::single=1;
 $form->process( params => { end_date => '' } );
 
 #

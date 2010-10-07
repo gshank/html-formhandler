@@ -17,7 +17,7 @@ my $form = Test::Dates->new;
 my $field_updates = {
         foo_date => { format => '%m/%e/%Y', date_start => '10-01-01'  },
         bar => { default => 'formabc' },
-}; 
+};
 my $fif = {};
 $form->process( update_field_list => $field_updates, params => $fif );
 is( $form->field('foo_date')->date_start, '10-01-01', 'field updated' );
@@ -61,7 +61,7 @@ is( $form->field('blah')->value, 'page1form', 'right value for hidden field' );
 $fif = $form->fif;
 $fif->{foo} = 'fooforall';
 $fif->{bar} = 'barbiedoll';
-$form->process( form_id => 'page1form', params => $fif ); 
+$form->process( form_id => 'page1form', params => $fif );
 is( $form->field('foo')->temp, 'foo_temp', 'foo field updated' );
 is( $form->field('bar')->value, 'barbiedoll', 'foo value updated from default' );
 is( $form->field('blah')->value, 'page1form', 'right value for hidden field' );

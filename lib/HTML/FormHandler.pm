@@ -19,7 +19,7 @@ use Try::Tiny;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.32002';
+our $VERSION = '0.32003';
 
 =head1 SYNOPSIS
 
@@ -413,9 +413,9 @@ active on 'process' will have the field's '_active' flag set just for the life o
 request.
 
 The 'sorted_fields' method returns only active fields. The 'fields' method returns
-all fields. 
+all fields.
 
-   foreach my $field ( $self->sorted_fields ) { ... } 
+   foreach my $field ( $self->sorted_fields ) { ... }
 
 =head3 field_name_space
 
@@ -434,7 +434,7 @@ so this is a tree structure.
 =head3 sorted_fields
 
 Returns those fields from the fields array which are currently active. This
-is the method that returns the fields that are looped through when rendering. 
+is the method that returns the fields that are looped through when rendering.
 
 =head3 field($name)
 

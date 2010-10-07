@@ -1,3 +1,16 @@
+0.32003 Sun Oct 3, 2010
+    Fix syntax for 'with', excludes => -excludes
+    Use labels in radio group widgets
+    Add 'is_active' and 'is_inactive' convenience methods in Field
+    Select options - check defined instead of truth
+    Misc minor doc and test improvements
+    Coderef allowed for messages in apply actions
+    Limit removing of numbers when constructing method names
+    Use html_filter when rendering labels
+    Allow undefining min_size and max_size in upload field
+    Return in render_filter if string is not defined
+    Change rendering of repeatable subfields
+    
 0.32002 Thu July 29, 2010
     Update to handle newer Moose (error msg with Moose::Util::MetaRole API)
     Swich to Dist::Zilla
