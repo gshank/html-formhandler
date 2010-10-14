@@ -278,7 +278,8 @@ sub new_field_with_traits {
         push @traits, $widget_role, $wrapper_role;
     }
     if( @traits ) {
-        $field = $class->new_with_traits( traits => \@traits, %{$field_attr} );
+        my $new_class = $class->with_traits( @traits );
+        $field = $new_class->new( %{$field_attr} );
     }
     else {
         $field = $class->new( %{$field_attr} );

@@ -3,7 +3,7 @@ package HTML::FormHandler::Result;
 
 use Moose;
 with 'HTML::FormHandler::Result::Role';
-with 'MooseX::Traits';
+with 'HTML::FormHandler::Traits';
 
 =head1 SYNOPSIS
 

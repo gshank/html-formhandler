@@ -2,6 +2,7 @@ package HTML::FormHandler;
 # ABSTRACT: HTML forms using Moose
 
 use Moose;
+extends 'HTML::FormHandler::Base'; # to make some methods overridable by roles
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::BuildFields',
     'HTML::FormHandler::Validate::Actions',
@@ -670,10 +671,12 @@ has 'result' => (
 
 sub build_result {
     my $self = shift;
-    my $result = HTML::FormHandler::Result->new( name => $self->name, form => $self );
+    my $result_class = 'HTML::FormHandler::Result';
     if ( $self->widget_form ) {
-        $self->apply_widget_role( $result, $self->widget_form, 'Form' );
+        my $role = $self->get_widget_role( $self->widget_form, 'Form' );
+        $result_class = $result_class->with_traits( $role );
     }
+    my $result = $result_class->new( name => $self->name, form => $self );
     return $result;
 }
 
@@ -790,7 +793,7 @@ sub BUILD {
 
     $self->apply_field_traits if $self->has_field_traits;
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
-        if ( $self->widget_form && !$self->can('render') );
+        if ( $self->widget_form && $self->widget_form ne 'Simple' );
     $self->_build_fields;    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active; # set optional fields active
     return if defined $self->item_id && !$self->item;
