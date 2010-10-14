@@ -52,4 +52,9 @@ is( $class, 'Test::Another::3', 'right class name' );
 my $obj3 = $class->new( 'another_test' => 1 );
 is( $obj3->another_test, 1, 'instance ok' );
 
+my $obj4 = Test::Another->new_with_traits( traits => ['Test::Trait::Two'], test_two => 'foo' );
+is( $obj4->test_two, 'foo', 'instantiated ok' );
+is( $obj4->meta->name, 'Test::Another::4', 'named ok' );
+
+
 done_testing;

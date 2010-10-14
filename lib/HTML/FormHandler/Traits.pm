@@ -10,11 +10,11 @@ has '_trait_namespace' => (
 );
 
 my %COMPOSED_CLASS_INDEX;
-    # {
-    #    'HTML::FormHandler::Field::Text' => { 'Role|Another::Role' => 1 },
-    #    'HTML::FormHandler::Field::Select' => { 'My::Role' => 1,
-    #                                            'My::Role|Your::Role' => 2 },
-    # }
+# {
+#    'HTML::FormHandler::Field::Text' => { 'Role|Another::Role' => 1 },
+#    'HTML::FormHandler::Field::Select' => { 'My::Role' => 2,
+#                                            'My::Role|Your::Role' => 3 },
+# }
 my %COMPOSED_META;
 my $composed_index = 0;
 
@@ -57,7 +57,7 @@ sub composed_class_name {
     my $class     = $options{class};
     my $cache_key = _anon_cache_key( $options{roles} );
 
-    my $index = $COMPOSED_CLASS_INDEX{$class}{$cache_key};;
+    my $index = $COMPOSED_CLASS_INDEX{$class}{$cache_key};
     if ( defined $index ) {
         return "${class}::$index";
     }
@@ -86,12 +86,21 @@ sub with_traits {
     else {
         $meta = $class->meta->create(
             $new_class_name,
-            superclasses => [ $class_name ],
+            superclasses => [$class_name],
             roles        => \@traits,
         );
         $COMPOSED_META{$new_class_name} = $meta;
         return $meta->name;
     }
+}
+
+sub new_with_traits {
+    my ( $class, %args ) = @_;
+
+    my $traits = delete $args{traits} || [];
+    my $new_class   = $class->with_traits(@$traits);
+    my $constructor = $new_class->meta->constructor_name;
+    return $new_class->$constructor(%args);
 }
 
 =head1 SYNOPSIS
