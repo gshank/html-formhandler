@@ -504,13 +504,23 @@ a regular expression, or an array of valid values, plus a message.
 A 'check' coderef will be passed the current value of the field. It should
 return true or false:
 
-  has_field 'this_num' => (
-      apply => [
-         {
-             check => sub { if ( $_[0] =~ /(\d+)/ ) { return $1 > 10 } },
-             message => 'Must contain number greater than 10',
-         }
-  );
+    has_field 'this_num' => (
+        apply => [
+            {
+                check => sub {
+                    if ( $_[0] =~ /(\d+)/ )
+                    {
+                        return $1 > 10;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                },
+                message => 'Must contain number greater than 10',
+            },
+        ],
+    );
 
 A 'check' regular expression:
 
