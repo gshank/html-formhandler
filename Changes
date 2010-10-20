@@ -1,3 +1,8 @@
+0.32004 Wed Oct 20, 2010
+    Minor doc cleanup
+    Switch away from MooseX::Traits; memory leak because of non-cached
+        composed classes
+    
 0.32003 Sun Oct 3, 2010
     Fix syntax for 'with', excludes => -excludes
     Use labels in radio group widgets
