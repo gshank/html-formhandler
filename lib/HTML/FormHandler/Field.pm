@@ -387,6 +387,21 @@ In a FormHandler field_list
         range_end       => 120,
     }
 
+
+=item not_nullable
+
+Fields that contain 'empty' values such as '' are changed to undef in the validation process.
+If this flag is set, the value is not changed to undef. If your database column requires
+an empty string instead of a null value (such as a NOT NULL column), set this attribute.
+
+    has_field 'description' => (
+        type => 'TextArea',
+        not_nullable => 1,
+    );
+
+This attribute is also used when you want an empty array to stay an empty array and not
+be set to undef.
+
 =back
 
 =head2 apply

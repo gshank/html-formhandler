@@ -21,15 +21,9 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    set_init      Name of the form method used to initialize a field
    required      Field is required
    required_message  If this field is required, the message to display on failure
-   id            Useful for javascript that requires unique id. Set in Field.
-   label         Text label. Not used by FormHandler, but useful in templates
    order         Set the order for fields. Used by sorted_fields, templates.
-   widget        Used by templates to decide widget usage. Set by field classes.
-   style         Style to use for css formatting. Not used by FormHandler; for templates.
-   title         For HTML titles. Not used by FormHandler.
+   widget        Determines which rendering widget to use for the field 
    password      Remove from params and do not display in forms.
-   disabled      HTML hint to not do updates (for templates) Init: 0
-   readonly      HTML hint to make the field readonly (for templates) Init: 0
    noupdate      Don't update this field in the database
    writeonly     Do not retrieve initial values
    errors        Errors associated with this field
@@ -47,6 +41,28 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    apply         Array of constraint/coercion/transformation actions
    value_changed Has the field's value changed from the init_value?
    dump          For debugging
+   inactive, is_active, is_inactive
+   input_without_param  The value of the field if there is no input from the submitted form
+   default       Default value for the field
+   default_over_obj Default that takes precedence over item or init_object
+   not_nullable  Don't convert an empty field ('', etc) to undef
+   trim          Transform to trim the field 
+   deflation     Function to transform the field
+
+=head2 Field Attributes for creating HTML
+
+   label       - Text label for this field. Defaults to ucfirst field name.
+   title       - Place to put title for field.
+   style       - Place to put field style string
+   css_class   - For a css class name (string; could be several classes,
+                 separated by spaces or commas). Used in wrapper for input field.
+   input_class - class attribute on the 'input' field. applied with
+                 '_apply_html_attribute' along with disabled/readonly/javascript
+   id          - Useful for javascript (default is html_name. to prefix with
+                 form name, use 'html_prefix' in your form)
+   disabled    - for the HTML flag
+   readonly    - for the HTML flag
+   javascript  - for a Javascript string
 
 =head2 Field attributes not set in a user form
 
@@ -80,10 +96,8 @@ These attributes are usually accessed in a subroutine or in a template.
    language handle  For MakeText
    params         HTTP parameters
    fields         Field array
-   parent         For compound/related fields: parent field reference
    html_prefix    Flag to prefix html field names with the form name
    ctx            Application context for your use
-
 
 =head2 Form methods
 
@@ -105,7 +119,18 @@ These attributes are usually accessed in a subroutine or in a template.
    uuid            Creates an HTML element 'form_uuid'
 
    process         Sets up form, validated, updates model
+   run             Returns a result object and clears form
 
+=head2 Form attributes useful in HTML
+
+   http_method - For storing 'post' or 'get'
+   action - Store the form 'action' on submission. No default value.
+   enctype - Request enctype
+   uuid - generates a string containing an HTML field with UUID
+   css_class - adds a 'class' attribute to the form tag
+   style - adds a 'style' attribute to the form tag
+   id/name - the form tag 'id' attribute is set to the form name
+ 
 =head2  Subroutines for your form
 
    options_$fieldname       Provides a list of key value pairs for select lists
