@@ -969,7 +969,7 @@ sub default_render_filter {
     $string =~ s/</&lt;/g;
     $string =~ s/>/&gt;/g;
     $string =~ s/"/&quot;/g;
-    return $string // '';
+    return $string;
 }
 
 has 'input_param' => ( is => 'rw', isa => 'Str' );
