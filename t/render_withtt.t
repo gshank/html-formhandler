@@ -41,7 +41,8 @@ my $rendered_via_tt;
 
 SKIP: {
     skip 'Install HTML::TreeBuilder to test TT Result', 3
-        unless eval { require HTML::TreeBuilder };
+        unless eval { require HTML::TreeBuilder && $HTML::TreeBuilder::VERSION >= 3.23 };
+        # really old TreeBuilder versions might not work
 
     my $rendered_via_widget;
     {
