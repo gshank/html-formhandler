@@ -272,7 +272,7 @@ sub render_select {
     $output .= $self->_add_html_attributes( $field );
     $output .= '>';
     my $index = 0;
-    if( $field->empty_select ) {
+    if( defined $field->empty_select ) {
         $output .= '<option value="">' . $field->_localize($field->empty_select) . '</option>';
     }
     foreach my $option ( @{ $field->options } ) {
