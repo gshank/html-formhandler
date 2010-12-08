@@ -142,10 +142,11 @@ you to look for a different input parameter.
 
 =item inactive, is_inactive, is_active
 
-Set this attribute if this field is inactive. This provides a way to define fields
-in the form and selectively set them to inactive. There is also an '_active' attribute,
-for internal use to indicate that the field has been activated by the form's 'active'
-attribute.
+Set the 'inactive' attribute to 1 if this field is inactive. The 'inactive' attribute
+that isn't set or is set to 0 will make a field 'active'.
+This provides a way to define fields in the form and selectively set them to inactive.
+There is also an '_active' attribute, for internal use to indicate that the field has
+been activated/inactivated on 'process' by the form's 'active'/'inactive' attributes.
 
 You can use the is_inactive and is_active methods to check whether this particular
 field is active.
@@ -836,14 +837,14 @@ has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 # 'inactive' is set in the field declaration, and is static. Default status.
 has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
 # 'active' is cleared whenever the form is cleared. Ephemeral activation.
-has '_active'         => ( isa => 'Bool', is => 'rw', clearer => 'clear_active' );
+has '_active'         => ( isa => 'Bool', is => 'rw', clearer => 'clear_active', predicate => 'has__active' );
 sub is_active {
     my $self = shift;
     return ! $self->is_inactive;
 }
 sub is_inactive {
     my $self = shift;
-    return ($self->inactive && !$self->_active);
+    return (($self->inactive && !$self->_active) || (!$self->inactive && $self->has__active && $self->_active == 0 ) );
 }
 has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id { shift->html_name }

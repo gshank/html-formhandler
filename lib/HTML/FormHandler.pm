@@ -414,24 +414,32 @@ which can also be used in a form to do specific field updates:
 be overwritten by the validation process. Set the value in a field
 validation method.)
 
-=head3 active
+=head3 active/inactive
 
-If a form has a variable number of fields, fields which are not always to be
-used should be defined as 'inactive':
-
-   has_field 'foo' => ( type => 'Text', inactive => 1 );
-
+A field can be marked 'inactive' and set to active at new or process time;
 Then the field name can be specified in the 'active' array, either on 'new',
 or on 'process':
 
+   has_field 'foo' => ( type => 'Text', inactive => 1 );
+   ...
    my $form = MyApp::Form->new( active => ['foo'] );
    ...
    $form->process( active => ['foo'] );
 
-Fields specified as active on new will have the 'inactive' flag cleared, and so:
-those fields will be active for the life of the form object. Fields specified as
-active on 'process' will have the field's '_active' flag set just for the life of the
-request.
+Or a field can be a normal active field and set to inactive at new or process
+time:
+
+   has_field 'bar';
+   ...
+   my $form = MyApp::Form->new( inactive => ['foo'] );
+   ...
+   $form->process( inactive => ['foo'] );
+
+Fields specified as active/inactive on new will have the form's inactive/active
+arrayref cleared and the the field's inactive flag set appropriately, so the
+that state will be effective for the life of the form object. Fields specified as
+active/inactive on 'process' will have the field's '_active' flag set for the life
+of the request (the _active flag will be cleared when the form is cleared).
 
 The 'sorted_fields' method returns only active fields. The 'fields' method returns
 all fields.
@@ -731,6 +739,17 @@ has 'active' => (
         clear_active => 'clear',
     }
 );
+has 'inactive' => (
+    is => 'rw',
+    traits => ['Array'],
+    isa => 'ArrayRef[Str]',
+    default => sub {[]},
+    handles => {
+        add_inactive => 'push',
+        has_inactive => 'count',
+        clear_inactive => 'clear',
+    }
+);
 
 
 # object with which to initialize
@@ -830,7 +849,7 @@ sub BUILD {
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && $self->widget_form ne 'Simple' );
     $self->_build_fields;    # create the form fields (BuildFields.pm)
-    $self->build_active if $self->has_active; # set optional fields active
+    $self->build_active if $self->has_active || $self->has_inactive; # set optional fields active
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
     if ( my $init_object = $self->item || $self->init_object ) {
@@ -992,32 +1011,59 @@ sub setup_form {
 # if active => [...] is set at process time, set 'active' flag
 sub set_active {
     my $self = shift;
-    return unless $self->has_active;
-    foreach my $fname (@{$self->active}) {
-        my $field = $self->field($fname);
-        if ( $field ) {
-            $field->_active(1);
+    if( $self->has_active ) {
+        foreach my $fname (@{$self->active}) {
+            my $field = $self->field($fname);
+            if ( $field ) {
+                $field->_active(1);
+            }
+            else {
+                warn "field $fname not found to set active";
+            }
         }
-        else {
-            warn "field $fname not found to set active";
-        }
+        $self->clear_active;
     }
-    $self->clear_active;
+    if( $self->has_inactive ) {
+        foreach my $fname (@{$self->inactive}) {
+            my $field = $self->field($fname);
+            if ( $field ) {
+                $field->_active(0);
+            }
+            else {
+                warn "field $fname not found to set inactive";
+            }
+        }
+        $self->clear_inactive;
+    }
 }
 
 # if active => [...] is set at build time, remove 'inactive' flags
 sub build_active {
     my $self = shift;
-    foreach my $fname (@{$self->active}) {
-        my $field = $self->field($fname);
-        if( $field ) {
-            $field->clear_inactive;
+    if( $self->has_active ) {
+        foreach my $fname (@{$self->active}) {
+            my $field = $self->field($fname);
+            if( $field ) {
+                $field->clear_inactive;
+            }
+            else {
+                warn "field $fname not found to set active";
+            }
         }
-        else {
-            warn "field $fname not found to set active";
-        }
+        $self->clear_active;
     }
-    $self->clear_active;
+    if( $self->has_inactive ) {
+        foreach my $fname (@{$self->inactive}) {
+            my $field = $self->field($fname);
+            if( $field ) {
+                $field->inactive(1);
+            }
+            else {
+                warn "field $fname not found to set inactive";
+            }
+        }
+        $self->clear_inactive;
+    }
 }
 
 sub fif { shift->fields_fif(@_) }

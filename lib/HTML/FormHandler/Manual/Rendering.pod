@@ -199,7 +199,7 @@ widget_tags in a form to apply them to all the fields:
    package MyApp::Form;
    ....
    has '+widget_tags' => ( default => sub { {wrapper_start => '<p>',
-      wrapper_end => '</p>' } );
+      wrapper_end => '</p>' } } );
 
 =head2 Creating Widgets
 
