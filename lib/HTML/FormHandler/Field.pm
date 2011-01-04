@@ -4,12 +4,12 @@ package HTML::FormHandler::Field;
 use HTML::FormHandler::Moose;
 use HTML::FormHandler::Field::Result;
 use Try::Tiny;
+use Moose::Util::TypeConstraints;
 
 with 'HTML::FormHandler::Traits';
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::Widget::ApplyRole';
-with 'HTML::FormHandler::TraitFor::I18N';
 
 our $VERSION = '0.02';
 
@@ -778,6 +778,7 @@ has 'label' => (
     lazy    => 1,
     builder => 'build_label',
 );
+has 'no_render_label' => ( isa => 'Bool', is => 'rw' );
 sub build_label {
     my $self = shift;
     my $label = $self->name;
@@ -974,6 +975,32 @@ sub default_render_filter {
 }
 
 has 'input_param' => ( is => 'rw', isa => 'Str' );
+
+has 'language_handle' => (
+    isa => duck_type( [ qw(maketext) ] ),
+    is => 'rw',
+    reader => 'get_language_handle',
+    writer => 'set_language_handle',
+    predicate => 'has_language_handle'
+);
+
+sub language_handle {
+    my ( $self, $value ) = @_;
+    if( $value ) {
+        $self->set_language_handle($value);
+        return;
+    }
+    return $self->get_language_handle if( $self->has_language_handle );
+    return $self->form->language_handle if ( $self->has_form );
+    require HTML::FormHandler::I18N;
+    return $ENV{LANGUAGE_HANDLE} || HTML::FormHandler::I18N->get_handle;
+}
+
+sub _localize {
+    my ($self, @message) = @_;
+    my $message = $self->language_handle->maketext(@message);
+    return $message;
+}
 
 sub BUILDARGS {
     my $class = shift;

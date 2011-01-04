@@ -118,6 +118,11 @@ ok( $form, 'form built' );
 $form->process( params => { foo => 'test' } );
 is( $form->field('foo')->errors->[0], 'Loser! coin needed', 'right message' );
 is( ref $form->language_handle, 'MyApp::I18N::abc_de', 'using right lh');
+is( ref $form->field('foo')->language_handle, 'MyApp::I18N::abc_de', 'field uses form language handle' );
+
+$form->process( language_handle => HTML::FormHandler::I18N->get_handle('en_us'), params => { foo => 'byebye' } );
+my $field_lh = $form->field('bar')->language_handle;
+is( ref $field_lh, 'HTML::FormHandler::I18N::en_us', 'field uses form language handle' );
 
 $ENV{$_} = 'en-US' for @LH_VARS;
 
