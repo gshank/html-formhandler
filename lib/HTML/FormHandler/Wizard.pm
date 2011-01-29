@@ -11,7 +11,7 @@ has_field 'page_num' => ( type => 'Hidden', default => 1 );
 
 has 'on_last_page' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'stash' => ( is => 'rw', isa => 'HashRef' );
-has 'save_to' => ( is => 'rw', isa => 'Str' ) # 'item', 'stash', 'temp_table'
+has 'save_to' => ( is => 'rw', isa => 'Str' ); # 'item', 'stash', 'temp_table'
 
 # temp_table: DBIC row or other object with three columns:
 #    form, field, value
