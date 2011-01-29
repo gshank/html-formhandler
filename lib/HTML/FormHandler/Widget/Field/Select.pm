@@ -31,6 +31,9 @@ sub render {
             . $self->html_filter($option->{value})
             . qq{" id="$id.$index"};
         my $ffif = $result->fif;
+        if( defined $option->{disabled} && $option->{disabled} ) {
+            $output .= 'disabled="disabled" ';
+        }
         if ( defined $ffif ) {
             if ( $multiple ) {
                 my @fif;

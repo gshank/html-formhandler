@@ -278,6 +278,9 @@ sub render_select {
     foreach my $option ( @{ $field->options } ) {
         $output .= '<option value="' . $field->html_filter($option->{value}) . '" ';
         $output .= 'id="' . $field->id . ".$index\" ";
+        if( defined $option->{disabled} && $option->{disabled} ) {
+            $output .= 'disabled="disabled" ';
+        }
         if ( $field->fif ) {
             if ( $field->multiple == 1 ) {
                 my @fif;
