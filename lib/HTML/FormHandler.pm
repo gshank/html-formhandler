@@ -2,25 +2,29 @@ package HTML::FormHandler;
 # ABSTRACT: HTML forms using Moose
 
 use Moose;
+extends 'HTML::FormHandler::Base'; # to make some methods overridable by roles
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::BuildFields',
     'HTML::FormHandler::Validate::Actions',
     'HTML::FormHandler::TraitFor::I18N';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
-with 'MooseX::Traits';
+with 'HTML::FormHandler::Traits';
 
 use Carp;
 use Class::MOP;
 use HTML::FormHandler::Result;
+use HTML::FormHandler::Field;
 use Try::Tiny;
 
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.32002';
+our $VERSION = '0.32005';
 
 =head1 SYNOPSIS
+
+See the manual at L< HTML::FormHandler::Manual >.
 
     use HTML::FormHandler; # or a custom form: use MyApp::Form::User;
     my $form = HTML::FormHandler->new( .... );
@@ -86,7 +90,7 @@ field declaration sugar):
 
 
 A dynamic form - one that does not use a custom form class - may be
-created in using the 'field_list' attribute to set fields:
+created using the 'field_list' attribute to set fields:
 
     my $form = HTML::FormHandler->new(
         name => 'user_form',
@@ -114,14 +118,14 @@ details, or L<Catalyst::Manual::Tutorial::09_AdvancedCRUD::09_FormHandler>.
 
 =head1 DESCRIPTION
 
+*** Although documentation in this file provides some overview, it is mainly
+intended for API documentation. See L<HTML::FormHandler::Manual::Intro>
+for a more detailed introduction.
+
 HTML::FormHandler maintains a clean separation between form construction
 and form rendering. It allows you to define your forms and fields in a
 number of flexible ways. Although it provides renderers for HTML, you
 can define custom renderers for any kind of presentation.
-
-Although documentation in this file provides some overview, it is mainly
-intended for API documentation. See L<HTML::FormHandler::Manual::Intro>
-for a more detailed introduction.
 
 HTML::FormHandler allows you to define form fields and validators. It can
 be used for both database and non-database forms, and will
@@ -156,7 +160,6 @@ more atomic roles which are automatically applied to fields and form if a
 'render' method does not already exist. See
 L<HTML::FormHandler::Manual::Rendering> for more details.
 (And you can easily use hand-build forms - FormHandler doesn't care.)
-
 
 The typical application for FormHandler would be in a Catalyst, DBIx::Class,
 Template Toolkit web application, but use is not limited to that. FormHandler
@@ -253,7 +256,8 @@ a database form) can be retrieved with C<< $form->value >>.
 Parameters are passed in or already set when you call 'process'.
 HFH gets data to validate and store in the database from the params hash.
 If the params hash is empty, no validation is done, so it is not necessary
-to check for POST before calling C<< $form->process >>.
+to check for POST before calling C<< $form->process >>. (Although see
+the 'posted' option for complications.)
 
 Params can either be in the form of CGI/HTTP style params:
 
@@ -294,16 +298,31 @@ or as structured data in the form of hashes and lists:
 CGI style parameters will be converted to hashes and lists for HFH to
 operate on.
 
-You can add an additional param when setting params:
+=head3 posted
 
-   $form->process( params => { %{$c->req->params}, new_param  => 'something' } );
+Note that FormHandler by default uses empty params as a signal that the
+form has not actually been posted, and so will not attempt to validate
+a form with empty params. Most of the time this works OK, but if you
+have a small form with only the controls that do not return a post
+parameter if unselected (checkboxes and select lists), then the form
+will not be validated if everything is unselected. For this case you
+can either add a hidden field, or use the 'posted' flag:
+
+   $form->process( posted => ($c->req->method eq 'POST', params => ... );
+
+The corollary is that you will confuse FormHandler if you add extra params.
+It's often a better idea to add Moose attributes to the form rather than
+'dummy' fields if the data is not coming from a form control.
 
 =head2 Getting data out
 
 =head3 fif  (fill in form)
 
-Returns a hash of values suitable for use with HTML::FillInForm
-or for filling in a form with C<< $form->fif->{fieldname} >>.
+If you don't use FormHandler rendering and want to fill your form values in
+using some other method (such as with HTML::FillInForm or using a template)
+this returns a hash of values that are equivalent to params which you may
+use to fill in your form.
+
 The fif value for a 'title' field in a TT form:
 
    [% form.fif.title %]
@@ -311,6 +330,9 @@ The fif value for a 'title' field in a TT form:
 Or you can use the 'fif' method on individual fields:
 
    [% form.field('title').fif %]
+
+If you use FormHandler to render your forms or field you probably won't use
+these methods.
 
 =head3 value
 
@@ -345,7 +367,7 @@ See L<HTML::FormHandler::Manual::Intro>
 =head3 field_list
 
 A 'field_list' is an array of field definitions which can be used as an
-alternative to 'has_field' in small, dynamic forms.
+alternative to 'has_field' in small, dynamic forms to create fields.
 
     field_list => [
        field_one => {
@@ -373,7 +395,7 @@ add fields to the form depending on some other state.
 =head3 update_field_list
 
 Used to dynamically set particular field attributes on the 'process' (or
-'run') call.
+'run') call. (Will not create fields.)
 
     $form->process( update_field_list => {
        foo_date => { format => '%m/%e/%Y', date_start => '10-01-01' } },
@@ -388,28 +410,45 @@ which can also be used in a form to do specific field updates:
         $self->field('bar')->default( 'foo_value' );
     }
 
-(Note that you can't set a field's 'value' directly here, since it will
+(Note that you although you can set a field's 'default', you can't set a 
+field's 'value' directly here, since it will
 be overwritten by the validation process. Set the value in a field
 validation method.)
 
-=head3 active
+=head3 active/inactive
 
-If a form has a variable number of fields, fields which are not always to be
-used should be defined as 'inactive':
-
-   has_field 'foo' => ( type => 'Text', inactive => 1 );
-
+A field can be marked 'inactive' and set to active at new or process time;
 Then the field name can be specified in the 'active' array, either on 'new',
 or on 'process':
 
+   has_field 'foo' => ( type => 'Text', inactive => 1 );
+   ...
    my $form = MyApp::Form->new( active => ['foo'] );
    ...
    $form->process( active => ['foo'] );
 
-Fields specified as active on new will have the 'inactive' flag cleared, and so:
-those fields will be active for the life of the form object. Fields specified as
-active on 'process' will have the field's '_active' flag set just for the life of the
-request.
+Or a field can be a normal active field and set to inactive at new or process
+time:
+
+   has_field 'bar';
+   ...
+   my $form = MyApp::Form->new( inactive => ['foo'] );
+   ...
+   $form->process( inactive => ['foo'] );
+
+Fields specified as active/inactive on new will have the form's inactive/active
+arrayref cleared and the the field's inactive flag set appropriately, so the
+that state will be effective for the life of the form object. Fields specified as
+active/inactive on 'process' will have the field's '_active' flag set for the life
+of the request (the _active flag will be cleared when the form is cleared).
+
+The 'sorted_fields' method returns only active fields. The 'fields' method returns
+all fields.
+
+   foreach my $field ( $self->sorted_fields ) { ... }
+
+You can test whether a field is active by using the field 'is_active' and 'is_inactive'
+methods.
 
 =head3 field_name_space
 
@@ -424,6 +463,11 @@ name.
 The array of fields, objects of L<HTML::FormHandler::Field> or its subclasses.
 A compound field will itself have an array of fields,
 so this is a tree structure.
+
+=head3 sorted_fields
+
+Returns those fields from the fields array which are currently active. This
+is the method that returns the fields that are looped through when rendering.
 
 =head3 field($name)
 
@@ -480,7 +524,8 @@ validation method if you don't want to create a field subclass.
 It has access to the form ($self) and the field.
 This method is called after the field class 'validate' method, and is not
 called if the value for the field is empty ('', undef). (If you want an
-error message when the field is empty, use the 'required' flag and message.)
+error message when the field is empty, use the 'required' flag and message
+or the form 'validate' method.)
 The name of this method can be set with 'set_validate' on the field. The
 default is 'validate_' plus the field name:
 
@@ -490,8 +535,6 @@ If the field name has dots they should be replaced with underscores.
 
 =head3 validate
 
-(This method used to be called 'cross_validate'. It was renamed to 'validate'
-to make the api more consistent.)
 This is a form method that is useful for cross checking values after they have
 been saved as their final validated value, and for performing more complex
 dependency validation. It is called after all other field validation is done,
@@ -506,6 +549,9 @@ more than one field.
 Set an error in a field with C<< $field->add_error('some error string'); >>.
 Set a form error not tied to a specific field with
 C<< $self->add_form_error('another error string'); >>.
+The 'add_error' and 'add_form_error' methods call localization. If you
+want to skip localization for a particular error, you can use 'push_errors'
+or 'push_form_errors' instead.
 
   has_errors - returns true or false
   error_fields - returns list of fields with errors
@@ -529,6 +575,9 @@ each request, you may need to clear those yourself.
 If you do not call the form's 'process' method on a persistent form,
 such as in a REST controller's non-POST method or if you only call
 process when the form is posted, you will also need to call C<< $form->clear >>.
+
+The 'run' method which returns a result object always performs 'clear', to
+keep the form object clean.
 
 =head2 Miscellaneous attributes
 
@@ -622,6 +671,11 @@ will return the form name + "." + field full_name
    action - Store the form 'action' on submission. No default value.
    enctype - Request enctype
    uuid - generates a string containing an HTML field with UUID
+   css_class - adds a 'class' attribute to the form tag
+   style - adds a 'style' attribute to the form tag
+
+Note that the form tag contains an 'id' attribute which is set to the
+form name.
 
 =cut
 
@@ -661,10 +715,12 @@ has 'result' => (
 
 sub build_result {
     my $self = shift;
-    my $result = HTML::FormHandler::Result->new( name => $self->name, form => $self );
+    my $result_class = 'HTML::FormHandler::Result';
     if ( $self->widget_form ) {
-        $self->apply_widget_role( $result, $self->widget_form, 'Form' );
+        my $role = $self->get_widget_role( $self->widget_form, 'Form' );
+        $result_class = $result_class->with_traits( $role );
     }
+    my $result = $result_class->new( name => $self->name, form => $self );
     return $result;
 }
 
@@ -682,6 +738,17 @@ has 'active' => (
         add_active => 'push',
         has_active => 'count',
         clear_active => 'clear',
+    }
+);
+has 'inactive' => (
+    is => 'rw',
+    traits => ['Array'],
+    isa => 'ArrayRef[Str]',
+    default => sub {[]},
+    handles => {
+        add_inactive => 'push',
+        has_inactive => 'count',
+        clear_inactive => 'clear',
     }
 );
 
@@ -786,9 +853,9 @@ sub BUILD {
 
     $self->apply_field_traits if $self->has_field_traits;
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
-        if ( $self->widget_form && !$self->can('render') );
+        if ( $self->widget_form && $self->widget_form ne 'Simple' );
     $self->_build_fields;    # create the form fields (BuildFields.pm)
-    $self->build_active if $self->has_active || $self->has_flag('is_wizard');
+    $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
     if ( my $init_object = $self->item || $self->init_object ) {
@@ -950,32 +1017,59 @@ sub setup_form {
 # if active => [...] is set at process time, set 'active' flag
 sub set_active {
     my $self = shift;
-    return unless $self->has_active;
-    foreach my $fname (@{$self->active}) {
-        my $field = $self->field($fname);
-        if ( $field ) {
-            $field->_active(1);
+    if( $self->has_active ) {
+        foreach my $fname (@{$self->active}) {
+            my $field = $self->field($fname);
+            if ( $field ) {
+                $field->_active(1);
+            }
+            else {
+                warn "field $fname not found to set active";
+            }
         }
-        else {
-            warn "field $fname not found to set active";
-        }
+        $self->clear_active;
     }
-    $self->clear_active;
+    if( $self->has_inactive ) {
+        foreach my $fname (@{$self->inactive}) {
+            my $field = $self->field($fname);
+            if ( $field ) {
+                $field->_active(0);
+            }
+            else {
+                warn "field $fname not found to set inactive";
+            }
+        }
+        $self->clear_inactive;
+    }
 }
 
 # if active => [...] is set at build time, remove 'inactive' flags
 sub build_active {
     my $self = shift;
-    foreach my $fname (@{$self->active}) {
-        my $field = $self->field($fname);
-        if( $field ) {
-            $field->clear_inactive;
+    if( $self->has_active ) {
+        foreach my $fname (@{$self->active}) {
+            my $field = $self->field($fname);
+            if( $field ) {
+                $field->clear_inactive;
+            }
+            else {
+                warn "field $fname not found to set active";
+            }
         }
-        else {
-            warn "field $fname not found to set active";
-        }
+        $self->clear_active;
     }
-    $self->clear_active;
+    if( $self->has_inactive ) {
+        foreach my $fname (@{$self->inactive}) {
+            my $field = $self->field($fname);
+            if( $field ) {
+                $field->inactive(1);
+            }
+            else {
+                warn "field $fname not found to set inactive";
+            }
+        }
+        $self->clear_inactive;
+    }
 }
 
 sub fif { shift->fields_fif(@_) }

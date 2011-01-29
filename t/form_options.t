@@ -121,5 +121,46 @@ $params = {
 $form->process($params);
 is_deeply( $form->field('vegetables')->value, [], 'value for vegetables correct' );
 
+{
+    package Test::Form2;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'my_list' => ( type => 'Select' );
+
+    # this adds a 'selected' hash key to an option as an alternative
+    # to setting the default for the field.
+    sub options_my_list {
+        return [
+            {
+                value => 1,
+                label => 'One',
+                selected => 1,
+            },
+            {
+                value => 2,
+                label => 'Two',
+            },
+            {
+                value => 3,
+                label  => 'Three',
+            }
+        ];
+    }
+
+}
+
+$form = Test::Form2->new;
+ok( $form, 'form built' );
+
+my $rendered_field = $form->field('my_list')->render;
+like( $rendered_field, qr/<option value="1" id="my_list\.0" selected="selected">/, 'element is selected' );
+# the 'value' of the field will not reflect the selected option using this method
+is_deeply( $form->value, {},  'no form value' );
+ok( !$form->field('my_list')->fif, 'no fif value');
+$form->process( { my_list => 2 } );
+is_deeply( $form->fif, { my_list => 2 }, 'fif is correct' );
+$rendered_field = $form->field('my_list')->render;
+like( $rendered_field, qr/<option value="2" id="my_list\.1" selected="selected">/, 'element is selected' );
 
 done_testing;

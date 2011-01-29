@@ -96,7 +96,7 @@ sub _apply_actions {
         # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
         # actions in a hashref
         elsif ( ref $action->{check} eq 'CODE' ) {
-            if ( !$action->{check}->($value) ) {
+            if ( !$action->{check}->($value, $self) ) {
                 $error_message = 'Wrong value';
             }
         }
@@ -113,7 +113,7 @@ sub _apply_actions {
         elsif ( ref $action->{transform} eq 'CODE' ) {
             $new_value = eval {
                 no warnings 'all';
-                $action->{transform}->($value);
+                $action->{transform}->($value, $self);
             };
             if ($@) {
                 $error_message = $@ || 'error occurred';
@@ -126,8 +126,8 @@ sub _apply_actions {
             my @message = ref $error_message eq 'ARRAY' ? @$error_message : ($error_message);
             if ( defined $action->{message} ) {
                 my $act_msg = $action->{message};
-                if ( ref $act_msg eq 'CODEREF' ) {
-                    $act_msg = $act_msg->($value);
+                if ( ref $act_msg eq 'CODE' ) {
+                    $act_msg = $act_msg->($value, $self, $error_message);
                 }
                 if ( ref $act_msg eq 'ARRAY' ) {
                     @message = @{$act_msg};

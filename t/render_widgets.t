@@ -56,7 +56,7 @@ use HTML::FormHandler::Field::Text;
         type => 'Text',
     );
     has_field 'active'     => ( type => 'Checkbox' );
-    has_field 'comments'   => ( type => 'TextArea' );
+    has_field 'comments'   => ( type => 'TextArea', cols => 40, rows => 3 );
     has_field 'hidden'     => ( type => 'Hidden' );
     has_field 'selected'   => ( type => 'Boolean' );
     has_field 'start_date' => ( type => 'DateTime' );
@@ -119,7 +119,7 @@ ok( $form, 'create form' );
 my $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never<br /><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes<br /></div>
+<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
 ', 'output from radio group'
 );
 
@@ -209,7 +209,7 @@ my $output5 = $form->field('comments')->render;
 is(
     $output5,
     '
-<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...&lt;/textarea&gt;</textarea></div>
+<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="3" cols="40">Four score and seven years ago...&lt;/textarea&gt;</textarea></div>
 ',
     'output from textarea'
 );
@@ -264,7 +264,7 @@ is(
 $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never<br /><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes<br /></div>
+<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
 ', 'output from radio group'
 );
 
@@ -336,8 +336,9 @@ is( $form->field('omega')->render, '<h1>You got here!</h1>',     'omega rendered
 dies_ok( sub { Test::NoWidget->new }, 'dies on no widget' );
 throws_ok( sub { Test::NoWidget->new }, qr/Can't find /, 'no widget throws message' );
 
+# table widget
 $form = Test::Form->new( widget_form => 'Table', widget_wrapper => 'Table' );
-ok( $form->can('render'), 'form has table widget' );
+like( $form->render, qr/<table/, 'rendered form contains table' );
 like( $form->field('number')->render, qr/<td>/, 'field has table wrapper');
 $form->process($params);
 my $outputT = $form->render;

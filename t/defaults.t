@@ -97,7 +97,6 @@ ok( $form->field('bax')->value, 'default_bax' );
 
     sub BUILD {
         my $self = shift;
-$DB::single=1;
         my $var = 'test';
     }
     has_field 'foo';
@@ -114,7 +113,6 @@ $DB::single=1;
 
     sub init_object {
         my $self = shift;
-$DB::single=1;
         return { bar => 'initbar' };
     }
 

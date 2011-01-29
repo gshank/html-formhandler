@@ -46,7 +46,7 @@ and usage patterns which do not fit well with the dynamic method - it's harder
 to create form methods or attributes, for example. But most forms could be
 created in either way.
 
-Create a Form, subclassed from HTML::FormHandler::Model::DBIC. The fields
+An example of a form class, subclassed from HTML::FormHandler::Model::DBIC. The fields
 are declared here using the 'has_field' sugar, but they could also be
 defined using the 'field_list', as in the following dynamic example.
 
@@ -175,10 +175,8 @@ An example of a dynamically created form instance:
     my $form = HTML::FormHandler->new( %$args );
     my $renderedform = $form->render;
 
-
 You can create custom rendering roles or classes and easily change the
-rendering methods. FormHandler ships with 'Simple' and 'Table' renderers, and
-returns the validated values in a hashref using C<< $form->value >>.
+rendering methods. See L<HTML::FormHandler::Manual::Rendering> for details.
 
 By default the L<HTML::FormHandler::Widget> roles will be applied, making it
 possible to render a simple form for scaffolding:
@@ -189,14 +187,7 @@ Individual fields can also be rendered:
 
     [% form.field('title').render %]
 
-You can also use the Simple and Table rendering roles by adding
-C< with 'HTML::FormHandler::Field::Render'; > to your class. These rendering
-roles also enable  use of the C< [% form.render %] > syntax, but the widget
-rendering methods included in the these roles are accessed with:
-
-    [% form.render_field('title') %]
-
-Using a template, for an input field:
+You can render a field using a template. For an input field:
 
    <p>
    [% f = form.field('address') %]
@@ -353,6 +344,15 @@ It's often a better idea to add Moose attributes to the form rather than
 
 A DBIC form generator is installed with the L<HTML::FormHandler::Model::DBIC>
 package. See L<HTML::FormHandler::Generator::DBIC>.
+
+There's also a role, L<HTML::FormHandler::TraitFor::DBICFields>, that allows 
+simple form fields to be auto-generated from a DBIC result class.
+
+    my $form = HTML::FormHandler::Model::DBIC->new_with_traits(
+        traits => ['HTML::FormHandler::TraitFor::DBICFields'],
+        include => ['title', 'author' ],
+        field_list => [ 'submit' => { type => 'Submit', value => 'Save', order => 99 } ],
+        item => $book );
 
 =head1 Non-database forms
 
@@ -964,5 +964,16 @@ has lots of examples. Here is an example of a test script for a DBIC form:
       format => 2
    };
    ok( $form->process($good), 'now form validates' );
+
+=head1 Localization
+
+FormHandler's built-in errors are added to the form fields with C<< $field->add_error >>,
+and to the form with C<< $form->add_form_error >>.
+These methods call the _localize method, which is applied by L< HTML::FormHandler::TraitFor::I18N >,
+and uses Locale::MakeText. You can also use duck_type classes for localization.
+See the documentation in L< HTML::FormHandler::TraitFor::I18N > and the tests in xt/locale.t.
+
+If you wish to skip localization for a particular message (such as for system errors)
+you can use C<< $field->push_errors >> or C<< $form->push_form_errors >>.
 
 =cut

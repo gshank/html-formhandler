@@ -94,18 +94,20 @@ is( $form->render_field( $form->field('number') ),
 );
 
 my $output1 = $form->render_field( $form->field('test_field') );
-is( $output1,
-   '
+
+my $rendered =   '
 <div><label class="label" for="f99">&quot;TEST&quot;: </label><input type="text" name="test_field" id="f99" size="20" value="something&lt;br&gt;" /></div>
-',
+';
+is( $output1, $rendered,
    'output from text field');
+is( $form->field('test_field')->render, $rendered, 'text field with widgets' );
+
 
 my $output2 = $form->render_field( $form->field('fruit') );
-is( $output2,
-   '
+$rendered =  '
 <div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0" >&quot;apples&quot;</option><option value="2" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="3" id="fruit.2" >&amp;kiwi&amp;</option></select></div>
-',
-   'output from select field');
+';
+is( $output2, $rendered, 'output from select field');
 
 my $output3 = $form->render_field( $form->field('vegetables') );
 is( $output3,
@@ -162,7 +164,7 @@ is( $output9, q{
 
 my $output10 = $form->render_field( $form->field('opt_in') );
 is( $output10, q{
-<div><label class="label" for="opt_in">Opt in: </label> <br /><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />&lt;No&gt;<br /><input type="radio" value="1" name="opt_in" id="opt_in.1" />&lt;Yes&gt;<br /></div>
+<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />&lt;No&gt;</label><br /><label for="opt_in.1"><input type="radio" value="1" name="opt_in" id="opt_in.1" />&lt;Yes&gt;</label><br /></div>
 }, 'output from radio group' );
 
 my $output11 = $form->render_start;

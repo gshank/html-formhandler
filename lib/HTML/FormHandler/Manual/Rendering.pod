@@ -47,6 +47,9 @@ FormHandler to display the field elements:
 
    [% form.field('title').render %]
 
+If you wish to loop through the fields yourself, use the 'sorted_fields'
+method.
+
 FormHandler is not a template system, so unless your form is very simple,
 rendering the entire form page only with FormHandler may not be the best solution.
 It's great for scaffolding, or simple admin forms, but user facing forms
@@ -141,6 +144,37 @@ attributes in the form, or do it on new:
      widget_wrapper => 'Table'
    );
 
+=head2 Rendering bare html with no fieldset and no divs
+
+Use a widget_wrapper of 'None', and set 'auto_fieldset' to 0:
+
+    package Test::Form;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has '+name' => ( default => 'testform' );
+    has '+widget_wrapper' => ( default => 'None' );
+    has '+auto_fieldset' => ( default => 0 );
+    has_field 'foo';
+    has_field 'bar';
+
+Renders:
+
+    <form id="testform" method="post" >
+    <input type="text" name="foo" id="foo" value="" />
+    <input type="text" name="bar" id="bar" value="" />
+    </form>
+
+Or you can use individual field rendering and produce your own html
+to wrap around it:
+
+    <div class="my_class">
+    [% form.field('foo').render %]
+    </div>
+    <div class="another_class">
+    [% form.field('bar').render %]
+    </div>
+
 =head2 Rendering filter for fill-in-form values
 
 The base field class has a 'render_filter' attribute which is a coderef used to
@@ -196,7 +230,7 @@ widget_tags in a form to apply them to all the fields:
    package MyApp::Form;
    ....
    has '+widget_tags' => ( default => sub { {wrapper_start => '<p>',
-      wrapper_end => '</p>' } );
+      wrapper_end => '</p>' } } );
 
 =head2 Creating Widgets
 

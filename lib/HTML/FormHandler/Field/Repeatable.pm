@@ -100,7 +100,6 @@ Will create an 'id' field automatically
 
 =back
 
-
 =cut
 
 has 'contains' => (
@@ -121,7 +120,7 @@ sub _fields_validate {
     # loop through array of fields and validate
     my @value_array;
     foreach my $field ( $self->all_fields ) {
-        next if ( $field->inactive && !$field->_active );
+        next if ( $field->is_inactive );
         # Validate each field and "inflate" input -> value.
         $field->validate_field;    # this calls the field's 'validate' routine
         push @value_array, $field->value;

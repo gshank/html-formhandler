@@ -3,7 +3,7 @@ package HTML::FormHandler::Widget::Form::Table;
 
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Form::Simple' =>
-    { excludes => [ 'render_start', 'render_end' ] };
+    { -excludes => [ 'render_start', 'render_end' ] };
 
 =head1 SYNOPSIS
 

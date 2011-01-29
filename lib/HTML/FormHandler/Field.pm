@@ -4,12 +4,12 @@ package HTML::FormHandler::Field;
 use HTML::FormHandler::Moose;
 use HTML::FormHandler::Field::Result;
 use Try::Tiny;
+use Moose::Util::TypeConstraints;
 
-with 'MooseX::Traits';
+with 'HTML::FormHandler::Traits';
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Validate::Actions';
 with 'HTML::FormHandler::Widget::ApplyRole';
-with 'HTML::FormHandler::TraitFor::I18N';
 
 our $VERSION = '0.02';
 
@@ -140,12 +140,18 @@ you to look for a different input parameter.
 
 =over
 
-=item inactive
+=item inactive, is_inactive, is_active
 
-Set this attribute if this field is inactive. This provides a way to define fields
-in the form and selectively set them to inactive. There is also an '_active' attribute,
-for internal use to indicate that the field has been activated by the form's 'active'
-attribute.
+Set the 'inactive' attribute to 1 if this field is inactive. The 'inactive' attribute
+that isn't set or is set to 0 will make a field 'active'.
+This provides a way to define fields in the form and selectively set them to inactive.
+There is also an '_active' attribute, for internal use to indicate that the field has
+been activated/inactivated on 'process' by the form's 'active'/'inactive' attributes.
+
+You can use the is_inactive and is_active methods to check whether this particular
+field is active.
+
+   if( $form->field('foo')->is_active ) { ... }
 
 =item input
 
@@ -382,6 +388,21 @@ In a FormHandler field_list
         range_end       => 120,
     }
 
+
+=item not_nullable
+
+Fields that contain 'empty' values such as '' are changed to undef in the validation process.
+If this flag is set, the value is not changed to undef. If your database column requires
+an empty string instead of a null value (such as a NOT NULL column), set this attribute.
+
+    has_field 'description' => (
+        type => 'TextArea',
+        not_nullable => 1,
+    );
+
+This attribute is also used when you want an empty array to stay an empty array and not
+be set to undef.
+
 =back
 
 =head2 apply
@@ -439,8 +460,18 @@ To declare actions inside a field class use L<HTML::FormHandler::Moose> and
 Actions specified with apply are cumulative. Actions may be specified in
 field classes and additional actions added in the 'has_field' declaration.
 
+In addition to being a string, Messages may be arrayrefs, for localization,
+or coderefs, which will be passed a reference to the field and the original value.
+
+   apply [ { check => ['abc'], message => \&err_message } ];
+   sub err_message {
+      my ( $value, $field ) = @_;
+      return $field->name . ": must .... ";
+   }
+
 You can see examples of field classes with 'apply' actions in the source for
-L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>.
+L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>, and
+in t/constraints.t.
 
 =head2 Moose types for constraints and transformations
 
@@ -495,6 +526,7 @@ return true or false:
              check => sub { if ( $_[0] =~ /(\d+)/ ) { return $1 > 10 } },
              message => 'Must contain number greater than 10',
          }
+      ]
   );
 
 A 'check' regular expression:
@@ -746,6 +778,7 @@ has 'label' => (
     lazy    => 1,
     builder => 'build_label',
 );
+has 'no_render_label' => ( isa => 'Bool', is => 'rw' );
 sub build_label {
     my $self = shift;
     my $label = $self->name;
@@ -805,7 +838,15 @@ has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 # 'inactive' is set in the field declaration, and is static. Default status.
 has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
 # 'active' is cleared whenever the form is cleared. Ephemeral activation.
-has '_active'         => ( isa => 'Bool', is => 'rw', clearer => 'clear_active' );
+has '_active'         => ( isa => 'Bool', is => 'rw', clearer => 'clear_active', predicate => 'has__active' );
+sub is_active {
+    my $self = shift;
+    return ! $self->is_inactive;
+}
+sub is_inactive {
+    my $self = shift;
+    return (($self->inactive && !$self->_active) || (!$self->inactive && $self->has__active && $self->_active == 0 ) );
+}
 has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
 sub build_id { shift->html_name }
 has 'javascript' => ( isa => 'Str',  is => 'rw' );
@@ -828,8 +869,10 @@ sub _set_validate_meth {
     my $self = shift;
     return $self->set_validate if $self->set_validate;
     my $name = $self->full_name;
-    $name =~ s/\./_/g;
-    $name =~ s/_\d+_/_/g; # remove repeatable field instances
+    if( $name =~ /\./ ) {
+        $name =~ s/\.\d+\./_/g;
+        $name =~ s/\./_/g;
+    }
     return 'validate_' . $name;
 }
 sub _validate {
@@ -850,16 +893,20 @@ sub _can_default {
 sub _comp_default_meth {
     my $self = shift;
     my $name = $self->full_name;
-    $name =~ s/\./_/g;
-    $name =~ s/_\d+_/_/g;
+    if( $name =~ /\./ ) {
+        $name =~ s/\.\d+\./_/g;
+        $name =~ s/\./_/g;
+    }
     return 'init_value_' . $name;
 }
 sub _set_default_meth {
     my $self = shift;
     return $self->set_default if $self->set_default;
     my $name = $self->full_name;
-    $name =~ s/\./_/g;
-    $name =~ s/_\d_/_/g;
+    if( $name =~ /\./ ) {
+        $name =~ s/\.\d+\./_/g;
+        $name =~ s/\./_/g;
+    }
     return 'default_' . $name;
 }
 sub get_default_value {
@@ -919,7 +966,7 @@ sub build_render_filter {
 }
 sub default_render_filter {
     my ( $self, $string ) = @_;
-    return if (!defined $string);
+    return '' if (!defined $string);
     $string =~ s/&/&amp;/g;
     $string =~ s/</&lt;/g;
     $string =~ s/>/&gt;/g;
@@ -928,6 +975,32 @@ sub default_render_filter {
 }
 
 has 'input_param' => ( is => 'rw', isa => 'Str' );
+
+has 'language_handle' => (
+    isa => duck_type( [ qw(maketext) ] ),
+    is => 'rw',
+    reader => 'get_language_handle',
+    writer => 'set_language_handle',
+    predicate => 'has_language_handle'
+);
+
+sub language_handle {
+    my ( $self, $value ) = @_;
+    if( $value ) {
+        $self->set_language_handle($value);
+        return;
+    }
+    return $self->get_language_handle if( $self->has_language_handle );
+    return $self->form->language_handle if ( $self->has_form );
+    require HTML::FormHandler::I18N;
+    return $ENV{LANGUAGE_HANDLE} || HTML::FormHandler::I18N->get_handle;
+}
+
+sub _localize {
+    my ($self, @message) = @_;
+    my $message = $self->language_handle->maketext(@message);
+    return $message;
+}
 
 sub BUILDARGS {
     my $class = shift;
@@ -1089,19 +1162,19 @@ sub dump {
     warn "HFH: type: ",  $self->type, "\n";
     warn "HFH: required: ", ( $self->required || '0' ), "\n";
     warn "HFH: label: ",  $self->label,  "\n";
-    warn "HFH: widget: ", $self->widget, "\n";
+    warn "HFH: widget: ", $self->widget || '', "\n";
     my $v = $self->value;
-    warn "HFH: value: ", Data::Dumper::Dumper $v if $v;
+    warn "HFH: value: ", Data::Dumper::Dumper($v) if $v;
     my $iv = $self->init_value;
-    warn "HFH: init_value: ", Data::Dumper::Dumper $iv if $iv;
+    warn "HFH: init_value: ", Data::Dumper::Dumper($iv) if $iv;
     my $i = $self->input;
-    warn "HFH: input: ", Data::Dumper::Dumper $i if $i;
+    warn "HFH: input: ", Data::Dumper::Dumper($i) if $i;
     my $fif = $self->fif;
-    warn "HFH: fif: ", Data::Dumper::Dumper $fif if $fif;
+    warn "HFH: fif: ", Data::Dumper::Dumper($fif) if $fif;
 
     if ( $self->can('options') ) {
         my $o = $self->options;
-        warn "HFH: options: " . Data::Dumper::Dumper $o;
+        warn "HFH: options: " . Data::Dumper::Dumper($o);
     }
 }
 

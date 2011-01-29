@@ -39,4 +39,24 @@ is_deeply( $form->fif, $fif, 'fif is correct' );
 is_deeply( $form->value, $fif, 'value is correct' );
 
 
+# tests for setting active fields inactive
+{
+    package Test::Another;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo';
+    has_field 'bar';
+    has_field 'gaz';
+}
+
+$form = Test::Another->new( inactive => ['bar'] );
+ok( $form->field('bar')->is_inactive, 'field is inactive' );
+ok( $form->field('foo')->is_active, 'field is active' );
+$form = Test::Another->new;
+$form->process( inactive => ['gaz'], params => {} );
+ok( $form->field('gaz')->is_inactive, 'field is inactive' );
+ok( $form->field('foo')->is_active, 'field is active' );
+
+
 done_testing;
