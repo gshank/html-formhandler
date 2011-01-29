@@ -156,7 +156,7 @@ ok( $form, 'form built' );
 my $rendered_field = $form->field('my_list')->render;
 like( $rendered_field, qr/<option value="1" id="my_list\.0" selected="selected">/, 'element is selected' );
 # the 'value' of the field will not reflect the selected option using this method
-ok( !$form->value, 'no form value' );
+is_deeply( $form->value, {},  'no form value' );
 ok( !$form->field('my_list')->fif, 'no fif value');
 $form->process( { my_list => 2 } );
 is_deeply( $form->fif, { my_list => 2 }, 'fif is correct' );
