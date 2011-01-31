@@ -38,8 +38,6 @@ sub render {
                     if $self->check_selected_option($option, $ffif);
             }
         }
-        $output .= ' checked="checked"'
-            if $self->check_selected_option($option);
         $output .= $html_attributes;
         $output .= ' />';
         $output .= $self->html_filter($option->{label}) . '<br />';

@@ -2,8 +2,11 @@ package HTML::FormHandler::Result;
 # ABSTRACT: form result object
 
 use Moose;
+# following is to allow the form to return an empty
+# hashref when value is undefined, without messing
+# with the way 'value' works for fields
 with 'HTML::FormHandler::Result::Role';
-with 'MooseX::Traits';
+with 'HTML::FormHandler::Traits';
 
 =head1 SYNOPSIS
 
@@ -52,6 +55,16 @@ has 'form' => (
     weak_ref => 1,
     #  handles => ['render' ]
 );
+
+has '_value' => (
+    is        => 'ro',
+    writer    => '_set_value',
+    reader    => '_get_value',
+    clearer   => '_clear_value',
+    predicate => 'has_value',
+);
+
+sub value { shift->_get_value || {} }
 
 has 'form_errors' => (
     traits     => ['Array'],

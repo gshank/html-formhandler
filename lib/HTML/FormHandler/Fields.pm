@@ -222,8 +222,8 @@ sub dump_validated {
     warn "HFH: fields validated:\n";
     foreach my $field ( $self->all_fields ) {
         $field->dump_validated if $field->can('dump_validated');
-        warn "HFH: ", $field->name, ": ",
-            ( $field->has_errors ? join( ' | ', $field->errors ) : 'validated' ), "\n";
+        my $message = $field->has_errors ? join( ' | ', $field->all_errors) : 'validated';
+        warn "HFH: ", $field->name, ": $message\n";
     }
 }
 

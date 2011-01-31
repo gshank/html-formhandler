@@ -43,6 +43,7 @@ my $form = My::Form->new;
 is( $form->field('optname')->temp, 'Second', 'got second optname field' );
 
 ok( !$form->process, 'Empty data' );
+is_deeply( $form->value, {}, 'no values returns hashref');
 
 my $good = {
    reqname     => 'hello',

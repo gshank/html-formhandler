@@ -272,12 +272,15 @@ sub render_select {
     $output .= $self->_add_html_attributes( $field );
     $output .= '>';
     my $index = 0;
-    if( $field->empty_select ) {
+    if( defined $field->empty_select ) {
         $output .= '<option value="">' . $field->_localize($field->empty_select) . '</option>';
     }
     foreach my $option ( @{ $field->options } ) {
         $output .= '<option value="' . $field->html_filter($option->{value}) . '" ';
         $output .= 'id="' . $field->id . ".$index\" ";
+        if( defined $option->{disabled} && $option->{disabled} ) {
+            $output .= 'disabled="disabled" ';
+        }
         if ( $field->fif ) {
             if ( $field->multiple == 1 ) {
                 my @fif;

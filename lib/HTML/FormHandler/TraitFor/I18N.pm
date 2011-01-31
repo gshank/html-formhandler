@@ -35,6 +35,10 @@ You can use non-Locale::Maketext language handles, such as L<Data::Localize>.
 There's an example of building a L<Data::Localize> language handle
 in t/xt/locale_data_localize.t in the distribution.
 
+If you don't want a particular error message to go through localization,
+you can use 'push_errors' and 'push_form_errors' instead of 'add_error' and
+'add_form_errors'.
+
 =cut
 
 has 'language_handle' => (

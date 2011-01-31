@@ -62,21 +62,22 @@ of them 'inactive';
    has_field 'bar' => ( inactive => 1 );
    1;
 
-Then you can mark them active using a Moose method modifier on
-'set_active'.
+Set to 'active' or 'inactive' on the 'process' call:
+
+   $form->process( params => $params, active => ['foo', 'bar'] );
+   ...
+   $form->process( params => $params, inactive => ['bar'] );
+
+If you need to check some other state to determine whether or not a field should
+be active, you can do that using a Moose method modifier on 'set_active':
 
    before 'set_active' => sub {
       my $self = shift;
       $self->active(['foo', bar']) if ( <some_condition> );
    };
 
-Or on the 'process' call:
-
-   $form->process( params => $params, active => ['foo', 'bar'] );
-
-Fields set to active with the form's 'active' modifier (but not on new) will
-be automatically set back to inactive when the form is cleared, so there's no
-need to reset.
+Fields set to active/inactive on the 'process' call be automatically set back
+to inactive when the form is cleared, so there's no need to reset.
 
 If you want the fields activated for the life of an object, set active on new:
 

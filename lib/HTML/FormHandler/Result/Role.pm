@@ -26,13 +26,6 @@ has 'input' => (
     predicate => 'has_input',
 );
 
-has 'value' => (
-    is        => 'ro',
-    writer    => '_set_value',
-    clearer   => '_clear_value',
-    predicate => 'has_value',
-);
-
 has '_results' => (
     traits    => ['Array'],
     isa        => 'ArrayRef[HTML::FormHandler::Field::Result]',

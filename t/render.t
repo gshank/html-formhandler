@@ -20,7 +20,9 @@ use HTML::FormHandler::Field::Text;
             );
    has_field 'number';
    has_field 'fruit' => ( type => 'Select' );
+   has_field 'cheese' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple' );
+   has_field 'grains' => ( type => 'Multiple' );
    has_field 'opt_in' => ( type => 'Select', widget => 'radio_group',
       options => [{ value => 0, label => 'No'}, { value => 1, label => 'Yes'} ] );
    has_field 'starch' => ( type => 'Multiple', widget => 'checkbox_group',
@@ -66,6 +68,22 @@ use HTML::FormHandler::Field::Text;
            3   => 'carrots',
            4   => 'peas',
        );
+   }
+
+   sub options_grains {
+       return [
+           { value => 1, label => 'maize', disabled => 0 },
+           { value => 2, label => 'rice', disabled => 1 },
+           { value => 3, label => 'wheat' },
+       ];
+   }
+
+   sub options_cheese {
+       return [
+           { value => 1, label => 'canastra', disabled => 0 },
+           { value => 2, label => 'brie', disabled => 1 },
+           { value => 3, label => 'gorgonzola' },
+       ];
    }
 }
 
@@ -116,12 +134,26 @@ is( $output2,
 ',
    'output from select field');
 
+my $output12 = $form->render_field( $form->field('cheese') );
+is( $output12,
+   '
+<div><label class="label" for="cheese">Cheese: </label><select name="cheese" id="cheese"><option value="1" id="cheese.0" >canastra</option><option value="2" id="cheese.1" disabled="disabled" >brie</option><option value="3" id="cheese.2" >gorgonzola</option></select></div>
+',
+   'output from select field with disabled option');
+
 my $output3 = $form->render_field( $form->field('vegetables') );
 is( $output3,
    '
 <div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0" >lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2" >carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
 ',
 'output from select multiple field');
+
+my $output13 = $form->render_field( $form->field('grains') );
+is( $output13,
+   '
+<div><label class="label" for="grains">Grains: </label><select name="grains" id="grains" multiple="multiple" size="5"><option value="1" id="grains.0" >maize</option><option value="2" id="grains.1" disabled="disabled" >rice</option><option value="3" id="grains.2" >wheat</option></select></div>
+',
+'output from select multiple field with disabled option');
 
 my $output4 = $form->render_field( $form->field('active') );
 is( $output4,
@@ -191,6 +223,7 @@ is( $form->render_field( $form->field('no_render')), '', 'no_render' );
     has_field 'my_html' => ( type => 'Display', html => '<h2>You got here!</h2>' );
     has_field 'explanation' => ( type => 'Display' );
     has_field 'between' => ( type => 'Display', set_html => 'between_html' );
+    has_field 'nolabel' => ( type => 'Text', no_render_label => 1 );
 
     sub html_explanation {
        my ( $self, $field ) = @_;
@@ -210,5 +243,8 @@ is( $form->field('explanation')->render, '<p>I have an explanation somewhere aro
     'display field renders with form method' );
 is( $form->field('between')->render, '<div>Somewhere, over the rainbow...</div>',
     'set_html field renders' );
+is( $form->field('nolabel')->render, '
+<div><input type="text" name="nolabel" id="nolabel" value="" /></div>
+', 'no_render_label works');
 
 done_testing;

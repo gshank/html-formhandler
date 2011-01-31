@@ -10,6 +10,13 @@ Result class for L<HTML::FormHandler::Field>
 
 =cut
 
+has 'value' => (
+    is        => 'ro',
+    writer    => '_set_value',
+    clearer   => '_clear_value',
+    predicate => 'has_value',
+);
+
 has 'field_def' => (
     is     => 'ro',
     isa    => 'HTML::FormHandler::Field',

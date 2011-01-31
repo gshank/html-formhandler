@@ -21,7 +21,7 @@ sub render {
     $output .= $self->_add_html_attributes;
     $output .= '>';
 
-    if( $self->empty_select ) {
+    if( defined $self->empty_select ) {
         $t = $self->_localize($self->empty_select);
         $output .= qq{<option value="">$t</option>};
     }
@@ -31,6 +31,9 @@ sub render {
             . $self->html_filter($option->{value})
             . qq{" id="$id.$index"};
         my $ffif = $result->fif;
+        if( defined $option->{disabled} && $option->{disabled} ) {
+            $output .= 'disabled="disabled" ';
+        }
         if ( defined $ffif ) {
             if ( $multiple ) {
                 my @fif;
@@ -50,8 +53,6 @@ sub render {
                     if $self->check_selected_option($option, $ffif);
             }
         }
-        $output .= ' selected="selected"'
-            if $self->check_selected_option($option);
         my $label = $self->localize_labels ? $self->_localize($option->{label}) : $option->{label};
         $output .= '>' . ($self->html_filter($label) || '') . '</option>';
         $index++;

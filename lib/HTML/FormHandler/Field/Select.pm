@@ -85,6 +85,25 @@ to the hashes that you can use in creating the HTML:
       return @selections;
    }
 
+To have an option being shown, but disabled (thus not selectable), use the
+'disabled' key with a true value inside this hashref. Let's extend the example
+above, adding also inactive licenses, and disabling them.  Keep in mind that a
+disabled option can be made selectable later, by removing the disabled
+attribute, e.g. using javascript.
+
+   sub options_license
+   {
+      my $self = shift;
+      return unless $self->schema;
+      my $licenses = $self->schema->resultset('License')->search(undef,
+           {order_by => 'sequence'});
+      my @selections;
+      while ( my $license = $licenses->next ) {
+         push @selections, { value => $license->id, label => $license->label,
+              note => $license->note, disabled => ($license->active == 0) ? 1 : 0 };
+      }
+      return @selections;
+   }
 
 The final source of the options array is a database when the name of the
 accessor is a relation to the table holding the information used to construct
