@@ -243,7 +243,9 @@ Compound fields will have an array of errors from the subfields.
 
 =head2 widget
 
-The 'widget' attribute is not used by base FormHandler code.
+The 'widget' attribute is used in rendering, so if you are
+not using FormHandler's rendering facility, you don't need this
+attribute. 
 It is intended for use in generating HTML, in templates and the
 rendering roles, and is used in L<HTML::FormHandler::Render::Simple>.
 Fields of different type can use the same widget.
@@ -252,9 +254,11 @@ This attribute is set in the field classes, or in the fields
 defined in the form. If you want a new widget type, use a new
 name and provide a C<< 'widget_<name>' >> method in your copy
 of Render::Simple or in your form class.
+
 If you are using a template based rendering system you will want
-to create a widget template.
+to create a widget template.  
 (see L<HTML::FormHandler::Manual::Templates>)
+
 If you are using the widget roles, you can specify the widget
 with the short class name instead.
 
@@ -282,6 +286,18 @@ Widget roles are automatically applied to field classes
 unless they already have a 'render' method. Render::Simple
 will fall back to doing C<< $field->render >> if the corresponding
 widget method does not exist.
+
+You can create your own widget roles and specify the namespace
+in 'widget_name_space'. In the form:
+
+    has '+widget_name_space' => ( default => sub { ['MyApp::Widget'] } );
+
+If you want to use a fully specified role name for a widget, you
+can prefix it with a '+':
+
+   widget => '+MyApp::Widget::SomeWidget'
+
+For more about widgets, see L<HTML::FormHandler::Manual::Rendering>.
 
 =head2 Flags
 

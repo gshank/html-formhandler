@@ -21,10 +21,17 @@ sub get_widget_role {
     my $ldir              = $dir ? '::' . $dir . '::' : '::';
     my @name_spaces = ( @{$self->widget_name_space},
         ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget') );
+    my @classes;
+    if ( $widget_class =~ s/^\+// )
+    {
+        push @classes, $widget_class;
+    }
     foreach my $ns (@name_spaces) {
-        my $render_role = $ns . $ldir . $widget_class;
-        try { Class::MOP::load_class($render_role) } catch { die $_ unless $_ =~ /^Can't locate/; };
-        return $render_role if Class::MOP::is_class_loaded($render_role);
+        push @classes,  $ns . $ldir . $widget_class;
+    }
+    foreach my $try (@classes) {
+        try { Class::MOP::load_class($try) } catch { die $_ unless $_ =~ /^Can't locate/; };
+        return $try if Class::MOP::is_class_loaded($try);
     }
     die "Can't find $dir widget $widget_class from " . join(", ", @name_spaces);
 }
