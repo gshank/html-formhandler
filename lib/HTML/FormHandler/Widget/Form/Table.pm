@@ -3,7 +3,7 @@ package HTML::FormHandler::Widget::Form::Table;
 
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Form::Simple' =>
-    { -excludes => [ 'render_start', 'render_end' ] };
+    { -excludes => [ 'render_start', 'render_end', 'render_form_errors' ] };
 
 =head1 SYNOPSIS
 
@@ -20,6 +20,17 @@ Use in a template:
 sub render_start {
     my $self   = shift;
     return $self->html_form_tag . "<table>\n";
+}
+
+sub render_form_errors {
+    my ( $self, $form, $result ) = @_;
+
+    return '' unless $result->has_form_errors; 
+    my $output = "\n<tr class=\"form_errors\"><td colspan=\"2\">";
+    $output .= qq{\n<span class="error_message">$_</span>}
+        for $result->all_form_errors;
+    $output .= "\n</td></tr>";
+    return $output;
 }
 
 sub render_end {

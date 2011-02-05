@@ -24,6 +24,7 @@ sub render {
     my $self = shift;
 
     my $output = $self->render_start;
+    $output .= $self->render_form_errors;
     foreach my $field ( $self->sorted_fields ) {
         $output .= $self->render_field($field);
     }
@@ -35,6 +36,17 @@ sub render_start {
     my $self   = shift;
 
     return $self->html_form_tag . "<table>\n";
+}
+
+sub render_form_errors {
+    my $self = shift;
+
+    return '' unless $self->has_form_errors; 
+    my $output = "\n<tr class=\"form_errors\"><td colspan=\"2\">";
+    $output .= qq{\n<span class="error_message">$_</span>}
+        for $self->all_form_errors;
+    $output .= "\n</td></tr>";
+    return $output;
 }
 
 sub render_end {

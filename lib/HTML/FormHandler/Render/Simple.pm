@@ -140,6 +140,8 @@ sub render {
     my $self   = shift;
     my $output = $self->render_start;
 
+    $output .= $self->render_form_errors;
+
     foreach my $field ( $self->sorted_fields ) {
         $output .= $self->render_field($field);
     }
@@ -157,6 +159,17 @@ sub render_start {
         if $self->form->auto_fieldset;
 
     return $output
+}
+
+sub render_form_errors {
+    my $self = shift; 
+
+    return '' unless $self->has_form_errors; 
+    my $output = "\n<div class=\"form_errors\">";
+    $output .= qq{\n<span class="error_message">$_</span>}
+        for $self->all_form_errors;
+    $output .= "\n</div>";
+    return $output;
 }
 
 sub render_end {
