@@ -410,7 +410,7 @@ which can also be used in a form to do specific field updates:
         $self->field('bar')->default( 'foo_value' );
     }
 
-(Note that you although you can set a field's 'default', you can't set a 
+(Note that you although you can set a field's 'default', you can't set a
 field's 'value' directly here, since it will
 be overwritten by the validation process. Set the value in a field
 validation method.)

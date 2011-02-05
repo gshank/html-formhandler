@@ -35,7 +35,7 @@ is( $wizard->page('one')->field('foo')->name, 'foo', 'field object from page' );
 
     sub page_list { [
         one => { fields => ['foo'] },
-        two => { fields => ['bar'] }, 
+        two => { fields => ['bar'] },
         three => { fields => ['zed'] }
     ]}
 

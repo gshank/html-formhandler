@@ -5,4 +5,4 @@ use Test::More;
 eval 'use Test::EOL';
 plan skip_all => 'Test::EOL required' if $@;
 
-all_perl_files_ok({ trailing_whitespace => 1 });
+all_perl_files_ok({ trailing_whitespace => 1, all_reasons => 1 }, ('lib', 't', 'xt') );

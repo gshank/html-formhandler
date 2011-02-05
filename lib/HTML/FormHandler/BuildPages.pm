@@ -3,16 +3,16 @@ package HTML::FormHandler::BuildPages;
 use Moose::Role;
 use Try::Tiny;
 
-has 'page_list' => ( 
-    isa => 'ArrayRef', 
-    is => 'rw', 
+has 'page_list' => (
+    isa => 'ArrayRef',
+    is => 'rw',
     traits => ['Array'],
     default => sub { [] },
 );
 
 sub has_page_list {
     my ( $self ) = @_;
-    
+
     my $page_list = $self->page_list;
     return unless $page_list && ref $page_list eq 'ARRAY';
     return $page_list if ( scalar @{$page_list} );

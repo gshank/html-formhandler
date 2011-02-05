@@ -5,6 +5,34 @@ use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';
 with ('HTML::FormHandler::BuildPages', 'HTML::FormHandler::Pages' );
 
+=head1 SYNOPSIS
+
+This feature is EXPERIMENTAL. That means that the interface may change,
+and that it hasn't been fully implemented.
+We are actively looking for input, so if you are interested in this
+feature, please show up on the FormHandler mailing list or irc channel
+(#formhandler on irc.perl.org) to discuss.
+
+    package Test::Wizard;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler::Wizard';
+
+    has_field 'foo';
+    has_field 'bar';
+    has_field 'zed';
+
+    has_page 'one' => ( fields => ['foo'] );
+    has_page 'two' => ( fields => ['bar'] );
+    has_page 'three' => ( fields => ['zed'] );
+
+    ...
+
+    my $stash = {};
+    my $wizard = Test::Wizard->new( stash => $stash );
+    $wizard->process( params => $params );
+
+=cut
+
 sub is_wizard {1}
 
 has_field 'page_num' => ( type => 'Hidden', default => 1 );
@@ -18,7 +46,7 @@ has 'save_to' => ( is => 'rw', isa => 'Str' ); # 'item', 'stash', 'temp_table'
 #
 has 'temp_table' => ( is => 'rw' );
 
-sub validated { 
+sub validated {
     my $self = shift;
     return $self->next::method && $self->on_last_page;
 }
@@ -37,7 +65,7 @@ sub build_active {
     }
     foreach my $field_name ( @page_fields ) {
         $self->field($field_name)->inactive(1);
-    } 
+    }
 }
 
 
@@ -49,7 +77,7 @@ sub set_active {
     $self->on_last_page(1) if $current_page == $self->num_pages;
     my $page = $self->get_page( $current_page - 1 );
 
-    foreach my $fname ( $page->all_fields ) { 
+    foreach my $fname ( $page->all_fields ) {
         my $field = $self->field($fname);
         if ( $field ) {
             $field->_active(1);
@@ -62,12 +90,12 @@ sub set_active {
 
 after 'validate_form' => sub {
     my $self = shift;
-    if( $self->page_validated ) { 
+    if( $self->page_validated ) {
         $self->save_page;
         if( $self->field('page_num')->value < $self->num_pages ) {
             my $new_page_num = $self->field('page_num')->value + 1;
             $self->clear_page;
-            $self->set_active( $new_page_num ); 
+            $self->set_active( $new_page_num );
             $self->_result_from_fields( $self->result );
             $self->field('page_num')->value($new_page_num);
             $self->on_last_page(1) if $new_page_num == $self->num_pages;

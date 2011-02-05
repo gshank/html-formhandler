@@ -35,6 +35,10 @@ Cut-and-paste examples of templates to use with FormHandler
 
 Catalyst specific documentation
 
+=head1 L<HTML::FormHandler::Manual::Reference>
+
+Quick reference of FormHandler interface
+
 =head1 SUPPORT
 
 IRC:
