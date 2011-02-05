@@ -210,7 +210,7 @@ sub _result_from_input {
         # build appropriate instance array
         my $index = 0;
         foreach my $element ( @{$input} ) {
-            next unless $element;
+            next if not defined $element; # skip empty slots
             my $field  = $self->clone_element($index);
             my $result = HTML::FormHandler::Field::Result->new(
                 name   => $index,
