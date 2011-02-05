@@ -5,6 +5,7 @@ use Moose;
 extends 'HTML::FormHandler::Field::Compound';
 
 use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
+use HTML::FormHandler::Field::PrimaryKey;
 
 =head1 SYNOPSIS
 
@@ -112,8 +113,8 @@ has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
 has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 has '+reload_after_update' => ( default => 1 );
-has 'is_repeatable' => ( is => 'ro', default => 1 );
-has '+widget' => ( default => 'repeatable' );
+has 'is_repeatable'        => ( is      => 'ro', default => 1 );
+has '+widget'              => ( default => 'repeatable' );
 
 sub _fields_validate {
     my $self = shift;
@@ -154,9 +155,15 @@ sub create_element {
     # copy the fields from this field into the instance
     $instance->add_field( $self->all_fields );
     if ( $self->auto_id ) {
-        unless ( grep $_->can('is_primary_key') && $_->is_primary_key, $instance->all_fields )
-        {
-            my $field = HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' );
+        unless ( grep $_->can('is_primary_key') && $_->is_primary_key, $instance->all_fields ) {
+            my $field;
+            if ( $self->form ) { # this will pull in the widget role
+                $field = $self->form->new_field_with_traits( 
+                    'HTML::FormHandler::Field::PrimaryKey', { name => 'id' } );
+            }
+            else { # the following won't have a widget role applied
+                $field = HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' );
+            }
             $instance->add_field($field);
         }
     }
@@ -204,7 +211,7 @@ sub _result_from_input {
         my $index = 0;
         foreach my $element ( @{$input} ) {
             next unless $element;
-            my $field = $self->clone_element( $index );
+            my $field  = $self->clone_element($index);
             my $result = HTML::FormHandler::Field::Result->new(
                 name   => $index,
                 parent => $self->result
@@ -224,7 +231,7 @@ sub _result_from_input {
 sub _result_from_object {
     my ( $self, $result, $values ) = @_;
 
-    return $self->_result_from_fields( $result )
+    return $self->_result_from_fields($result)
         if ( $self->num_when_empty > 0 && !$values );
     $self->item($values);
     $self->init_state;
@@ -236,7 +243,7 @@ sub _result_from_object {
     $values = [$values] if ( $values && ref $values ne 'ARRAY' );
     foreach my $element ( @{$values} ) {
         next unless $element;
-        my $field = $self->clone_element( $index );
+        my $field = $self->clone_element($index);
         my $result =
             HTML::FormHandler::Field::Result->new( name => $index, parent => $self->result );
         $result = $field->_result_from_object( $result, $element );
@@ -263,7 +270,7 @@ sub _result_from_fields {
     # build empty instance
     $self->fields( [] );
     while ( $count > 0 ) {
-        my $field = $self->clone_element( $index );
+        my $field = $self->clone_element($index);
         my $result =
             HTML::FormHandler::Field::Result->new( name => $index, parent => $self->result );
         $result = $field->_result_from_fields($result);
@@ -279,23 +286,25 @@ sub _result_from_fields {
 
 before 'value' => sub {
     my $self = shift;
-    my @pk_elems = map { $_->accessor } grep { $_->has_flag('is_primary_key') } $self->contains->all_fields
+    my @pk_elems =
+        map { $_->accessor } grep { $_->has_flag('is_primary_key') } $self->contains->all_fields
         if $self->contains->has_flag('is_compound');
     my $value = $self->result->value;
     my @new_value;
     foreach my $element ( @{$value} ) {
         next unless $element;
-        if( ref $element eq 'HASH' ) {
-            foreach my $pk ( @pk_elems ) {
+        if ( ref $element eq 'HASH' ) {
+            foreach my $pk (@pk_elems) {
                 delete $element->{$pk}
-                   if exists $element->{$pk} && (!defined $element->{$pk} || $element->{$pk} eq '');
+                    if exists $element->{$pk} &&
+                        ( !defined $element->{$pk} || $element->{$pk} eq '' );
             }
             next unless keys %$element;
             next unless grep { defined $_ && $_ ne '' } values %$element;
         }
         push @new_value, $element;
     }
-    $self->_set_value(\@new_value);
+    $self->_set_value( \@new_value );
 };
 
 __PACKAGE__->meta->make_immutable;
