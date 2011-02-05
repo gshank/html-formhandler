@@ -223,6 +223,13 @@ wrapper from divs to using paragraphs instead:
    has_field 'my_field' => ( widget_tags => {wrapper_start => '<p>',
        wrapper_end => '</p>' } );
 
+If you want just the plain html (including the label) with no wrapping div or
+other element, you can set the wrapper_start and wrapper_end to ''.
+
+   has_field 'baz' => ( widget_tags => { wrapper_start => '',
+        wrapper_end => '' } );
+   <label class="label" for="baz">Baz: </label><input type="text" name="baz" id="baz" value="" />
+
 Widget tags set for the form will be copied into the fields if the same key
 does not exist in the field 'wrapper_tags' hashref, so you can set the
 widget_tags in a form to apply them to all the fields:
