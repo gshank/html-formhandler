@@ -775,6 +775,11 @@ has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
+sub has_flag {
+    my ( $self, $flag_name ) = @_;
+    return unless $self->can($flag_name);
+    return $self->$flag_name;
+}
 
 has 'widget_tags'         => (
     traits => ['Hash'],
@@ -850,7 +855,7 @@ sub BUILD {
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && $self->widget_form ne 'Simple' );
     $self->_build_fields;    # create the form fields (BuildFields.pm)
-    $self->build_active if $self->has_active || $self->has_inactive; # set optional fields active
+    $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
     if ( my $init_object = $self->item || $self->init_object ) {
