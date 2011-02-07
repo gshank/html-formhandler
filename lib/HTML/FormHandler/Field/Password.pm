@@ -39,8 +39,24 @@ Does not check by default.
 
 has '+widget'           => ( default => 'password' );
 has '+password'         => ( default => 1 );
-has '+required_message' => ( default => 'Please enter a password in this field' );
 has 'ne_username'       => ( isa     => 'Str', is => 'rw' );
+
+our $class_messages = {
+    'required' => 'Please enter a password in this field', 
+    'password_ne_username' => 'Password must not match [_1]',
+};
+
+sub get_class_messages  {
+    my $self = shift;
+    my $messages = {
+        %{ $self->next::method },
+        %$class_messages,
+    };
+    $messages->{required} = $self->required_message
+        if $self->required_message;
+    return $messages;
+}
+
 
 after 'validate_field' => sub {
     my $self = shift;
@@ -60,7 +76,7 @@ sub validate {
     my $value = $self->value;
     if ( $self->form && $self->ne_username ) {
         my $username = $self->form->get_param( $self->ne_username );
-        return $self->add_error( 'Password must not match ' . $self->ne_username )
+        return $self->add_error( $self->get_message('password_ne_username'), $self->ne_username  )
             if $username && $username eq $value;
     }
     return 1;

@@ -15,18 +15,32 @@ the L<HTML::FormHandler/fields> method).
 
 Set this attribute to the name of your password field (default 'password')
 
+Customize error message 'pass_conf_not_matched'
+
 =cut
 
 has '+widget'           => ( default => 'password' );
 has '+password'         => ( default => 1 );
 has '+required'         => ( default => 1 );
-has '+required_message' => ( default => 'Please enter a password confirmation' );
 has 'password_field'    => ( isa     => 'Str', is => 'rw', default => 'password' );
-has 'pass_conf_message' => (
-    isa     => 'Str',
-    is      => 'rw',
-    default => 'The password confirmation does not match the password'
-);
+has 'pass_conf_message' => ( isa     => 'Str', is      => 'rw' );
+
+our $class_messages = {
+    required => 'Please enter a password confirmation', 
+    pass_conf_not_matched => 'The password confirmation does not match the password',
+};
+
+sub get_class_messages  {
+    my $self = shift;
+    my $messages = {
+        %{ $self->next::method },
+        %$class_messages,
+    };
+    $messages->{pass_conf_not_matched} = $self->pass_conf_message
+        if $self->pass_conf_message;
+    return $messages;
+}
+
 
 sub validate {
     my $self = shift;
@@ -34,7 +48,7 @@ sub validate {
     my $value    = $self->value;
     my $password = $self->form->field( $self->password_field )->value;
     if ( $password ne $self->value ) {
-        $self->add_error( $self->pass_conf_message );
+        $self->add_error( $self->get_message('pass_conf_not_matched') );
         return;
     }
     return 1;

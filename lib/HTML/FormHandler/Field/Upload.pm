@@ -47,6 +47,19 @@ has '+widget' => ( default => 'upload', );
 has min_size   => ( is      => 'rw', isa => 'Maybe[Int]', default => 1 );
 has max_size   => ( is      => 'rw', isa => 'Maybe[Int]', default => 1048576 );
 
+our $class_messages = {
+        'upload_file_not_found' => 'File not found for upload field',
+        'upload_file_empty' => 'File uploaded is empty',
+        'upload_file_too_small' => 'File is too small (< [_1] bytes)',
+        'upload_file_too_big' => 'File is too big (> [_1] bytes)',
+};
+sub get_class_messages  {
+    my $self = shift;
+    return {
+        %{ $self->next::method },
+        %$class_messages,
+    }
+}
 
 sub validate {
     my $self   = shift;
@@ -60,17 +73,17 @@ sub validate {
         $size = -s $upload;
     }
     else {
-        return $self->add_error('File not found for upload field');
+        return $self->add_error($self->get_message('upload_file_not_found'));
     }
-    return $self->add_error('File uploaded is empty')
+    return $self->add_error($self->get_message('upload_file_empty'))
         unless $size > 0;
 
     if( defined $self->min_size && $size < $self->min_size ) {
-        $self->add_error( 'File is too small (< [_1] bytes)', $self->min_size );
+        $self->add_error( $self->get_message('upload_file_too_small'), $self->min_size ); 
     }
 
     if( defined $self->max_size && $size > $self->max_size ) {
-        $self->add_error( 'File is too big (> [_1] bytes)', $self->max_size );
+        $self->add_error( $self->get_message('upload_file_too_big'), $self->max_size ); 
     }
     return;
 }

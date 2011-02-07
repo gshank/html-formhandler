@@ -41,6 +41,18 @@ has '+css_class' => ( default => 'captcha' );
 
 has '+noupdate' => ( default => 1 );
 
+our $class_messages = {
+    'captcha_verify_failed' => 'Verification incorrect. Try again.',
+};
+
+sub get_class_messages  {
+    my $self = shift;
+    return {
+        %{ $self->next::method },
+        %$class_messages,
+    }
+}
+
 sub get_default_value {
     my $self = shift;
 
@@ -69,7 +81,7 @@ sub validate {
 
     my $captcha = $self->form->get_captcha;
     unless ( $captcha->{rnd} eq $self->value ) {
-        $self->add_error("Verification incorrect. Try again.");
+        $self->add_error($self->get_message('captcha_verify_failed'));
         $self->gen_captcha;
     }
     else {

@@ -5,7 +5,6 @@ use Moose;
 extends 'HTML::FormHandler::Base'; # to make some methods overridable by roles
 with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
     'HTML::FormHandler::BuildFields',
-    'HTML::FormHandler::Validate::Actions',
     'HTML::FormHandler::TraitFor::I18N';
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
@@ -820,6 +819,34 @@ has '_required' => (
     }
 );
 
+# these messages could apply to either fields or form
+has 'messages' => ( is => 'rw',
+    isa => 'HashRef',
+    traits => ['Hash'],
+    builder => 'build_messages', 
+    handles => {
+        '_get_form_message' => 'get',
+        '_has_form_message' => 'exists',
+        'set_message' => 'set',
+    },
+);
+sub build_messages { {} }
+
+my $class_messages = {};
+sub get_class_messages  {
+    return $class_messages;
+}
+
+sub get_message {
+    my ( $self, $msg ) = @_;
+    return $self->_get_form_message($msg) if $self->_has_form_message($msg);
+    return $self->get_class_messages->{$msg};
+}
+sub all_messages {
+    my $self = shift;
+    return { %{$self->get_class_messages}, %{$self->messages} };
+}
+
 {
     use Moose::Util::TypeConstraints;
 
@@ -939,7 +966,6 @@ sub validate_form {
     my $params = $self->params;
     $self->_set_dependency;    # set required dependencies
     $self->_fields_validate;
-    $self->_apply_actions;
     $self->validate;           # empty method for users
     $self->validate_model;     # model specific validation
     $self->fields_set_value;
@@ -1098,7 +1124,7 @@ sub _set_dependency {
             # This is to allow requiring a field when a boolean is true.
             my $field = $self->field($name);
             next if $self->field($name)->type eq 'Boolean' && $value == 0;
-            next unless has_some_value($value);
+            next unless HTML::FormHandler::Field::has_some_value($value);
             # one field was found non-blank, so set all to required
             for (@$group) {
                 my $field = $self->field($_);

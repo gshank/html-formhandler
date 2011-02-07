@@ -217,6 +217,11 @@ Returns the option label for the option value that matches the field's current v
 Can be helpful for displaying information about the field in a more friendly format.
 This does a string compare.
 
+=head2 error messages
+
+Customize 'select_invalid_value' and 'select_not_multiple'. Though neither of these
+messages should really be seen by users in a properly constructed select.
+
 =cut
 
 has 'options' => (
@@ -300,6 +305,19 @@ sub build_input_without_param {
     }
 }
 
+our $class_messages = {
+    'select_not_multiple' => 'This field does not take multiple values',
+    'select_invalid_value' => '\'[_1]\' is not a valid value',
+};
+
+sub get_class_messages  {
+    my $self = shift;
+    return {
+        %{ $self->next::method },
+        %$class_messages,
+    }
+}
+
 sub select_widget {
     my $field = shift;
 
@@ -331,7 +349,7 @@ sub _inner_validate_field {
     if ( ref $value eq 'ARRAY' &&
         !( $self->can('multiple') && $self->multiple ) )
     {
-        $self->add_error('This field does not take multiple values');
+        $self->add_error( $self->get_message('select_not_multiple') );
         return;
     }
     elsif ( ref $value ne 'ARRAY' && $self->multiple ) {
@@ -343,7 +361,7 @@ sub _inner_validate_field {
     my %options = map { $_->{value} => 1 } @{ $self->options };
     for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) ) {
         unless ( $options{$value} ) {
-            $self->add_error("'$value' is not a valid value");
+            $self->add_error($self->get_message('select_invalid_value'), $value);
             return;
         }
     }

@@ -16,6 +16,25 @@ has 'minlength_message' => ( isa => 'Str', is => 'rw',
 
 has '+widget' => ( default => 'text' );
 
+our $class_messages = {
+    'text_maxlength' => 'Field should not exceed [quant,_1,character]. You entered [_2]',
+    'text_minlength' => 'Field must be at least [quant,_1,character]. You entered [_2]',
+};
+
+sub get_class_messages {
+    my $self = shift;
+    my $messages = {
+        %{ $self->next::method },
+        %$class_messages,
+    };
+    $messages->{text_minlength} = $self->minlength_message
+        if $self->minlength_message;
+    $messages->{text_maxlength} = $self->maxlength_message
+        if $self->maxlength_message;
+    return $messages;
+}
+
+
 sub validate {
     my $field = shift;
 
@@ -23,7 +42,7 @@ sub validate {
     my $value = $field->input;
     # Check for max length
     if ( my $maxlength = $field->maxlength ) {
-        return $field->add_error( $field->maxlength_message,
+        return $field->add_error( $field->get_message('text_maxlength'), 
             $maxlength, length $value, $field->loc_label )
             if length $value > $maxlength;
     }
@@ -31,7 +50,7 @@ sub validate {
     # Check for min length
     if ( my $minlength = $field->minlength ) {
         return $field->add_error(
-            $field->minlength_message,
+            $field->get_message('text_minlength'),
             $minlength, length $value, $field->loc_label )
             if length $value < $minlength;
     }
@@ -58,6 +77,16 @@ be entered.
 =head2 maxlength [integer]
 
 A constraint on the maximum length of the text.
+
+=head2 error messages
+
+Set error messages (text_minlength, text_maxlength):
+
+    has_field 'my_text' => ( type => 'Text', messages => 
+        {  'text_minlength' => 'Field is too short',
+           'text_maxlength' => 'Field is too long',
+        } );
+ 
 
 =cut
 

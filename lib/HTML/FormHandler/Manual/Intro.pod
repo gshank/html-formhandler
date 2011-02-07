@@ -65,8 +65,8 @@ defined using the 'field_list', as in the following dynamic example.
     # in your result class.
 
     has_field 'name'    => ( type => 'Text', label => 'Username', required => 1,
-       required_message => 'You must enter a username', unique => 1,
-       unique_message => 'That username is already taken' );
+       unique => 1, messages => { required => 'You must enter a username',
+       unique => 'That username is already taken' } );
     # the css_class, title, and widget attributes are for use in templates
     has_field 'age'     => ( type => 'PosInteger', required => 1, css_class => 'box',
        title => 'User age in years', widget => 'age_text', range_start => 18 );
@@ -702,7 +702,7 @@ set 'range_start' to 0 and 'range_end' to 23. A 'select' field might
 override the 'build_options' builder for the 'options' array, like
 L<HTML::FormHandler::Field::IntRange>. A field may add additional
 attributes, such as 'label_format' in L<HTML::FormHandler::Field::IntRange>,
-or set the 'required_message'.
+or set the 'required' message.
 
 An alternative to new field classes for many field validations might
 be roles with collections of validations.
@@ -964,6 +964,29 @@ has lots of examples. Here is an example of a test script for a DBIC form:
       format => 2
    };
    ok( $form->process($good), 'now form validates' );
+
+=head1 Messages
+
+The base field class and the field subclasses have some 'built-in' error messages.
+These can be modified by setting the 'messages' hashref in the form or the
+individual fields.
+
+When a message is retrieved in a field with C<< $field->get_message('upload_file_') >>
+for example, the 'get_message' method will look first in user-set field specific messages,
+then in user-supplied form messages, finally in messages provided by the field classes.
+
+   package MyApp::Form;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+
+   sub build_messages {
+       return { required => '....', my_message => '....' };
+   }
+   ...
+   my $form = MyApp::Form->new( messages => { required => '...', ...} );  
+   ...
+   has_field 'my_field' => ( messages => { required => 'Please provide a my_field' },
+       required => 1 );
 
 =head1 Localization
 

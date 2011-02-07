@@ -5,6 +5,19 @@ use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.01';
 
+our $class_messages = {
+    'money_convert' => 'Value cannot be converted to money',
+    'money_real'    => 'Value must be a real number',
+};
+
+sub get_class_messages  {
+    my $self = shift;
+    return {
+        %{ $self->next::method },
+        %$class_messages,
+    }
+}
+
 apply(
     [
         {
@@ -16,11 +29,17 @@ apply(
         },
         {
             transform => sub { sprintf '%.2f', $_[0] },
-            message   => 'Value cannot be converted to money'
+            message => sub { 
+                my ( $value, $field ) = @_;
+                return [$field->get_message('money_convert'), $value];
+            }, 
         },
         {
             check => sub { $_[0] =~ /^-?\d+\.?\d*$/ },
-            message => 'Value must be a real number'
+            message => sub { 
+                my ( $value, $field ) = @_;
+                return [$field->get_message('money_real'), $value];
+            }, 
         }
     ]
 );

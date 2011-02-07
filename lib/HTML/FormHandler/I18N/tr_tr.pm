@@ -13,49 +13,16 @@ use utf8;
 our %Lexicon = (
     '_AUTO' => 1,
 
-    # H::F::Field::Date
-    'Date is too early' => 'Bu tarih izin verilen en küçük tarihten daha önce',
-    'Date is too late'  => 'Bu tarih izin verilen en büyük tarihten daha sonra',
-
-    # H::F::Field::DateTime
-    'Not a valid DateTime' => 'Geçersiz tarih/zaman',
-
-    # H::F::Field::Email
-    'Email should be of the format [_1]' => 'E-Posta [_1] formatında olmalı',
-
-    # H::F::Field::Integer
-    'Value must be an integer' => 'Tam sayı olmalı',
-
-    # H::F::Field::Money
-    'Value cannot be converted to money'    => 'Değer para birimine çevrilemedi',
-    'Value must be a real number'           => 'Ondalık sayı olmalı',
-
-    # H::F::Field::Password
-    'Please enter a password in this field' => 'Lütfen bir şifre girin',
-
-    # H::F::Field::PasswordConf
-    'Please enter a password confirmation' => 'Lütfen şifre onayı girin',
-
-    # H::F::Field::PosInteger
-    'Value must be a positive integer' => 'Pozitif tam sayı olmalı',
-
-    # H::F::Field::Select
-    'This field does not take multiple values' => 'Birden fazla değer seçilemez',
-
-    # H::F::Field::Text
-    'Please limit to [quant,_1,character]. You submitted [_2]'          => 'Girilen verinin uzunluğu en fazla [_1] olabilir. Gönderilen: [_2]',
-    'Input must be at least [quant,_1,character]. You submitted [_2]'   => 'Girilen verinin uzunluğu en az [_1] olabilir. Gönderilen: [_2]',
-
-    # H::F::Field::Upload
-    'File uploaded is empty' => 'Gönderilen dosya boş',
-    'File is too small (< [_1] bytes)' => 'Dosya çok küçük. (< [_1] bytes)',
-    'File is too big (> [_1] bytes)' => 'Dosya çok büyük. (> [_1] bytes)',
-
     # H::F::Field
     'field is invalid' => 'Geçersiz değer',
-
-    # H::F::Model
-    'Value must be unique in the database' => 'Daha önceden kullanımda',
+    'Wrong value' => 'Hatalı değer',
+    '[_1] does not match' => '[_1] formatı uymuyor',
+    '[_1] not allowed'    => '[_1] izinli değil',
+    'Value must be between [_1] and [_2]'           => 'değer [_1] ile [_2] arasında olmalı',
+    'Value must be greater than or equal to [_1]'   => 'değer [_1] veya daha yüksek olmalı',
+    'Value must be less than or equal to [_1]'      => 'değer [_1] veya daha düşük olmalı',
+    '[_1] field is required'                        => '[_1] alanı boş bırakılamaz',
+    'error occurred'                             => 'hata oluştu',
 
     # H::F::Types
     'Must be a positive number'                                 => 'Pozitif sayı olmalı',
@@ -70,26 +37,64 @@ our %Lexicon = (
     'Email is not valid'                                        => 'Geçersiz E-Posta',
     'Zip is not valid'                                          => 'Geçersiz posta kodu',
     'Not a valid IP address'                                    => 'Geçersiz IP adresi',
-    'Cannot contain spaces'                                     => 'Boşluk içeremez',
+    'Must not contain spaces'                                   => 'Boşluk içeremez',
     'Must be made up of letters, digits, and underscores'       => 'Sadece harf, rakam ya da "_" içerebilir',
     'Must not be all digits'                                    => 'Sadece rakamlardan oluşamaz',
     'Field contains non-printable characters'                   => 'Basılamayan karakterler içeriyor',
     'Field must contain a single word'                          => 'Tek bir kelime olmalı',
+    'Must not be empty' => '...',
+    'Must be between 8 and 255 chars, and contain a non-alpha char' => '...',
 
-    # H::F::Validate::Actions
-    'Wrong value' => 'Hatalı değer',
-    '[_1] does not match' => '[_1] formatı uymuyor',
-    '[_1] not allowed'    => '[_1] izinli değil',
+    # H::F::Field::Date
+    'Date is too early' => 'Bu tarih izin verilen en küçük tarihten daha önce',
+    'Date is too late'  => 'Bu tarih izin verilen en büyük tarihten daha sonra',
 
-    # H::F::Validate
-    'value must be between [_1] and [_2]'           => 'değer [_1] ile [_2] arasında olmalı',
-    'value must be greater than or equal to [_1]'   => 'değer [_1] veya daha yüksek olmalı',
-    'value must be less than or equal to [_1]'      => 'değer [_1] veya daha düşük olmalı',
-    '[_1] field is required'                        => '[_1] alanı boş bırakılamaz',
+    # H::F::Field::DateTime
+    'Not a valid DateTime' => 'Geçersiz tarih/zaman',
+
+    # H::F::Field::Duration
+    'Invalid value for [_1]: [_2]' => '.....',
+
+    # H::F::Field::Email
+    'Email should be of the format [_1]' => 'E-Posta [_1] formatında olmalı',
+
+    # H::F::Field::Integer
+    'Value must be an integer' => 'Tam sayı olmalı',
+
+    # H::F::Field::Money
+    'Value cannot be converted to money'    => 'Değer para birimine çevrilemedi',
+    'Value must be a real number'           => 'Ondalık sayı olmalı',
+
+    # H::F::Field::Password
+    'Please enter a password in this field' => 'Lütfen bir şifre girin',
+    'Password must not match [_1]' => '....',
+
+    # H::F::Field::PasswordConf
+    'Please enter a password confirmation' => 'Lütfen şifre onayı girin',
+    'The password confirmation does not match the password' => '...', 
+
+    # H::F::Field::PosInteger
+    'Value must be a positive integer' => 'Pozitif tam sayı olmalı',
+
+    # H::F::Field::Select
+    'This field does not take multiple values' => 'Birden fazla değer seçilemez',
+    '\'[_1]\' is not a valid value' => '...',
+
+    # H::F::Field::Text
+    'Field should not exceed [quant,_1,character]. You entered [_2]'          => 'Girilen verinin uzunluğu en fazla [_1] olabilir. Gönderilen: [_2]',
+    'Field must be at least [quant,_1,character]. You entered [_2]'   => 'Girilen verinin uzunluğu en az [_1] olabilir. Gönderilen: [_2]',
+
+    # H::F::Field::Upload
+    'File uploaded is empty' => 'Gönderilen dosya boş',
+    'File is too small (< [_1] bytes)' => 'Dosya çok küçük. (< [_1] bytes)',
+    'File is too big (> [_1] bytes)' => 'Dosya çok büyük. (> [_1] bytes)',
+    'File not found for upload field' => '...',
+
+    # H::F::Model
+    'Value must be unique in the database' => 'Daha önceden kullanımda',
 
     # Other
     'Your datetime does not match your pattern.' => 'Tarih formatı hatalı.',
-    'error occurred'                             => 'hata oluştu',
 
   );
 

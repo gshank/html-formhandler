@@ -15,6 +15,28 @@ use MooseX::Types -declare => [
     'Collapse',       'Upper',       'Lower',             'Trim',
 ];
 
+our $class_messages = {
+    PositiveNum => "Must be a positive number", 
+    PositiveInt => "Must be a positive integer",
+    NegativeNum => "Must be a negative number",
+    NegativeInt => "Must be a negative integer",
+    SingleDigit => "Must be a single digit",
+    SimpleStr => 'Must be a single line of no more than 255 chars',
+    NonEmptySimpleStr => "Must be a non-empty single line of no more than 255 chars",
+    Password => "Must be between 4 and 255 chars",
+    StrongPassword =>"Must be between 8 and 255 chars, and contain a non-alpha char",
+    NonEmptyStr => "Must not be empty",
+    State => "Not a valid state",
+    Email => "Email is not valid",
+    Zip => "Zip is not valid",
+    IPAddress => "Not a valid IP address",
+    NoSpaces =>'Must not contain spaces',
+    WordChars => 'Must be made up of letters, digits, and underscores',
+    NotAllDigits => 'Must not be all digits',
+    Printable => 'Field contains non-printable characters',
+    SingleWord => 'Field must contain a single word',
+};
+
 use MooseX::Types::Moose ( 'Str', 'Num', 'Int' );
 
 =head1 SYNOPSIS
@@ -133,24 +155,24 @@ subtype SingleDigit, as PositiveInt, where { $_ <= 9 }, message { "Must be a sin
 subtype SimpleStr,
     as Str,
     where { ( length($_) <= 255 ) && ( $_ !~ m/\n/ ) },
-    message { "Must be a single line of no more than 255 chars" };
+    message { $class_messages->{SimpleStr} };
 
 subtype NonEmptySimpleStr,
     as SimpleStr,
     where { length($_) > 0 },
-    message { "Must be a non-empty single line of no more than 255 chars" };
+    message { $class_messages->{NonEmptySimpleStr} };
 
 subtype Password,
     as NonEmptySimpleStr,
     where { length($_) >= 4 && length($_) <= 255 },
-    message { "Must be between 4 and 255 chars" };
+    message { $class_messages->{Password} };
 
 subtype StrongPassword,
     as Password,
     where { ( length($_) >= 8 ) && length($_) <= 255 && (m/[^a-zA-Z]/) },
-    message { "Must be between 8 and 255 chars, and contain a non-alpha char" };
+    message { $class_messages->{StrongPassword} }; 
 
-subtype NonEmptyStr, as Str, where { length($_) > 0 }, message { "Must not be empty" };
+subtype NonEmptyStr, as Str, where { length($_) > 0 }, message { $class_messages->{NonEmptyStr} };
 
 subtype State, as Str, where {
     my $value = $_;
@@ -160,7 +182,7 @@ MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA PR RI
 SC SD TN TX UT VT VA WA WV WI WY DC AP FP FPO APO GU VI
 EOF
     return ( $state =~ /\b($value)\b/i );
-}, message { "Not a valid state" };
+}, message { $class_messages->{State} };
 
 subtype Email, as Str, where {
     my $value = shift;
@@ -168,31 +190,31 @@ subtype Email, as Str, where {
     my $valid;
     return ( $valid = Email::Valid->address($value) ) &&
         ( $valid eq $value );
-}, message { "Email is not valid" };
+}, message { $class_messages->{Email} };
 
 subtype Zip,
     as Str,
     where { /^(\s*\d{5}(?:[-]\d{4})?\s*)$/ },
-    message { "Zip is not valid" };
+    message { $class_messages->{Zip} };
 
 subtype IPAddress, as Str, where {
     /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-}, message { "Not a valid IP address" };
+}, message { $class_messages->{IPAddress} };
 
 subtype NoSpaces,
     as Str,
     where { ! /\s/ },
-    message { 'Must not contain spaces' };
+    message { $class_messages->{NoSpaces} };
 
 subtype WordChars,
     as Str,
     where { ! /\W/ },
-    message { 'Must be made up of letters, digits, and underscores' };
+    message { $class_messages->{WordChars} };
 
 subtype NotAllDigits,
     as Str,
     where { ! /^\d+$/ },
-    message { 'Must not be all digits' };
+    message { $class_messages->{NotAllDigits} };
 
 subtype Printable,
     as Str,

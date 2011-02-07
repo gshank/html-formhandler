@@ -18,9 +18,6 @@ relationship.
   has_field 'addresses.city';
   has_field 'addresses.state';
 
-For a database field include a PrimaryKey hidden field, or set 'auto_id' to
-have an 'id' field automatically created.
-
 In a form, for an array of single fields (not directly equivalent to a
 database relationship) use the 'contains' pseudo field name:
 
@@ -95,10 +92,6 @@ This attribute (default 1) indicates how many empty fields to present
 in an empty form which hasn't been filled from parameters or database
 rows.
 
-=item auto_id
-
-Will create an 'id' field automatically
-
 =back
 
 =cut
@@ -146,23 +139,37 @@ sub init_state {
 
 sub create_element {
     my ($self) = @_;
-    my $instance = Instance->new(
+
+    my $instance;
+    # TODO - instance has no way to change widgets
+    my $instance_attr = {
         name   => 'contains',
         parent => $self,
         form   => $self->form,
         type   => 'Repeatable::Instance',
-    );
+    };
+    if( $self->form ) {
+        $instance = $self->form->new_field_with_traits( 
+            'HTML::FormHandler::Field::Repeatable::Instance',
+            $instance_attr );
+    }
+    else {
+        $instance = Instance->new( %$instance_attr );
+    }
     # copy the fields from this field into the instance
     $instance->add_field( $self->all_fields );
+
+    # auto_id has no way to change widgets...deprecate this?
     if ( $self->auto_id ) {
         unless ( grep $_->can('is_primary_key') && $_->is_primary_key, $instance->all_fields ) {
             my $field;
+            my $field_attr = { name => 'id', parent => $instance, form => $self->form };
             if ( $self->form ) { # this will pull in the widget role
                 $field = $self->form->new_field_with_traits( 
-                    'HTML::FormHandler::Field::PrimaryKey', { name => 'id' } );
+                    'HTML::FormHandler::Field::PrimaryKey', $field_attr );
             }
             else { # the following won't have a widget role applied
-                $field = HTML::FormHandler::Field->new( type => 'PrimaryKey', name => 'id' );
+                $field = HTML::FormHandler::Field::PrimaryKey->new( %$field_attr );
             }
             $instance->add_field($field);
         }

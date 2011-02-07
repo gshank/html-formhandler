@@ -6,6 +6,18 @@ extends 'HTML::FormHandler::Field::Text';
 use Email::Valid;
 our $VERSION = '0.02';
 
+our $class_messages = {
+    'email_format' => 'Email should be of the format [_1]',
+};
+
+sub get_class_messages  {
+    my $self = shift;
+    return {
+        %{ $self->next::method },
+        %$class_messages,
+    }
+}
+
 apply(
     [
         {
@@ -13,7 +25,10 @@ apply(
         },
         {
             check => sub { Email::Valid->address( $_[0] ) },
-            message => [ 'Email should be of the format [_1]', 'someuser@example.com' ]
+            message => sub { 
+                my ( $value, $field ) = @_;
+                return [$field->get_message('email_format'), 'someuser@example.com'];
+            }, 
         }
     ]
 );

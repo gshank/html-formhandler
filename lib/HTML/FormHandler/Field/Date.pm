@@ -41,6 +41,12 @@ of the date range. Use iso_8601 formats for these dates ("yyyy-mm-dd");
 
    has_field 'start_date' => ( type => 'Date', date_start => "2009-12-25" );
 
+Customize error messages 'date_early' and 'date_late':
+
+   has_field 'start_date' => ( type => 'Date,
+       messages => { date_early => 'Pick a later date',
+                     date_late  => 'Pick an earlier date', } );
+
 =cut
 
 has 'format' => ( is => 'rw', isa => 'Str', default => "%Y-%m-%d" );
@@ -66,6 +72,18 @@ my $dp_to_dt = {
     "yy" => "\%Y",    # year (4 digits)
     "@"  => "\%s",    # epoch
 };
+
+our $class_messages = {
+    'date_early' => 'Date is too early',
+    'date_late' => 'Date is too late',
+};
+sub get_class_messages  {
+    my $self = shift;
+    return {
+        %{ $self->next::method },
+        %$class_messages,
+    }
+}
 
 sub deflate {
     my ( $self, $value ) = @_;
@@ -95,13 +113,13 @@ sub validate {
         my $date_start = $val_strp->parse_datetime( $self->date_start );
         die "date_start: " . $val_strp->errmsg unless $date_start;
         my $cmp = DateTime->compare( $date_start, $dt );
-        $self->add_error("Date is too early") if $cmp eq 1;
+        $self->add_error($self->get_message('date_early')) if $cmp eq 1;
     }
     if ( $self->date_end ) {
         my $date_end = $val_strp->parse_datetime( $self->date_end );
         die "date_end: " . $val_strp->errmsg unless $date_end;
         my $cmp = DateTime->compare( $date_end, $dt );
-        $self->add_error("Date is too late") if $cmp eq -1;
+        $self->add_error($self->get_message('date_late')) if $cmp eq -1;
     }
 }
 

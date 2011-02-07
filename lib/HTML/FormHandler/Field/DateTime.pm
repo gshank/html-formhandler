@@ -31,9 +31,22 @@ If you want simple input fields:
     has_field 'my_date.day' => ( type => 'Integer', range_start => 1,
          range_end => 31 );
 
+Customizable error: 'datetime_invalid' (default = "Not a valid DateTime")
+
 =cut
 
 has '+widget' => ( default => 'compound' );
+
+our $class_messages = {
+    'datetime_invalid' => 'Not a valid DateTime',
+};
+sub get_class_messages {
+    my $self = shift;
+    return {
+        %{ $self->next::method },
+        %$class_messages,
+    }
+}
 
 sub deflate {
     my ( $self, $value ) = @_;
@@ -60,7 +73,7 @@ sub validate {
         $dt = DateTime->new(@dt_parms);
     }
     catch {
-        $self->add_error('Not a valid DateTime');
+        $self->add_error( $self->get_message('datetime_invalid') );
     };
     if( $dt ) {
         $self->_set_value($dt);

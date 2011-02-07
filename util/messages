@@ -1,0 +1,106 @@
+[
+          {
+            'Field' => {
+                         'range_too_high' => 'Value must be less than or equal to [_1]',
+                         'range_incorrect' => 'Value must be between [_1] and [_2]',
+                         'wrong_value' => 'Wrong value',
+                         'error_occurred' => 'error occurred',
+                         'range_too_low' => 'Value must be greater than or equal to [_1]',
+                         'field_invalid' => 'field is invalid',
+                         'required' => '[_1] field is required',
+                         'not_allowed' => '[_1] not allowed',
+                         'no_match' => '[_1] does not match'
+                       }
+          },
+          {
+            'Types' => {
+                         'NegativeNum' => 'Must be a negative number',
+                         'NegativeInt' => 'Must be a negative integer',
+                         'PositiveNum' => 'Must be a positive number',
+                         'WordChars' => 'Must be made up of letters, digits, and underscores',
+                         'IPAddress' => 'Not a valid IP address',
+                         'PositiveInt' => 'Must be a positive integer',
+                         'State' => 'Not a valid state',
+                         'Printable' => 'Field contains non-printable characters',
+                         'Password' => 'Must be between 4 and 255 chars',
+                         'Zip' => 'Zip is not valid',
+                         'SimpleStr' => 'Must be a single line of no more than 255 chars',
+                         'Email' => 'Email is not valid',
+                         'SingleDigit' => 'Must be a single digit',
+                         'NonEmptySimpleStr' => 'Must be a non-empty single line of no more than 255 chars',
+                         'NotAllDigits' => 'Must not be all digits',
+                         'NoSpaces' => 'Must not contain spaces',
+                         'SingleWord' => 'Field must contain a single word',
+                         'NonEmptyStr' => 'Must not be empty',
+                         'StrongPassword' => 'Must be between 8 and 255 chars, and contain a non-alpha char'
+                       }
+          },
+          {
+            'Date' => {
+                        'date_late' => 'Date is too late',
+                        'date_early' => 'Date is too early'
+                      }
+          },
+          {
+            'DateTime' => {
+                            'datetime_invalid' => 'Not a valid DateTime'
+                          }
+          },
+          {
+            'Duration' => {
+                            'duration_invalid' => 'Invalid value for [_1]: [_2]'
+                          }
+          },
+          {
+            'Email' => {
+                         'email_format' => 'Email should be of the format [_1]'
+                       }
+          },
+          {
+            'Integer' => {
+                           'integer_needed' => 'Value must be an integer'
+                         }
+          },
+          {
+            'Money' => {
+                         'money_real' => 'Value must be a real number',
+                         'money_convert' => 'Value cannot be converted to money'
+                       }
+          },
+          {
+            'Password' => {
+                            'required' => 'Please enter a password in this field',
+                            'password_ne_username' => 'Password must not match [_1]'
+                          }
+          },
+          {
+            'PasswordConf' => {
+                                'pass_conf_not_matched' => 'The password confirmation does not match the password'
+                              }
+          },
+          {
+            'PosInteger' => {
+                              'integer_positive' => 'Value must be a positive integer'
+                            }
+          },
+          {
+            'Select' => {
+                          'select_not_multiple' => 'This field does not take multiple values',
+                          'select_invalid_value' => '\'[_1]\' is not a valid value'
+                        }
+          },
+          {
+            'Text' => {
+                        'text_maxlength' => 'Field should not exceed [quant,_1,character]. You entered [_2]',
+                        'text_minlength' => 'Field must be at least [quant,_1,character]. You entered [_2]'
+                      }
+          },
+          {
+            'Upload' => {
+                          'upload_file_too_small' => 'File is too small (< [_1] bytes)',
+                          'upload_file_empty' => 'File uploaded is empty',
+                          'upload_file_not_found' => 'File not found for upload field',
+                          'upload_file_too_big' => 'File is too big (> [_1] bytes)'
+                        }
+          }
+        ]

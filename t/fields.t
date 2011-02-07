@@ -117,6 +117,7 @@ is( $field->value, 0, 'Test value == 0' );
 $field->_set_input( 'checked' );
 $field->validate_field;
 ok( $field->has_errors, 'Test non integer' );
+is( $field->errors->[0], 'Value must be an integer', 'correct error');
 $field->_set_input( '+10' );
 $field->validate_field;
 ok( !$field->has_errors, 'Test positive' );
@@ -400,7 +401,6 @@ is( $field->errors->[0], 'This field does not take multiple values', 'Error mess
 $field = $class->new( name => 'test_prompt', 'empty_select' => "Choose a Number",
     options => $options, required => 1 );
 is( $field->num_options, 3, 'right number of options');
-like( $field->render, qr/Choose/, 'contains empty selection' );
 
 # textarea
 

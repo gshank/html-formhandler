@@ -7,6 +7,19 @@ our $VERSION = '0.02';
 
 has '+size' => ( default => 8 );
 
+our $class_messages = {
+    'integer_needed' => 'Value must be an integer',
+};
+
+sub get_class_messages {
+    my $self = shift;
+    return {
+        %{ $self->next::method },
+        %$class_messages,
+    }
+}
+
+
 apply(
     [
         {
@@ -18,7 +31,10 @@ apply(
         },
         {
             check => sub { $_[0] =~ /^-?[0-9]+$/ },
-            message => 'Value must be an integer'
+            message => sub { 
+                my ( $value, $field ) = @_;
+                return $field->get_message('integer_needed');
+            }, 
         }
     ]
 );

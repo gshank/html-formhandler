@@ -252,7 +252,7 @@ Update the fields in the form file:
    has_field 'title' => ( type => 'Text', label => 'Title of a Book',
       required => 1, size => 40, minlength => 5 );
    has_field 'rating' => ( type => 'Integer', label => 'Rating (1-5)',
-      required => 1, required_message => 'You must rate the book',
+      required => 1, messages => { required => 'You must rate the book' },
       range_start => 1, range_end => 5 );
    has_field 'authors' => ( type => 'Multiple', label_column => 'last_name',
       required => 1 );

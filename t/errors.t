@@ -14,7 +14,7 @@ use_ok( 'HTML::FormHandler' );
            reqname     => {
               type => 'Text',
               required => 1,
-              required_message => 'You must supply a reqname',
+              messages => { required => 'You must supply a reqname' },
            },
            fruit       => 'Select',
            optname     => 'Text',

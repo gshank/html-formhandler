@@ -372,18 +372,22 @@ see tests in the distribution.
 
 Flag indicating whether this field must have a value
 
-=item required_message
-
-Error message text added to errors if required field is not present
-The default is "Field <field label> is required".
-
 =item unique
 
-Flag to initiate checks in the database model for uniqueness.
+For DB field - check for uniqueness. Action is performed by
+the DB model.
 
-=item unique_message
+=item messages
 
-Error message text added to errors if field is not unique
+    messages => { required => '...', unique => '...' }
+
+Set messages created by FormHandler by setting in the 'messages'
+hashref. Some field subclasses have additional settable messages.
+
+required:  Error message text added to errors if required field is not present
+The default is "Field <field label> is required".
+
+unique: message for when 'unique' is set, but field is not unique 
 
 =item range_start
 
@@ -1018,6 +1022,57 @@ sub _localize {
     return $message;
 }
 
+has 'messages' => ( is => 'rw',
+    isa => 'HashRef',
+    traits => ['Hash'],
+    default => sub {{}},
+    handles => {
+        '_get_field_message' => 'get',
+        '_has_field_message' => 'exists',
+        'set_message' => 'set',
+    },
+);
+
+our $class_messages = {
+    'field_invalid'   => 'field is invalid',
+    'range_too_low'   => 'Value must be greater than or equal to [_1]',
+    'range_too_high'  => 'Value must be less than or equal to [_1]',
+    'range_incorrect' => 'Value must be between [_1] and [_2]',
+    'wrong_value'     => 'Wrong value',
+    'no_match'        => '[_1] does not match',
+    'not_allowed'     => '[_1] not allowed',
+    'error_occurred'  => 'error occurred',
+    'required'        => '[_1] field is required',
+};
+
+sub get_class_messages  {
+    my $self = shift;
+    my $messages = { %$class_messages };
+    $messages->{required} = $self->required_message
+        if $self->required_message;
+    return $messages; 
+}
+
+sub get_message {
+    my ( $self, $msg ) = @_;
+
+    # first look in messages set on individual field
+    return $self->_get_field_message($msg)
+       if $self->_has_field_message($msg);
+    # then look at form messages 
+    return $self->form->_get_form_message($msg)
+       if $self->has_form && $self->form->_has_form_message($msg);
+    # then look for messages up through inherited field classes
+    return $self->get_class_messages->{$msg};
+}
+sub all_messages {
+    my $self = shift;
+    my $form_messages = $self->has_form ? $self->form->messages : {}; 
+    my $field_messages = $self->messages || {};
+    my $lclass_messages = $self->my_class_messages || {};
+    return {%{$lclass_messages}, %{$form_messages}, %{$field_messages}};
+}
+
 sub BUILDARGS {
     my $class = shift;
 
@@ -1036,7 +1091,7 @@ sub BUILD {
     $self->add_widget_name_space( @{$self->form->widget_name_space} ) if $self->form;
     # widgets will already have been applied by BuildFields, but this allows
     # testing individual fields
-    $self->apply_rendering_widgets unless ($self->can('render') );
+#   $self->apply_rendering_widgets unless ($self->can('render') );
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;
     $self->add_action( @{ $params->{apply} } ) if $params->{apply};
@@ -1111,7 +1166,7 @@ sub add_error {
     my ( $self, @message ) = @_;
 
     unless ( defined $message[0] ) {
-        @message = ('field is invalid');
+        @message = ( $class_messages->{field_invalid});
     }
     @message = @{$message[0]} if ref $message[0] eq 'ARRAY';
     my $out;
@@ -1198,6 +1253,7 @@ sub apply_rendering_widgets {
     my $self = shift;
 
     if ( $self->widget ) {
+        warn "in apply_rendering_widgets " . $self->widget . " Field\n";
         $self->apply_widget_role( $self, $self->widget, 'Field' );
     }
     my $widget_wrapper = $self->widget_wrapper;
@@ -1230,6 +1286,28 @@ sub peek {
         }
     }
     return $string;
+}
+
+sub has_some_value {
+    my $x = shift;
+
+    return unless defined $x;
+    return $x =~ /\S/ if !ref $x;
+    if ( ref $x eq 'ARRAY' ) {
+        for my $elem (@$x) {
+            return 1 if has_some_value($elem);
+        }
+        return 0;
+    }
+    if ( ref $x eq 'HASH' ) {
+        for my $key ( keys %$x ) {
+            return 1 if has_some_value( $x->{$key} );
+        }
+        return 0;
+    }
+    return 1 if blessed($x);    # true if blessed, otherwise false
+    return 1 if ref( $x );
+    return;
 }
 
 __PACKAGE__->meta->make_immutable;

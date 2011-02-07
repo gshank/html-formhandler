@@ -20,7 +20,6 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    set_validate  Name of validation method in form. Default is validate_$fieldname
    set_init      Name of the form method used to initialize a field
    required      Field is required
-   required_message  If this field is required, the message to display on failure
    order         Set the order for fields. Used by sorted_fields, templates.
    widget        Determines which rendering widget to use for the field 
    password      Remove from params and do not display in forms.
@@ -28,6 +27,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    writeonly     Do not retrieve initial values
    errors        Errors associated with this field
                  (also num_errors, clear_errors, has_errors, add_error)
+   messages      Hashref of message identifiers and text
    label_column  Select lists: column to use for labels (default: name)
    active_column Select lists: which values to list
    sort_column   Select lists: column to use for sorting (default: label_column)
@@ -37,7 +37,6 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    range_start   Range start for number fields
    range_end     Range end for number fields
    unique        Field should be unique in the database
-   unique_message If field is not unique, error message.
    apply         Array of constraint/coercion/transformation actions
    value_changed Has the field's value changed from the init_value?
    dump          For debugging
