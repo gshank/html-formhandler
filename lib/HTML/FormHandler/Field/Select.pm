@@ -387,6 +387,8 @@ sub _result_from_fields {
 sub _result_from_input {
     my ( $self, $result, $input, $exists ) = @_;
 
+    $input = ref $input eq 'ARRAY' ? $input : [$input]
+        if $self->multiple;
     $result = $self->next::method( $result, $input, $exists );
     $self->_load_options;
     return $result;

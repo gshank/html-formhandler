@@ -31,10 +31,10 @@ apply(
         },
         {
             check => sub { $_[0] =~ /^-?[0-9]+$/ },
-            message => sub { 
+            message => sub {
                 my ( $value, $field ) = @_;
                 return $field->get_message('integer_needed');
-            }, 
+            },
         }
     ]
 );

@@ -49,7 +49,7 @@ sub value {
 
 sub validate {
     my $self = shift;
-    $self->add_error($self->required_message) if( $self->required && !$self->value );
+    $self->add_error($self->get_message('required'), $self->loc_label) if( $self->required && !$self->value );
     return;
 }
 

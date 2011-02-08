@@ -162,9 +162,9 @@ sub render_start {
 }
 
 sub render_form_errors {
-    my $self = shift; 
+    my $self = shift;
 
-    return '' unless $self->has_form_errors; 
+    return '' unless $self->has_form_errors;
     my $output = "\n<div class=\"form_errors\">";
     $output .= qq{\n<span class="error_message">$_</span>}
         for $self->all_form_errors;

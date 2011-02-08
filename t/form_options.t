@@ -117,9 +117,11 @@ is_deeply( $form->values, { fruit => 2, vegetables => [2, 4], empty => [], build
 
 $params = {
     fruit => 2,
+    vegetables => 4,
 };
 $form->process($params);
-is_deeply( $form->field('vegetables')->value, [], 'value for vegetables correct' );
+is_deeply( $form->field('vegetables')->value, [4], 'value for vegetables correct' );
+is_deeply( $form->field('vegetables')->fif, [4], 'fif for vegetables correct' );
 
 {
     package Test::Form2;

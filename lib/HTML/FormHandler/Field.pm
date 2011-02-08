@@ -245,7 +245,7 @@ Compound fields will have an array of errors from the subfields.
 
 The 'widget' attribute is used in rendering, so if you are
 not using FormHandler's rendering facility, you don't need this
-attribute. 
+attribute.
 It is intended for use in generating HTML, in templates and the
 rendering roles, and is used in L<HTML::FormHandler::Render::Simple>.
 Fields of different type can use the same widget.
@@ -256,7 +256,7 @@ name and provide a C<< 'widget_<name>' >> method in your copy
 of Render::Simple or in your form class.
 
 If you are using a template based rendering system you will want
-to create a widget template.  
+to create a widget template.
 (see L<HTML::FormHandler::Manual::Templates>)
 
 If you are using the widget roles, you can specify the widget
@@ -387,7 +387,7 @@ hashref. Some field subclasses have additional settable messages.
 required:  Error message text added to errors if required field is not present
 The default is "Field <field label> is required".
 
-unique: message for when 'unique' is set, but field is not unique 
+unique: message for when 'unique' is set, but field is not unique
 
 =item range_start
 
@@ -1050,7 +1050,7 @@ sub get_class_messages  {
     my $messages = { %$class_messages };
     $messages->{required} = $self->required_message
         if $self->required_message;
-    return $messages; 
+    return $messages;
 }
 
 sub get_message {
@@ -1059,7 +1059,7 @@ sub get_message {
     # first look in messages set on individual field
     return $self->_get_field_message($msg)
        if $self->_has_field_message($msg);
-    # then look at form messages 
+    # then look at form messages
     return $self->form->_get_form_message($msg)
        if $self->has_form && $self->form->_has_form_message($msg);
     # then look for messages up through inherited field classes
@@ -1067,7 +1067,7 @@ sub get_message {
 }
 sub all_messages {
     my $self = shift;
-    my $form_messages = $self->has_form ? $self->form->messages : {}; 
+    my $form_messages = $self->has_form ? $self->form->messages : {};
     my $field_messages = $self->messages || {};
     my $lclass_messages = $self->my_class_messages || {};
     return {%{$lclass_messages}, %{$form_messages}, %{$field_messages}};

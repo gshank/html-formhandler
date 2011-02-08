@@ -27,7 +27,7 @@ like( $rendered_array, qr/my_array\.0/, 'renders my_array field' );
 $rendered_rep = $form->field('my_rep')->render;
 like( $rendered_rep, qr/my_rep\.0/, 'renders my_rep field' );
 
-$form->process( params => { foo => 'xxx', bar => 'yyy', 
+$form->process( params => { foo => 'xxx', bar => 'yyy',
    'my_array.0' => '', 'my_array.1' => '',
    'my_rep.0.foo' => '', 'my_rep.1.foo' => '' } );
 $rendered_array = $form->field('my_array')->render;

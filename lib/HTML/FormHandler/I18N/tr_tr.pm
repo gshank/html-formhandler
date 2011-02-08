@@ -71,7 +71,7 @@ our %Lexicon = (
 
     # H::F::Field::PasswordConf
     'Please enter a password confirmation' => 'Lütfen şifre onayı girin',
-    'The password confirmation does not match the password' => '...', 
+    'The password confirmation does not match the password' => '...',
 
     # H::F::Field::PosInteger
     'Value must be a positive integer' => 'Pozitif tam sayı olmalı',

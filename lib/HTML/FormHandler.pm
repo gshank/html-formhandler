@@ -823,7 +823,7 @@ has '_required' => (
 has 'messages' => ( is => 'rw',
     isa => 'HashRef',
     traits => ['Hash'],
-    builder => 'build_messages', 
+    builder => 'build_messages',
     handles => {
         '_get_form_message' => 'get',
         '_has_form_message' => 'exists',

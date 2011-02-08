@@ -203,7 +203,7 @@ sub _apply_actions {
                 $action->{transform}->($value, $self);
             };
             if ($@) {
-                $error_message = $@ || $self->get_message('error_occurred'); 
+                $error_message = $@ || $self->get_message('error_occurred');
             }
             else {
                 $self->_set_value($new_value);

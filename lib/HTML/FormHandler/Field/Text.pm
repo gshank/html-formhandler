@@ -42,7 +42,7 @@ sub validate {
     my $value = $field->input;
     # Check for max length
     if ( my $maxlength = $field->maxlength ) {
-        return $field->add_error( $field->get_message('text_maxlength'), 
+        return $field->add_error( $field->get_message('text_maxlength'),
             $maxlength, length $value, $field->loc_label )
             if length $value > $maxlength;
     }
@@ -82,11 +82,11 @@ A constraint on the maximum length of the text.
 
 Set error messages (text_minlength, text_maxlength):
 
-    has_field 'my_text' => ( type => 'Text', messages => 
+    has_field 'my_text' => ( type => 'Text', messages =>
         {  'text_minlength' => 'Field is too short',
            'text_maxlength' => 'Field is too long',
         } );
- 
+
 
 =cut
 

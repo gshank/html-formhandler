@@ -25,10 +25,10 @@ apply(
         },
         {
             check => sub { Email::Valid->address( $_[0] ) },
-            message => sub { 
+            message => sub {
                 my ( $value, $field ) = @_;
                 return [$field->get_message('email_format'), 'someuser@example.com'];
-            }, 
+            },
         }
     ]
 );

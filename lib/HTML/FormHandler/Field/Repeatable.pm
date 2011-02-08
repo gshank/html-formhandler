@@ -149,7 +149,7 @@ sub create_element {
         type   => 'Repeatable::Instance',
     };
     if( $self->form ) {
-        $instance = $self->form->new_field_with_traits( 
+        $instance = $self->form->new_field_with_traits(
             'HTML::FormHandler::Field::Repeatable::Instance',
             $instance_attr );
     }
@@ -165,7 +165,7 @@ sub create_element {
             my $field;
             my $field_attr = { name => 'id', parent => $instance, form => $self->form };
             if ( $self->form ) { # this will pull in the widget role
-                $field = $self->form->new_field_with_traits( 
+                $field = $self->form->new_field_with_traits(
                     'HTML::FormHandler::Field::PrimaryKey', $field_attr );
             }
             else { # the following won't have a widget role applied

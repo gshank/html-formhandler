@@ -16,7 +16,7 @@ use MooseX::Types -declare => [
 ];
 
 our $class_messages = {
-    PositiveNum => "Must be a positive number", 
+    PositiveNum => "Must be a positive number",
     PositiveInt => "Must be a positive integer",
     NegativeNum => "Must be a negative number",
     NegativeInt => "Must be a negative integer",
@@ -170,7 +170,7 @@ subtype Password,
 subtype StrongPassword,
     as Password,
     where { ( length($_) >= 8 ) && length($_) <= 255 && (m/[^a-zA-Z]/) },
-    message { $class_messages->{StrongPassword} }; 
+    message { $class_messages->{StrongPassword} };
 
 subtype NonEmptyStr, as Str, where { length($_) > 0 }, message { $class_messages->{NonEmptyStr} };
 

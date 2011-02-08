@@ -41,7 +41,7 @@ sub render_start {
 sub render_form_errors {
     my $self = shift;
 
-    return '' unless $self->has_form_errors; 
+    return '' unless $self->has_form_errors;
     my $output = "\n<tr class=\"form_errors\"><td colspan=\"2\">";
     $output .= qq{\n<span class="error_message">$_</span>}
         for $self->all_form_errors;

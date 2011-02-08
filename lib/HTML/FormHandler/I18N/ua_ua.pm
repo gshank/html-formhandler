@@ -71,7 +71,7 @@ our %Lexicon = (
 
     # H::F::Field::PasswordConf
     'Please enter a password confirmation' => 'Будь ласка, введіть підтвердження паролю',
-    'The password confirmation does not match the password' => '...', 
+    'The password confirmation does not match the password' => '...',
 
     # H::F::Field::PosInteger
     'Value must be a positive integer' => 'Значення має бути позитивним цілим числом',

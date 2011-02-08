@@ -72,7 +72,7 @@ our %Lexicon = (
 
     # H::F::Field::PasswordConf
     'Please enter a password confirmation' => 'Jelszó megerősítése',
-    'The password confirmation does not match the password' => '...', 
+    'The password confirmation does not match the password' => '...',
 
     # H::F::Field::PosInteger
     'Value must be a positive integer' => 'Pozitív egész szám szükséges',

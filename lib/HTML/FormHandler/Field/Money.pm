@@ -29,17 +29,17 @@ apply(
         },
         {
             transform => sub { sprintf '%.2f', $_[0] },
-            message => sub { 
+            message => sub {
                 my ( $value, $field ) = @_;
                 return [$field->get_message('money_convert'), $value];
-            }, 
+            },
         },
         {
             check => sub { $_[0] =~ /^-?\d+\.?\d*$/ },
-            message => sub { 
+            message => sub {
                 my ( $value, $field ) = @_;
                 return [$field->get_message('money_real'), $value];
-            }, 
+            },
         }
     ]
 );

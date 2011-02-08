@@ -42,7 +42,7 @@ has '+password'         => ( default => 1 );
 has 'ne_username'       => ( isa     => 'Str', is => 'rw' );
 
 our $class_messages = {
-    'required' => 'Please enter a password in this field', 
+    'required' => 'Please enter a password in this field',
     'password_ne_username' => 'Password must not match [_1]',
 };
 

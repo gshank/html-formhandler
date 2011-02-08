@@ -76,6 +76,7 @@ ok( $form->field('must_select')->has_errors, 'must_select has error' );
 ok( !$form->field('optname')->has_errors,    'optname has no error' );
 is( $form->field('fruit')->id,    "fruit", 'field has id' );
 is( $form->field('fruit')->label, 'Fruit',          'field label' );
+$DB::single=1;
 
 ok( !$form->process( {} ), 'no leftover params' );
 is( $form->num_errors, 0, 'no leftover errors' );

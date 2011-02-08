@@ -79,11 +79,11 @@ sub validate {
         unless $size > 0;
 
     if( defined $self->min_size && $size < $self->min_size ) {
-        $self->add_error( $self->get_message('upload_file_too_small'), $self->min_size ); 
+        $self->add_error( $self->get_message('upload_file_too_small'), $self->min_size );
     }
 
     if( defined $self->max_size && $size > $self->max_size ) {
-        $self->add_error( $self->get_message('upload_file_too_big'), $self->max_size ); 
+        $self->add_error( $self->get_message('upload_file_too_big'), $self->max_size );
     }
     return;
 }
