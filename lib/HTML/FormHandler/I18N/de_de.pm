@@ -41,7 +41,7 @@ our %Lexicon = (
     'Must not contain spaces' => 'Darf keine Leerzeichen enthalten',
     'Field must contain a single word' => 'Feld muss ein einzelnes Wort enthalten',
     'Must not be empty' => 'Feld darf nicht leer bleiben',
-    'Must be between 8 and 255 chars, and contain a non-alpha char' => 'Wert muss 8 bis 255 und ein nicht alpha-num Zeichen enthalten',
+    'Must be between 8 and 255 chars, and contain a non-alpha char' => 'Wert muss 8 bis 255 Zeichen und ein nicht alpha-num Zeichen enthalten',
 
 
     # H::F::Field::Date
@@ -66,7 +66,7 @@ our %Lexicon = (
 
     # H::F::Field::Password
     'Please enter a password in this field' => 'Bitte ein Passwort eingeben',
-    'Password must not match [_1]' => 'Passwörter müssen verschieden sein [_1]',
+    'Password must not match [_1]' => 'Passwort darf nicht mit \'[_1]\' übereinstimmen',
 
     # H::F::Field::PasswordConf
     'Please enter a password confirmation' => 'Bitte das Passwort bestätigen',
@@ -87,7 +87,7 @@ our %Lexicon = (
     'File uploaded is empty' => 'Hochgeladene Datei ist leer',
     'File is too small (< [_1] bytes)' => 'Datei ist zu klein (< [_1] bytes)',
     'File is too big (> [_1] bytes)' => 'Datei ist zu groß (> [_1] bytes)',
-    'File not found for upload field' => 'Datei für upload Feld nich gefunden',
+    'File not found for upload field' => 'Datei für upload Feld nicht gefunden',
 
     # H::F::Model
     'Value must be unique in the database' => 'Wert existiert bereits in der Datenbank',
