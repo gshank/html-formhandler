@@ -36,6 +36,11 @@
                        }
           },
           {
+            'Captcha' => {
+                           'captcha_verify_failed' => 'Verification incorrect. Try again.'
+                         }
+          },
+          {
             'Date' => {
                         'date_late' => 'Date is too late',
                         'date_early' => 'Date is too early'
@@ -75,6 +80,7 @@
           },
           {
             'PasswordConf' => {
+                                'required' => 'Please enter a password confirmation',
                                 'pass_conf_not_matched' => 'The password confirmation does not match the password'
                               }
           },
