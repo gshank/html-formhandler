@@ -16,7 +16,7 @@ our %Lexicon = (
     'Wrong value' => 'Ungültiger Wert',
     '[_1] does not match' => '[_1] ist kein gültiger Wert',
     '[_1] not allowed' => '[_1] ist nicht erlaubt',
-    '[_1] field is required' => '...',
+    '[_1] field is required' => 'Feld ist erforderlich',
     'error occurred' => 'Fehler aufgetreten',
     'Value must be between [_1] and [_2]' => 'Wert muss zwischen [_1] und [_2] liegen',
     'Value must be greater than or equal to [_1]' => 'Wert muss größer oder gleich [_1] sein',
@@ -40,8 +40,8 @@ our %Lexicon = (
     'Email is not valid' => 'E-Mail ist nicht gültig',
     'Must not contain spaces' => 'Darf keine Leerzeichen enthalten',
     'Field must contain a single word' => 'Feld muss ein einzelnes Wort enthalten',
-    'Must not be empty' => '...',
-    'Must be between 8 and 255 chars, and contain a non-alpha char' => '...',
+    'Must not be empty' => 'Feld darf nicht leer bleiben',
+    'Must be between 8 and 255 chars, and contain a non-alpha char' => 'Wert muss 8 bis 255 und ein nicht alpha-num Zeichen enthalten',
 
 
     # H::F::Field::Date
@@ -52,7 +52,7 @@ our %Lexicon = (
     'Not a valid DateTime' => 'Ungültige Datums-/Zeitangabe',
 
     # H::F::Field::Duration
-    'Invalid value for [_1]: [_2]' => '.....',
+    'Invalid value for [_1]: [_2]' => 'Ungültiger Wert für [_1]: [_2]',
 
     # H::F::Field::Email
     'Email should be of the format [_1]' => 'E-Mail sollte die Form [_1] haben',
@@ -66,18 +66,18 @@ our %Lexicon = (
 
     # H::F::Field::Password
     'Please enter a password in this field' => 'Bitte ein Passwort eingeben',
-    'Password must not match [_1]' => '....',
+    'Password must not match [_1]' => 'Passwörter müssen verschieden sein [_1]',
 
     # H::F::Field::PasswordConf
     'Please enter a password confirmation' => 'Bitte das Passwort bestätigen',
-    'The password confirmation does not match the password' => '...',
+    'The password confirmation does not match the password' => 'Passwort Bestätigung stimmt nicht überein',
 
     # H::F::Field::PosInteger
     'Value must be a positive integer' => 'Muss eine positive ganze Zahl sein',
 
     # H::F::Field::Select
     'This field does not take multiple values' => 'Mehrfachauswahl nicht erlaubt',
-    '\'[_1]\' is not a valid value' => '...',
+    '\'[_1]\' is not a valid value' => '\'[_1]\' ist kein gültiger Wert',
 
     # H::F::Field::Text
     'Field should not exceed [quant,_1,character]. You entered [_2]' => 'Bitte auf [_1] Zeichen beschränken. Sie haben [_2] eingegeben',
@@ -87,7 +87,7 @@ our %Lexicon = (
     'File uploaded is empty' => 'Hochgeladene Datei ist leer',
     'File is too small (< [_1] bytes)' => 'Datei ist zu klein (< [_1] bytes)',
     'File is too big (> [_1] bytes)' => 'Datei ist zu groß (> [_1] bytes)',
-    'File not found for upload field' => '...',
+    'File not found for upload field' => 'Datei für upload Feld nich gefunden',
 
     # H::F::Model
     'Value must be unique in the database' => 'Wert existiert bereits in der Datenbank',
