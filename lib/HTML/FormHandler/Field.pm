@@ -971,21 +971,21 @@ has 'render_filter' => (
 
 sub build_render_filter {
     my $self = shift;
+
     if( $self->form && $self->form->can('render_filter') ) {
+        # does this leak? needs testing
         return sub {
             my $name = shift;
             return $self->form->render_filter($name);
         }
     }
     else {
-        return sub {
-            my $name = shift;
-            return $self->default_render_filter($name);
-        }
+        return \&default_render_filter;
     }
 }
+
 sub default_render_filter {
-    my ( $self, $string ) = @_;
+    my $string = shift;
     return '' if (!defined $string);
     $string =~ s/&/&amp;/g;
     $string =~ s/</&lt;/g;
