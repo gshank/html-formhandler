@@ -20,7 +20,7 @@ is( $output, '&quot;J.Doe&quot; &lt;jdoe@gmail.com&gt;', 'output ok' );
     has_field 'bar';
 
     sub render_filter {
-        my ( $self, $string ) = @_;
+        my $string = shift;
         $string =~ s/my/MY/g;
         return $string;
     }

@@ -973,11 +973,8 @@ sub build_render_filter {
     my $self = shift;
 
     if( $self->form && $self->form->can('render_filter') ) {
-        # does this leak? needs testing
-        return sub {
-            my $name = shift;
-            return $self->form->render_filter($name);
-        }
+        my $coderef = $self->form->can('render_filter');
+        return $coderef;
     }
     else {
         return \&default_render_filter;
