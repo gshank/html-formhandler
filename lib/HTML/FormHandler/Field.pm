@@ -240,6 +240,8 @@ Compound fields will have an array of errors from the subfields.
    javascript  - for a Javascript string
    order       - Used for sorting errors and fields. Built automatically,
                  but may also be explicitly set
+   render_filter - Coderef for filtering fields before rendering. By default
+                 changes >, <, &, " to the html entities
 
 =head2 widget
 
@@ -304,6 +306,7 @@ For more about widgets, see L<HTML::FormHandler::Manual::Rendering>.
    password  - prevents the entered value from being displayed in the form
    writeonly - The initial value is not taken from the database
    noupdate  - Do not update this field in the database (does not appear in $form->value)
+
 
 =head2 Form methods for fields
 
@@ -1013,7 +1016,27 @@ sub language_handle {
     return $ENV{LANGUAGE_HANDLE} || HTML::FormHandler::I18N->get_handle;
 }
 
-sub _localize {
+has 'localize_meth' => (
+     traits => ['Code'],
+     is     => 'ro',
+     isa    => 'CodeRef',
+     builder => 'build_localize_meth',
+     handles => { '_localize' => 'execute_method' },
+);
+
+sub build_localize_meth {
+    my $self = shift;
+
+    if( $self->form && $self->form->can('localize_meth') ) {
+        my $coderef = $self->form->can('localize_meth');
+        return $coderef;
+    }
+    else {
+        return \&default_localize;
+    }
+}
+
+sub default_localize {
     my ($self, @message) = @_;
     my $message = $self->language_handle->maketext(@message);
     return $message;

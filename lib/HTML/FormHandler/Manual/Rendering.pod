@@ -182,10 +182,11 @@ clean the values used to fill in the form for Render::Simple and the Widgets.
 The default filter changes quote, ampersand, <, and > to the equivalent html
 entities. If you wish to use some other sort of filtering, you can set use
 'render_filter' method in your form, or set a coderef on individual field
-objects.
+objects. A 'render_filter' function in your form will be used by all fields.
+Setting it for a field will just be for that field.
 
     sub render_filter {
-        my ( $self, $string ) = @_;
+        my $string = shift;
         $string =~ s/my/MY/g; # perform some kind of transformation
         return $string;
     }

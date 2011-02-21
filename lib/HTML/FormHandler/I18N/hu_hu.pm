@@ -16,13 +16,13 @@ our %Lexicon = (
     # H:: F:: Field
     'field is invalid' => 'A mező érvénytelen',
     'Wrong value' => 'Rossz érték',
-    '[_1] does not match' => '...',
-    '[_1] not allowed' => '...',
+#   '[_1] does not match' => '...',
+#   '[_1] not allowed' => '...',
     'Value must be between [_1] and [_2]'         => 'az érték [_1] és [_2] között legyen',
     'Value must be greater than or equal to [_1]' => 'az érték nagyobb vagy egyenlő legyen: [_1]',
     'Value must be less than or equal to [_1]'    => 'az érték kisebb vagy egyenlő legyen: [_1]',
     '[_1] field is required'                      => 'A [_1] mező szükséges',
-    'error occurred' => '...',
+#   'error occurred' => '...',
 
 
     # H:: F:: Types
@@ -43,8 +43,8 @@ our %Lexicon = (
     'Must not be all digits'                                    => 'Nem csak számok szükségesek',
     'Field contains non-printable characters'                   => 'A mező nem nyomtatható karaktert tartalmaz',
     'Field must contain a single word'                          => 'A mező csak egy szót tartalmazhat',
-    'Must not be empty' => '...',
-    'Must be between 8 and 255 chars, and contain a non-alpha char' => '...',
+#   'Must not be empty' => '...',
+#   'Must be between 8 and 255 chars, and contain a non-alpha char' => '...',
 
     # H::F::Field::Date
     'Date is too early' => 'A dátum túl korai',
@@ -54,7 +54,7 @@ our %Lexicon = (
     'Not a valid DateTime' => 'Érvénytelen formátum',
 
     # H::F::Field::Duration
-    'Invalid value for [_1]: [_2]' => '.....',
+#   'Invalid value for [_1]: [_2]' => '.....',
 
     # H::F::Field::Email
     'Email should be of the format [_1]' => 'Az email [_1] formátumú legyen',
@@ -68,18 +68,18 @@ our %Lexicon = (
 
     # H::F::Field::Password
     'Please enter a password in this field' => 'Légyszíves adj meg jelszót ebben a mezőben',
-    'Password must not match [_1]' => '....',
+#   'Password must not match [_1]' => '....',
 
     # H::F::Field::PasswordConf
     'Please enter a password confirmation' => 'Jelszó megerősítése',
-    'The password confirmation does not match the password' => '...',
+#   'The password confirmation does not match the password' => '...',
 
     # H::F::Field::PosInteger
     'Value must be a positive integer' => 'Pozitív egész szám szükséges',
 
     # H::F::Field::Select
     'This field does not take multiple values' => 'Ez a mező csak egy értéket kaphat',
-    '\'[_1]\' is not a valid value' => '...',
+#   '\'[_1]\' is not a valid value' => '...',
 
     # H::F::Field::Text
     'Field should not exceed [quant,_1,character]. You entered [_2]'        => 'A maximális hossz: [_1] karakter. A tiéd pedig: [_2]',
@@ -89,7 +89,7 @@ our %Lexicon = (
     'File uploaded is empty'          => 'A feltöltött fájl üres',
     'File is too small (< [_1] bytes)' => 'A fájl túl kicsi (<[_1] byte)',
     'File is too big (> [_1] bytes)'  => 'A fájl túl nagy (>[_1] byte)',
-    'File not found for upload field' => '...',
+#   'File not found for upload field' => '...',
 
     # H:: F:: Model
     'Value must be unique in the database' => 'Az érték egyedi kell legyen az adatbázisban',

@@ -42,8 +42,8 @@ our %Lexicon = (
     'Must not be all digits'                                    => 'Sadece rakamlardan oluşamaz',
     'Field contains non-printable characters'                   => 'Basılamayan karakterler içeriyor',
     'Field must contain a single word'                          => 'Tek bir kelime olmalı',
-    'Must not be empty' => '...',
-    'Must be between 8 and 255 chars, and contain a non-alpha char' => '...',
+#   'Must not be empty' => '...',
+#   'Must be between 8 and 255 chars, and contain a non-alpha char' => '...',
 
     # H::F::Field::Date
     'Date is too early' => 'Bu tarih izin verilen en küçük tarihten daha önce',
@@ -53,7 +53,7 @@ our %Lexicon = (
     'Not a valid DateTime' => 'Geçersiz tarih/zaman',
 
     # H::F::Field::Duration
-    'Invalid value for [_1]: [_2]' => '.....',
+#   'Invalid value for [_1]: [_2]' => '.....',
 
     # H::F::Field::Email
     'Email should be of the format [_1]' => 'E-Posta [_1] formatında olmalı',
@@ -67,18 +67,18 @@ our %Lexicon = (
 
     # H::F::Field::Password
     'Please enter a password in this field' => 'Lütfen bir şifre girin',
-    'Password must not match [_1]' => '....',
+#   'Password must not match [_1]' => '....',
 
     # H::F::Field::PasswordConf
     'Please enter a password confirmation' => 'Lütfen şifre onayı girin',
-    'The password confirmation does not match the password' => '...',
+#   'The password confirmation does not match the password' => '...',
 
     # H::F::Field::PosInteger
     'Value must be a positive integer' => 'Pozitif tam sayı olmalı',
 
     # H::F::Field::Select
     'This field does not take multiple values' => 'Birden fazla değer seçilemez',
-    '\'[_1]\' is not a valid value' => '...',
+#   '\'[_1]\' is not a valid value' => '...',
 
     # H::F::Field::Text
     'Field should not exceed [quant,_1,character]. You entered [_2]'          => 'Girilen verinin uzunluğu en fazla [_1] olabilir. Gönderilen: [_2]',
@@ -88,7 +88,7 @@ our %Lexicon = (
     'File uploaded is empty' => 'Gönderilen dosya boş',
     'File is too small (< [_1] bytes)' => 'Dosya çok küçük. (< [_1] bytes)',
     'File is too big (> [_1] bytes)' => 'Dosya çok büyük. (> [_1] bytes)',
-    'File not found for upload field' => '...',
+#   'File not found for upload field' => '...',
 
     # H::F::Model
     'Value must be unique in the database' => 'Daha önceden kullanımda',
