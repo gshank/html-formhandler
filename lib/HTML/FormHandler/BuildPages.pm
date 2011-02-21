@@ -1,4 +1,5 @@
 package HTML::FormHandler::BuildPages;
+# ABSTRACT: used in Wizard
 
 use Moose::Role;
 use Try::Tiny;

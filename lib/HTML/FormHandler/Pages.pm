@@ -1,4 +1,5 @@
 package HTML::FormHandler::Pages;
+# ABSTRACT: used in Wizard
 
 use Moose::Role;
 

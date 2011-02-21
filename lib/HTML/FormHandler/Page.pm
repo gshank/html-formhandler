@@ -1,4 +1,5 @@
 package HTML::FormHandler::Page;
+# ABSTRACT: used in Wizard
 
 use Moose;
 with 'HTML::FormHandler::Pages';

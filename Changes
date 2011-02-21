@@ -1,3 +1,31 @@
+0.33000 Mon Feb 21, 2011
+    bug - empty_select check defined
+    Add button field, widget, template
+    Check html attributes for definedness not truth
+    Add ability to set field inactive on new & process
+       in addition to setting active
+    Move 'no_render_label' into Field
+    Use form's language_handle in fields
+    Improve PrimaryKey doc
+    Return empty hashref from $form->value instead of undef
+    Merge experimental Wizard into master
+    Render disabled select options
+    Repeatable contains rendering incorrectly, skipping empty elements
+    Add rendering of form_errors to widgets and Render::Simple
+       *** If you were using form_errors (there are none by default)
+       and were using HFH rendering, check for compatibility
+    Allow specifying full class for widget with '+'
+    Document removing wrapper div from Simple wrapper
+    Re-do how field messages are stored and accessed. Use messages => {...}
+        instead of various _message attributes
+    Add utilities in util to pull out class messages and check I18N
+    Update I18N messages files (those that were provided by translators)
+    Change render_filter Coderef setting because of leak;
+       *** Possible incompatibility: if you have a form render_filter,
+       change to function instead of method
+    Change _localize to a Coderef to allow easier changing.
+       *** If you have a custom _localize method, check for compatibility
+
 0.32005 Wed Oct 20, 2010
     Removed '//'; incompatible with earlier versions of Perl
 

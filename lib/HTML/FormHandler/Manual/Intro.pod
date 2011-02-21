@@ -992,8 +992,10 @@ then in user-supplied form messages, finally in messages provided by the field c
 
 FormHandler's built-in errors are added to the form fields with C<< $field->add_error >>,
 and to the form with C<< $form->add_form_error >>.
-These methods call the _localize method, which is applied by L< HTML::FormHandler::TraitFor::I18N >,
-and uses Locale::MakeText. You can also use duck_type classes for localization.
+These methods call a C<< $self->_localize method >> which is a coderef set from
+the field's default_localize sub, the field's 'localize_meth' attribute with
+C<< localize_meth => sub {} >>, or a form's sub localize_meth. The default localize
+uses Locale::Maketext.  You can also use duck_type classes for localization.
 See the documentation in L< HTML::FormHandler::TraitFor::I18N > and the tests in xt/locale.t.
 
 If you wish to skip localization for a particular message (such as for system errors)
