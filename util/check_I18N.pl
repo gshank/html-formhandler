@@ -19,7 +19,7 @@ use Data::Dumper;
 use lib ( getcwd() . '/lib');
 use HTML::FormHandler::I18N;
 
-my @directories = ( getcwd() . "/lib/HTML/FormHandler/I18N" ); 
+my @directories = ( getcwd() . "/lib/HTML/FormHandler/I18N" );
 my @lexicons;
 find(\&wanted, @directories);
 
@@ -34,12 +34,12 @@ my @builtin_messages = map { values %{$_} } (map { values %{$_}} @$messages);
 binmode STDOUT, ":utf8";
 foreach my $lexicon (@lexicons) {
     print "\n\n========== $lexicon ================\n";
-    my $lh = HTML::FormHandler::I18N->get_handle($lexicon); 
+    my $lh = HTML::FormHandler::I18N->get_handle($lexicon);
     foreach my $msg (@builtin_messages) {
         my $translated = $lh->maketext($msg, '[_1]', '[_2]');
         print $msg, "  ==>  ", $translated, "\n";
     }
-   
+
 }
 
 # you can pull in the arrayref of hashrefs that's written out

@@ -6,7 +6,7 @@
 # This is a utility to pull all of the messages out of the
 # FormHandler fields (and the Types package), for easy
 # updating of I18N files.
-# 
+#
 # Writes out file util/messages that contains Dumper
 # output for current messages, so that changes to messages
 # can be tracked.
@@ -24,12 +24,12 @@ use Class::Load ':all';
 use Data::Dumper;
 use lib ( getcwd() . '/lib');
 
-my @directories = ( getcwd() . "/lib/HTML/FormHandler/Field" ); 
+my @directories = ( getcwd() . "/lib/HTML/FormHandler/Field" );
 my @field_types;
 find(\&wanted, @directories);
 
 # get base Field class messages
-my $base_messages = $HTML::FormHandler::Field::class_messages; 
+my $base_messages = $HTML::FormHandler::Field::class_messages;
 
 # get messages from Types module
 use HTML::FormHandler::Types;
