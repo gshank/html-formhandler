@@ -1,3 +1,6 @@
+0.33001 Mon Feb 21, 2011
+    Remove unnecessary with of HFH::Validate::Actions
+
 0.33000 Mon Feb 21, 2011
     bug - empty_select check defined
     Add button field, widget, template
