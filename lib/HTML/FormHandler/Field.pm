@@ -1067,6 +1067,8 @@ our $class_messages = {
 sub get_class_messages  {
     my $self = shift;
     my $messages = { %$class_messages };
+    $messages->{required} = $self->required_message
+        if $self->required_message;
     return $messages;
 }
 

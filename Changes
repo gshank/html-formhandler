@@ -1,3 +1,7 @@
+0.33002 Tues Feb 22, 2011
+    Accidentally left off compatibility for 'required_message' attribute
+        messages => { required => '...' } is new style and worked
+
 0.33001 Mon Feb 21, 2011
     Remove unnecessary with of HFH::Validate::Actions
 
