@@ -165,4 +165,33 @@ is_deeply( $form->fif, { my_list => 2 }, 'fif is correct' );
 $rendered_field = $form->field('my_list')->render;
 like( $rendered_field, qr/<option value="2" id="my_list\.1" selected="selected">/, 'element is selected' );
 
+# following test is for 'has_many' select field flag
+{
+    package Test::HasMany;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo' => ( default => 'my_foo' );
+    has_field 'hm_bar' => ( type => 'Multiple',
+        has_many => 'my_id', default => [3] );
+
+    sub options_hm_bar { [1, 2, 3, 4] }
+}
+$form = Test::HasMany->new;
+ok( $form, 'has many form built' );
+$form->process( params => {} );
+my $fif_expected = { foo => 'my_foo', hm_bar => [3] };
+is_deeply( $form->fif, $fif_expected, 'got expected fif' );
+$form->process( params => { foo => 'my_foo', hm_bar => [4] } );
+my $val_expected = { foo => 'my_foo', hm_bar => [ { my_id => 4 } ] };
+is_deeply( $form->value, $val_expected, 'got expected value' );
+$fif_expected = { foo => 'my_foo', hm_bar => [4] };
+is_deeply( $form->fif, $fif_expected, 'got expected fif' );
+$form->process( params => { foo => 'my_foo', hm_bar => [1,2] } );
+$fif_expected = { foo => 'my_foo', hm_bar => [1,2] };
+is_deeply( $form->fif, $fif_expected, 'got expected fif again' );
+$val_expected = { foo => 'my_foo', hm_bar => [ { my_id => 1 }, { my_id => 2 } ] };
+is_deeply( $form->value, $val_expected, 'got expected value agina' );
+
+
 done_testing;

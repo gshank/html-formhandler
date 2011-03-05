@@ -222,6 +222,21 @@ This does a string compare.
 Customize 'select_invalid_value' and 'select_not_multiple'. Though neither of these
 messages should really be seen by users in a properly constructed select.
 
+=head1 Database relations
+
+Also see L<HTML::FormHandler::TraitFor::Model::DBIC>.
+
+The single select is for a DBIC 'belongs_to' relation. The multiple select is for
+a 'many_to_many' relation.
+
+There is very limited ability to do multiple select with 'has_many' relations.
+It will only work in very specific circumstances, and requires setting
+the 'has_many' attribute to the name of the primary key of the related table.
+This is a somewhat peculiar data structure for a relational database, and may
+not be what you really want. A 'has_many' is usually represented with a Repeatable
+field, and may require custom code if the form structure doesn't match the database
+structure. See L<HTML::FormHandler::Manual::Cookbook>.
+
 =cut
 
 has 'options' => (
@@ -285,6 +300,9 @@ sub _form_options {
 }
 
 has 'multiple'         => ( isa => 'Bool', is => 'rw', default => '0' );
+# following is for unusual case where a multiple select is a has_many type relation
+has 'has_many'         => ( isa => 'Str', is => 'rw' );
+has '+deflate_to'      => ( default => 'fif' );
 has 'size'             => ( isa => 'Int|Undef', is => 'rw' );
 has 'label_column'     => ( isa => 'Str',       is => 'rw', default => 'name' );
 has 'localize_labels'  => ( isa => 'Bool', is => 'rw' );
@@ -359,6 +377,9 @@ sub _inner_validate_field {
 
     # create a lookup hash
     my %options = map { $_->{value} => 1 } @{ $self->options };
+    if( $self->has_many ) {
+        $value = [map { $_->{$self->has_many} } @$value];
+    }
     for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) ) {
         unless ( $options{$value} ) {
             $self->add_error($self->get_message('select_invalid_value'), $value);
@@ -438,12 +459,33 @@ sub _load_options {
 sub sort_options { shift; return shift; }
 
 before 'value' => sub {
-    my $self = shift;
+    my $self  = shift;
+
     my $value = $self->result->value;
-    if( $self->multiple && (!defined $value || $value eq '') ) {
-        $self->_set_value([]);
+
+    if( $self->multiple ) {
+        if ( !defined $value || $value eq '' ) {
+            $self->_set_value( [] );
+        }
+        elsif ( $self->has_many && scalar @$value && ref($value->[0]) ne 'HASH' ) {
+            my @new_values;
+            foreach my $ele (@$value) {
+                push @new_values, { $self->has_many => $ele };
+            }
+            $self->_set_value( \@new_values );
+        }
     }
 };
+
+sub deflate {
+    my ( $self, $value ) = @_;
+
+    return $value unless ( $self->has_many && $self->multiple );
+
+    # the following is for the edge case of a has_many select
+    return $value unless ref($value) eq 'ARRAY' && scalar @$value && ref($value->[0]) eq 'HASH'; 
+    return [map { $_->{$self->has_many} } @$value];
+}
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

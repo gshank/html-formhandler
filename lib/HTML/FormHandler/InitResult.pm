@@ -116,7 +116,13 @@ sub _get_value {
     if( $field->_can_deflate && $field->deflate_to eq 'value' ) {
         @values = $field->_apply_deflation(@values);
     }
-    my $value = @values > 1 ? \@values : shift @values;
+    my $value;
+    if( $field->has_flag('multiple')) {
+        $value = scalar @values == 1 && ! defined $values[0] ? [] : \@values;
+    }
+    else {
+        $value = @values > 1 ? \@values : shift @values;
+    }
     return $value;
 }
 
