@@ -1,5 +1,4 @@
   Improve TT rendering
-  Refactor messages to set in one place and make translations easier
   Unique support for non-top-level fields?
   Improve example of Repeatable form (BookDB, User) to do adds & deletes with js
   Create more usable 'add_field' routine that will handle ordering, parent,

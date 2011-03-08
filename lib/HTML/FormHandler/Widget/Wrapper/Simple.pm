@@ -24,6 +24,8 @@ in paragraph tags instead:
 
 =cut
 
+has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', lazy => 1, default => 1 );
+
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
     my $t;
@@ -37,8 +39,10 @@ sub wrap_field {
     $output .= $start_tag;
 
     if ( $is_compound ) {
-        $output .= '<fieldset class="' . $self->html_name . '">';
-        $output .= '<legend>' . $self->loc_label . '</legend>';
+        if( $self->auto_fieldset ) {
+            $output .= '<fieldset class="' . $self->html_name . '">';
+            $output .= '<legend>' . $self->loc_label . '</legend>';
+        }
     }
     elsif ( !$self->has_flag('no_render_label') && length( $self->label ) > 0 ) {
         $output .= $self->render_label;
@@ -48,7 +52,7 @@ sub wrap_field {
     $output .= qq{\n<span class="error_message">$_</span>}
         for $result->all_errors;
     $output .= '</fieldset>'
-        if $is_compound;
+        if ( $is_compound && $self->auto_fieldset );
 
     $output .= defined($t = $self->get_tag('wrapper_end')) ? $t : '</div>';
 
