@@ -714,5 +714,41 @@ method:
         my $self = shift;
         $self->field('foo')->default('my_form');
     }
+
+=head2 Static form, dynamic field IDs
+
+The problem: you have a form that will be used in multiple places on a page, but you don't
+want to use a static form instead of doing 'new' for each. You can pass a form name in
+on the process call and use 'html_prefix' in the form:
+
+   $form->process( name => '...', params => {} );
+
+But the field 'id' attribute has already been constructed and doesn't change.
+
+Solution: apply a role to the base field class to replace the 'id' getter for the 'id'
+attribute with a method which constructs the 'id' dynamically. Since the role is
+being applied to the base field class, you can't just use 'sub id', because the 
+'id' method defined by the 'id' attribute has precedence. So create an 'around'
+method modifier that replaces it in the role.
+
+    package My::DynamicFieldId;
+    use Moose::Role;
+    around 'id' => sub {
+        my $orig = shift;
+        my $self = shift;
+        my $form_name = $self->form->name;
+        return $form_name . "." . $self->full_name;
+    };
+
+    package My::CustomIdForm;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has '+html_prefix' => ( default => 1 );
+    has '+field_traits' => ( default => sub { ['My::DynamicFieldId'] } );
+
+    has_field 'foo';
+    has_field 'bar';
+
  
 =cut

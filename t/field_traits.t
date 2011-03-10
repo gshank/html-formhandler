@@ -81,5 +81,35 @@ is( $form->field('baz')->html, "<h2>Pick something, quick!</h2>", 'new method wo
 is( $form->field('foo')->widget_attr, 'A Test!', 'widget attribute applied' );
 is( $form->field('foo')->render, 'A Test!', 'widget renders using attribute' );
 
+# the following test show that with application of a role to create
+# a field method 'id', you can have dynamically changed form names
+{
+    package My::FieldId;
+    use Moose::Role;
+    around 'id' => sub {
+        my $orig = shift;
+        my $self = shift;
+        my $form_name = $self->form->name;
+        return $form_name . "." . $self->full_name;
+    };
+}
+
+{
+    package My::CustomIdForm;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has '+html_prefix' => ( default => 1 );
+    has '+field_traits' => ( default => sub { ['My::FieldId'] } );
+
+    has_field 'foo';
+    has_field 'bar';
+}
+
+$form = My::CustomIdForm->new;
+$form->process( name => 'Form123', params => {} );
+is( $form->field('foo')->id, 'Form123.foo', 'right field id' );
+$form->process( name => 'Form456', params => {} );
+is( $form->field('foo')->id, 'Form456.foo', 'right field id again' );
 
 done_testing;
