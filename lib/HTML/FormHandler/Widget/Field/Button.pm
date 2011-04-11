@@ -15,7 +15,7 @@ sub render {
     my $output = '<input type="button" name="';
     $output .= $self->html_name . '"';
     $output .= ' id="' . $self->id . '"';
-    $output .= ' value="' . $self->html_filter($self->value) . '"';
+    $output .= ' value="' . $self->html_filter($self->_localize($self->value)) . '"';
     $output .= $self->_add_html_attributes;
     $output .= ' />';
     return $self->wrap_field( $result, $output );
