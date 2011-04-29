@@ -5,6 +5,7 @@ use Moose::Role;
 use namespace::autoclean;
 
 with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
+with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 
 sub render {
     my $self = shift;
@@ -19,6 +20,7 @@ sub render {
             . $self->html_name . qq{" id="$id.$index"};
         $output .= ' checked="checked"'
             if $self->check_selected_option($option, $result->fif);
+        $output .= $self->_add_html_attributes;
         $output .= ' />';
         $output .= $self->html_filter($option->{label}) . '</label><br />';
         $index++;
