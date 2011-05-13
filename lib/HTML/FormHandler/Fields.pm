@@ -51,6 +51,7 @@ has 'fields' => (
     handles   => {
         all_fields => 'elements',
         clear_fields => 'clear',
+        add_field => 'push',
         push_field => 'push',
         num_fields => 'count',
         has_fields => 'count',
@@ -70,10 +71,6 @@ sub add_error_field {
     $self->result->add_error_result( $field->result );
 }
 sub num_error_fields { shift->result->num_error_results }
-
-sub add_field {
-    shift->push_field(@_);
-}
 
 has 'field_name_space' => (
     isa     => 'Str|ArrayRef[Str]|Undef',
