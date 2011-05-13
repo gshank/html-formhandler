@@ -253,7 +253,6 @@ sub new_field_with_traits {
     my ( $self, $class, $field_attr ) = @_;
 
     my $widget = $field_attr->{widget};
-    my $field;
     unless( $widget ) {
         my $attr = $class->meta->find_attribute_by_name( 'widget' );
         if ( $attr ) {
@@ -278,12 +277,9 @@ sub new_field_with_traits {
         push @traits, $widget_role, $wrapper_role;
     }
     if( @traits ) {
-        my $new_class = $class->with_traits( @traits );
-        $field = $new_class->new( %{$field_attr} );
+        $class = $class->with_traits( @traits );
     }
-    else {
-        $field = $class->new( %{$field_attr} );
-    }
+    my $field = $class->new( %{$field_attr} );
     if( $field->form ) {
         foreach my $key ( keys %{$field->form->widget_tags} ) {
             $field->set_tag( $key, $field->form->widget_tags->{$key} )
