@@ -685,14 +685,9 @@ has 'name' => (
     default => sub { return 'form' . int( rand 1000 ) }
 );
 # for consistency in api with field nodes
-has 'form' => (
-    isa      => 'HTML::FormHandler',
-    is       => 'rw',
-    weak_ref => 1,
-    predicate => 'has_form',
-    lazy     => 1,
-    default  => sub { shift }
-);
+sub form {
+    return shift;
+}
 has 'result' => (
     isa       => 'HTML::FormHandler::Result',
     is        => 'ro',
