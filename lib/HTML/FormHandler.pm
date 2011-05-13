@@ -693,7 +693,6 @@ has 'form' => (
     lazy     => 1,
     default  => sub { shift }
 );
-has 'parent' => ( is => 'rw' );
 has 'result' => (
     isa       => 'HTML::FormHandler::Result',
     is        => 'ro',
