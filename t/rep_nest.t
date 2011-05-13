@@ -15,7 +15,7 @@ use Test::More;
     has_field 'password';
 }
 
-{ 
+{
     package Test::Form::Employee;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';

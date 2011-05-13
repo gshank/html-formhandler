@@ -385,7 +385,7 @@ is( $form->field('baz')->render, '
     package Test::Rendering;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    
+
     has_field 'my_comp' => ( type => 'Compound', widget_wrapper => 'SimpleInline' );
     has_field 'my_comp.one';
     has_field 'my_comp.two';
