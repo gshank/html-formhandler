@@ -24,6 +24,12 @@ use Test::Memory::Cycle;
         type     => 'Text',
         required => 1,
     );
+    has_field 'some_select' => ( type => 'Select', inactive => 1 );
+
+    sub update_model {
+        my $self = shift;
+        my $value = $self->field('some_select')->value;
+    }
 }
 
 my $form = new_ok( 'My::RepeatableForm' );

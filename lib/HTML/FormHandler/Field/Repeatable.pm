@@ -296,6 +296,8 @@ before 'value' => sub {
     my @pk_elems =
         map { $_->accessor } grep { $_->has_flag('is_primary_key') } $self->contains->all_fields
         if $self->contains->has_flag('is_compound');
+
+    return [] unless $self->has_value;
     my $value = $self->result->value;
     my @new_value;
     foreach my $element ( @{$value} ) {

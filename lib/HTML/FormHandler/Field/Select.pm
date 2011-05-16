@@ -461,6 +461,7 @@ sub sort_options { shift; return shift; }
 before 'value' => sub {
     my $self  = shift;
 
+    return undef unless $self->has_result;
     my $value = $self->result->value;
 
     if( $self->multiple ) {
