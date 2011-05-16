@@ -702,26 +702,20 @@ sub build_result {
 
 sub input {
     my $self = shift;
+
+    # allow testing fields individually by creating result if no form
+    return undef unless $self->has_result || !$self->form; 
     my $result = $self->result;
-    # garbage collection should not happen
-    # but just in case resetting for safety
-    unless ( $result ) {
-        $self->clear_result;
-        $result = $self->result;
-    }
     return $result->_set_input(@_) if @_;
     return $result->input;
 }
 
 sub value {
     my $self = shift;
+
+    # allow testing fields individually by creating result if no form
+    return undef unless $self->has_result || !$self->form; 
     my $result = $self->result;
-    # garbage collection should not happen
-    # but just in case resetting for safety
-    unless ( $result ) {
-        $self->clear_result;
-        $result = $self->result;
-    }
     return $result->_set_value(@_) if @_;
     return $result->value;
 }
