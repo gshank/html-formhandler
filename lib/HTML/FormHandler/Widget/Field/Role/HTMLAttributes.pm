@@ -7,8 +7,12 @@ sub _add_html_attributes {
     my $self = shift;
 
     my $output = q{};
+    my $html_attr = $self->html_attr;
     for my $attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
-        $output .= ( $self->$attr ? qq{ $attr="} . $self->$attr . '"' : '' );
+        $html_attr->{$attr} = $self->$attr if $self->$attr;
+    }
+    foreach my $attr ( sort keys %$html_attr ) {
+        $output .= qq{ $attr="} . $html_attr->{$attr} . qq{"};
     }
     $output .= ($self->javascript ? ' ' . $self->javascript : '');
     if( $self->input_class ) {

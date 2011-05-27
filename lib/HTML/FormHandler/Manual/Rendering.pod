@@ -144,6 +144,12 @@ attributes in the form, or do it on new:
      widget_wrapper => 'Table'
    );
 
+=head2 HTML attributes
+
+Arbitrary HTML attributes can be specified with 'html_attr' on the field. There
+are also specific setters available for some attributes. See the documentation in
+L< HTML::FormHandler::Field >.
+
 =head2 Rendering bare html with no fieldset and no divs
 
 Use a widget_wrapper of 'None', and set 'auto_fieldset' to 0:
