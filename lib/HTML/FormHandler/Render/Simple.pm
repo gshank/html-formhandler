@@ -423,7 +423,7 @@ sub _add_html_attributes {
     my ( $self, $field ) = @_;
 
     my $output = q{};
-    for my $attr ( 'readonly', 'disabled', 'style' ) {
+    for my $attr ( 'readonly', 'disabled', 'style', 'tabindex' ) {
         $output .= ( $field->$attr ? qq{ $attr="} . $field->$attr . '"' : '' );
     }
     $output .= ($field->javascript ? ' ' . $field->javascript : '');

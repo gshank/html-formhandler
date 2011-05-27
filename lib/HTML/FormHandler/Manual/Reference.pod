@@ -61,6 +61,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
                  form name, use 'html_prefix' in your form)
    disabled    - for the HTML flag
    readonly    - for the HTML flag
+   tabindex    - for the HTML tab index
    javascript  - for a Javascript string
 
 =head2 Field attributes not set in a user form

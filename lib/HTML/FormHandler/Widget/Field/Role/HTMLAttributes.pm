@@ -7,7 +7,7 @@ sub _add_html_attributes {
     my $self = shift;
 
     my $output = q{};
-    for my $attr ( 'readonly', 'disabled', 'style', 'title' ) {
+    for my $attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
         $output .= ( $self->$attr ? qq{ $attr="} . $self->$attr . '"' : '' );
     }
     $output .= ($self->javascript ? ' ' . $self->javascript : '');

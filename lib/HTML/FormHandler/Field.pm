@@ -236,6 +236,7 @@ Compound fields will have an array of errors from the subfields.
                  form name, use 'html_prefix' in your form)
    disabled    - for the HTML flag
    readonly    - for the HTML flag
+   tabindex    - for the HTML tab index
    javascript  - for a Javascript string
    order       - Used for sorting errors and fields. Built automatically,
                  but may also be explicitly set
@@ -986,6 +987,8 @@ sub default_render_filter {
     $string =~ s/"/&quot;/g;
     return $string;
 }
+
+has 'tabindex' => ( is => 'rw', isa => 'Int' );
 
 has 'input_param' => ( is => 'rw', isa => 'Str' );
 
