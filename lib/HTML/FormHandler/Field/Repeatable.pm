@@ -309,7 +309,9 @@ before 'value' => sub {
                         ( !defined $element->{$pk} || $element->{$pk} eq '' );
             }
             next unless keys %$element;
-            next unless grep { defined $_ && $_ ne '' } values %$element;
+            next unless grep {
+                defined $_ && !ref $_ && $_ ne ''
+            } values %$element;
         }
         push @new_value, $element;
     }
