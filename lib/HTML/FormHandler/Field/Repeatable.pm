@@ -293,6 +293,7 @@ sub _result_from_fields {
 
 before 'value' => sub {
     my $self = shift;
+
     my @pk_elems =
         map { $_->accessor } grep { $_->has_flag('is_primary_key') } $self->contains->all_fields
         if $self->contains->has_flag('is_compound');
@@ -309,9 +310,7 @@ before 'value' => sub {
                         ( !defined $element->{$pk} || $element->{$pk} eq '' );
             }
             next unless keys %$element;
-            next unless grep {
-                defined $_ && !ref $_ && $_ ne ''
-            } values %$element;
+            next unless grep { defined $_ && length $_ } values %$element;
         }
         push @new_value, $element;
     }
