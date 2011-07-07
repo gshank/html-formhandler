@@ -119,7 +119,7 @@ sub sorted_fields {
     my $self = shift;
 
     my @fields = sort { $a->order <=> $b->order }
-        grep { !$_->inactive || ($_->inactive && $_->_active) } $self->all_fields;
+        grep { $_->is_active } $self->all_fields;
     return wantarray ? @fields : \@fields;
 }
 
