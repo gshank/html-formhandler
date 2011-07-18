@@ -2,6 +2,8 @@ use strict;
 use warnings;
 use Test::More;
 
+use HTML::FormHandler::Field;
+
 # This is an example of the different ways to change an attribute of a field.
 # It uses the 'id' field for demonstration purposes - most of these methods
 # can also be used against other attributes.
@@ -10,8 +12,7 @@ use Test::More;
     package Test::IDRole;
     use Moose::Role;
 
-    around 'build_id' => sub {
-        my $orig = shift;
+    sub build_id {
         my $self = shift;
         return "meth_role." . $self->html_name;
     };
@@ -55,7 +56,6 @@ use Test::More;
     }
 
     has "+name" => ( default => $name );
-    has '+field_traits' => ( default => sub {['Test::IDRoleMM']} );
     has_field 'foo' => ( id => 'form.foo' );
     has_field 'bar' => ( id => &my_id );
     has_field 'dux' => ( traits => ['Test::IDRole'] );
@@ -66,6 +66,8 @@ use Test::More;
     sub my_id { 'my_form.bar' }
 
 }
+
+HTML::FormHandler::Field->apply_traits('Test::IDRoleMM');
 
 #my $form = Test::Form->new( field_traits => ['Test::IDRole'] );
 my $form = Test::Form->new;
