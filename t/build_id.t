@@ -10,11 +10,11 @@ use Test::More;
     package Test::IDRole;
     use Moose::Role;
 
-    sub build_id {
+    around 'build_id' => sub {
+        my $orig = shift;
         my $self = shift;
-        return  "meth_role." . $self->html_name;
-    }
-
+        return "meth_role." . $self->html_name;
+    };
 }
 
 # can't use a simple method role in field_traits because
