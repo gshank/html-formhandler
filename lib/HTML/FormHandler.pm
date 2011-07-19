@@ -724,6 +724,7 @@ has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub 
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'no_widgets'        => ( is => 'ro', isa => 'Bool' );
+has 'no_preload'        => ( is => 'ro', isa => 'Bool' );
 has 'active' => (
     is => 'rw',
     traits => ['Array'],
@@ -881,11 +882,19 @@ sub BUILD {
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
-    if ( my $init_object = $self->item || $self->init_object ) {
-        $self->_result_from_object( $self->result, $init_object );
-    }
-    else {
-        $self->_result_from_fields( $self->result );
+    # would rather not load results at all here, but I'm afraid it might
+    # break existing apps; added fudge flag no_preload to enable skipping.
+    # a well-behaved program that always does ->process shouldn't need
+    # this preloading.
+    unless( $self->no_preload ) {
+        if ( my $init_object = $self->item || $self->init_object ) {
+            $self->_result_from_object( $self->result, $init_object );
+            $self->processed(1);
+        }
+        else {
+            $self->_result_from_fields( $self->result );
+            $self->processed(1);
+        }
     }
     $self->dump_fields if $self->verbose;
     return;
