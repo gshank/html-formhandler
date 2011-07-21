@@ -187,6 +187,9 @@ Individual fields can also be rendered:
 
     [% form.field('title').render %]
 
+Note: If you don't want to use the field widgets, you can set the 'no_widgets' flag
+in the form to skip having the widget roles applied to the fields.
+
 You can render a field using a template. For an input field:
 
    <p>
@@ -1000,5 +1003,21 @@ See the documentation in L< HTML::FormHandler::TraitFor::I18N > and the tests in
 
 If you wish to skip localization for a particular message (such as for system errors)
 you can use C<< $field->push_errors >> or C<< $form->push_form_errors >>.
+
+=head1 Performance
+
+FormHandler makes heavy use of Moose, so almost all of FormHandler's profiled time
+will actually be in Moose methods. Some people prefer to use a persistent form class
+(in a Moose attribute) in order to skip the form building step on each call. Other
+people don't like that solution because state will remain in the form until the
+next process call. The 'clear' method is called at the beginning of each 'process',
+but additional Moose attributes in the form, etc, will have to cleared by the
+programmer (with a method modifier on 'clear').
+
+If you are loading options from the database and you don't need to have them refreshed
+each time, you can set the 'do_not_reload' flag in the Select/Multiple field.
+If you're not using the field widget roles, you can set the 'no_widgets' flag.
+If you always use 'process' on each call (recommended) then you can set the
+'no_preload' flag in the form to skip building results in BUILD (new).
 
 =cut

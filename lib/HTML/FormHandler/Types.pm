@@ -219,12 +219,12 @@ subtype NotAllDigits,
 subtype Printable,
     as Str,
     where { /^\p{IsPrint}*\z/ },
-    message { 'Field contains non-printable characters' };
+    message { $class_messages->{Printable} };
 
 subtype SingleWord,
     as Str,
     where { /^\w*\z/ },
-    message { 'Field must contain a single word' };
+    message { $class_messages->{SingleWord} };
 
 subtype Collapse,
    as Str,

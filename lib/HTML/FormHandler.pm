@@ -227,6 +227,10 @@ If you want to update field attributes on the 'process' call, you can
 use an 'update_field_list' hashref attribute, or subclass
 update_fields in your form.
 
+Field results are built on the 'new' call, but will then be re-built
+on the process call. If you always use 'process' before rendering the form,
+accessing fields, etc, you can set the 'no_preload' flag to skip this step.
+
 =head2 Processing the form
 
 =head3 process
