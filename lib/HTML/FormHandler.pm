@@ -724,7 +724,7 @@ sub build_result {
 
 has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef',
     default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
-has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
+has 'widget_name_space' => ( is => 'ro', isa => 'Str|ArrayRef[Str]', default => sub {[]} );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'no_widgets'        => ( is => 'ro', isa => 'Bool' );

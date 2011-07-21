@@ -6,13 +6,18 @@
     *** it's possible that this may break code if field values were being
         set outside of FormHandler, or params were set on new. Pass params
         on process. Set fields inside FormHandler, or run clear first, then
-        set values. 
+        set values. In general, it works best to update fields inside a
+        FormHandler class, in a method or method modifier.
+        Building results in 'new' happened originally because people expected
+        to be able to do $form->render after new, without process. But you're
+        better off always running 'process'.
     Add flag 'no_preload' to skip building results in new (BUILD) if not needed
     Add flag 'no_widgets' to skip applying widgets to fields if not needed
     Fix for Date fields in compounds.
     Types Printable & SingleWord use class messages
-
     Add link to the bug tracker into the HELP section in the Pod.
+    Change how field_traits work: apply traits to field objects, add
+      new class method apply_traits (Stephen Thirlwall)
 
 0.34001 Mon May 16, 2011
     Fiz another memory cycle using Select field

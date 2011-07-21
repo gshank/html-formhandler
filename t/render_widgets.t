@@ -313,7 +313,7 @@ is( $form->field('boxed')->render, '<fieldset class="boxed"><legend>Boxed</legen
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has '+widget_name_space' => ( default => sub { ['Widget'] } );
+    has '+widget_name_space' => ( default => 'Widget' );
 
     has_field 'alpha' => ( widget => 'test_widget' );
     has_field 'omega' => ( widget => 'Omega' );

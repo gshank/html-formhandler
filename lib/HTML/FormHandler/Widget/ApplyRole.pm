@@ -19,8 +19,10 @@ sub get_widget_role {
     my ( $self, $widget_name, $dir ) = @_;
     my $widget_class      = $self->widget_class($widget_name);
     my $ldir              = $dir ? '::' . $dir . '::' : '::';
-    my @name_spaces = ( @{$self->widget_name_space},
-        ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget') );
+
+    my $widget_ns = $self->widget_name_space;
+    my @name_spaces = ref $widget_ns eq 'ARRAY' ? @$widget_ns : $widget_ns;
+    push @name_spaces, ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget');
     my @classes;
     if ( $widget_class =~ s/^\+// )
     {

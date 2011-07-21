@@ -66,7 +66,7 @@ ok( $form->field('foo')->got_here  && $form->field('bar')->got_here, 'base field
 
 use HTML::FormHandler;
 $form = HTML::FormHandler->new(
-    widget_name_space => ['MyApp::Widget'],
+    widget_name_space => 'MyApp::Widget',
     field_list => [
         foo => { type => 'Text', required => 1, widget_attr => 'A Test!' },
         baz => { type => 'Display', traits => ['My::Render'], my_attr => 'something' },

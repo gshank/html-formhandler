@@ -862,14 +862,21 @@ has 'widget_tags'         => (
     },
 );
 has 'widget_name_space' => (
-    traits => ['Array'],
-    isa => 'ArrayRef[Str]',
-    is => 'ro',
+    isa => 'Str|ArrayRef[Str]',
+    is => 'rw',
     default => sub {[]},
-    handles => {
-        add_widget_name_space => 'push',
-    },
 );
+sub add_widget_name_space {
+    my ( $self, @ns ) = @_;
+    @ns = @{$ns[0]}if( scalar @ns && ref $ns[0] eq 'ARRAY' );
+    my $widget_ns = $self->widget_name_space;
+    if( ref $widget_ns eq 'ARRAY' ) {
+        push @{$self->widget_name_space}, @ns;
+    }
+    else {
+        $self->widget_name_space( [$widget_ns, @ns] );
+    }
+}
 has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 # 'inactive' is set in the field declaration, and is static. Default status.
 has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );
@@ -1129,7 +1136,7 @@ sub BUILD {
 
     $self->_set_default( $self->_comp_default_meth )
         if( $self->form && $self->form->can( $self->_comp_default_meth ) );
-    $self->add_widget_name_space( @{$self->form->widget_name_space} ) if $self->form;
+    $self->add_widget_name_space( $self->form->widget_name_space ) if $self->form;
     # widgets will already have been applied by BuildFields, but this allows
     # testing individual fields
 #   $self->apply_rendering_widgets unless ($self->can('render') );
