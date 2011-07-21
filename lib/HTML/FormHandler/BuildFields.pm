@@ -39,9 +39,18 @@ sub has_field_list {
 # orders the fields after processing in order to skip
 # fields which have had the 'order' attribute set
 sub _build_fields {
-    my $self = shift;
+    my ($self, $field_traits) = @_;
 
     my $meta_flist = $self->_build_meta_field_list;
+
+    # If there are field_traits at the form level, prepend them
+    # to the traits list of each individual field.
+    if ($meta_flist && $field_traits) {
+        for my $field (@{ $meta_flist }) {
+            unshift(@{ $field->{traits} }, @{ $field_traits });
+        }
+    }
+
     $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
     my $flist = $self->has_field_list;
     $self->_process_field_list($flist) if $flist;

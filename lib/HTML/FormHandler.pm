@@ -879,10 +879,9 @@ sub BUILDARGS {
 sub BUILD {
     my $self = shift;
 
-    $self->apply_field_traits if $self->has_field_traits;
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && $self->widget_form ne 'Simple' );
-    $self->_build_fields;    # create the form fields (BuildFields.pm)
+    $self->_build_fields($self->field_traits);    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
@@ -1196,14 +1195,6 @@ sub add_form_error {
     };
     $self->push_form_errors($out);
     return;
-}
-
-sub apply_field_traits {
-    my $self = shift;
-    my $fmeta = HTML::FormHandler::Field->meta;
-    $fmeta->make_mutable;
-    Moose::Util::apply_all_roles( $fmeta, @{$self->field_traits});
-    $fmeta->make_immutable;
 }
 
 sub get_default_value { }

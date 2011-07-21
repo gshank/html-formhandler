@@ -1351,6 +1351,14 @@ sub has_some_value {
     return;
 }
 
+sub apply_traits {
+    my ($class, @traits) = @_;
+
+    $class->meta->make_mutable;
+    Moose::Util::apply_all_roles($class->meta, @traits);
+    $class->meta->make_immutable;
+}
+
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
 1;
