@@ -74,7 +74,7 @@ my $Address = 'Test@example.com';
 $field->_set_input( $Address );
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 2' );
-is( $field->value, $Address, 'is value input string' );
+is( $field->value, lc($Address), 'is value input string' );
 
 # hidden
 
