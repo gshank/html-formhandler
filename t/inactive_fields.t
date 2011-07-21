@@ -53,10 +53,18 @@ is_deeply( $form->value, $fif, 'value is correct' );
 $form = Test::Another->new( inactive => ['bar'] );
 ok( $form->field('bar')->is_inactive, 'field is inactive' );
 ok( $form->field('foo')->is_active, 'field is active' );
+
+my $html = $form->render;
+unlike($html, qr/input.*name="bar"/, 'inactive field is hidden');
+like($html,   qr/input.*name="foo"/, 'active field is shown');
+
 $form = Test::Another->new;
 $form->process( inactive => ['gaz'], params => {} );
 ok( $form->field('gaz')->is_inactive, 'field is inactive' );
 ok( $form->field('foo')->is_active, 'field is active' );
 
+$html = $form->render;
+unlike($html, qr/input.*name="gaz"/, 'inactive field is hidden');
+like($html,   qr/input.*name="foo"/, 'active field is shown');
 
 done_testing;
