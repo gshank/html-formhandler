@@ -318,7 +318,7 @@ You might need the user_id to create specialized select lists, or do other form 
 
 Then pass it in when you process the form:
 
-  $form->process( item => $item, params => $c->req->parameters, user_id = $c->user->user_id );
+  $form->process( item => $item, params => $c->req->parameters, user_id => $c->user->user_id );
 
 =head2 Handle extra database fields
 
