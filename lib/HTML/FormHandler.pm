@@ -1232,6 +1232,10 @@ Code repository:
 
   http://github.com/gshank/html-formhandler/tree/master
 
+Bug tracker:
+
+  https://rt.cpan.org/Dist/Display.html?Name=HTML-FormHandler
+
 =head1 SEE ALSO
 
 L<HTML::FormHandler::Manual>

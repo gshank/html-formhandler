@@ -12,6 +12,8 @@
     Fix for Date fields in compounds.
     Types Printable & SingleWord use class messages
 
+    Add link to the bug tracker into the HELP section in the Pod.
+
 0.34001 Mon May 16, 2011
     Fiz another memory cycle using Select field
     Tweak code creating results for Field testing
