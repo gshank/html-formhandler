@@ -1,3 +1,7 @@
+0.35001 Mon Jul 25, 2011
+    Undid setting processed flag when building result in BUILD. Breaks
+    existing apps. Re-thinking that part for now.
+
 0.35000 Thu Jul 21, 2011
     Add support for tabindex attribute.
     Generic html attribute setting (html_attr)

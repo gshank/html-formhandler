@@ -19,7 +19,7 @@ use Try::Tiny;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.35000';
+our $VERSION = '0.35001';
 
 =head1 SYNOPSIS
 
@@ -892,11 +892,9 @@ sub BUILD {
     unless( $self->no_preload ) {
         if ( my $init_object = $self->item || $self->init_object ) {
             $self->_result_from_object( $self->result, $init_object );
-            $self->processed(1);
         }
         else {
             $self->_result_from_fields( $self->result );
-            $self->processed(1);
         }
     }
     $self->dump_fields if $self->verbose;
