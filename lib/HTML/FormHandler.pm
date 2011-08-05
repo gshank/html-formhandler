@@ -15,6 +15,8 @@ use Class::MOP;
 use HTML::FormHandler::Result;
 use HTML::FormHandler::Field;
 use Try::Tiny;
+use MooseX::Types::LoadableClass qw/ LoadableClass /;
+use namespace::autoclean;
 
 use 5.008;
 
@@ -848,21 +850,12 @@ sub all_messages {
     return { %{$self->get_class_messages}, %{$self->messages} };
 }
 
-{
-    use Moose::Util::TypeConstraints;
-
-    my $tc = subtype as 'ClassName';
-    coerce $tc, from 'Str', via { Class::MOP::load_class($_); $_ };
-
-    has 'params_class' => (
-        is      => 'ro',
-        isa     => $tc,
-        coerce  => 1,
-        default => 'HTML::FormHandler::Params',
-    );
-
-    no Moose::Util::TypeConstraints;
-}
+has 'params_class' => (
+    is      => 'ro',
+    isa     => LoadableClass,
+    coerce  => 1,
+    default => 'HTML::FormHandler::Params',
+);
 
 has 'params_args' => ( is => 'ro', isa => 'ArrayRef' );
 

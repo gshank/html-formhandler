@@ -3,6 +3,8 @@ package HTML::FormHandler::BuildPages;
 
 use Moose::Role;
 use Try::Tiny;
+use Class::Load qw/ load_optional_class /;
+use namespace::autoclean;
 
 has 'page_list' => (
     isa => 'ArrayRef',
@@ -104,18 +106,12 @@ sub _make_page {
         push @classes, $ns . "::" . $type;
     }
     # look for Page in possible namespaces
-    my $loaded;
     my $class;
     foreach my $try ( @classes ) {
-        try {
-            Class::MOP::load_class($try);
-            $loaded++;
-            $class = $try;
-        };
-        last if $loaded;
+        last if $class = load_optional_class($try) ? $try : undef;
     }
     die "Could not load page class '$type' for field '$name'"
-       unless $loaded;
+       unless $class;
 
     $page_attr->{form} = $self->form if $self->form;
     # parent and name correction for names with dots

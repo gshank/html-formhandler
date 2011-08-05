@@ -3,6 +3,8 @@ package HTML::FormHandler::BuildFields;
 
 use Moose::Role;
 use Try::Tiny;
+use Class::Load qw/ load_optional_class /;
+use namespace::autoclean;
 
 =head1 SYNOPSIS
 
@@ -184,18 +186,12 @@ sub _make_field {
         push @classes, $ns . "::" . $type;
     }
     # look for Field in possible namespaces
-    my $loaded;
     my $class;
     foreach my $try ( @classes ) {
-        try {
-            Class::MOP::load_class($try);
-            $loaded++;
-            $class = $try;
-        };
-        last if $loaded;
+        last if $class = load_optional_class($try) ? $try : undef;
     }
     die "Could not load field class '$type' for field '$name'"
-       unless $loaded;
+       unless $class;
 
 
     $field_attr->{form} = $self->form if $self->form;
