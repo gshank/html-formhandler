@@ -1,3 +1,6 @@
+0.35002 Mon Aug 8, 2011
+    Change to use Class::Load due to speed.
+
 0.35001 Mon Jul 25, 2011
     Undid setting processed flag when building result in BUILD. Breaks
     existing apps. Re-thinking that part for now.
