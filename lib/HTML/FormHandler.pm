@@ -659,7 +659,9 @@ Flag to indicate that the form name is used as a prefix for fields
 in an HTML form. Useful for multiple forms
 on the same HTML page. The prefix is stripped off of the fields
 before creating the internal field name, and added back in when
-returning a parameter hash from the 'fif' method. For example,
+returning a parameter hash from the 'fif' method.
+
+For example,
 the field name in the HTML form could be "book.borrower", and
 the field name in the FormHandler form (and the database column)
 would be just "borrower".
@@ -668,7 +670,23 @@ would be just "borrower".
    has '+html_prefix' => ( default => 1 );
 
 Also see the Field attribute "html_name", a convenience function which
-will return the form name + "." + field full_name
+will return the form name + html_prefix_separator + field full_name
+
+=head3 html_prefix_separator
+
+When html_prefix is set, this is the string which is used to connect
+the form name and the field names.
+By default it is set to "." (dot character).
+
+For example, given the above form class, by adding:
+
+   has '+html_prefix_separator' => ( default => '_' );
+
+the field name in the HTML form will be "book_borrower".
+
+This proves to be handy with DOM/CSS/jQuery selectors,
+where an (unescaped) dot inside an identifier would be interpreted
+as a metacharacter (thus making the selector not working).
 
 =head2 For use in HTML
 
@@ -771,7 +789,8 @@ has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
 has 'ctx' => ( is => 'rw', weak_ref => 1, clearer => 'clear_ctx' );
-has 'html_prefix'   => ( isa => 'Bool', is  => 'ro' );
+has 'html_prefix'           => ( isa => 'Bool', is  => 'ro' );
+has 'html_prefix_separator' => ( isa => 'Str',  is  => 'ro', default => '.' );
 has 'active_column' => ( isa => 'Str',  is  => 'ro' );
 has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );

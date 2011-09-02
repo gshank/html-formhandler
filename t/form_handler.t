@@ -185,5 +185,30 @@ is_deeply( $form->value, { foo => 'bovine', bar => 'horse' }, 'correct value' );
 $form = HTML::FormHandler->new( { name => 'test_form', field_list => { one => 'Text', two => 'Text' } } );
 ok( $form, 'form constructed ok' );
 
+# tests for user-defined html_prefix_separator
+
+$form = HTML::FormHandler->new( name => 'Form123', html_prefix => 1, html_prefix_separator => '_', field_list => [ 'foo' ] );
+$form->process( params => { foo => 'foovalue' } );
+is( $form->field('foo')->id, 'Form123_foo', 'right field id with custom separator' );
+is( $form->field('foo')->name, 'foo', 'right field internal with custom separator' );
+is( $form->field('foo')->html_name, 'Form123_foo', 'right field html_name with custom separator' );
+
+{
+    package My::CustomSepForm;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has '+name' => ( default => 'Form123' );
+    has '+html_prefix' => ( default => 1 );
+    has '+html_prefix_separator' => ( default => '::' );
+
+    has_field 'foo';
+}
+
+$form = My::CustomSepForm->new;
+$form->process( params => { foo => 'foovalue' } );
+is( $form->field('foo')->id, 'Form123::foo', 'right field id with custom separator in a form class' );
+is( $form->field('foo')->name, 'foo', 'right field internal with custom separator in a form class' );
+is( $form->field('foo')->html_name, 'Form123::foo', 'right field html_name with custom separator in a form class' );
 
 done_testing;

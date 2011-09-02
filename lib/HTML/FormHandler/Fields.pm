@@ -158,7 +158,7 @@ sub fields_fif {
     return unless $result;
     $prefix ||= '';
     if ( $self->isa('HTML::FormHandler') ) {
-        $prefix = $self->name . "." if $self->html_prefix;
+        $prefix = $self->name . $self->html_prefix_separator if $self->html_prefix;
     }
     my %params;
     foreach my $fld_result ( $result->results ) {

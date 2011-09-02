@@ -126,7 +126,8 @@ The field accessor with all parents
 
 =item html_name
 
-The full_name plus the form name if 'html_prefix' is set.
+The full_name, prepended by the form name and the 'html_prefix_separator' if
+'html_prefix' is set.
 
 =item input_param
 
@@ -845,7 +846,8 @@ has 'html_name' => (
 
 sub build_html_name {
     my $self = shift;
-    my $prefix = ( $self->form && $self->form->html_prefix ) ? $self->form->name . "." : '';
+    my $form = $self->form;
+    my $prefix = ( $form && $form->html_prefix ) ? $form->name . $form->html_prefix_separator : '';
     return $prefix . $self->full_name;
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
