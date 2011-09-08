@@ -64,7 +64,7 @@ has '+field_name_space' => (
         my $self = shift;
         return $self->form->field_name_space
             if $self->form && $self->form->field_name_space;
-        return '';
+        return [];
     },
 );
 

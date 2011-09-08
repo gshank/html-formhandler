@@ -173,15 +173,15 @@ sub _make_field {
         $field_attr->{name} = $name = $1;
         $do_update = 1;
     }
+
     my $field_ns = $self->field_name_space;
-    my @field_name_space = ref $field_ns eq 'ARRAY' ? @$field_ns : $field_ns if length $field_ns;
     my @classes;
     # '+'-prefixed fields could be full namespaces
     if ( $type =~ s/^\+// )
     {
         push @classes, $type;
     }
-    foreach my $ns ( @field_name_space, 'HTML::FormHandler::Field', 'HTML::FormHandlerX::Field' )
+    foreach my $ns ( @$field_ns, 'HTML::FormHandler::Field', 'HTML::FormHandlerX::Field' )
     {
         push @classes, $ns . "::" . $type;
     }

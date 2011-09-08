@@ -9,6 +9,7 @@ use Moose::Util::TypeConstraints;
 with 'HTML::FormHandler::Traits';
 with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Widget::ApplyRole';
+with 'HTML::FormHandler::TraitFor::Types';
 
 our $VERSION = '0.02';
 
@@ -862,20 +863,16 @@ has 'widget_tags'         => (
     },
 );
 has 'widget_name_space' => (
-    isa => 'Str|ArrayRef[Str]',
+    isa => 'HFH::ArrayRefStr',
     is => 'rw',
     default => sub {[]},
+    coerce => 1,
 );
 sub add_widget_name_space {
     my ( $self, @ns ) = @_;
     @ns = @{$ns[0]}if( scalar @ns && ref $ns[0] eq 'ARRAY' );
     my $widget_ns = $self->widget_name_space;
-    if( ref $widget_ns eq 'ARRAY' ) {
-        push @{$self->widget_name_space}, @ns;
-    }
-    else {
-        $self->widget_name_space( [$widget_ns, @ns] );
-    }
+    push @{$self->widget_name_space}, @ns;
 }
 has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 # 'inactive' is set in the field declaration, and is static. Default status.

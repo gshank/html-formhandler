@@ -23,7 +23,7 @@ sub get_widget_role {
     my $ldir              = $dir ? '::' . $dir . '::' : '::';
 
     my $widget_ns = $self->widget_name_space;
-    my @name_spaces = ref $widget_ns eq 'ARRAY' ? @$widget_ns : $widget_ns;
+    my @name_spaces = @$widget_ns; 
     push @name_spaces, ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget');
     my @classes;
     if ( $widget_class =~ s/^\+// )

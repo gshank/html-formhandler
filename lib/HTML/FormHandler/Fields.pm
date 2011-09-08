@@ -2,6 +2,7 @@ package HTML::FormHandler::Fields;
 # ABSTRACT: internal role for form and compound fields
 
 use Moose::Role;
+use HTML::FormHandler::TraitFor::Types;
 
 =head1 SYNOPSIS
 
@@ -73,10 +74,11 @@ sub add_error_field {
 sub num_error_fields { shift->result->num_error_results }
 
 has 'field_name_space' => (
-    isa     => 'Str|ArrayRef[Str]|Undef',
+    isa     => 'HFH::ArrayRefStr',
     is      => 'rw',
     lazy    => 1,
     default => '',
+    coerce  => 1,
 );
 
 sub field_index {
