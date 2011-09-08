@@ -672,6 +672,9 @@ will return the form name + "." + field full_name
 
 =head2 For use in HTML
 
+   html_attr - hashref for setting arbitrary HTML attributes
+         has '+html_attr' => 
+           ( default => sub { { class => '...', method => '...' } } );
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    enctype - Request enctype
@@ -777,6 +780,11 @@ has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
+has 'html_attr' => ( is => 'rw', traits => ['Hash'],
+   default => sub { {} }, handles => { has_html_attr => 'count',
+   set_html_attr => 'set', delete_html_attr => 'delete' }
+);
+
 sub has_flag {
     my ( $self, $flag_name ) = @_;
     return unless $self->can($flag_name);

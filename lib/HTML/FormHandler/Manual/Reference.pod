@@ -50,6 +50,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
 =head2 Field Attributes for creating HTML
 
+   html_attr   - Hashref to store arbitrary html attributes.
    label       - Text label for this field. Defaults to ucfirst field name.
    title       - Place to put title for field.
    style       - Place to put field style string
@@ -123,6 +124,7 @@ These attributes are usually accessed in a subroutine or in a template.
 
 =head2 Form attributes useful in HTML
 
+   html_attr - For arbitrary html attributes in the 'form' tag
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    enctype - Request enctype
