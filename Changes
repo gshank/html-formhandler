@@ -1,3 +1,6 @@
+0.35003 Wed Sep 7, 2011
+    Fix bug constructing classes for Class::Load, revealed by Class::Load 0.10
+
 0.35002 Mon Aug 8, 2011
     Change to use Class::Load due to speed.
 

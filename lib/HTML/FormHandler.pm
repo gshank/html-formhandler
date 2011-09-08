@@ -21,7 +21,7 @@ use namespace::autoclean;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.35002';
+our $VERSION = '0.35003';
 
 =head1 SYNOPSIS
 
