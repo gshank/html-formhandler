@@ -24,11 +24,17 @@ ok( $dir, 'found template dir' );
     sub build_tt_template     {'form.tt'}
     sub build_tt_include_path { ['share/templates'] }
 
-    has_field 'foo' => ( css_class => 'schoen', style => 'bunt' );
+    has_field 'foo' => ( css_class => 'schoen', style => 'bunt', title => 'MyTitle' );
+    has_field 'bar' => ( html_attr => { arbitrary => 'something', title => 'AltTitle' } );
 
 }
 
 my %results;
+{
+    my $form
+        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
+    $results{Widgets} = $form->render;
+}
 {
     my $form
         = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
@@ -58,6 +64,12 @@ while ( my ( $key, $res ) = each %results ) {
 
     like( $res, qr/class="beautifully"/, "$key Form got the class" );
     like( $res, qr/style="colorful"/,    "$key Form got the style" );
+
+    like( $res, qr/arbitrary="something"/,   "$key Field got the arbitrary attribute" );
+
+    like( $res, qr/title="MyTitle"/,   "$key Field got the title" );
+    like( $res, qr/title="AltTitle"/,   "$key Field got the title from html_attr" );
+
 }
 
 done_testing();

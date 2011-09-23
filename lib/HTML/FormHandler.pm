@@ -15,11 +15,13 @@ use Class::MOP;
 use HTML::FormHandler::Result;
 use HTML::FormHandler::Field;
 use Try::Tiny;
+use MooseX::Types::LoadableClass qw/ LoadableClass /;
+use namespace::autoclean;
 
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.33002';
+our $VERSION = '0.35003';
 
 =head1 SYNOPSIS
 
@@ -226,6 +228,10 @@ fields are built at construction time.
 If you want to update field attributes on the 'process' call, you can
 use an 'update_field_list' hashref attribute, or subclass
 update_fields in your form.
+
+Field results are built on the 'new' call, but will then be re-built
+on the process call. If you always use 'process' before rendering the form,
+accessing fields, etc, you can set the 'no_preload' flag to skip this step.
 
 =head2 Processing the form
 
@@ -678,20 +684,15 @@ form name.
 
 =cut
 
+# for consistency in api with field nodes
+sub form { shift }
+sub has_form { 1 }
+
 # Moose attributes
 has 'name' => (
     isa     => 'Str',
     is      => 'rw',
     default => sub { return 'form' . int( rand 1000 ) }
-);
-# for consistency in api with field nodes
-has 'form' => (
-    isa      => 'HTML::FormHandler',
-    is       => 'rw',
-    weak_ref => 1,
-    predicate => 'has_form',
-    lazy     => 1,
-    default  => sub { shift }
 );
 has 'parent' => ( is => 'rw' );
 has 'result' => (
@@ -725,9 +726,11 @@ sub build_result {
 
 has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef',
     default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
-has 'widget_name_space' => ( is => 'ro', isa => 'ArrayRef[Str]', default => sub {[]} );
+has 'widget_name_space' => ( is => 'ro', isa => 'HFH::ArrayRefStr', default => sub {[]}, coerce => 1 );
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
+has 'no_widgets'        => ( is => 'ro', isa => 'Bool' );
+has 'no_preload'        => ( is => 'ro', isa => 'Bool' );
 has 'active' => (
     is => 'rw',
     traits => ['Array'],
@@ -847,21 +850,12 @@ sub all_messages {
     return { %{$self->get_class_messages}, %{$self->messages} };
 }
 
-{
-    use Moose::Util::TypeConstraints;
-
-    my $tc = subtype as 'ClassName';
-    coerce $tc, from 'Str', via { Class::MOP::load_class($_); $_ };
-
-    has 'params_class' => (
-        is      => 'ro',
-        isa     => $tc,
-        coerce  => 1,
-        default => 'HTML::FormHandler::Params',
-    );
-
-    no Moose::Util::TypeConstraints;
-}
+has 'params_class' => (
+    is      => 'ro',
+    isa     => LoadableClass,
+    coerce  => 1,
+    default => 'HTML::FormHandler::Params',
+);
 
 has 'params_args' => ( is => 'ro', isa => 'ArrayRef' );
 
@@ -878,18 +872,23 @@ sub BUILDARGS {
 sub BUILD {
     my $self = shift;
 
-    $self->apply_field_traits if $self->has_field_traits;
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         if ( $self->widget_form && $self->widget_form ne 'Simple' );
-    $self->_build_fields;    # create the form fields (BuildFields.pm)
+    $self->_build_fields($self->field_traits);    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
-    if ( my $init_object = $self->item || $self->init_object ) {
-        $self->_result_from_object( $self->result, $init_object );
-    }
-    else {
-        $self->_result_from_fields( $self->result );
+    # would rather not load results at all here, but I'm afraid it might
+    # break existing apps; added fudge flag no_preload to enable skipping.
+    # a well-behaved program that always does ->process shouldn't need
+    # this preloading.
+    unless( $self->no_preload ) {
+        if ( my $init_object = $self->item || $self->init_object ) {
+            $self->_result_from_object( $self->result, $init_object );
+        }
+        else {
+            $self->_result_from_fields( $self->result );
+        }
     }
     $self->dump_fields if $self->verbose;
     return;
@@ -1189,14 +1188,6 @@ sub add_form_error {
     return;
 }
 
-sub apply_field_traits {
-    my $self = shift;
-    my $fmeta = HTML::FormHandler::Field->meta;
-    $fmeta->make_mutable;
-    Moose::Util::apply_all_roles( $fmeta, @{$self->field_traits});
-    $fmeta->make_immutable;
-}
-
 sub get_default_value { }
 sub _can_deflate { }
 
@@ -1231,6 +1222,10 @@ Mailing list:
 Code repository:
 
   http://github.com/gshank/html-formhandler/tree/master
+
+Bug tracker:
+
+  https://rt.cpan.org/Dist/Display.html?Name=HTML-FormHandler
 
 =head1 SEE ALSO
 

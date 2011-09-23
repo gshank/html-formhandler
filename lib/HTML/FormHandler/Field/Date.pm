@@ -88,7 +88,6 @@ sub get_class_messages  {
 sub deflate {
     my ( $self, $value ) = @_;
 
-    $value ||= $self->value;
     # if not a DateTime, assume correctly formated string and return
     return $value unless ref $value eq 'DateTime';
     my $format = $self->get_strf_format;

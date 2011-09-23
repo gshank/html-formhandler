@@ -192,4 +192,35 @@ is_deeply( $form->value, { employers => [], user_name => 'No Employer', occupati
     'creates right value for empty repeatable' );
 is_deeply( $form->fif, $unemployed_params, 'right fif for empty repeatable' );
 
+
+# following tests Duration in a Repeatable, with no other subfield
+{
+    package Form::RepeatableCompound;
+
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field timeslots => (type => 'Repeatable');
+
+    has_field 'timeslots.duration' => (type => 'Duration');
+    has_field 'timeslots.duration.hours' => (type => 'Integer');
+    has_field 'timeslots.duration.minutes' => (type => 'Integer');
+}
+
+$form = Form::RepeatableCompound->new;
+my $params = {
+    'timeslots.0.id' => 'zero',
+    'timeslots.0.duration.hours' => 10,
+    'timeslots.0.duration.minutes' => 12,
+    'timeslots.1.id' => 'one',
+    'timeslots.1.duration.hours' => 2,
+    'timeslots.1.duration.minutes' => 1,
+};
+
+$form->process( params => $params );
+ok( $form->validated, 'form validated' );
+my $value = $form->value;
+my $dur0 = DateTime::Duration->new( hours => 10, minutes => 12 );
+is( $value->{timeslots}->[0]->{duration}->in_units('minutes'), $dur0->in_units('minutes'), 'got same duration' ); 
+
 done_testing;

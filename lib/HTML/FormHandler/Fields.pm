@@ -2,6 +2,7 @@ package HTML::FormHandler::Fields;
 # ABSTRACT: internal role for form and compound fields
 
 use Moose::Role;
+use HTML::FormHandler::TraitFor::Types;
 
 =head1 SYNOPSIS
 
@@ -51,6 +52,7 @@ has 'fields' => (
     handles   => {
         all_fields => 'elements',
         clear_fields => 'clear',
+        add_field => 'push',
         push_field => 'push',
         num_fields => 'count',
         has_fields => 'count',
@@ -71,15 +73,12 @@ sub add_error_field {
 }
 sub num_error_fields { shift->result->num_error_results }
 
-sub add_field {
-    shift->push_field(@_);
-}
-
 has 'field_name_space' => (
-    isa     => 'Str|ArrayRef[Str]|Undef',
+    isa     => 'HFH::ArrayRefStr',
     is      => 'rw',
     lazy    => 1,
     default => '',
+    coerce  => 1,
 );
 
 sub field_index {
@@ -122,7 +121,7 @@ sub sorted_fields {
     my $self = shift;
 
     my @fields = sort { $a->order <=> $b->order }
-        grep { !$_->inactive || ($_->inactive && $_->_active) } $self->all_fields;
+        grep { $_->is_active } $self->all_fields;
     return wantarray ? @fields : \@fields;
 }
 

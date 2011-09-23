@@ -5,6 +5,8 @@ use Moose::Role;
 use File::Spec;
 use Class::MOP;
 use Try::Tiny;
+use Class::Load qw/ load_optional_class /;
+use namespace::autoclean;
 
 our $ERROR;
 
@@ -19,8 +21,10 @@ sub get_widget_role {
     my ( $self, $widget_name, $dir ) = @_;
     my $widget_class      = $self->widget_class($widget_name);
     my $ldir              = $dir ? '::' . $dir . '::' : '::';
-    my @name_spaces = ( @{$self->widget_name_space},
-        ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget') );
+
+    my $widget_ns = $self->widget_name_space;
+    my @name_spaces = @$widget_ns; 
+    push @name_spaces, ('HTML::FormHandler::Widget', 'HTML::FormHandlerX::Widget');
     my @classes;
     if ( $widget_class =~ s/^\+// )
     {
@@ -30,8 +34,7 @@ sub get_widget_role {
         push @classes,  $ns . $ldir . $widget_class;
     }
     foreach my $try (@classes) {
-        try { Class::MOP::load_class($try) } catch { die $_ unless $_ =~ /^Can't locate/; };
-        return $try if Class::MOP::is_class_loaded($try);
+        return $try if load_optional_class($try);
     }
     die "Can't find $dir widget $widget_class from " . join(", ", @name_spaces);
 }

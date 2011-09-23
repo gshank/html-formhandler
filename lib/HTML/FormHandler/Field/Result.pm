@@ -45,6 +45,7 @@ sub peek {
     my $name = $self->field_def ? $self->field_def->full_name : $self->name;
     my $type = $self->field_def ? $self->field_def->type : 'unknown';
     my $string = $indent . "result " . $name . "  type: " . $type . "\n";
+    $string .= $indent . "....value => " . $self->value . "\n" if $self->has_value;
     if( $self->has_results ) {
         $indent .= '  ';
         foreach my $res ( $self->results ) {

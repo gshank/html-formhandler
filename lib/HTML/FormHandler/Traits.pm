@@ -1,6 +1,7 @@
 package HTML::FormHandler::Traits;
 # ABSTRACT: customized replacement for MooseX::Traits
 use Moose::Role;
+use Class::Load qw/ load_class /;
 use namespace::autoclean;
 
 has '_trait_namespace' => (
@@ -25,7 +26,7 @@ sub resolve_traits {
         my $orig = $_;
         if ( !ref $orig ) {
             my $transformed = transform_trait( $class, $orig );
-            Class::MOP::load_class($transformed);
+            load_class($transformed);
             $transformed;
         }
         else {

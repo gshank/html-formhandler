@@ -60,6 +60,21 @@ $field->validate_field;
 ok( $field->has_errors, 'required field fails with 0' );
 
 
+# email
+$class = 'HTML::FormHandler::Field::Email';
+use_ok($class);
+$field = $class->new( name => 'test', );
+ok( defined $field, 'new() called' );
+my $address = 'test@example.com';
+$field->_set_input( $address );
+$field->validate_field;
+ok( !$field->has_errors, 'Test for errors 1' );
+is( $field->value, $address, 'is value input string' );
+my $Address = 'Test@example.com';
+$field->_set_input( $Address );
+$field->validate_field;
+ok( !$field->has_errors, 'Test for errors 2' );
+is( $field->value, lc($Address), 'is value input string' );
 
 # hidden
 

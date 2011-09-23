@@ -14,6 +14,7 @@ use_ok('HTML::FormHandler');
    extends 'HTML::FormHandler';
 
    has '+name'         => ( default  => 'testform_' );
+   has '+no_preload'   => ( default => 1 );
    has_field 'optname' => ( temp     => 'First' );
    has_field 'reqname' => ( required => 1 );
    has_field 'somename';
@@ -87,7 +88,9 @@ my $init_object = {
    optname => 'Over Again'
 };
 
-$form = My::Form->new( init_object => $init_object );
+# if you're going to load something on new and expect it to work without
+# process, you need to have no_preload turned off 
+$form = My::Form->new( init_object => $init_object, no_preload => 0 );
 is( $form->field('optname')->value, 'Over Again', 'value with int_obj' );
 $form->process( params => {} );
 ok( !$form->validated, 'form validated' );

@@ -54,6 +54,7 @@ use HTML::FormHandler::Field::Text;
 
     has_field 'hobbies.contains' => (
         type => 'Text',
+        tabindex => 2,
     );
     has_field 'active'     => ( type => 'Checkbox' );
     has_field 'comments'   => ( type => 'TextArea', cols => 40, rows => 3 );
@@ -134,7 +135,7 @@ my $output13 = $form->field('hobbies')->render;
 is(
     $output13, '
 <div><fieldset class="hobbies"><legend>Hobbies</legend>
-<div><label class="label" for="hobbies.0">0: </label><input type="text" name="hobbies.0" id="hobbies.0" value="" /></div>
+<div><label class="label" for="hobbies.0">0: </label><input type="text" name="hobbies.0" id="hobbies.0" value="" tabindex="2" /></div>
 </fieldset></div>
 ', 'output from repeatable with num_when_empty == 1'
 );
@@ -287,11 +288,11 @@ $output13 = $form->field('hobbies')->render;
 is(
     $output13, '
 <div><fieldset class="hobbies"><legend>Hobbies</legend>
-<div><label class="label" for="hobbies.0">0: </label><input type="text" name="hobbies.0" id="hobbies.0" value="eating" /></div>
+<div><label class="label" for="hobbies.0">0: </label><input type="text" name="hobbies.0" id="hobbies.0" value="eating" tabindex="2" /></div>
 
-<div><label class="label" for="hobbies.1">1: </label><input type="text" name="hobbies.1" id="hobbies.1" value="sleeping" /></div>
+<div><label class="label" for="hobbies.1">1: </label><input type="text" name="hobbies.1" id="hobbies.1" value="sleeping" tabindex="2" /></div>
 
-<div><label class="label" for="hobbies.2">2: </label><input type="text" name="hobbies.2" id="hobbies.2" value="not chasing mice" /></div>
+<div><label class="label" for="hobbies.2">2: </label><input type="text" name="hobbies.2" id="hobbies.2" value="not chasing mice" tabindex="2" /></div>
 </fieldset></div>
 ', 'output from repeatable after processing result with 3 items'
 );
@@ -312,7 +313,7 @@ is( $form->field('boxed')->render, '<fieldset class="boxed"><legend>Boxed</legen
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has '+widget_name_space' => ( default => sub { ['Widget'] } );
+    has '+widget_name_space' => ( default => 'Widget' );
 
     has_field 'alpha' => ( widget => 'test_widget' );
     has_field 'omega' => ( widget => 'Omega' );
@@ -385,7 +386,7 @@ is( $form->field('baz')->render, '
     package Test::Rendering;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    
+
     has_field 'my_comp' => ( type => 'Compound', widget_wrapper => 'SimpleInline' );
     has_field 'my_comp.one';
     has_field 'my_comp.two';

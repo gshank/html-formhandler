@@ -90,13 +90,18 @@ is( $field->fif, '07-07-09', 'fif ok');
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Render::Simple';
 
+   has_field 'start_date' => ( type => 'Date' );
    has_field 'end_date' => ( type => 'Date', required => 1 );
 }
 
 my $form = Test::Date->new;
 ok( $form, 'form with date created' );
 ok( $form->render_field('end_date'), 'date field renders' );
-$form->process( params => { end_date => '' } );
+ok( !$form->process( params => { end_date => '' } ), "Didn't validate Test::Date with empty string for end_date" );
+
+$form = Test::Date->new( item => { end_date => '1999-01-01', start_date => '' } );
+ok( !$form->process( params => { } ), "Didn't validate Test::Date with empty params" );
+ok( $form->process( params => { end_date => '1999-12-31' } ), "Didn't validate Test::Date with empty params" );
 
 #
 # DateTime

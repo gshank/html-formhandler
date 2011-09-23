@@ -1,3 +1,44 @@
+0.35003 Wed Sep 7, 2011
+    Fix bug constructing classes for Class::Load, revealed by Class::Load 0.10
+
+0.35002 Mon Aug 8, 2011
+    Change to use Class::Load due to speed.
+
+0.35001 Mon Jul 25, 2011
+    Undid setting processed flag when building result in BUILD. Breaks
+    existing apps. Re-thinking that part for now.
+
+0.35000 Thu Jul 21, 2011
+    Add support for tabindex attribute.
+    Generic html attribute setting (html_attr)
+    Set 'processed' flag when building results in BUILD to fix problem
+        with garbage collected results.
+    *** it's possible that this may break code if field values were being
+        set outside of FormHandler, or params were set on new. Pass params
+        on process. Set fields inside FormHandler, or run clear first, then
+        set values. In general, it works best to update fields inside a
+        FormHandler class, in a method or method modifier.
+        Building results in 'new' happened originally because people expected
+        to be able to do $form->render after new, without process. But you're
+        better off always running 'process'.
+    Add flag 'no_preload' to skip building results in new (BUILD) if not needed
+    Add flag 'no_widgets' to skip applying widgets to fields if not needed
+    Fix for Date fields in compounds.
+    Types Printable & SingleWord use class messages
+    Add link to the bug tracker into the HELP section in the Pod.
+    Change how field_traits work: apply traits to field objects, add
+      new class method apply_traits (Stephen Thirlwall)
+
+0.34001 Mon May 16, 2011
+    Fiz another memory cycle using Select field
+    Tweak code creating results for Field testing
+
+0.34000 Mon May 16, 2011
+    Fixed memory cycles; 1 in HFH code, others by requiring Moose 2.0007
+    Localize value of a button
+    Allow limited use of has_many multiple select
+    Add SimpleInline & TableInline widgets to not wrap compound fields
+
 0.33002 Tues Feb 22, 2011
     Accidentally left off compatibility for 'required_message' attribute
         messages => { required => '...' } is new style and worked

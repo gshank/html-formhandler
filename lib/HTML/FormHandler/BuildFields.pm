@@ -3,6 +3,8 @@ package HTML::FormHandler::BuildFields;
 
 use Moose::Role;
 use Try::Tiny;
+use Class::Load qw/ load_optional_class /;
+use namespace::autoclean;
 
 =head1 SYNOPSIS
 
@@ -39,9 +41,18 @@ sub has_field_list {
 # orders the fields after processing in order to skip
 # fields which have had the 'order' attribute set
 sub _build_fields {
-    my $self = shift;
+    my ($self, $field_traits) = @_;
 
     my $meta_flist = $self->_build_meta_field_list;
+
+    # If there are field_traits at the form level, prepend them
+    # to the traits list of each individual field.
+    if ($meta_flist && $field_traits) {
+        for my $field (@{ $meta_flist }) {
+            unshift(@{ $field->{traits} }, @{ $field_traits });
+        }
+    }
+
     $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
     my $flist = $self->has_field_list;
     $self->_process_field_list($flist) if $flist;
@@ -162,31 +173,25 @@ sub _make_field {
         $field_attr->{name} = $name = $1;
         $do_update = 1;
     }
+
     my $field_ns = $self->field_name_space;
-    my @field_name_space = ref $field_ns eq 'ARRAY' ? @$field_ns : $field_ns;
     my @classes;
     # '+'-prefixed fields could be full namespaces
     if ( $type =~ s/^\+// )
     {
         push @classes, $type;
     }
-    foreach my $ns ( @field_name_space, 'HTML::FormHandler::Field', 'HTML::FormHandlerX::Field' )
+    foreach my $ns ( @$field_ns, 'HTML::FormHandler::Field', 'HTML::FormHandlerX::Field' )
     {
         push @classes, $ns . "::" . $type;
     }
     # look for Field in possible namespaces
-    my $loaded;
     my $class;
     foreach my $try ( @classes ) {
-        try {
-            Class::MOP::load_class($try);
-            $loaded++;
-            $class = $try;
-        };
-        last if $loaded;
+        last if $class = load_optional_class($try) ? $try : undef;
     }
     die "Could not load field class '$type' for field '$name'"
-       unless $loaded;
+       unless $class;
 
 
     $field_attr->{form} = $self->form if $self->form;
@@ -252,39 +257,38 @@ sub _update_or_create {
 sub new_field_with_traits {
     my ( $self, $class, $field_attr ) = @_;
 
-    my $widget = $field_attr->{widget};
-    my $field;
-    unless( $widget ) {
-        my $attr = $class->meta->find_attribute_by_name( 'widget' );
-        if ( $attr ) {
-            $widget = $attr->default;
-        }
-    }
-    my $widget_wrapper = $field_attr->{widget_wrapper};
-    $widget_wrapper ||= $field_attr->{form}->widget_wrapper if $field_attr->{form};
-    unless( $widget_wrapper ) {
-        my $attr = $class->meta->get_attribute('widget_wrapper');
-        $widget_wrapper = $class->meta->get_attribute('widget')->default if $attr;
-        $widget_wrapper ||= 'Simple';
-    }
     my @traits;
     if( $field_attr->{traits} ) {
         @traits = @{$field_attr->{traits}};
         delete $field_attr->{traits};
     }
-    if( $widget ) {
-        my $widget_role = $self->get_widget_role( $widget, 'Field' );
-        my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
-        push @traits, $widget_role, $wrapper_role;
+
+    unless( $self->form && $self->form->no_widgets ) {
+        my $widget = $field_attr->{widget};
+        unless( $widget ) {
+            my $attr = $class->meta->find_attribute_by_name( 'widget' );
+            if ( $attr ) {
+                $widget = $attr->default;
+            }
+        }
+        my $widget_wrapper = $field_attr->{widget_wrapper};
+        $widget_wrapper ||= $field_attr->{form}->widget_wrapper if $field_attr->{form};
+        unless( $widget_wrapper ) {
+            my $attr = $class->meta->get_attribute('widget_wrapper');
+            $widget_wrapper = $class->meta->get_attribute('widget')->default if $attr;
+            $widget_wrapper ||= 'Simple';
+        }
+        if( $widget ) {
+            my $widget_role = $self->get_widget_role( $widget, 'Field' );
+            my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
+            push @traits, $widget_role, $wrapper_role;
+        }
     }
     if( @traits ) {
-        my $new_class = $class->with_traits( @traits );
-        $field = $new_class->new( %{$field_attr} );
+        $class = $class->with_traits( @traits );
     }
-    else {
-        $field = $class->new( %{$field_attr} );
-    }
-    if( $field->form ) {
+    my $field = $class->new( %{$field_attr} );
+    if( $field->form && !$field->form->no_widgets ) {
         foreach my $key ( keys %{$field->form->widget_tags} ) {
             $field->set_tag( $key, $field->form->widget_tags->{$key} )
                  unless $field->tag_exists($key);
