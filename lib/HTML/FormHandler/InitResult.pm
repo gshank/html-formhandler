@@ -106,7 +106,12 @@ sub _get_value {
         @values = $item->$accessor;
     }
     elsif ( exists $item->{$accessor} ) {
-        @values = $item->{$accessor};
+        my $v = $item->{$accessor};
+        if($field->has_flag('multiple') && ref($v) eq 'ARRAY'){
+            @values = @$v;
+        } else {
+            @values = $v;
+        }
     }
     elsif ( @values = $field->get_default_value ) {
     }

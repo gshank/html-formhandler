@@ -193,5 +193,32 @@ is_deeply( $form->fif, $fif_expected, 'got expected fif again' );
 $val_expected = { foo => 'my_foo', hm_bar => [ { my_id => 1 }, { my_id => 2 } ] };
 is_deeply( $form->value, $val_expected, 'got expected value agina' );
 
+{
+    package Test::Multiple::InitObject;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo' => ( default => 'my_foo' );
+    has_field 'bar' => ( type => 'Multiple' );
+
+   sub options_bar {
+       return (
+           1   => 'one',
+           2   => 'two',
+           3   => 'three',
+           4   => 'four',
+       );
+   }
+
+
+}
+
+$form = Test::Multiple::InitObject->new;
+my $init_object = { foo => 'new_foo', bar => [3,4] };
+$form->process(init_object => $init_object, params => {} );
+my $rendered = $form->render;
+like($rendered, qr/<option value="4" id="bar.1" selected="selected">four<\/option>/, 'rendered option');
+my $value = $form->value;
+is_deeply( $value, $init_object, 'correct value');
 
 done_testing;
