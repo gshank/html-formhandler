@@ -1,3 +1,8 @@
+0.35004 Wed Oct 5, 2011
+    Fix bug setting multiple selects with init_object
+    Provide html_attr for form attributes
+    Use Moose type for field_name_space and widget_name_space
+
 0.35003 Wed Sep 7, 2011
     Fix bug constructing classes for Class::Load, revealed by Class::Load 0.10
 
