@@ -54,7 +54,7 @@ sub render {
             }
         }
         my $label = $self->localize_labels ? $self->_localize($option->{label}) : $option->{label};
-        $output .= '>' . $self->html_filter($label) . '</option>';
+        $output .= '>' . ( $self->html_filter($label) || '' ) . '</option>';
         $index++;
     }
     $output .= '</select>';
