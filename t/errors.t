@@ -131,4 +131,29 @@ is( $form->num_errors, 2, 'form has two errors' );
 my $rendered_field = $form->field('addresses')->render;
 ok( $rendered_field, 'rendered field with auto_id ok' );
 
+{
+    package Form;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo' => ( type => 'Repeatable', required => 1);
+    has_field 'foo.bar' => ( type => 'Text', required => 1);
+    has_field 'foo.optional' => ( type => 'Text', required => 0);
+}
+
+$form = Form->new;
+
+ok(!$form->process( params => { 'foo.0.bar' => '' , 'foo.1.bar' => '' }),
+   'Processing a form with empty fields should not validate');
+
+ok(!$form->process( params => { 'foo.0.bar' => '' , 'foo.1.bar' => 'Test' }),
+   'Processing a form with some empty fields should not validate');
+
+ok(!$form->process( params => { 'foo.0.bar' => 'Test' , 'foo.1.bar' => '' }),
+   'Processing a form with some empty fields should not validate');
+
+ok($form->process( params => { 'foo.0.bar' => 'Test' , 'foo.1.bar' => 'Test' }),
+   'Processing a form with all inputs validates');
+
+
 done_testing;

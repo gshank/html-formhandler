@@ -159,6 +159,9 @@ sub create_element {
     # copy the fields from this field into the instance
     $instance->add_field( $self->all_fields );
 
+    # set required flag
+    $instance->required( $self->required );
+
     # auto_id has no way to change widgets...deprecate this?
     if ( $self->auto_id ) {
         unless ( grep $_->can('is_primary_key') && $_->is_primary_key, $instance->all_fields ) {
