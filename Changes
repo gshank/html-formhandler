@@ -1,3 +1,11 @@
+0.35005 Sat Oct 8, 2011
+    Fix bug repeatable result not returned for num_when_empty
+    Fix bug repeatable required flag not propagated
+    Fix bug building nested compound fields
+    Allow html attributes on radio group elements
+    Undefined string warning in select rendering
+    Add Japanese message file
+
 0.35004 Wed Oct 5, 2011
     Fix bug setting multiple selects with init_object
     Provide html_attr for form attributes
