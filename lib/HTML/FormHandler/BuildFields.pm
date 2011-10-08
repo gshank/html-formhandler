@@ -200,7 +200,10 @@ sub _make_field {
         my @names       = split /\./, $field_attr->{name};
         my $simple_name = pop @names;
         my $parent_name = join '.', @names;
-        my $parent      = $self->field($parent_name);
+        # use special 'field' method call that starts from
+        # $self, because names aren't always starting from 
+        # the form
+        my $parent      = $self->field($parent_name, undef, $self);
         if ($parent) {
             die "The parent of field " . $field_attr->{name} . " is not a Compound Field"
                 unless $parent->isa('HTML::FormHandler::Field::Compound');

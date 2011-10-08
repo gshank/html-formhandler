@@ -212,4 +212,37 @@ is_deeply( $value, $params, 'value is correct' );
 
 }
 
+{
+    package MyForm;
+
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'name' => ( type => 'Text' );
+    has_field 'args' => ( type => '+MyForm::Args' );
+
+
+    package MyForm::Args;
+
+    use HTML::FormHandler::Moose;
+    use namespace::autoclean;
+
+    extends 'HTML::FormHandler::Field::Compound';
+
+    has_field 'id'        => (type => 'Text');
+    has_field 'data'      => (type => 'Repeatable');
+    has_field 'data.type' => (type => 'Text');
+    has_field 'data.links' => (type => 'Repeatable');
+    has_field 'data.links.title' => (type => 'Text');
+    has_field 'data.links.url'   => (type => 'Text');
+}
+
+$form = MyForm->new;
+ok( $form, 'form built' );
+
+$form->process( params => {} );
+
+my $rendered = $form->render;
+like( $rendered, qr/"args.data.0.links.0.title"/, 'form has args.data.link.title in Repeatable' );
+
 done_testing;

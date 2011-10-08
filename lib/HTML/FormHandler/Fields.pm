@@ -92,7 +92,7 @@ sub field_index {
 }
 
 sub field {
-    my ( $self, $name, $die ) = @_;
+    my ( $self, $name, $die, $f ) = @_;
 
     my $index;
     # if this is a full_name for a compound field
@@ -100,7 +100,7 @@ sub field {
     return undef unless ( defined $name );
     if ( $name =~ /\./ ) {
         my @names = split /\./, $name;
-        my $f = $self->form || $self;
+        $f ||= $self->form || $self;
         foreach my $fname (@names) {
             $f = $f->field($fname);
             return unless $f;
