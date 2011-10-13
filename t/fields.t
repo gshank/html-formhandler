@@ -426,6 +426,10 @@ ok( $field, 'get TextArea field');
 $field->_set_input("Testing, testing, testing... This is a test");
 $field->validate_field;
 ok( !$field->has_errors, 'field has no errors');
+$field->maxlength( 10 );
+$field->validate_field;
+ok( $field->has_errors, 'field has errors');
+is( $field->errors->[0], 'Field should not exceed 10 characters. You entered 43',  'Test for too long' );
 
 # text
 
