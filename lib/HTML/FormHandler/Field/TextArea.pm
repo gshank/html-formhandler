@@ -11,7 +11,7 @@ has 'rows'    => ( isa     => 'Int', is => 'rw' );
 
 =head1 Summary
 
-For HTML textarea. Uses 'textarea' widget. Set cols/row/minlenght/maxlength.
+For HTML textarea. Uses 'textarea' widget. Set cols/row/minlength/maxlength.
 
 =cut
 
