@@ -737,6 +737,7 @@ sub value {
     # allow testing fields individually by creating result if no form
     return undef unless $self->has_result || !$self->form; 
     my $result = $self->result;
+    return undef unless $result;
     return $result->_set_value(@_) if @_;
     return $result->value;
 }

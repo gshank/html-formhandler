@@ -6,6 +6,7 @@ extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.02';
 
 has '+size' => ( default => 8 );
+has '+html5_tag_type' => ( default => 'number' );
 
 our $class_messages = {
     'integer_needed' => 'Value must be an integer',
@@ -44,6 +45,9 @@ apply(
 This accpets a positive or negative integer.  Negative integers may
 be prefixed with a dash.  By default a max of eight digits are accepted.
 Widget type is 'text'.
+
+If form has 'is_html5' flag active it will render <input type="number" ... /> 
+instead of type="text"
 
 =cut
 

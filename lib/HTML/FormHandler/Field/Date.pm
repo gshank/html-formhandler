@@ -47,8 +47,12 @@ Customize error messages 'date_early' and 'date_late':
        messages => { date_early => 'Pick a later date',
                      date_late  => 'Pick an earlier date', } );
 
+If form has 'is_html5' flag active it will render <input type="date" ... /> 
+instead of type="text"
+
 =cut
 
+has '+html5_tag_type' => ( default => 'date' );
 has 'format' => ( is => 'rw', isa => 'Str', default => "%Y-%m-%d" );
 has 'locale'     => ( is => 'rw', isa => 'Str' );                                  # TODO
 has 'time_zone'  => ( is => 'rw', isa => 'Str' );                                  # TODO

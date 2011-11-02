@@ -670,10 +670,14 @@ would be just "borrower".
 Also see the Field attribute "html_name", a convenience function which
 will return the form name + "." + field full_name
 
+=head3 is_html5
+
+Flag to indicate the fields will render using specialized attributes for html5, it is set to 0 by default
+
 =head2 For use in HTML
 
    html_attr - hashref for setting arbitrary HTML attributes
-         has '+html_attr' => 
+         has '+html_attr' =>
            ( default => sub { { class => '...', method => '...' } } );
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
@@ -780,6 +784,7 @@ has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
+has 'is_html5'  => ( isa => 'Bool', is => 'ro', default => 0 );
 has 'html_attr' => ( is => 'rw', traits => ['Hash'],
    default => sub { {} }, handles => { has_html_attr => 'count',
    set_html_attr => 'set', delete_html_attr => 'delete' }

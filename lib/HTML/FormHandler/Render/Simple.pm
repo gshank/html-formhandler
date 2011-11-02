@@ -240,7 +240,7 @@ sub render_field_struct {
 
 sub render_text {
     my ( $self, $field ) = @_;
-    my $output = '<input type="text" name="';
+    my $output = '<input type="' . $field->tag_type . '" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
     $output .= ' size="' . $field->size . '"' if $field->size;
@@ -421,14 +421,25 @@ sub render_reset {
 
 sub _add_html_attributes {
     my ( $self, $field ) = @_;
-
+    if ($self->form->has_flag('is_html5')) {
+        $field->set_html_attr('required' => 'required') if ($field->required);
+        my %attributes = (
+            maxlength => 'maxlength',
+            range_start => 'min',
+            range_end => 'max',
+        );
+        foreach my $attr (keys %attributes) {
+            $field->set_html_attr($attributes{$attr} => $field->$attr) if ($field->meta->find_attribute_by_name($attr) && defined $field->$attr);
+        }
+    }
     my $output = q{};
     my $html_attr = { %{$field->html_attr} };
+
     for my $attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
         $html_attr->{$attr} = $field->$attr if !exists $html_attr->{$attr} && $field->$attr;
     }
     foreach my $attr ( sort keys %$html_attr ) {
-        $output .= qq{ $attr="} . $html_attr->{$attr} . qq{"}; 
+        $output .= qq{ $attr="} . $html_attr->{$attr} . qq{"};
     }
     $output .= ($field->javascript ? ' ' . $field->javascript : '');
     if( $field->input_class ) {

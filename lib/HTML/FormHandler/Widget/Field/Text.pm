@@ -12,7 +12,7 @@ sub render {
     my $t;
 
     my $rendered = $self->html_filter($result->fif);
-    my $output = '<input type="text" name="'
+    my $output = '<input type="'.$self->tag_type.'" name="'
         . $self->html_name . '" id="' . $self->id . '"';
     $output .= qq{ size="$t"} if $t = $self->size;
     $output .= qq{ maxlength="$t"} if $t = $self->maxlength;

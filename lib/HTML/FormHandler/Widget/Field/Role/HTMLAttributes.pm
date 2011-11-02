@@ -5,7 +5,16 @@ use Moose::Role;
 
 sub _add_html_attributes {
     my $self = shift;
-
+    if ($self->form->has_flag('is_html5')) {
+        $self->set_html_attr('required' => 'required') if ($self->required);
+        my %attributes = (
+            range_start => 'min',
+            range_end => 'max',
+        );
+        foreach my $attr (keys %attributes) {
+            $self->set_html_attr($attributes{$attr} => $self->$attr) if ($self->meta->find_attribute_by_name($attr) && defined $self->$attr);
+        }
+    }
     my $output = q{};
     my $html_attr = { %{$self->html_attr} };
     for my $attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {

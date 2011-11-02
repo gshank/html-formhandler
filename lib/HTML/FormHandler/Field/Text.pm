@@ -16,6 +16,15 @@ has 'minlength_message' => ( isa => 'Str', is => 'rw',
 
 has '+widget' => ( default => 'text' );
 
+has 'html5_tag_type' => ( isa => 'Str', is => 'ro', default => 'text' );
+has 'tag_type' => ( isa => 'Str', is => 'ro', lazy => 1,
+    default => sub {
+        my $self = shift;
+        return $self->html5_tag_type if $self->form->has_flag('is_html5');
+        return 'text';
+    },
+);
+
 our $class_messages = {
     'text_maxlength' => 'Field should not exceed [quant,_1,character]. You entered [_2]',
     'text_minlength' => 'Field must be at least [quant,_1,character]. You entered [_2]',
@@ -87,6 +96,9 @@ Set error messages (text_minlength, text_maxlength):
            'text_maxlength' => 'Field is too long',
         } );
 
+=head2 html5_tag_type [string]
+
+This string is used when rendering the tag as value for the type attribute, it is used when the form has the is_html5 flag on.
 
 =cut
 
