@@ -867,15 +867,20 @@ has 'widget_tags'         => (
 has 'widget_name_space' => (
     isa => 'HFH::ArrayRefStr',
     is => 'rw',
+    traits => ['Array'],
     default => sub {[]},
     coerce => 1,
+    handles => {
+        push_widget_name_space => 'push',
+    },
 );
+
 sub add_widget_name_space {
     my ( $self, @ns ) = @_;
     @ns = @{$ns[0]}if( scalar @ns && ref $ns[0] eq 'ARRAY' );
-    my $widget_ns = $self->widget_name_space;
-    push @{$self->widget_name_space}, @ns;
+    $self->push_widget_name_space(@ns);
 }
+
 has 'order'             => ( isa => 'Int',  is => 'rw', default => 0 );
 # 'inactive' is set in the field declaration, and is static. Default status.
 has 'inactive'          => ( isa => 'Bool', is => 'rw', clearer => 'clear_inactive' );

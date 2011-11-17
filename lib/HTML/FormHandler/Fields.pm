@@ -76,9 +76,13 @@ sub num_error_fields { shift->result->num_error_results }
 has 'field_name_space' => (
     isa     => 'HFH::ArrayRefStr',
     is      => 'rw',
+    traits  => ['Array'],
     lazy    => 1,
     default => '',
     coerce  => 1,
+    handles => {
+        add_field_name_space => 'push',
+    },
 );
 
 sub field_index {
