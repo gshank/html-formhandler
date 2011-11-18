@@ -9,7 +9,7 @@ with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
 sub render {
     my $self = shift;
     my $result = shift || $self->result;
-    my $fif  = $self->html_filter($result->fif) || '';
+    my $fif  = $self->html_filter($result->fif);
     my $id   = $self->id;
     my $cols = $self->cols || 10;
     my $rows = $self->rows || 5;
