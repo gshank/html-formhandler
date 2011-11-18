@@ -46,5 +46,7 @@ has 'page_list' => (
     }
 );
 
+has 'found_hfh' => ( is => 'rw', default => '0' );
+
 use namespace::autoclean;
 1;

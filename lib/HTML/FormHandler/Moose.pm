@@ -46,6 +46,16 @@ sub has_field {
     my ( $meta, $name, %options ) = @_;
     my $names = ( ref($name) eq 'ARRAY' ) ? $name : [ ($name) ];
 
+    unless ($meta->found_hfh) {
+        my @linearized_isa = $meta->linearized_isa;
+        if( grep { $_ eq 'HTML::FormHandler' || $_ eq 'HTML::FormHandler::Field' } @linearized_isa ) {
+            $meta->found_hfh(1);
+        }
+        else {
+            die "Package uses HTML::FormHandler::Moose without extending HTML::FormHandler[::Field]";
+        }
+    }
+
     $meta->add_to_field_list( { name => $_, %options } ) for @$names;
 }
 
