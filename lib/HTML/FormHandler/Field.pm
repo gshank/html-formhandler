@@ -234,8 +234,8 @@ arbitrary HTML attributes on a field.
 Some attributes also have specific setters
 (readonly', 'disabled', 'style', 'title', 'tabindex).
 
-   has_field 'bar' => ( readonly => 1 ); 
-         
+   has_field 'bar' => ( readonly => 1 );
+
    title       - Place to put title for field.
    style       - Place to put field style string
    disabled    - for the HTML flag
@@ -252,7 +252,7 @@ The following are used in rendering HTML, but are handled specially.
    css_class   - For a css class name (string; could be several classes,
                  separated by spaces or commas). Used in wrapper for input field.
    input_class - class attribute on the 'input' field. applied with
-                 '_apply_html_attribute' (also html_attr => { class => '...' } ) 
+                 '_apply_html_attribute' (also html_attr => { class => '...' } )
    id          - Useful for javascript (default is html_name. to prefix with
                  form name, use 'html_prefix' in your form)
    render_filter - Coderef for filtering fields before rendering. By default
@@ -802,6 +802,7 @@ has 'accessor' => (
         return $accessor;
     }
 );
+has 'is_contains' => ( is => 'rw', isa => 'Bool' );
 has 'temp' => ( is => 'rw' );
 
 sub has_flag {
@@ -1203,8 +1204,13 @@ sub full_name {
 sub full_accessor {
     my $field = shift;
 
+    my $parent = $field->parent;
+    if( $field->is_contains ) {
+        return '' unless $parent;
+        return $parent->full_accessor;
+    }
     my $accessor = $field->accessor;
-    my $parent = $field->parent || return $accessor;
+    return $accessor unless $parent;
     return $parent->full_accessor . '.' . $accessor;
 }
 

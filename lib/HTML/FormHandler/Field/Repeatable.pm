@@ -128,10 +128,11 @@ sub init_state {
     # must clear out instances built last time
     unless ( $self->has_contains ) {
         if ( $self->num_fields == 1 && $self->field('contains') ) {
+            $self->field('contains')->is_contains(1);
             $self->contains( $self->field('contains') );
         }
         else {
-            $self->contains( $self->create_element );
+            $self->contains( $self->create_element ); 
         }
     }
     $self->clear_fields;
@@ -147,6 +148,7 @@ sub create_element {
         parent => $self,
         form   => $self->form,
         type   => 'Repeatable::Instance',
+        is_contains => 1,
     };
     if( $self->form ) {
         $instance = $self->form->new_field_with_traits(
