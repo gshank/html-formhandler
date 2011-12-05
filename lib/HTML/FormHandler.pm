@@ -313,7 +313,7 @@ parameter if unselected (checkboxes and select lists), then the form
 will not be validated if everything is unselected. For this case you
 can either add a hidden field, or use the 'posted' flag:
 
-   $form->process( posted => ($c->req->method eq 'POST', params => ... );
+   $form->process( posted => ($c->req->method eq 'POST'), params => ... );
 
 The corollary is that you will confuse FormHandler if you add extra params.
 It's often a better idea to add Moose attributes to the form rather than

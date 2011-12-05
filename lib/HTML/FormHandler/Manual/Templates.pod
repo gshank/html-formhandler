@@ -105,7 +105,7 @@ with a good solution, please submit a doc patch.)
 
 =head2 Textarea
 
-   <div><label class="label" for="[% f.id %]">[% f.label %]" </label>
+   <div><label class="label" for="[% f.id %]">[% f.label %]: </label>
    <textarea name="[% f.html_name %]" id="[% f.id %]"
         rows="[% f.rows %]" cols="[% f.cols %]">[% f.fif %]</textarea></div>
 
