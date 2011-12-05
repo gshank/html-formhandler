@@ -14,12 +14,14 @@ sub render {
     my $output = " <br />";
     my $index  = 0;
 
+    my $fif = $result->fif;
     foreach my $option ( @{ $self->options } ) {
+        my $value = $option->{value};
         $output .= qq{<label for="$id.$index"><input type="radio" value="}
-            . $self->html_filter($option->{value}) . '" name="'
+            . $self->html_filter($value) . '" name="'
             . $self->html_name . qq{" id="$id.$index"};
         $output .= ' checked="checked"'
-            if $self->check_selected_option($option, $result->fif);
+            if $fif eq $value;
         $output .= $self->_add_html_attributes;
         $output .= ' />';
         $output .= $self->html_filter($option->{label}) . '</label><br />';

@@ -278,43 +278,42 @@ sub render_hidden {
 sub render_select {
     my ( $self, $field ) = @_;
 
+    my $multiple = $field->multiple;
+    my $id = $field->id;
     my $output = '<select name="' . $field->html_name . '"';
-    $output .= ' id="' . $field->id . '"';
-    $output .= ' multiple="multiple"' if $field->multiple == 1;
+    $output .= qq{ id="$id"};
+    $output .= ' multiple="multiple"' if $multiple == 1;
     $output .= ' size="' . $field->size . '"' if $field->size;
-    $output .= $self->_add_html_attributes( $field );
+    my $html_attributes = $field->_add_html_attributes( $field );
+    $output .= $html_attributes;
     $output .= '>';
     my $index = 0;
     if( defined $field->empty_select ) {
         $output .= '<option value="">' . $field->_localize($field->empty_select) . '</option>';
     }
-    foreach my $option ( @{ $field->options } ) {
-        $output .= '<option value="' . $field->html_filter($option->{value}) . '" ';
-        $output .= 'id="' . $field->id . ".$index\" ";
+    my $fif = $field->fif;
+    my %fif_lookup;
+    @fif_lookup{@$fif} = () if $multiple;
+    foreach my $option ( @{ $field->{options} } ) {
+        my $value = $option->{value};
+        $output .= '<option value="'
+            . $field->html_filter($value)
+            . qq{" id="$id.$index"};
         if( defined $option->{disabled} && $option->{disabled} ) {
-            $output .= 'disabled="disabled" ';
+            $output .= ' disabled="disabled"';
         }
-        if ( $field->fif ) {
-            if ( $field->multiple == 1 ) {
-                my @fif;
-                if ( ref $field->fif ) {
-                    @fif = @{ $field->fif };
-                }
-                else {
-                    @fif = ( $field->fif );
-                }
-                foreach my $optval (@fif) {
-                    $output .= 'selected="selected"'
-                        if $optval eq $option->{value};
-                }
+        if ( defined $fif ) {
+            if ( $multiple && exists $fif_lookup{$value} ) {
+                $output .= ' selected="selected"';
             }
-            else {
-                $output .= 'selected="selected"'
-                    if $option->{value} eq $field->fif;
+            elsif ( $fif eq $value ) {
+                $output .= ' selected="selected"';
             }
         }
-        my $label = $field->localize_labels ? $field->_localize($option->{label}) : $option->{label};
-        $output .= '>' . $field->html_filter($label) . '</option>';
+        $output .= $html_attributes;
+        my $label = $option->{label};
+        $label = $field->_localize($label) if $field->localize_labels;
+        $output .= '>' . ( $field->html_filter($label) || '' ) . '</option>';
         $index++;
     }
     $output .= '</select>';

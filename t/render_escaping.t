@@ -105,14 +105,14 @@ is( $form->field('test_field')->render, $rendered, 'text field with widgets' );
 
 my $output2 = $form->render_field( $form->field('fruit') );
 $rendered =  '
-<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0" >&quot;apples&quot;</option><option value="2" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="3" id="fruit.2" >&amp;kiwi&amp;</option></select></div>
+<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0">&quot;apples&quot;</option><option value="2" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="3" id="fruit.2">&amp;kiwi&amp;</option></select></div>
 ';
 is( $output2, $rendered, 'output from select field');
 
 my $output3 = $form->render_field( $form->field('vegetables') );
 is( $output3,
    '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0" >&lt;lettuce&gt;</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2" >carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
+<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0">&lt;lettuce&gt;</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2">carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
 ',
 'output from select multiple field');
 

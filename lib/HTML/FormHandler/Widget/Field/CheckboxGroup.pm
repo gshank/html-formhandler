@@ -12,35 +12,33 @@ sub render {
     my $result = shift || $self->result;
     my $output = " <br />";
     my $index  = 0;
+    my $multiple = $self->multiple;
     my $id = $self->id;
     my $html_attributes = $self->_add_html_attributes;
 
-    foreach my $option ( @{ $self->options } ) {
+    my $fif = $result->fif;
+    my %fif_lookup;
+    @fif_lookup{@$fif} = () if $multiple;
+    foreach my $option ( @{ $self->{options} } ) {
+        my $value = $option->{value};
         $output .= '<input type="checkbox" value="'
-            . $self->html_filter($option->{value}) . '" name="'
+            . $self->html_filter($value) . '" name="'
             . $self->html_name . qq{" id="$id.$index"};
-        if ( my $ffif = $result->fif ) {
-            if ( $self->multiple == 1 ) {
-                my @fif;
-                if ( ref $ffif ) {
-                    @fif = @{$ffif};
-                }
-                else {
-                    @fif = ($ffif);
-                }
-                foreach my $optval (@fif) {
-                    $output .= ' checked="checked"'
-                        if $self->check_selected_option($option, $optval);
-                }
+        if( defined $option->{disabled} && $option->{disabled} ) {
+            $output .= 'disabled="disabled" ';
+        }
+        if ( defined $fif ) {
+            if ( $multiple && exists $fif_lookup{$value} ) {
+                $output .= ' checked="checked"';
             }
-            else {
-                $output .= ' checked="checked"'
-                    if $self->check_selected_option($option, $ffif);
+            elsif ( $fif eq $value ) {
+                $output .= ' checked="checked"';
             }
         }
         $output .= $html_attributes;
-        $output .= ' />';
-        $output .= $self->html_filter($option->{label}) . '<br />';
+        my $label = $option->{label};
+        $label = $self->_localize($label) if $self->localize_labels;
+        $output .= ' />' . ( $self->html_filter($label) || '' ) . '<br />';
         $index++;
     }
     return $self->wrap_field( $result, $output );

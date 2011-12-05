@@ -262,7 +262,10 @@ has 'do_not_reload' => ( isa => 'Bool', is => 'ro' );
 sub BUILD {
     my $self = shift;
 
-    $self->options_from('build') if $self->options && $self->has_options;
+    if( $self->options && $self->has_options ) {
+        $self->options_from('build');
+        $self->default_from_options([$self->options]);
+    }
     $self->input_without_param; # vivify
 }
 
@@ -394,6 +397,8 @@ sub _result_from_object {
 
     $result = $self->next::method( $result, $item );
     $self->_load_options;
+    $result->_set_value($self->default)
+        if( defined $self->default && not $result->has_value );
     return $result;
 }
 
@@ -402,6 +407,8 @@ sub _result_from_fields {
 
     $result = $self->next::method($result);
     $self->_load_options;
+    $result->_set_value($self->default)
+        if( defined $self->default && not $result->has_value );
     return $result;
 }
 
@@ -412,6 +419,8 @@ sub _result_from_input {
         if $self->multiple;
     $result = $self->next::method( $result, $input, $exists );
     $self->_load_options;
+    $result->_set_value($self->default)
+        if( defined $self->default && not $result->has_value );
     return $result;
 }
 
@@ -444,6 +453,7 @@ sub _load_options {
     # if options_<field_name> is returning an already constructed array of hashrefs
     if ( ref $options[0] eq 'HASH' ) {
         $opts = \@options;
+        $self->default_from_options($opts);
     }
     else {
         croak "Options array must contain an even number of elements for field " . $self->name
@@ -453,6 +463,27 @@ sub _load_options {
     if ($opts) {
         my $opts = $self->sort_options($opts);    # allow sorting options
         $self->options($opts);
+    }
+}
+
+# This is because setting 'checked => 1' or 'selected => 1' in an options
+# hashref is the equivalent of setting a default on the field. Originally
+# that was handled only in rendering, but it moved knowledge about where
+# the 'fif' value came from into the renderer, which was bad. So instead
+# we're setting the defaults from the options.
+# It's probably better to use 'defaults' to start with, but since there are
+# people using this method, this at least normalizes it.
+sub default_from_options {
+    my ( $self, $options ) = @_;
+
+    my @defaults = map { $_->{value} } grep { $_->{checked} || $_->{selected} } @$options;
+    if( scalar @defaults ) {
+        if( $self->multiple ) {
+            $self->default(\@defaults);
+        }
+        else {
+            $self->default($defaults[0]);
+        }
     }
 }
 

@@ -130,28 +130,28 @@ is( $output1,
 my $output2 = $form->render_field( $form->field('fruit') );
 is( $output2,
    '
-<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0" >apples</option><option value="2" id="fruit.1" selected="selected">oranges</option><option value="3" id="fruit.2" >kiwi</option></select></div>
+<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0">apples</option><option value="2" id="fruit.1" selected="selected">oranges</option><option value="3" id="fruit.2">kiwi</option></select></div>
 ',
    'output from select field');
 
 my $output12 = $form->render_field( $form->field('cheese') );
 is( $output12,
    '
-<div><label class="label" for="cheese">Cheese: </label><select name="cheese" id="cheese"><option value="1" id="cheese.0" >canastra</option><option value="2" id="cheese.1" disabled="disabled" >brie</option><option value="3" id="cheese.2" >gorgonzola</option></select></div>
+<div><label class="label" for="cheese">Cheese: </label><select name="cheese" id="cheese"><option value="1" id="cheese.0">canastra</option><option value="2" id="cheese.1" disabled="disabled">brie</option><option value="3" id="cheese.2">gorgonzola</option></select></div>
 ',
    'output from select field with disabled option');
 
 my $output3 = $form->render_field( $form->field('vegetables') );
 is( $output3,
    '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0" >lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2" >carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
+<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0">lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2">carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
 ',
 'output from select multiple field');
 
 my $output13 = $form->render_field( $form->field('grains') );
 is( $output13,
    '
-<div><label class="label" for="grains">Grains: </label><select name="grains" id="grains" multiple="multiple" size="5"><option value="1" id="grains.0" >maize</option><option value="2" id="grains.1" disabled="disabled" >rice</option><option value="3" id="grains.2" >wheat</option></select></div>
+<div><label class="label" for="grains">Grains: </label><select name="grains" id="grains" multiple="multiple" size="5"><option value="1" id="grains.0">maize</option><option value="2" id="grains.1" disabled="disabled">rice</option><option value="3" id="grains.2">wheat</option></select></div>
 ',
 'output from select multiple field with disabled option');
 
