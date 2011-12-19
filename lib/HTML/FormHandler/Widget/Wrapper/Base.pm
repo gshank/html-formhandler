@@ -2,26 +2,36 @@ package HTML::FormHandler::Widget::Wrapper::Base;
 # ABSTRACT: commong methods for widget wrappers
 
 use Moose::Role;
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render_label {
     my $self = shift;
-    return '<label class="label" for="' . $self->id . '">' . $self->html_filter($self->loc_label) . ': </label>';
+    my %attrs = %{$self->label_attr};
+    $attrs{class} = 'label' if ( scalar( keys %attrs ) == 0 ); # old behavior
+    my $attrs = process_attrs(\%attrs);
+    return "<label$attrs for=\"" . $self->id . '">' . $self->html_filter($self->loc_label) . ': </label>';
 }
 
 sub render_class {
     my ( $self, $result ) = @_;
 
     $result ||= $self->result;
-    my $class = '';
-    if ( $self->css_class || $result->has_errors ) {
-        my @css_class;
-        push( @css_class, split( /[ ,]+/, $self->css_class ) ) if $self->css_class;
-        push( @css_class, 'error' ) if $result->has_errors;
-        $class .= ' class="';
-        $class .= join( ' ' => @css_class );
-        $class .= '"';
+
+    my %attr = %{$self->wrapper_attr};
+
+    if( ! exists $attr{class} && $self->css_class ) {
+        $attr{class} = $self->css_class;
     }
-    return $class;
+    if( $result->has_errors ) {
+        if( ref $attr{class} eq 'ARRAY' ) {
+            push @{$attr{class}}, 'error';
+        }
+        else {
+            $attr{class} = $attr{class} ? ' error' : 'error';
+        }
+    }
+    my $output = process_attrs(\%attr);
+    return $output;
 }
 
 use namespace::autoclean;

@@ -908,6 +908,14 @@ has 'html_attr' => ( is => 'rw', traits => ['Hash'],
    default => sub { {} }, handles => { has_html_attr => 'count',
    set_html_attr => 'set', delete_html_attr => 'delete' }
 );
+has 'label_attr' => ( is => 'rw', traits => ['Hash'],
+   default => sub { {} }, handles => { has_label_attr => 'count',
+   set_label_attr => 'set', delete_label_attr => 'delete' }
+);
+has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
+   default => sub { {} }, handles => { has_wrapper_attr => 'count',
+   set_wrapper_attr => 'set', delete_wrapper_attr => 'delete' }
+);
 
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
 has 'set_validate' => ( isa => 'Str', is => 'ro',);
