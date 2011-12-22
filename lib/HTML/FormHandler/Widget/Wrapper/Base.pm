@@ -27,7 +27,7 @@ sub render_class {
             push @{$attr{class}}, 'error';
         }
         else {
-            $attr{class} = $attr{class} ? ' error' : 'error';
+            $attr{class} .= $attr{class} ? ' error' : 'error';
         }
     }
     my $output = process_attrs(\%attr);
