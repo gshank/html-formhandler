@@ -4,6 +4,16 @@ use Test::More;
 use lib 't/lib';
 
 {
+    package My::Constraints;
+
+    sub check_something {
+        my $value = shift;
+        return 1 if $value eq 'something';
+        return 0;
+    }
+}
+
+{
 
    package My::Form;
    use HTML::FormHandler::Moose;
@@ -80,7 +90,7 @@ use lib 't/lib';
              check => \&check_callback_pass,
              message => 'Must contain number greater than 10',
          }
-      ]
+       ]
    );
    sub check_callback_pass {
        my ( $value, $field ) = @_;
@@ -93,6 +103,10 @@ use lib 't/lib';
    );
    has_field 'less_than_ten_pass' => (
       apply => [ 'NaturalLessThanTen' ]
+   );
+   has_field 'my_something' => (
+       apply => [{ check => \&My::Constraints::check_something,
+                  message => 'Something is not right' }],
    );
 }
 
@@ -110,6 +124,7 @@ my $params = {
       less_than_ten_error      => 10,
       less_than_ten_pass       => 9,
       message_sub              => 'xyz',
+      my_something             => 'nothing',
 };
 $form->process($params);
 # ok( $form->field('empty_field')->has_errors, 'empty does not pass required constraint' );
@@ -125,6 +140,7 @@ ok( $form->field('less_than_ten_error')->has_errors,     'type constraint - erro
 my $message = $form->field('less_than_ten_error')->errors->[0];
 is( $message, "This number (10) is not less than ten!", 'type constraint - error message' );
 ok( !$form->field('less_than_ten_pass')->has_errors,     'type constraint - pass' );
+is( $form->field('my_something')->errors->[0], 'Something is not right', 'check sub from package' );
 #warn Dumper( $form ); use Data::Dumper;
 is_deeply( $form->fif, $params, 'fif is correct');
 

@@ -46,7 +46,7 @@ in t/field_traits.t and t/xt/display.t of the distribution.
 
 =cut
 
-has 'html' => ( is => 'rw', isa => 'Str', builder => 'build_html' );
+has 'html' => ( is => 'rw', isa => 'Str', builder => 'build_html', lazy => 1 );
 sub build_html {''}
 has 'set_html' => ( isa => 'Str', is => 'ro');
 sub _set_html_meth {
