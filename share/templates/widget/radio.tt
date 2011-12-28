@@ -1,7 +1,0 @@
-<label class="label [% IF f.has_errors %]fld_error[% END %]" for="[% f.html_name %]">[% f.label %]</label>
-[% FOR option IN f.options %]
- <input type="radio" value="[% option.label %]" 
- [% IF option.value == f.fif %] selected="selected"[% END %]>
- [% option.label | html %]>
-[% END %] 
-

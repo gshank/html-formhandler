@@ -3,8 +3,7 @@ package HTML::FormHandler::Widget::Field::Checkbox;
 
 use Moose::Role;
 use namespace::autoclean;
-
-with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render {
     my $self = shift;
@@ -16,7 +15,7 @@ sub render {
         . $self->html_filter($checkbox_value) . '"';
     $output .= ' checked="checked"'
         if $result->fif eq $checkbox_value;
-    $output .= $self->_add_html_attributes;
+    $output .= process_attrs($self->attributes);
     $output .= ' />';
 
     return $self->wrap_field( $result, $output );

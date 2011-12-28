@@ -1,6 +1,0 @@
-<form id="[% form.name %]" method="[% form.http_method %]" 
-   [% IF form.action %]action="[% form.action %]"[% END %] 
-   [% IF form.enctype %]enctype="[% form.enctype %]"[% END %]
-   [% IF form.css_class %]class="[% form.css_class %]"[% END %]
-   [% IF form.style %]style="[% form.style %]"[% END %]
->

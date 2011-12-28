@@ -39,6 +39,7 @@ set 'inactive' to 1 instead.
 has '+widget'              => ( default => 'checkbox' );
 has 'checkbox_value'       => ( is      => 'rw', default => 1 );
 has '+input_without_param' => ( default => 0 );
+has '+type_attr'           => ( default => 'checkbox' );
 
 sub value {
     my $field = shift;

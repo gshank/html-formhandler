@@ -3,8 +3,7 @@ package HTML::FormHandler::Widget::Field::Textarea;
 
 use Moose::Role;
 use namespace::autoclean;
-
-with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render {
     my $self = shift;
@@ -17,7 +16,7 @@ sub render {
 
     my $output =
         qq(<textarea name="$name" id="$id")
-        . $self->_add_html_attributes
+        . process_attrs($self->attributes)
         . qq( rows="$rows" cols="$cols">$fif</textarea>);
 
     return $self->wrap_field( $result, $output );

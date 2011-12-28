@@ -132,7 +132,7 @@ sub init_state {
             $self->contains( $self->field('contains') );
         }
         else {
-            $self->contains( $self->create_element ); 
+            $self->contains( $self->create_element );
         }
     }
     $self->clear_fields;

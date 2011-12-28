@@ -1,0 +1,5 @@
+[% PROCESS form/form_start.tt -%]
+[% FOREACH f IN form.sorted_fields -%]
+[% WRAPPER "wrapper/${f.wrapper}.tt" %][% PROCESS "field/${f.widget}.tt" -%][% END -%]
+[% END -%]
+[% PROCESS form/form_end.tt -%]

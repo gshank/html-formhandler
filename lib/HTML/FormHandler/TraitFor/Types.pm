@@ -7,9 +7,9 @@ subtype 'HFH::ArrayRefStr'
 
 coerce 'HFH::ArrayRefStr'
   => from 'Str'
-  => via { 
+  => via {
          if( length $_ ) { return [$_] };
-         return []; 
+         return [];
      };
 
 coerce 'HFH::ArrayRefStr'

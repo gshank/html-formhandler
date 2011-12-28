@@ -12,17 +12,12 @@ use_ok('HTML::FormHandler::Render::WithTT');
 use_ok('HTML::FormHandler::Render::Simple');
 use_ok('HTML::FormHandler::Render::Table');
 
-my $dir = File::ShareDir::dist_dir('HTML-FormHandler') . '/templates/';
-ok( $dir, 'found template dir' );
-
 {
 
     package Test::Form;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_tt_template     {'form.tt'}
-    sub build_tt_include_path { ['share/templates'] }
     has '+is_html5' => (default => 1);
 
     has_field 'foo' => ( css_class => 'schoen', style => 'bunt', title => 'MyTitle', required => 1, maxlength=> 10 );
@@ -33,6 +28,15 @@ ok( $dir, 'found template dir' );
     has_field 'money' => ( type => "Money");
 }
 
+{
+    package Test::Form::WithTT::Role;
+    use Moose::Role;
+    with 'HTML::FormHandler::Render::WithTT' =>
+        { -excludes => [ 'build_tt_template', 'build_tt_include_path' ] };
+    sub build_tt_template     {'form/form.tt'}
+    sub build_tt_include_path { ['share/templates'] }
+}
+
 my %results;
 {
     my $form
@@ -41,27 +45,26 @@ my %results;
 }
 {
     my $form
-        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
-    HTML::FormHandler::Render::WithTT->meta->apply($form);
-    $results{TT} = $form->render;
+        = Test::Form->new_with_traits( traits => ['Test::Form::WithTT::Role'],
+            css_class => 'beautifully', style => 'colorful' );
+    $results{TT} = $form->tt_render;
 }
 {
     my $form
-        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
-    HTML::FormHandler::Render::Simple->meta->apply($form);
+        = Test::Form->new_with_traits( traits => ['HTML::FormHandler::Render::Simple'],
+            css_class => 'beautifully', style => 'colorful' );
     $results{Simple} = $form->render;
 }
 {
     my $form
-        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
-    HTML::FormHandler::Render::Table->meta->apply($form);
+        = Test::Form->new_with_traits( traits => ['HTML::FormHandler::Render::Table'],
+            css_class => 'beautifully', style => 'colorful' );
     $results{Table} = $form->render;
 }
 is( scalar( grep {$_} values %results ),
     scalar keys %results,
     'Both methods rendered'
 );
-
 
 while ( my ( $key, $res ) = each %results ) {
     like( $res, qr/class="schoen"/, "$key Field got the class" );

@@ -3,8 +3,7 @@ package HTML::FormHandler::Widget::Field::Text;
 
 use Moose::Role;
 use namespace::autoclean;
-
-with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render {
     my $self = shift;
@@ -12,12 +11,12 @@ sub render {
     my $t;
 
     my $rendered = $self->html_filter($result->fif);
-    my $output = '<input type="'.$self->tag_type.'" name="'
+    my $output = '<input type="' . $self->input_type . '" name="'
         . $self->html_name . '" id="' . $self->id . '"';
     $output .= qq{ size="$t"} if $t = $self->size;
     $output .= qq{ maxlength="$t"} if $t = $self->maxlength;
     $output .= ' value="' . $self->html_filter($result->fif) . '"';
-    $output .= $self->_add_html_attributes;
+    $output .= process_attrs($self->attributes);
     $output .= ' />';
 
     return $self->wrap_field( $result, $output );

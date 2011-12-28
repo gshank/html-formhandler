@@ -5,7 +5,7 @@ use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.01';
 
-has '+html5_tag_type' => ( default => 'number' );
+has '+html5_type_attr' => ( default => 'number' );
 
 our $class_messages = {
     'money_convert' => 'Value cannot be converted to money',
@@ -53,7 +53,7 @@ Formatted with two decimal places.
 
 Uses a period for the decimal point. Widget type is 'text'.
 
-If form has 'is_html5' flag active it will render <input type="number" ... /> 
+If form has 'is_html5' flag active it will render <input type="number" ... />
 instead of type="text"
 
 =cut

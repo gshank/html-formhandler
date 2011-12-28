@@ -221,6 +221,6 @@ $form->process( params => $params );
 ok( $form->validated, 'form validated' );
 my $value = $form->value;
 my $dur0 = DateTime::Duration->new( hours => 10, minutes => 12 );
-is( $value->{timeslots}->[0]->{duration}->in_units('minutes'), $dur0->in_units('minutes'), 'got same duration' ); 
+is( $value->{timeslots}->[0]->{duration}->in_units('minutes'), $dur0->in_units('minutes'), 'got same duration' );
 
 done_testing;

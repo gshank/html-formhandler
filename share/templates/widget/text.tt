@@ -1,3 +1,0 @@
-<label class="label [% IF f.has_errors %]fld_error[% END %]" for="[% f.html_name %]">[% f.label %]</label>
-<input type="text" name="[% f.html_name %]" id="[% f.id %]" value="[% f.fif %]">
-

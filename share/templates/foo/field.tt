@@ -1,0 +1,4 @@
+[% IF self.wrapper_tag %]<[% self.wrapper_tag %][% process_attrs(self.wrapper_attributes) %]>[% END -%]
+[% IF self.label.defined %][% INCLUDE label.tt %][% END -%]
+[% content -%]
+[% IF self.wrapper_tag %]</[% self.wrapper_tag %]>[% END -%]

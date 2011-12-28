@@ -27,7 +27,7 @@ use Test::More;
     package Test::Form::Field::Employee;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Field::Compound';
-    
+
     has_field 'id' => ( type => 'PrimaryKey' );
     with 'Test::Form::Role::Employee';
 }
@@ -44,7 +44,7 @@ use Test::More;
     has_field 'fax';
     has_field 'employees' => ( type => 'Repeatable' );
     has_field 'employees.contains' =>  ( type =>  '+Test::Form::Field::Employee' );
-    
+
 }
 
 {
@@ -80,7 +80,7 @@ use Test::More;
     has_field 'tier';
     has_field 'type';
 
-    has_field 'offices' => ( type => 'Repeatable' ); 
+    has_field 'offices' => ( type => 'Repeatable' );
     has_field 'offices.contains' => ( type => '+Test::Form::Field::Office' );
 
 }
@@ -110,7 +110,7 @@ my $params = {
                 }
             ]
         },
-    ] 
+    ]
 };
 $form->process( params => $params );
 ok( $form, 'form built' );
@@ -145,7 +145,7 @@ is_deeply( $value, $params, 'value is correct' );
     package Test::Form::Field::RepEmployee;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler::Field::Repeatable';
-    
+
     has_field 'id' => ( type => 'PrimaryKey' );
     with 'Test::Form::Role::Employee';
 }
@@ -161,7 +161,7 @@ is_deeply( $value, $params, 'value is correct' );
     has_field 'phone';
     has_field 'fax';
     has_field 'employees' => ( type => '+Test::Form::Field::RepEmployee' );
-    
+
 }
 
 {

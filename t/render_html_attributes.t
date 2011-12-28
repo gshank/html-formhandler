@@ -21,12 +21,18 @@ ok( $dir, 'found template dir' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_tt_template     {'form.tt'}
-    sub build_tt_include_path { ['share/templates'] }
-
     has_field 'foo' => ( css_class => 'schoen', style => 'bunt', title => 'MyTitle' );
     has_field 'bar' => ( html_attr => { arbitrary => 'something', title => 'AltTitle' } );
 
+}
+
+{
+    package Test::Form::WithTT::Role;
+    use Moose::Role;
+    with 'HTML::FormHandler::Render::WithTT' =>
+        { -excludes => [ 'build_tt_template', 'build_tt_include_path' ] };
+    sub build_tt_template     {'form/form.tt'}
+    sub build_tt_include_path { ['share/templates'] }
 }
 
 my %results;
@@ -37,20 +43,20 @@ my %results;
 }
 {
     my $form
-        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
-    HTML::FormHandler::Render::WithTT->meta->apply($form);
-    $results{TT} = $form->render;
+        = Test::Form->new_with_traits( traits => ['Test::Form::WithTT::Role'],
+            css_class => 'beautifully', style => 'colorful' );
+    $results{TT} = $form->tt_render;
 }
 {
     my $form
-        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
-    HTML::FormHandler::Render::Simple->meta->apply($form);
+        = Test::Form->new_with_traits( traits => ['HTML::FormHandler::Render::Simple'],
+            css_class => 'beautifully', style => 'colorful' );
     $results{Simple} = $form->render;
 }
 {
     my $form
-        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
-    HTML::FormHandler::Render::Table->meta->apply($form);
+        = Test::Form->new_with_traits( traits => ['HTML::FormHandler::Render::Table'],
+            css_class => 'beautifully', style => 'colorful' );
     $results{Table} = $form->render;
 }
 is( scalar( grep {$_} values %results ),
@@ -59,11 +65,11 @@ is( scalar( grep {$_} values %results ),
 );
 
 while ( my ( $key, $res ) = each %results ) {
-    like( $res, qr/class="schoen"/, "$key Field got the class" );
-    like( $res, qr/style="bunt"/,   "$key Field got the style" );
+    like( $res, qr/class="schoen"/, "$key Field got the class (schoen)" );
+    like( $res, qr/style="bunt"/,   "$key Field got the style (bunt)" );
 
-    like( $res, qr/class="beautifully"/, "$key Form got the class" );
-    like( $res, qr/style="colorful"/,    "$key Form got the style" );
+    like( $res, qr/class="beautifully"/, "$key Form got the class (beautifully)" );
+    like( $res, qr/style="colorful"/,    "$key Form got the style (colorful)" );
 
     like( $res, qr/arbitrary="something"/,   "$key Field got the arbitrary attribute" );
 

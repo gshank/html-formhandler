@@ -3,9 +3,7 @@ package HTML::FormHandler::Widget::Field::CheckboxGroup;
 
 use Moose::Role;
 use namespace::autoclean;
-
-with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
-with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render {
     my $self = shift;
@@ -14,7 +12,7 @@ sub render {
     my $index  = 0;
     my $multiple = $self->multiple;
     my $id = $self->id;
-    my $html_attributes = $self->_add_html_attributes;
+    my $html_attributes = process_attrs($self->attributes);
 
     my $fif = $result->fif;
     my %fif_lookup;

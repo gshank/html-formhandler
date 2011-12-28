@@ -55,7 +55,14 @@ sub _build_fields {
 
     $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
     my $flist = $self->has_field_list;
-    $self->_process_field_list($flist) if $flist;
+    if( $flist ) {
+        if( ref($flist) eq 'ARRAY' && ref( $flist->[0] ) eq 'HASH' ) {
+            $self->_process_field_array( $flist );
+        }
+        else {
+            $self->_process_field_list( $flist );
+        }
+    }
     my $mlist = $self->model_fields if $self->fields_from_model;
     $self->_process_field_list( $mlist ) if $mlist;
     return unless $self->has_fields;
@@ -193,7 +200,6 @@ sub _make_field {
     die "Could not load field class '$type' for field '$name'"
        unless $class;
 
-
     $field_attr->{form} = $self->form if $self->form;
     # parent and name correction for names with dots
     if ( $field_attr->{name} =~ /\./ ) {
@@ -201,7 +207,7 @@ sub _make_field {
         my $simple_name = pop @names;
         my $parent_name = join '.', @names;
         # use special 'field' method call that starts from
-        # $self, because names aren't always starting from 
+        # $self, because names aren't always starting from
         # the form
         my $parent      = $self->field($parent_name, undef, $self);
         if ($parent) {

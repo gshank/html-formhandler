@@ -9,7 +9,7 @@ our $VERSION = '0.02';
 our $class_messages = {
     'email_format' => 'Email should be of the format [_1]',
 };
-has '+html5_tag_type' => ( default => 'email' );
+has '+html5_type_attr' => ( default => 'email' );
 
 sub get_class_messages  {
     my $self = shift;
@@ -39,7 +39,7 @@ apply(
 Validates that the input looks like an email address uisng L<Email::Valid>.
 Widget type is 'text'.
 
-If form has 'is_html5' flag active it will render <input type="email" ... /> 
+If form has 'is_html5' flag active it will render <input type="email" ... />
 instead of type="text"
 
 =head1 DEPENDENCIES

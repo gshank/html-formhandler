@@ -40,6 +40,7 @@ Does not check by default.
 has '+widget'           => ( default => 'password' );
 has '+password'         => ( default => 1 );
 has 'ne_username'       => ( isa     => 'Str', is => 'rw' );
+has '+type_attr'        => ( default => 'password' );
 
 our $class_messages = {
     'required' => 'Please enter a password in this field',

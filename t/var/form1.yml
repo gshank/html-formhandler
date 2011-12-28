@@ -1,0 +1,27 @@
+action: /login
+name: login_form
+tt_template: form.tt
+field_list:
+    - name: user
+      type: Text
+      label: Username
+      required: 1
+      wrapper_attr:
+          class: 'text label'
+    - name: pass
+      type: Password
+      label: Password
+      required: 1
+      wrapper_attr:
+          class: 'password label'
+    - name: opt_in
+      type: Checkbox
+      label: Opt in?
+      wrapper_attr:
+          class: 'checkbox label'
+    - name: submit
+      type: Submit
+      value: Login
+      label: ~
+      wrapper_attr:
+          class: 'submit'

@@ -681,13 +681,17 @@ Flag to indicate the fields will render using specialized attributes for html5, 
            ( default => sub { { class => '...', method => '...' } } );
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
-   enctype - Request enctype
    uuid - generates a string containing an HTML field with UUID
+
+Deprecated (use html_attr instead):
+
    css_class - adds a 'class' attribute to the form tag
    style - adds a 'style' attribute to the form tag
+   enctype - Request enctype
 
 Note that the form tag contains an 'id' attribute which is set to the
-form name.
+form name. The standards have been flip-flopping over whether a 'name'
+attribute is valid. It can be set with 'html_attr'.
 
 =cut
 
@@ -733,11 +737,11 @@ sub build_result {
 
 has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef',
     default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
-has 'widget_name_space' => ( 
-    is => 'ro', 
-    isa => 'HFH::ArrayRefStr', 
+has 'widget_name_space' => (
+    is => 'ro',
+    isa => 'HFH::ArrayRefStr',
     traits => ['Array'],
-    default => sub {[]}, 
+    default => sub {[]},
     coerce => 1,
     handles => {
         add_widget_name_space => 'push',
@@ -798,6 +802,18 @@ has 'html_attr' => ( is => 'rw', traits => ['Hash'],
    default => sub { {} }, handles => { has_html_attr => 'count',
    set_html_attr => 'set', delete_html_attr => 'delete' }
 );
+
+sub attributes {
+    my $self = shift;
+    my $attr = {};
+    $attr->{id} = $self->name;
+    $attr->{action} = $self->action if $self->action;
+    $attr->{method} = $self->http_method if $self->http_method;
+    $attr->{enctype} = $self->enctype if $self->enctype;
+    $attr->{class} = $self->css_class if $self->css_class;
+    $attr->{style} = $self->style if $self->style;
+    return {%$attr, %{$self->html_attr}};
+}
 
 sub has_flag {
     my ( $self, $flag_name ) = @_;
@@ -894,8 +910,8 @@ sub BUILDARGS {
 sub BUILD {
     my $self = shift;
 
-    $self->apply_widget_role( $self, $self->widget_form, 'Form' )
-        if ( $self->widget_form && $self->widget_form ne 'Simple' );
+    $self->before_build; # hook to allow customizing forms
+    $self->apply_widget_role( $self, $self->widget_form, 'Form' ) unless $self->no_widgets;
     $self->_build_fields($self->field_traits);    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     return if defined $self->item_id && !$self->item;
@@ -915,6 +931,8 @@ sub BUILD {
     $self->dump_fields if $self->verbose;
     return;
 }
+
+sub before_build {}
 
 sub process {
     my $self = shift;

@@ -2,7 +2,7 @@ package HTML::FormHandler::Widget::Field::Upload;
 # ABSTRACT: update field rendering widget
 
 use Moose::Role;
-with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render {
     my ( $self, $result ) = @_;
@@ -12,7 +12,7 @@ sub render {
     $output = '<input type="file" name="';
     $output .= $self->html_name . '"';
     $output .= ' id="' . $self->id . '"';
-    $output .= $self->_add_html_attributes;
+    $output .= process_attrs($self->attributes);
     $output .= ' />';
     return $self->wrap_field($result, $output);
 }

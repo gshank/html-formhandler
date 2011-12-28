@@ -5,14 +5,9 @@ use Moose::Role;
 use File::ShareDir;
 use Template;
 use namespace::autoclean;
-
-requires 'form';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 =head1 SYNOPSIS
-
-Warning: this feature is not quite ready for prime time. It has not
-been well tested and the template widgets aren't complete. Contributions
-welcome.
 
 A rendering role for HTML::FormHandler that allows rendering using
 Template::Toolkit
@@ -23,7 +18,7 @@ Template::Toolkit
    with 'HTML::FormHandler::Render::WithTT';
 
    sub build_tt_template { 'user_form.tt' }
-   sub build_tt_include_path { 'root/templates' }
+   sub build_tt_include_path { ['root/templates'] }
    ....< define form >....
 
    my $form = MyApp::Form->new(
@@ -43,6 +38,9 @@ has 'tt_include_path' => (
     isa => 'ArrayRef',
     lazy => 1,
     builder => 'build_tt_include_path',
+    handles => {
+       add_tt_include_path => 'push',
+    }
 );
 sub build_tt_include_path {[]}
 
@@ -65,7 +63,7 @@ sub build_tt_config {
 # either file name string or string ref?
 has 'tt_template' => ( is => 'rw', isa => 'Str', lazy => 1,
    builder => 'build_tt_template' );
-sub build_tt_template { 'form.tt' }
+sub build_tt_template { 'form/form.tt' }
 
 has 'tt_engine' => ( is => 'rw', isa => 'Template', lazy => 1,
    builder => 'build_tt_engine'
@@ -85,7 +83,7 @@ has 'default_tt_vars' => ( is => 'ro', isa => 'HashRef',
    lazy => 1, builder => 'build_default_tt_vars' );
 sub build_default_tt_vars {
     my $self = shift;
-    return { form => $self->form };
+    return { form => $self->form, process_attrs => \&process_attrs };
 }
 
 has 'tt_default_options' => (
@@ -104,8 +102,12 @@ sub tt_render {
     my $output;
     my $vars = { %{$self->default_tt_vars}, %{$self->tt_vars} };
     $self->tt_engine->process( $self->tt_template, $vars, \$output );
+
+    if( my $exception = $self->tt_engine->{SERVICE}->{_ERROR} ) {
+
+        die $exception->[0] . " " . $exception->[1] . ".  So far => " . ${$exception->[2]} . "\n";
+    }
     return $output;
 }
-
 
 1;

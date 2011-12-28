@@ -23,6 +23,7 @@ attribute is used for the HTML input field 'value'.
 
 has '+value'  => ( default => 'Save' );
 has '+widget' => ( default => 'submit' );
+has '+type_attr' => ( default => 'submit' );
 
 sub _result_from_input {
     my ( $self, $result, $input, $exists ) = @_;

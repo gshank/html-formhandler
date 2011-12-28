@@ -1,0 +1,46 @@
+use strict;
+use warnings;
+use Test::More;
+
+use HTML::FormHandler::Foo;
+use FindBin;
+
+my $expected =
+'<form action="/login" id="login_form" method="post">
+<div class="text label">
+<label>Username</label>
+<input name="user" type="text" />
+</div>
+<div class="password label">
+<label>Password</label>
+<input name="pass" type="password" />
+</div>
+<div class="checkbox label">
+<label>Opt in?</label>
+<input name="opt_in" type="checkbox" value="1" />
+</div>
+<div class="submit">
+<input name="submit" type="submit" value="Login" />
+</div>
+</form>
+';
+
+
+my $form = HTML::FormHandler::Foo->new( config_file => "$FindBin::Bin/var/form1.yml" );
+$form->process({});
+is( $form->num_fields, 4, 'right number of fields');
+my $tt_rendered_form = $form->tt_render;
+ok($tt_rendered_form, 'form rendered');
+
+SKIP: {
+    skip 'Install HTML::TreeBuilder to test TT Result', 3
+        unless eval { require HTML::TreeBuilder && $HTML::TreeBuilder::VERSION >= 3.23 };
+        # really old TreeBuilder versions might not work
+
+    my $expected_tree = HTML::TreeBuilder->new_from_content($expected);
+    my $tt_tree = HTML::TreeBuilder->new_from_content($tt_rendered_form);
+    is( $tt_tree->as_HTML, $expected_tree->as_HTML,
+        "rendering matches expected output" );
+};
+
+done_testing;

@@ -5,7 +5,8 @@ use Moose::Role;
 
 requires( 'sorted_fields', 'field' );
 
-with 'HTML::FormHandler::Widget::Form::Role::HTMLAttributes';
+use HTML::FormHandler::Render::Util ('process_attrs');
+
 our $VERSION = 0.01;
 
 =head1 SYNOPSIS
@@ -240,13 +241,13 @@ sub render_field_struct {
 
 sub render_text {
     my ( $self, $field ) = @_;
-    my $output = '<input type="' . $field->tag_type . '" name="';
+    my $output = '<input type="' . $field->input_type . '" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
     $output .= ' value="' . $field->html_filter($field->fif) . '"';
-    $output .= $self->_add_html_attributes( $field );
+    $output .= process_attrs($field->attributes);
     $output .= ' />';
     return $output;
 }
@@ -259,7 +260,7 @@ sub render_password {
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
     $output .= ' value="' . $field->html_filter($field->fif) . '"';
-    $output .= $self->_add_html_attributes( $field );
+    $output .= process_attrs($field->attributes);
     $output .= ' />';
     return $output;
 }
@@ -270,7 +271,7 @@ sub render_hidden {
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
     $output .= ' value="' . $field->html_filter($field->fif) . '"';
-    $output .= $self->_add_html_attributes( $field );
+    $output .= process_attrs($field->attributes);
     $output .= ' />';
     return $output;
 }
@@ -284,7 +285,7 @@ sub render_select {
     $output .= qq{ id="$id"};
     $output .= ' multiple="multiple"' if $multiple == 1;
     $output .= ' size="' . $field->size . '"' if $field->size;
-    my $html_attributes = $field->_add_html_attributes( $field );
+    my $html_attributes = process_attrs($field->attributes);
     $output .= $html_attributes;
     $output .= '>';
     my $index = 0;
@@ -327,7 +328,7 @@ sub render_checkbox {
     $output .= ' id="' . $field->id . '"';
     $output .= ' value="' . $field->html_filter($field->checkbox_value) . '"';
     $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
-    $output .= $self->_add_html_attributes( $field );
+    $output .= process_attrs($field->attributes);
     $output .= ' />';
     return $output;
 }
@@ -359,7 +360,7 @@ sub render_textarea {
 
     my $output =
         qq(<textarea name="$name" id="$id" )
-        . $self->_add_html_attributes($field)
+        . process_attrs($field->attributes)
         . qq(rows="$rows" cols="$cols">)
         . $field->html_filter($fif)
         . q(</textarea>);
@@ -374,7 +375,7 @@ sub render_upload {
     $output = '<input type="file" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= $self->_add_html_attributes( $field );
+    $output .= process_attrs($field->attributes);
     $output .= ' />';
     return $output;
 }
@@ -402,7 +403,7 @@ sub render_submit {
     my $output = '<input type="submit" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= $self->_add_html_attributes( $field );
+    $output .= process_attrs($field->attributes);
     $output .= ' value="' . $field->html_filter($field->_localize($field->value)) . '" />';
     return $output;
 }
@@ -413,37 +414,8 @@ sub render_reset {
     my $output = '<input type="reset" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= $self->_add_html_attributes( $field );
+    $output .= process_attrs($field->attributes);
     $output .= ' value="' . $field->html_filter($field->value) . '" />';
-    return $output;
-}
-
-sub _add_html_attributes {
-    my ( $self, $field ) = @_;
-    if ($self->form->has_flag('is_html5')) {
-        $field->set_html_attr('required' => 'required') if ($field->required);
-        my %attributes = (
-            maxlength => 'maxlength',
-            range_start => 'min',
-            range_end => 'max',
-        );
-        foreach my $attr (keys %attributes) {
-            $field->set_html_attr($attributes{$attr} => $field->$attr) if ($field->meta->find_attribute_by_name($attr) && defined $field->$attr);
-        }
-    }
-    my $output = q{};
-    my $html_attr = { %{$field->html_attr} };
-
-    for my $attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
-        $html_attr->{$attr} = $field->$attr if !exists $html_attr->{$attr} && $field->$attr;
-    }
-    foreach my $attr ( sort keys %$html_attr ) {
-        $output .= qq{ $attr="} . $html_attr->{$attr} . qq{"};
-    }
-    $output .= ($field->javascript ? ' ' . $field->javascript : '');
-    if( $field->input_class ) {
-        $output .= ' class="' . $field->input_class . '"';
-    }
     return $output;
 }
 

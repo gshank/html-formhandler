@@ -3,8 +3,7 @@ package HTML::FormHandler::Widget::Field::Select;
 
 use Moose::Role;
 use namespace::autoclean;
-
-with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render {
     my $self = shift;
@@ -14,7 +13,7 @@ sub render {
     my $multiple = $self->multiple;
     my $output = '<select name="' . $self->html_name . qq{" id="$id"};
     my $t;
-    my $html_attributes = $self->_add_html_attributes;
+    my $html_attributes = process_attrs($self->attributes);
 
     $output .= ' multiple="multiple"' if $multiple;
     $output .= qq{ size="$t"} if $t = $self->size;

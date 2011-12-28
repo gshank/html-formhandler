@@ -227,20 +227,13 @@ Compound fields will have an array of errors from the subfields.
 =head2 Attributes for creating HTML
 
 There's a generic 'html_attr' hashref attribute that can be used to set
-arbitrary HTML attributes on a field.
+arbitrary HTML attributes on a field's input tag.
 
    has_field 'foo' => ( html_attr => { readonly => 1, my_attr => 'abc' } );
 
-Some attributes also have specific setters
-(readonly', 'disabled', 'style', 'title', 'tabindex).
-
-   has_field 'bar' => ( readonly => 1 );
-
-   title       - Place to put title for field.
-   style       - Place to put field style string
-   disabled    - for the HTML flag
-   tabindex    - for the HTML tab index
-   readonly    - for the HTML flag
+The 'label_attr' hashref is for label attributes, and the 'wrapper_attr'
+is for attributes on the wrapping element (a 'div' for the standard 'simple'
+wrapper).
 
 The javascript value of the javascript attribute is entered completely.
 
@@ -249,10 +242,6 @@ The javascript value of the javascript attribute is entered completely.
 The following are used in rendering HTML, but are handled specially.
 
    label       - Text label for this field. Defaults to ucfirst field name.
-   css_class   - For a css class name (string; could be several classes,
-                 separated by spaces or commas). Used in wrapper for input field.
-   input_class - class attribute on the 'input' field. applied with
-                 '_apply_html_attribute' (also html_attr => { class => '...' } )
    id          - Useful for javascript (default is html_name. to prefix with
                  form name, use 'html_prefix' in your form)
    render_filter - Coderef for filtering fields before rendering. By default
@@ -262,6 +251,23 @@ The order attribute may be used to set the order in which fields are rendered.
 
    order       - Used for sorting errors and fields. Built automatically,
                  but may also be explicitly set
+
+The following are deprecated. Use the 'html_attr', 'label_attr', and 'wrapper_attr'
+instead.
+
+   css_class   - instead use wrapper_attr => { class => '...' }
+   input_class - instead use html_attr => { class => '...' }
+   title       - instead use html_attr => { title => '...' }
+   style       - instead use html_attr => { style => '...' }
+   disabled    - instead use html_attr => { disabled => 'disabled' }
+   tabindex    - instead use html_attr => { tabindex => 1 }
+   readonly    - instead use html_attr => { readonly => 'readonly' }
+
+
+=head2 html5_type_attr [string]
+
+This string is used when rendering the input tag as the value for the type attribute.
+It is used when the form has the is_html5 flag on.
 
 =head2 widget
 
@@ -725,7 +731,7 @@ sub input {
     my $self = shift;
 
     # allow testing fields individually by creating result if no form
-    return undef unless $self->has_result || !$self->form; 
+    return undef unless $self->has_result || !$self->form;
     my $result = $self->result;
     return $result->_set_input(@_) if @_;
     return $result->input;
@@ -735,7 +741,7 @@ sub value {
     my $self = shift;
 
     # allow testing fields individually by creating result if no form
-    return undef unless $self->has_result || !$self->form; 
+    return undef unless $self->has_result || !$self->form;
     my $result = $self->result;
     return undef unless $result;
     return $result->_set_value(@_) if @_;
@@ -812,7 +818,7 @@ sub has_flag {
 }
 
 has 'label' => (
-    isa     => 'Str',
+    isa     => 'Maybe[Str]',
     is      => 'rw',
     lazy    => 1,
     builder => 'build_label',
@@ -853,6 +859,7 @@ sub build_html_name {
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
 has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw' );
+sub wrapper { lc( shift->widget_wrapper ) || 'simple' }
 has 'widget_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
@@ -904,6 +911,14 @@ has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
 has 'disabled'   => ( isa => 'Bool', is => 'rw' );
 has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'tabindex' => ( is => 'rw', isa => 'Int' );
+has 'type_attr' => ( is => 'rw', isa => 'Str', default => 'text' );
+has 'html5_type_attr' => ( isa => 'Str', is => 'ro', default => 'text' );
+sub input_type {
+    my $self = shift;
+    return $self->html5_type_attr if ( $self->form && $self->form->has_flag('is_html5') );
+    return $self->type_attr;
+}
+
 has 'html_attr' => ( is => 'rw', traits => ['Hash'],
    default => sub { {} }, handles => { has_html_attr => 'count',
    set_html_attr => 'set', delete_html_attr => 'delete' }
@@ -916,6 +931,57 @@ has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
    default => sub { {} }, handles => { has_wrapper_attr => 'count',
    set_wrapper_attr => 'set', delete_wrapper_attr => 'delete' }
 );
+
+sub attributes {
+    my $self = shift;
+
+    my $attrs = {};
+    if ($self->form->has_flag('is_html5')) {
+        $attrs->{required} = 'required' if $self->required;
+        $attrs->{min} = $self->range_start if defined $self->range_start;
+        $attrs->{max} = $self->range_end if defined $self->range_end;
+    }
+    for my $attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
+        $attrs->{$attr} = $self->$attr if $self->$attr;
+    }
+    $attrs->{class} = $self->input_class if $self->input_class;
+    my %all_attrs = (%$attrs, %{$self->html_attr});
+    return \%all_attrs;
+}
+
+sub label_attributes {
+    my $self = shift;
+    my %attr = %{$self->label_attr};
+    if( ! exists $attr{class} && $self->form && ! $self->form->can('no_label_class')  ) {
+        $attr{class} = 'label';
+    }
+    return \%attr;
+}
+sub wrapper_attributes {
+   my $self = shift;
+   my %attr = %{$self->wrapper_attr};
+   if( ! exists $attr{class} && defined $self->css_class ) {
+       $attr{class} = $self->css_class;
+   }
+   return \%attr;
+}
+
+#=====================
+# these may be temporary
+sub field_filename {
+    my $self = shift;
+    return 'checkbox_tag.tt' if $self->input_type eq 'checkbox';
+    return 'input_tag.tt';
+}
+sub wrapper_tag {
+    my $self = shift;
+    return $self->get_tag('wrapper_tag') || 'div';
+}
+sub label_tag {
+    my $self = shift;
+    return $self->get_tag('label_tag') || 'label';
+}
+#===================
 
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
 has 'set_validate' => ( isa => 'Str', is => 'ro',);
@@ -1136,11 +1202,7 @@ sub all_messages {
 sub BUILDARGS {
     my $class = shift;
 
-    # for compatibility, change 'set_init' to 'set_default'
-    my @new;
-    push @new, ('set_default', {@_}->{set_init} )
-        if( exists {@_}->{set_init} );
-    return $class->SUPER::BUILDARGS(@_, @new);
+    return $class->SUPER::BUILDARGS(@_);
 }
 
 sub BUILD {

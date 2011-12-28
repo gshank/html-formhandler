@@ -1,9 +1,0 @@
-<label class="label [% IF field.has_errors %]fld_error[% END %]" for="[% f.html_name %]">[% f.label %]</label>
-[% FOR option IN f.options %]
-  <input type="checkbox" value="[% option.value %]" name="[% f.name %]"
-  [% FOREACH selval IN f.fif %]
-    [% IF selval == option.value %]selected="selected"[% END %]
-  [% END %]>
-  [% option.label | html %]>
-[% END %] 
-

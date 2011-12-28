@@ -1,0 +1,1 @@
+<input name="[% self.html_name %]" type="checkbox" value="[% self.checkbox_value %]"[% process_attrs(self.attributes) %] />

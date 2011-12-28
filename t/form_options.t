@@ -157,7 +157,7 @@ ok( $form, 'form built' );
 
 my $rendered_field = $form->field('my_list')->render;
 like( $rendered_field, qr/<option value="1" id="my_list\.0" selected="selected">/, 'element is selected' );
-# the 'value' of the field should reflect the selected values 
+# the 'value' of the field should reflect the selected values
 is_deeply( $form->value, {},  'no form value' );
 ok( $form->field('my_list')->fif, 'fif value');
 $form->process( { my_list => 2 } );

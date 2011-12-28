@@ -3,9 +3,7 @@ package HTML::FormHandler::Widget::Field::RadioGroup;
 
 use Moose::Role;
 use namespace::autoclean;
-
-with 'HTML::FormHandler::Widget::Field::Role::SelectedOption';
-with 'HTML::FormHandler::Widget::Field::Role::HTMLAttributes';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render {
     my $self = shift;
@@ -22,7 +20,7 @@ sub render {
             . $self->html_name . qq{" id="$id.$index"};
         $output .= ' checked="checked"'
             if $fif eq $value;
-        $output .= $self->_add_html_attributes;
+        $output .= process_attrs($self->attributes);
         $output .= ' />';
         $output .= $self->html_filter($option->{label}) . '</label><br />';
         $index++;

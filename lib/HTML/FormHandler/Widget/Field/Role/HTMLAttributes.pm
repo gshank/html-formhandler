@@ -3,6 +3,7 @@ package HTML::FormHandler::Widget::Field::Role::HTMLAttributes;
 
 use Moose::Role;
 
+# TODO: replace some of this with the eqivalent of the template process_attrs(field.attributes)
 sub _add_html_attributes {
     my $self = shift;
     if ($self->form->has_flag('is_html5')) {

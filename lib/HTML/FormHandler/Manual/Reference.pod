@@ -18,7 +18,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    type          Field type. From a Field class: 'Text', 'Select', etc
    accessor      Database accessor name if different than field name
    set_validate  Name of validation method in form. Default is validate_$fieldname
-   set_init      Name of the form method used to initialize a field
+   set_default   Name of the form method used to initialize a field
    required      Field is required
    order         Set the order for fields. Used by sorted_fields, templates.
    widget        Determines which rendering widget to use for the field 

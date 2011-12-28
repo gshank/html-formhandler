@@ -1,0 +1,3 @@
+[% INCLUDE start_form.tt -%]
+[% FOREACH element = form.sorted_fields %][% INCLUDE "input.tt" self=element %][% END -%]
+[% INCLUDE end_form.tt -%]

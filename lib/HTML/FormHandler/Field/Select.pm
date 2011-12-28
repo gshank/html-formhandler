@@ -515,7 +515,7 @@ sub deflate {
     return $value unless ( $self->has_many && $self->multiple );
 
     # the following is for the edge case of a has_many select
-    return $value unless ref($value) eq 'ARRAY' && scalar @$value && ref($value->[0]) eq 'HASH'; 
+    return $value unless ref($value) eq 'ARRAY' && scalar @$value && ref($value->[0]) eq 'HASH';
     return [map { $_->{$self->has_many} } @$value];
 }
 
