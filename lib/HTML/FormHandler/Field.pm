@@ -859,7 +859,7 @@ sub build_html_name {
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
 has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw' );
-sub wrapper { lc( shift->widget_wrapper ) || 'simple' }
+sub wrapper { lc( shift->widget_wrapper || '' ) || 'simple' }
 has 'widget_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
