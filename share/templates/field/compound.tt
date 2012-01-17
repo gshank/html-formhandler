@@ -2,7 +2,7 @@
 <legend>[% f.label %]</legend>
 [% FOREACH sf IN f.sorted_fields -%]
 [% outerf = f; f = sf; -%]
-<div[% IF f.css_class %]class="[% f.css_class %]"[% END %]>[% PROCESS "field/${f.widget}.tt" -%]</div>
+<div[% process_atrrs(f.wrapper_attributes) %]>[% PROCESS "field/${f.widget}.tt" -%]</div>
 [% f = outerf -%]
 [% END -%]
 </fieldset>

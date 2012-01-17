@@ -34,6 +34,23 @@ And include them in a generic template:
 
    [% PROCESS widget/form_end.tt %]
 
+In release 0.36000, the templates were rearranged to match the widgets better,
+so that there are field, form, and wrapper directories. (See the templates in the
+share directory.)
+
+=head1 Field attributes
+
+There is a 'process_attrs' method in the HTML::FormHandler::Render::Util which
+can be used to handle attributes in fields, wrappers, and labels:
+
+    label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">
+    [% f.label %]: </label>
+    <input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]" 
+    [% process_attrs(f.attributes) %] value="[% f.fif %]">
+
+The 'process_attrs' method can be added to your own TT view in a similar way to
+L<HTML::FormHandler::Render::WithTT>, where it's added to the TT vars.
+
 =head1 Sample templates
 
 Note that the following templates assume that the field is in a TT variable "f",
