@@ -45,6 +45,10 @@ IRC:
 
    Join #formhandler on irc.perl.org
 
+Mailing list:
+
+  http://groups.google.com/group/formhandler
+
 =head1 AUTHOR
 
 gshank: Gerda Shank <gshank@cpan.org>

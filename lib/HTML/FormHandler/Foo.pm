@@ -1,4 +1,5 @@
 package HTML::FormHandler::Foo;
+# ABSTRACT: Experiment in loading form from config file 
 use Moose;
 extends 'HTML::FormHandler';
 with 'HTML::FormHandler::Render::WithTT';
@@ -13,8 +14,8 @@ use 5.010;
 #);
 
 has 'form_error_message' => ( isa => 'Str', is => 'rw' );
-has 'javascript_src' => ( is => 'Str', is => 'rw' );
-has 'javascript' => ( is => 'STr', is => 'rw' );
+has 'javascript_src' => ( isa => 'Str', is => 'rw' );
+has 'javascript' => ( isa => 'Str', is => 'rw' );
 
 sub before_build {
     my $self = shift;

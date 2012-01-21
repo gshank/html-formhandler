@@ -5,6 +5,8 @@ use Test::More;
 use HTML::FormHandler::Foo;
 use FindBin;
 
+# test Foo class for loading form info from config
+
 my $expected =
 '<form action="/login" id="login_form" method="post">
 <div class="text label">
@@ -24,7 +26,6 @@ my $expected =
 </div>
 </form>
 ';
-
 
 my $form = HTML::FormHandler::Foo->new( config_file => "$FindBin::Bin/var/form1.yml" );
 $form->process({});

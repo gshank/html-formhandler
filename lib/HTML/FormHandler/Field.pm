@@ -1214,16 +1214,13 @@ sub BUILD {
     $self->_set_default( $self->_comp_default_meth )
         if( $self->form && $self->form->can( $self->_comp_default_meth ) );
     $self->add_widget_name_space( $self->form->widget_name_space ) if $self->form;
-    # widgets will already have been applied by BuildFields, but this allows
-    # testing individual fields
-#   $self->apply_rendering_widgets unless ($self->can('render') );
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;
     $self->add_action( @{ $params->{apply} } ) if $params->{apply};
 }
 
 # this is the recursive routine that is used
-# to initial fields if there is no initial object and no params
+# to initialize field results if there is no initial object and no params
 sub _result_from_fields {
     my ( $self, $result ) = @_;
 
