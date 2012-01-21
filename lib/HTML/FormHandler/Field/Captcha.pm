@@ -27,7 +27,7 @@ You can set the following attributes on the 'captcha' field:
 
 Example:
 
-   has 'captcha' => ( height => '24', width => '70 );
+   has 'captcha' => ( height => '24', width => '70' );
 
 =cut
 

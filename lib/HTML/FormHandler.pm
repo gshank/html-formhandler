@@ -61,6 +61,7 @@ field declaration sugar):
 
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
+    use Moose::Util::TypeConstraints;
 
     has '+item_class' => ( default => 'User' );
 
