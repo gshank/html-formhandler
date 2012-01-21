@@ -425,6 +425,14 @@ field's 'value' directly here, since it will
 be overwritten by the validation process. Set the value in a field
 validation method.)
 
+=head3 defaults
+
+This is a more specialized version of the 'update_field_list'. It can be
+used to provide 'default' settings for fields, in a shorthand way (you don't
+have to say 'default' for every field).
+
+   $form->process( defaults => { foo => 'this_foo', bar => 'this_bar' }, ... );
+
 =head3 active/inactive
 
 A field can be marked 'inactive' and set to active at new or process time;
@@ -617,6 +625,9 @@ not map to an existing or database object in an automatic way, and you need
 to create a different type of object for initialization. (You might also
 want to do 'update_model' yourself.)
 
+Also see the 'use_init_obj_over_item' flag, if you want to provide both an
+item and an init_object, and use the values from the init_object.
+
 =head3 ctx
 
 Place to store application context for your use in your form's methods.
@@ -653,10 +664,14 @@ Flag to indicate that validation has been run. This flag will be
 false when the form is initially loaded and displayed, since
 validation is not run until FormHandler has params to validate.
 
-=head3 verbose
+=head3 verbose, dump, peek
 
 Flag to dump diagnostic information. See 'dump_fields' and
-'dump_validated'.
+'dump_validated'. 'Peek' can be useful in diagnosing bugs.
+It will dump a brief listing of the fields and results.
+
+   $form->process( ... );
+   $form->peek;
 
 =head3 html_prefix
 
@@ -677,7 +692,19 @@ will return the form name + "." + field full_name
 
 =head3 is_html5
 
-Flag to indicate the fields will render using specialized attributes for html5, it is set to 0 by default
+Flag to indicate the fields will render using specialized attributes for html5.
+Set to 0 by default.
+
+=head3 use_defaults_over_obj
+
+The 'normal' precedence is that if there is an accessor in the item/init_object
+that value is used and not the 'default'. This flag makes the defaults of higher
+precedence. Mainly useful if providing an empty row on create.
+
+=head3 use_init_obj_over_item
+
+If you are providing both an item and an init_object, and want the init_object
+to be used for defaults instead of the item.
 
 =head2 For use in HTML
 

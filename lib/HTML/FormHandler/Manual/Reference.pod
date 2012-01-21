@@ -43,7 +43,6 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    inactive, is_active, is_inactive
    input_without_param  The value of the field if there is no input from the submitted form
    default       Default value for the field
-   default_over_obj Default that takes precedence over item or init_object
    not_nullable  Don't convert an empty field ('', etc) to undef
    trim          Transform to trim the field 
    deflation     Function to transform the field
@@ -51,18 +50,15 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 =head2 Field Attributes for creating HTML
 
    html_attr   - Hashref to store arbitrary html attributes.
+   label_attr  - Hashref for html attributes for the label
+   wrapper_attr - Hashref for html attributes for the wrapping element (div, etc)
    label       - Text label for this field. Defaults to ucfirst field name.
    title       - Place to put title for field.
    style       - Place to put field style string
-   css_class   - For a css class name (string; could be several classes,
-                 separated by spaces or commas). Used in wrapper for input field.
-   input_class - class attribute on the 'input' field. applied with
-                 '_apply_html_attribute' along with disabled/readonly/javascript
+   css_class   - use wrapper_attr  { class => '..' } instead 
+   input_class - use html_attr  { class => '..' } instead 
    id          - Useful for javascript (default is html_name. to prefix with
                  form name, use 'html_prefix' in your form)
-   disabled    - for the HTML flag
-   readonly    - for the HTML flag
-   tabindex    - for the HTML tab index
    javascript  - for a Javascript string
 
 =head2 Field attributes not set in a user form
