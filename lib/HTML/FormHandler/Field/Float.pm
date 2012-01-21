@@ -13,8 +13,8 @@ has 'decimal_symbol_for_db' => ( isa => 'Str', is => 'rw', default => '.');
 
 our $class_messages = {
     'float_needed'      => 'Must be a number. May contain numbers, +, - and decimal separator \'[_1]\'',
-    'float_size'        => 'May have maximum size of [_1], but has [_2]',
-    'float_precision'   => 'May have maximum [_1] [quant,_1,number] after the decimal point, but has [_2]',
+    'float_size'        => 'Total size of number must be less than or equal to [_1], but is [_2]',
+    'float_precision'   => 'May have a maximum of [quant,_1,digit] after the decimal point, but has [_2]',
 };
 
 sub get_class_messages {
@@ -111,5 +111,11 @@ Widget type is 'text'.
         range_start             => 0,
         range_end               => 100
     );
+
+=head2 messages
+
+   float_needed
+   float_size
+   float_precision
 
 =cut

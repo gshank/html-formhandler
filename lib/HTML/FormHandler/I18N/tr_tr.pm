@@ -60,8 +60,8 @@ our %Lexicon = (
 
     # H::F::Field::FloatNumber
     'Must be a number. May contain numbers, +, - and decimal separator \'[_1]\'', => 'Bir sayı olmalı. Rakamlar, +, -, ve ondalık ayırıcı \'[_1]\' içerebilir',
-    'May have maximum size of [_1], but has [_2]',                                => 'Maksimum [_1] rakam içerebilir ama [_2] rakam içeriyor',
-    'May have maximum [_1] [quant,_1,number] after decimal point, but has [_2]',  => 'Ayraçtan sonra maksimum [_1] rakam içerebilir ama [_2] rakam içeriyor',
+    'Total size of number must be less than or equal to [_1], but is [_2]', => 'Maksimum [_1] rakam içerebilir ama [_2] rakam içeriyor',
+    'May have a maximum of [quant,_1,digit] after the decimal point, but has [_2]',  => 'Ayraçtan sonra maksimum [_1] rakam içerebilir ama [_2] rakam içeriyor',
 
 
     # H::F::Field::Integer

@@ -36,11 +36,6 @@
                        }
           },
           {
-            'Captcha' => {
-                           'captcha_verify_failed' => 'Verification incorrect. Try again.'
-                         }
-          },
-          {
             'Date' => {
                         'date_late' => 'Date is too late',
                         'date_early' => 'Date is too early'
@@ -59,6 +54,13 @@
           {
             'Email' => {
                          'email_format' => 'Email should be of the format [_1]'
+                       }
+          },
+          {
+            'Float' => {
+                         'float_needed' => 'Must be a number. May contain numbers, +, - and decimal separator \'[_1]\'',
+                         'float_precision' => 'May have a maximum of [quant,_1,digit] after the decimal point, but has [_2]',
+                         'float_size' => 'Total size of number must be less than or equal to [_1], but is [_2]'
                        }
           },
           {
