@@ -389,6 +389,9 @@ is not defined so you can provide default values in a variety of other ways,
 including providing a trait which does 'build_default_over_obj'. For examples,
 see tests in the distribution.
 
+The 'default_over_obj' attributes can be set at process time with the 'defaults'
+hashref, which expects keys in the field name dot format.
+
 =back
 
 =head1 Constraints and Validations

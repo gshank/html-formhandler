@@ -226,8 +226,13 @@ but a 'field_list' argument must be passed in on 'new' since the
 fields are built at construction time.
 
 If you want to update field attributes on the 'process' call, you can
-use an 'update_field_list' hashref attribute, or subclass
-update_fields in your form.
+use an 'update_field_list' or 'defaults' hashref attribute , or subclass
+update_fields in your form. The 'defaults' attribute will update only
+the 'default' attribute in the field. The 'update_field_list' hashref
+can be used to set any field attribute:
+
+   $form->process( defaults => { foo => 'foo_def', bar => 'bar_def' } );
+   $form->process( update_field_list => { foo => { label => 'New Label' } }); 
 
 Field results are built on the 'new' call, but will then be re-built
 on the process call. If you always use 'process' before rendering the form,
@@ -786,6 +791,11 @@ has 'update_field_list'   => ( is => 'rw',
         has_update_field_list => 'count',
     },
 );
+has 'defaults' => ( is => 'rw', isa => 'HashRef', default => sub {{}}, traits => ['Hash'],
+    handles => { has_defaults => 'count', clear_defaults => 'clear' },
+);
+has 'use_defaults_over_obj' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_defaults_over_obj' ); 
+has 'use_init_obj_over_item' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_init_obj_over_item' );
 has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 # flags
 has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
@@ -921,7 +931,8 @@ sub BUILD {
     # a well-behaved program that always does ->process shouldn't need
     # this preloading.
     unless( $self->no_preload ) {
-        if ( my $init_object = $self->item || $self->init_object ) {
+        if ( my $init_object = $self->use_init_obj_over_item ?
+            ($self->init_object || $self->item) : ( $self->item || $self->init_object ) ) {
             $self->_result_from_object( $self->result, $init_object );
         }
         else {
@@ -974,6 +985,8 @@ sub clear {
     $self->processed(0);
     $self->did_init_obj(0);
     $self->clear_result;
+    $self->clear_use_defaults_over_obj;
+    $self->clear_use_init_obj_over_item;
 }
 
 sub values { shift->value }
@@ -1059,9 +1072,9 @@ sub setup_form {
     # will be done in _result_from_object when there's an initial object
     # in _result_from_input when there are params
     # and by _result_from_fields for empty forms
-
     if ( !$self->did_init_obj ) {
-        if ( my $init_object = $self->item || $self->init_object ) {
+        if ( my $init_object = $self->use_init_obj_over_item ?
+            ($self->init_object || $self->item) : ( $self->item || $self->init_object ) ) {
             $self->_result_from_object( $self->result, $init_object );
         }
         elsif ( !$self->has_params ) {
@@ -1233,20 +1246,34 @@ sub _can_deflate { }
 
 sub update_fields {
     my $self = shift;
-    return unless $self->has_update_field_list;
-    my $fields = $self->update_field_list;
-    foreach my $key ( keys %$fields ) {
-        my $field = $self->field($key);
-        unless( $field ) {
-            die "Field $key is not found and cannot be updated by update_fields";
+    if( $self->has_update_field_list ) {
+        my $updates = $self->update_field_list;
+        foreach my $field_name ( keys %{$updates} ) {
+            $self->update_field($field_name, $updates->{$field_name} );
         }
-        while ( my ( $attr_name, $attr_value ) = each %{$fields->{$key}} ) {
-            confess "invalid attribute '$attr_name' passed to update_field_list"
-                unless $field->can($attr_name);
-            $field->$attr_name($attr_value);
-        }
+        $self->clear_update_field_list;
     }
-    $self->clear_update_field_list;
+    if( $self->has_defaults ) {
+        my $defaults = $self->defaults;
+        foreach my $field_name ( keys %{$defaults} ) {
+            $self->update_field($field_name, { default => $defaults->{$field_name} } );
+        }
+        $self->clear_defaults;
+    }
+}
+
+sub update_field {
+    my ( $self, $field_name, $updates ) = @_;
+
+    my $field = $self->field($field_name);
+    unless( $field ) {
+        die "Field $field_name is not found and cannot be updated by update_fields";
+    }
+    while ( my ( $attr_name, $attr_value ) = each %{$updates} ) {
+        confess "invalid attribute '$attr_name' passed to update_field"
+            unless $field->can($attr_name);
+        $field->$attr_name($attr_value);
+    }
 }
 
 =head1 SUPPORT

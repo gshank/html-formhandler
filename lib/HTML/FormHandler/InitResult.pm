@@ -102,6 +102,8 @@ sub _get_value {
     if( defined $field->default_over_obj ) {
         @values = $field->default_over_obj;
     }
+    elsif( $field->form && $field->form->use_defaults_over_obj && ( @values = $field->get_default_value )  ) {
+    }
     elsif ( blessed($item) && $item->can($accessor) ) {
         @values = $item->$accessor;
     }

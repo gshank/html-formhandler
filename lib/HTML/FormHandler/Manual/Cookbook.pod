@@ -682,7 +682,7 @@ default.
     sub default_foo { 'my_default' }
     ..
     $form->process( init_object => { foo => 'my_default } );
-    $form->process( item => <object with $obj->foo method to provide default> ); 
+    $form->process( item => <object with $obj->foo method to provide default> );
 
 If you want to change the default for the field at run time, there are a number
 of options.
@@ -692,9 +692,11 @@ You can set the value in the init_object or item before doing process:
     my $foo_value = 'some calculated value';
     $form->process( init_object => { foo => $foo_value } );
 
-You can use 'update_field_list' on the 'process' call:
+You can use 'update_field_list' or 'defaults' on the 'process' call:
 
     $form->process( update_field_list => { foo => { default => $foo_value } } );
+    -- or --
+    $form->proces( defaults => { foo => $foo_value } );
 
 You can set a Moose attribute in the form class, and set the default in a
 default_<field_name> method:
@@ -703,7 +705,7 @@ default_<field_name> method:
     use HTML::FormHandler::Moose;
     extends 'HTML::Formhandler';
 
-    has 'form_id' => ( isa => 'Str', is => 'rw' ); 
+    has 'form_id' => ( isa => 'Str', is => 'rw' );
     has_field 'foo';
     sub default_foo {
         my $self = shift;
