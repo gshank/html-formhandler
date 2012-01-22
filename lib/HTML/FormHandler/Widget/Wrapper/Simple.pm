@@ -3,6 +3,7 @@ package HTML::FormHandler::Widget::Wrapper::Simple;
 
 use Moose::Role;
 use namespace::autoclean;
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 with 'HTML::FormHandler::Widget::Wrapper::Base';
 
@@ -28,17 +29,19 @@ has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', lazy => 1, default => 1 );
 
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
-    my $t;
-    my $start_tag = defined($t = $self->get_tag('wrapper_start')) ?
-        $t : '<div<%class%>>';
-    my $is_compound = $self->has_flag('is_compound');
-    my $class  = $self->render_class($result);
+
     my $output = "\n";
 
-    $start_tag =~ s/<%class%>/$class/g;
-    $output .= $start_tag;
+    my $tag = $self->wrapper_tag;
+    my $start_tag = $self->get_tag('wrapper_start');
+    if( defined $start_tag ) {
+        $output .= $start_tag;
+    }
+    else {
+        $output .= "<$tag" . process_attrs( $self->wrapper_attributes ) . ">";
+    }
 
-    if ( $is_compound ) {
+    if ( $self->has_flag('is_compound') ) {
         if( $self->auto_fieldset ) {
             $output .= '<fieldset class="' . $self->html_name . '">';
             $output .= '<legend>' . $self->loc_label . '</legend>';
@@ -52,9 +55,10 @@ sub wrap_field {
     $output .= qq{\n<span class="error_message">$_</span>}
         for $result->all_errors;
     $output .= '</fieldset>'
-        if ( $is_compound && $self->auto_fieldset );
+        if ( $self->has_flag('is_compound') && $self->auto_fieldset );
 
-    $output .= defined($t = $self->get_tag('wrapper_end')) ? $t : '</div>';
+    my $end_tag = $self->get_tag('wrapper_end');
+    $output .= defined $end_tag ? $end_tag : "</$tag>";
 
     return "$output\n";
 }

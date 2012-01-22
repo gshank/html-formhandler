@@ -3,14 +3,14 @@ package HTML::FormHandler::Widget::Wrapper::TableInline;
 
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Wrapper::Base';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
     return $rendered_widget if $self->has_flag('is_compound');
 
-    my $class  = $self->render_class($result);
-    my $output = "\n<tr$class>";
+    my $output = "\n<tr" . process_attrs($self->wrapper_attributes) . ">";
     if ( !$self->has_flag('no_render_label') && length( $self->label ) > 0 ) {
         $output .= '<td>' . $self->render_label . '</td>';
     }

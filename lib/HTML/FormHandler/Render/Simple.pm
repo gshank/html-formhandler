@@ -201,21 +201,13 @@ sub render_field {
     else {
         die "No widget method found for '" . $field->widget . "' in H::F::Render::Simple";
     }
-    my $class = '';
-    if ( $field->css_class || $field->has_errors ) {
-        my @css_class;
-        push( @css_class, split( /[ ,]+/, $field->css_class ) ) if $field->css_class;
-        push( @css_class, 'error' ) if $field->has_errors;
-        $class .= ' class="';
-        $class .= join( ' ' => @css_class );
-        $class .= '"';
-    }
-    return $self->render_field_struct( $field, $rendered_field, $class );
+    my $wrapper_attrs = process_attrs($field->wrapper_attributes);
+    return $self->render_field_struct( $field, $rendered_field, $wrapper_attrs );
 }
 
 sub render_field_struct {
-    my ( $self, $field, $rendered_field, $class ) = @_;
-    my $output = qq{\n<div$class>};
+    my ( $self, $field, $rendered_field, $wrapper_attrs ) = @_;
+    my $output = qq{\n<div$wrapper_attrs>};
     my $l_type =
         defined $self->get_label_type( $field->widget ) ?
         $self->get_label_type( $field->widget ) :
@@ -382,7 +374,9 @@ sub render_upload {
 
 sub _label {
     my ( $self, $field ) = @_;
-    return '<label class="label" for="' . $field->id . '">' .
+
+    my $attr = process_attrs( $field->label_attributes );
+    return "<label$attr for=\"" . $field->id . '">' .
         $field->html_filter($field->loc_label)
         . ': </label>';
 }

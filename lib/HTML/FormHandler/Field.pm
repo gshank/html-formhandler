@@ -948,25 +948,28 @@ sub attributes {
         $attrs->{$attr} = $self->$attr if $self->$attr;
     }
     $attrs->{class} = $self->input_class if $self->input_class;
-    my %all_attrs = (%$attrs, %{$self->html_attr});
-    return \%all_attrs;
+    my $all_attrs = {%$attrs, %{$self->html_attr}};
+    $all_attrs = $self->form->field_html_attributes($self, 'input', $all_attrs) if $self->form;
+    return $all_attrs; 
 }
 
 sub label_attributes {
     my $self = shift;
-    my %attr = %{$self->label_attr};
-    if( ! exists $attr{class} && $self->form && ! $self->form->can('no_label_class')  ) {
-        $attr{class} = 'label';
+    my $attr = {%{$self->label_attr}};
+    if( ! exists $attr->{class} && $self->form && ! $self->form->can('no_label_class')  ) {
+        $attr->{class} = 'label';
     }
-    return \%attr;
+    $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
+    return $attr;
 }
 sub wrapper_attributes {
    my $self = shift;
-   my %attr = %{$self->wrapper_attr};
-   if( ! exists $attr{class} && defined $self->css_class ) {
-       $attr{class} = $self->css_class;
+   my $attr = {%{$self->wrapper_attr}};
+   if( ! exists $attr->{class} && defined $self->css_class ) {
+       $attr->{class} = $self->css_class;
    }
-   return \%attr;
+   $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
+   return $attr;
 }
 
 #=====================

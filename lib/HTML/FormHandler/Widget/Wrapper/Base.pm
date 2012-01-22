@@ -6,12 +6,12 @@ use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub render_label {
     my $self = shift;
-    my %attrs = %{$self->label_attr};
-    $attrs{class} = 'label' if ( scalar( keys %attrs ) == 0 ); # old behavior
-    my $attrs = process_attrs(\%attrs);
+    my $attrs = process_attrs($self->label_attributes);
     return "<label$attrs for=\"" . $self->id . '">' . $self->html_filter($self->loc_label) . ': </label>';
 }
 
+# this is not actually used any more, but is left here for compatibility
+# with user created widgets
 sub render_class {
     my ( $self, $result ) = @_;
 

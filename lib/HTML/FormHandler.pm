@@ -853,6 +853,11 @@ sub attributes {
     return {%$attr, %{$self->html_attr}};
 }
 
+sub field_html_attributes {
+    my ( $self, $field, $type, $attrs ) = @_;
+    return $attrs;
+}
+
 sub has_flag {
     my ( $self, $flag_name ) = @_;
     return unless $self->can($flag_name);

@@ -3,12 +3,12 @@ package HTML::FormHandler::Widget::Wrapper::Table;
 
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Wrapper::Base';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    my $class  = $self->render_class($result);
-    my $output = "\n<tr$class>";
+    my $output = "\n<tr" . process_attrs($self->wrapper_attributes) . ">"; 
     if ( $self->has_flag('is_compound') ) {
         $output .= '<td>' . $self->render_label . '</td></tr>';
     }
