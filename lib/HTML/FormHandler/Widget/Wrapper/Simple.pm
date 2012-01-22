@@ -38,7 +38,7 @@ sub wrap_field {
         $output .= $start_tag;
     }
     else {
-        $output .= "<$tag" . process_attrs( $self->wrapper_attributes ) . ">";
+        $output .= "<$tag" . process_attrs( $self->wrapper_attributes($result) ) . ">";
     }
 
     if ( $self->has_flag('is_compound') ) {

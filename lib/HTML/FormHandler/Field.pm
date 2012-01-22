@@ -962,14 +962,24 @@ sub label_attributes {
     $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
     return $attr;
 }
+
 sub wrapper_attributes {
-   my $self = shift;
-   my $attr = {%{$self->wrapper_attr}};
-   if( ! exists $attr->{class} && defined $self->css_class ) {
-       $attr->{class} = $self->css_class;
-   }
-   $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
-   return $attr;
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $attr = {%{$self->wrapper_attr}};
+    if( ! exists $attr->{class} && defined $self->css_class ) {
+        $attr->{class} = $self->css_class;
+    }
+    if( $result->has_errors ) {
+        if( ref $attr->{class} eq 'ARRAY' ) {
+            push @{$attr->{class}}, 'error';
+        }
+        else {
+            $attr->{class} .= $attr->{class} ? ' error' : 'error';
+        }
+    }
+    $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
+    return $attr;
 }
 
 #=====================

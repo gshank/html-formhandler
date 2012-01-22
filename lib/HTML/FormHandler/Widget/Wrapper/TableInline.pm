@@ -10,7 +10,7 @@ sub wrap_field {
 
     return $rendered_widget if $self->has_flag('is_compound');
 
-    my $output = "\n<tr" . process_attrs($self->wrapper_attributes) . ">";
+    my $output = "\n<tr" . process_attrs($self->wrapper_attributes($result)) . ">";
     if ( !$self->has_flag('no_render_label') && length( $self->label ) > 0 ) {
         $output .= '<td>' . $self->render_label . '</td>';
     }
