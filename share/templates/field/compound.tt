@@ -1,4 +1,4 @@
-<fieldset class="[% f.name %]">
+<fieldset class="[% f.html_name %]">
 <legend>[% f.label %]</legend>
 [% FOREACH sf IN f.sorted_fields -%]
 [% outerf = f; f = sf; -%]

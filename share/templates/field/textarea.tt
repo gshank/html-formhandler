@@ -1,4 +1,2 @@
-<label [% process_attrs(f.label_attributes) %] for="[% f.html_name %]">[% f.label %]</label>
-<textarea name="[% f.html_name %]" id="[% f.id %]" rows="[% f.rows %]" cols="[% f.cols %]" [% process_attrs(f.attributes) %]>
-[% f.fif %]
-</textarea>
+[% INCLUDE field/label.tt %]
+<textarea name="[% f.html_name %]" id="[% f.id %]" rows="[% f.rows %]" cols="[% f.cols %]" [% process_attrs(f.attributes) %]>[% f.fif %]</textarea>

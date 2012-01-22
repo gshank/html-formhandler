@@ -1,11 +1,10 @@
-<label [% process_attrs(f.label_attributes) %] for="[% f.html_name %]">[% f.label %]</label>
-<select name="[% f.html_name %]" [% process_attrs(f.attriutes) %] 
-  [% IF f.multiple %] multiple="multiple" size="[% f.size %]" [% END %]>
+<label [% process_attrs(f.label_attributes) %] for="[% f.html_name %]">[% f.label %]: </label>
+<select name="[% f.html_name %]" id="[% f.id %]" [% process_attrs(f.attriutes) %]
+  [% IF f.multiple %] multiple="multiple" size="[% f.size %]" [% END -%]>
   [% FOR option IN f.options -%]
-    <option value="[% option.value %]" 
+    <option id="[% f.id %].[% loop.index %]" value="[% option.value %]"
     [% FOREACH selval IN f.fif -%]
-      [% IF selval == option.value %]selected="selected"[% END %]
-    [% END -%]>
-    [% option.label | html %]</option>
-  [% END -%] 
+      [% IF selval == option.value %]selected="selected"[% END -%]
+    [% END -%]>[% option.label | html %]</option>
+  [% END -%]
 </select>

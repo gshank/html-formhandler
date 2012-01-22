@@ -6,6 +6,7 @@ extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.01';
 
 has '+widget' => ( default => 'hidden' );
+has '+widget_wrapper' => ( default => 'None' );
 
 =head1 DESCRIPTION
 

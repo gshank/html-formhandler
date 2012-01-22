@@ -276,15 +276,13 @@ sub new_field_with_traits {
         my $widget = $field_attr->{widget};
         unless( $widget ) {
             my $attr = $class->meta->find_attribute_by_name( 'widget' );
-            if ( $attr ) {
-                $widget = $attr->default;
-            }
+            $widget = $attr->default if $attr;
         }
         my $widget_wrapper = $field_attr->{widget_wrapper};
-        $widget_wrapper ||= $field_attr->{form}->widget_wrapper if $field_attr->{form};
         unless( $widget_wrapper ) {
             my $attr = $class->meta->get_attribute('widget_wrapper');
-            $widget_wrapper = $class->meta->get_attribute('widget')->default if $attr;
+            $widget_wrapper = $attr->default if $attr;
+            $widget_wrapper ||= $field_attr->{form}->widget_wrapper if $field_attr->{form};
             $widget_wrapper ||= 'Simple';
         }
         if( $widget ) {
