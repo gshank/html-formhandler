@@ -372,13 +372,20 @@ sub render_upload {
     return $output;
 }
 
+sub render_label {
+    my $self = shift;
+    my $attrs = process_attrs($self->label_attributes);
+    my $label = $self->html_filter($self->loc_label);
+    $label .= ": " unless $self->get_tag('label_no_colon');
+    return qq{<label$attrs for="} . $self->id . qq{">$label</label>};
+}
 sub _label {
     my ( $self, $field ) = @_;
 
-    my $attr = process_attrs( $field->label_attributes );
-    return "<label$attr for=\"" . $field->id . '">' .
-        $field->html_filter($field->loc_label)
-        . ': </label>';
+    my $attrs = process_attrs( $field->label_attributes );
+    my $label = $field->html_filter($field->loc_label);
+    $label .= ": " unless $field->get_tag('label_no_colon');
+    return qq{<label$attrs for="} . $field->id . qq{">$label</label>};
 }
 
 sub render_compound {

@@ -23,6 +23,11 @@ in paragraph tags instead:
       wrapper_end   => '</p>' }
    );
 
+Alternatively, 'wrapper_tag' can be set to switch to a tag besides 'div',
+but still use the the wrapper attribute processing:
+
+   has '+widget_tags' => ( default => sub { { wrapper_tag => 'p' } } );
+
 =cut
 
 has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', lazy => 1, default => 1 );

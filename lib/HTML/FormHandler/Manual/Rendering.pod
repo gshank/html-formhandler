@@ -227,10 +227,11 @@ Your rendering widgets will be applied into your field classes.
 
 The 'widget_tags' hashref attribute has been provided to allow customizing
 rendering behavior on a per-field basis. They can be used to switch the Simple
-wrapper from divs to using paragraphs instead:
+wrapper from divs to using paragraphs instead, or to suppress the colon in
+label formatting:
 
-   has_field 'my_field' => ( widget_tags => {wrapper_start => '<p>',
-       wrapper_end => '</p>' } );
+   has_field 'my_field' => ( 
+       widget_tags => {wrapper_tag => 'p', label_no_colon => 1  } );
 
 If you want just the plain html (including the label) with no wrapping div or
 other element, you can set the wrapper_start and wrapper_end to ''.
