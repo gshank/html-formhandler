@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use File::ShareDir;
+use HTML::TreeBuilder;
 
 BEGIN {
     plan skip_all => 'Install Template Toolkit to test Render::WithTT'
@@ -81,23 +82,17 @@ my $rendered_via_tt;
     ok($rendered_via_tt, 'form tt renders' );
 }
 
-SKIP: {
-    skip 'Install HTML::TreeBuilder to test TT Result', 3
-        unless eval { require HTML::TreeBuilder && $HTML::TreeBuilder::VERSION >= 3.23 };
-        # really old TreeBuilder versions might not work
+my $rendered_via_widget;
+{
+    my $form = Test::Form->new(name => 'test_tt');
+    ok( $form, 'form builds' );
+    $rendered_via_widget = $form->render;
+    ok($rendered_via_widget, 'form simple renders' );
+}
 
-    my $rendered_via_widget;
-    {
-        my $form = Test::Form->new(name => 'test_tt');
-        ok( $form, 'form builds' );
-        $rendered_via_widget = $form->render;
-        ok($rendered_via_widget, 'form simple renders' );
-    }
-
-    my $widget = HTML::TreeBuilder->new_from_content($rendered_via_widget);
-    my $tt = HTML::TreeBuilder->new_from_content($rendered_via_tt);
-    is( $tt->as_HTML, $widget->as_HTML,
-        "TT Rendering and Widget Rendering matches");
-};
+my $widget = HTML::TreeBuilder->new_from_content($rendered_via_widget);
+my $tt = HTML::TreeBuilder->new_from_content($rendered_via_tt);
+is( $tt->as_HTML, $widget->as_HTML,
+    "TT Rendering and Widget Rendering matches");
 
 done_testing;

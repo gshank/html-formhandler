@@ -252,7 +252,7 @@ The order attribute may be used to set the order in which fields are rendered.
    order       - Used for sorting errors and fields. Built automatically,
                  but may also be explicitly set
 
-The following are deprecated. Use the 'html_attr', 'label_attr', and 'wrapper_attr'
+The following are deprecated. Use 'html_attr', 'label_attr', and 'wrapper_attr'
 instead.
 
    css_class   - instead use wrapper_attr => { class => '...' }
@@ -263,6 +263,23 @@ instead.
    tabindex    - instead use html_attr => { tabindex => 1 }
    readonly    - instead use html_attr => { readonly => 'readonly' }
 
+Rendering of the various HTML attributes is done by calling the 'process_attrs'
+function (from HTML::FormHandler::Render::Util) and passing in a method that
+adds in error classes, provides backward compatibility with the deprecated
+attributes, etc.
+
+    attribute hashref            wrapping method
+    =================            ================
+    html_attr                    attributes
+    label_attr                   label_attributes
+    wrapper_attr                 wrapper_attributes
+
+In addition, these 'wrapping method' call a hook method in the form class,
+'field_html_attributes' which you can use to customize and localize the various
+attributes.
+
+The 'process_attrs' function will handle an array of strings, such as for the
+'class' attribute.
 
 =head2 html5_type_attr [string]
 
@@ -371,14 +388,17 @@ the other. Now 'default' does *not* override.
 If you pass in a model object with C<< item => $row >> or an initial object
 with C<< init_object => {....} >> the values in that object will be used instead
 of values provided in the field definition with 'default' or 'default_fieldname'.
+If you want defaults that override the item/init_object, you can use the form
+flags 'use_defaults_over_obj' and 'use_init_obj_over_item'.
 
-If you *want* values that override the item/init_object, you can use the field
-attribute 'default_over_obj'.
+You could also put your defaults into your row or init_object instead.
 
-However you might want to consider putting your defaults into your row or init_object
-instead.
+See also L<HTML::FormHandler::Manual::Intro#Defaults>.
 
 =item default_over_obj
+
+This is deprecated; look into using 'use_defaults_over_obj' or 'use_init_obj_over_item'
+flags instead. They allow using the standard 'default' attribute.
 
 Allows setting defaults which will override values provided with an item/init_object.
 
@@ -388,9 +408,6 @@ At this time there is no equivalent of 'set_default', but the type of the attrib
 is not defined so you can provide default values in a variety of other ways,
 including providing a trait which does 'build_default_over_obj'. For examples,
 see tests in the distribution.
-
-The 'default_over_obj' attributes can be set at process time with the 'defaults'
-hashref, which expects keys in the field name dot format.
 
 =back
 
@@ -938,38 +955,54 @@ has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
 sub attributes {
     my $self = shift;
 
+    # copy html_attr, with deep copy of 'class' if it's an array
+    my $html_attr = {%{$self->html_attr}};
+    $html_attr->{class} = [@{$html_attr->{class}}] 
+        if ( exists $html_attr->{class} && ref( $html_attr->{class} eq 'ARRAY' ) );
     my $attrs = {};
-    if ($self->form->has_flag('is_html5')) {
+    # handle html5 attributes
+    if ($self->form && $self->form->has_flag('is_html5')) {
         $attrs->{required} = 'required' if $self->required;
         $attrs->{min} = $self->range_start if defined $self->range_start;
         $attrs->{max} = $self->range_end if defined $self->range_end;
     }
+    # pull in deprecated attributes for backward compatibility
     for my $attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
         $attrs->{$attr} = $self->$attr if $self->$attr;
     }
     $attrs->{class} = $self->input_class if $self->input_class;
     my $all_attrs = {%$attrs, %{$self->html_attr}};
-    $all_attrs = $self->form->field_html_attributes($self, 'input', $all_attrs) if $self->form;
-    return $all_attrs; 
+    # call form hook
+    $self->form->field_html_attributes($self, 'input', $all_attrs) if $self->form;
+    return $all_attrs;
 }
 
 sub label_attributes {
     my $self = shift;
+    # copy label_attr, with deep copy of 'class' if it's an array
     my $attr = {%{$self->label_attr}};
+    $attr->{class} = [@{$attr->{class}}]
+        if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
     if( ! exists $attr->{class} && $self->form && ! $self->form->can('no_label_class')  ) {
         $attr->{class} = 'label';
     }
-    $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
+    # call form hook
+    $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
     return $attr;
 }
 
 sub wrapper_attributes {
     my ( $self, $result ) = @_;
     $result ||= $self->result;
+    # copy wrapper_attr, with deep copy of 'class' if it's an array
     my $attr = {%{$self->wrapper_attr}};
+    $attr->{class} = [@{$attr->{class}}]
+        if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
+    # pull in deprecated css_class
     if( ! exists $attr->{class} && defined $self->css_class ) {
         $attr->{class} = $self->css_class;
     }
+    # add 'error' to class
     if( $result->has_errors ) {
         if( ref $attr->{class} eq 'ARRAY' ) {
             push @{$attr->{class}}, 'error';
@@ -978,8 +1011,14 @@ sub wrapper_attributes {
             $attr->{class} .= $attr->{class} ? ' error' : 'error';
         }
     }
-    $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
+    # call form hook
+    $self->form->field_html_attributes($self, 'wrapper', $attr) if $self->form;
     return $attr;
+}
+
+sub wrapper_tag {
+    my $self = shift;
+    return $self->get_tag('wrapper_tag') || 'div';
 }
 
 #=====================
@@ -988,10 +1027,6 @@ sub field_filename {
     my $self = shift;
     return 'checkbox_tag.tt' if $self->input_type eq 'checkbox';
     return 'input_tag.tt';
-}
-sub wrapper_tag {
-    my $self = shift;
-    return $self->get_tag('wrapper_tag') || 'div';
 }
 sub label_tag {
     my $self = shift;

@@ -726,6 +726,13 @@ Note that the form tag contains an 'id' attribute which is set to the
 form name. The standards have been flip-flopping over whether a 'name'
 attribute is valid. It can be set with 'html_attr'.
 
+The rendering of the HTML attributes is done using the 'process_attrs'
+function and the 'attributes' method, which munges the 'html_attr' hash
+for backward compatibility, etc.
+
+For field HTML attributes, there is a form method hook, 'field_html_attributes',
+which can be used to customize/modify/localize field HTML attributes.
+
 =cut
 
 # for consistency in api with field nodes
@@ -855,7 +862,7 @@ sub attributes {
 
 sub field_html_attributes {
     my ( $self, $field, $type, $attrs ) = @_;
-    return $attrs;
+    return;
 }
 
 sub has_flag {

@@ -826,7 +826,7 @@ an item/init_object and accessor exists.
 You can use either the 'defaults' hashref or the 'init_object' to provide query
 parameter 'defaults'. They should not be provided in the 'params' hash, because
 then FormHandler will assume that the form has been posted and attempt to validate,
-when you probably don't want to validate until the form has been submitted.
+when you probably don't want to do until the form has been submitted.
 
 =head1 Other methods for your form
 

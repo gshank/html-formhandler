@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use HTML::TreeBuilder;
 
 {
     package Test::Form;
@@ -27,12 +28,8 @@ my $expected = '<form id="test_errors" method="post" >
 </fieldset></form>';
 my $rendered = $form->render;
 
-SKIP: {
-    skip 'Install HTML::TreeBuilder to test TT Result', 3
-        unless eval { require HTML::TreeBuilder && $HTML::TreeBuilder::VERSION >= 3.23 };
-    my $exp_tree = HTML::TreeBuilder->new_from_content($expected);
-    my $got_tree = HTML::TreeBuilder->new_from_content($rendered);
-    is($exp_tree->as_HTML, $got_tree->as_HTML, 'error rendering matches expected');
-}
+my $exp_tree = HTML::TreeBuilder->new_from_content($expected);
+my $got_tree = HTML::TreeBuilder->new_from_content($rendered);
+is($exp_tree->as_HTML, $got_tree->as_HTML, 'error rendering matches expected');
 
 done_testing;

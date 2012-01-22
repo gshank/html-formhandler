@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use HTML::TreeBuilder;
 
 use HTML::FormHandler::Foo;
 use FindBin;
@@ -33,15 +34,9 @@ is( $form->num_fields, 4, 'right number of fields');
 my $tt_rendered_form = $form->tt_render;
 ok($tt_rendered_form, 'form rendered');
 
-SKIP: {
-    skip 'Install HTML::TreeBuilder to test TT Result', 3
-        unless eval { require HTML::TreeBuilder && $HTML::TreeBuilder::VERSION >= 3.23 };
-        # really old TreeBuilder versions might not work
-
-    my $expected_tree = HTML::TreeBuilder->new_from_content($expected);
-    my $tt_tree = HTML::TreeBuilder->new_from_content($tt_rendered_form);
-    is( $tt_tree->as_HTML, $expected_tree->as_HTML,
-        "rendering matches expected output" );
-};
+my $expected_tree = HTML::TreeBuilder->new_from_content($expected);
+my $tt_tree = HTML::TreeBuilder->new_from_content($tt_rendered_form);
+is( $tt_tree->as_HTML, $expected_tree->as_HTML,
+    "rendering matches expected output" );
 
 done_testing;
