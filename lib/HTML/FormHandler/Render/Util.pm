@@ -1,4 +1,5 @@
 package HTML::FormHandler::Render::Util;
+# ABSTRACT: rendering utility
 
 use Sub::Exporter;
 Sub::Exporter::setup_exporter({ exports => [ 'process_attrs' ] } );
