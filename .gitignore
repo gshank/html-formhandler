@@ -7,3 +7,5 @@ META.yml
 Makefile
 Makefile.old
 MANIFEST.bak
+HTML-FormHandler-*
+.build
