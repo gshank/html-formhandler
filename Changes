@@ -1,8 +1,23 @@
+0.36000 Sun Jan 22, 2012
+    Switch to using 'process_attrs' function to process attributes in rendering;
+    *** There were lots of updates to rendering. You should verify your custom
+        rendering, to make sure that nothing has broken. The '_add_html_attributes'
+        method is no longer used.
+    Add shorthand method for setting defaults in fields
+    Add widget_tags 'label_no_colon' & 'wrapper_tag'
+    Update and reorganize TT templates
+    Add flags 'use_defaults_over_obj' & 'use_init_obj_over_item'
+    Add 'num_extra' to Repeatable
+    Update Turkish message file; add Float field
+    Add lazy to 'html' attribute in Display field
+    Add 'label_attr' and 'wrapper_attr' to Field
+    Add 'Array' trait to field_name_space and widget_name_space
+    Bug with selected/checked hash key in Multiple; switch to creating default
+    Bug with repeatable contains; not using full name for accessor.
+    Die if using HTML::FormHandler::Moose without HTML::FormHandler
     Field::TextArea extends Field::Text to reuse its validations (min/max length)
     Add is_html5 attribute to forms which causes forms to have the additional
     HTML 5 attributes which can be used by HTML 5 capable clients for validation
-
-
 
 0.35005 Sat Oct 8, 2011
     Fix bug repeatable result not returned for num_when_empty

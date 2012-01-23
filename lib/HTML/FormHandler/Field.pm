@@ -884,7 +884,7 @@ has 'widget_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
     is => 'ro',
-    builder => 'build_widget_tags', 
+    builder => 'build_widget_tags',
     handles => {
       get_tag => 'get',
       set_tag => 'set',
@@ -961,7 +961,7 @@ sub attributes {
 
     # copy html_attr, with deep copy of 'class' if it's an array
     my $html_attr = {%{$self->html_attr}};
-    $html_attr->{class} = [@{$html_attr->{class}}] 
+    $html_attr->{class} = [@{$html_attr->{class}}]
         if ( exists $html_attr->{class} && ref( $html_attr->{class} eq 'ARRAY' ) );
     my $attrs = {};
     # handle html5 attributes

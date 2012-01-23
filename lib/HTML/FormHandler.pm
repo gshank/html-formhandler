@@ -21,7 +21,7 @@ use namespace::autoclean;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.35005';
+our $VERSION = '0.36000';
 
 =head1 SYNOPSIS
 
@@ -233,7 +233,7 @@ the 'default' attribute in the field. The 'update_field_list' hashref
 can be used to set any field attribute:
 
    $form->process( defaults => { foo => 'foo_def', bar => 'bar_def' } );
-   $form->process( update_field_list => { foo => { label => 'New Label' } }); 
+   $form->process( update_field_list => { foo => { label => 'New Label' } });
 
 Field results are built on the 'new' call, but will then be re-built
 on the process call. If you always use 'process' before rendering the form,
@@ -829,7 +829,7 @@ has 'update_field_list'   => ( is => 'rw',
 has 'defaults' => ( is => 'rw', isa => 'HashRef', default => sub {{}}, traits => ['Hash'],
     handles => { has_defaults => 'count', clear_defaults => 'clear' },
 );
-has 'use_defaults_over_obj' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_defaults_over_obj' ); 
+has 'use_defaults_over_obj' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_defaults_over_obj' );
 has 'use_init_obj_over_item' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_init_obj_over_item' );
 has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 # flags

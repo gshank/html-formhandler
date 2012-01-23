@@ -84,7 +84,7 @@ our %Lexicon = (
 
     # H::F::Field::Select
     'This field does not take multiple values'                  => 'Birden fazla değer seçilemez',
-    '\'[_1]\' is not a valid value'                             => '\'[_1]\' geçerli bir değer değil',               
+    '\'[_1]\' is not a valid value'                             => '\'[_1]\' geçerli bir değer değil',
 
     # H::F::Field::Text
     'Field should not exceed [quant,_1,character]. You entered [_2]'  => 'Girilen verinin uzunluğu en fazla [_1] olabilir. Gönderilen: [_2]',

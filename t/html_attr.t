@@ -59,7 +59,6 @@ my $expected = '<form id="myapp_form" method="post" name="myapp_form" >
 <div class="wrapper hfh"><label class="label hfh" for="mox">Mox: </label><input type="text" name="mox" id="mox" value="" class="input hfh" placeholder="my placeholder" /></div>
 </fieldset></form>';
 $rendered = $form->render;
-diag($rendered);
 
 my $exp = HTML::TreeBuilder->new_from_content($expected);
 my $got = HTML::TreeBuilder->new_from_content($rendered);

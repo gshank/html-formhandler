@@ -8,7 +8,7 @@ use HTML::FormHandler::Render::Util ('process_attrs');
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    my $output = "\n<tr" . process_attrs($self->wrapper_attributes($result)) . ">"; 
+    my $output = "\n<tr" . process_attrs($self->wrapper_attributes($result)) . ">";
     if ( $self->has_flag('is_compound') ) {
         $output .= '<td>' . $self->render_label . '</td></tr>';
     }

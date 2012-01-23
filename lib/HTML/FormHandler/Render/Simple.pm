@@ -372,13 +372,6 @@ sub render_upload {
     return $output;
 }
 
-sub render_label {
-    my $self = shift;
-    my $attrs = process_attrs($self->label_attributes);
-    my $label = $self->html_filter($self->loc_label);
-    $label .= ": " unless $self->get_tag('label_no_colon');
-    return qq{<label$attrs for="} . $self->id . qq{">$label</label>};
-}
 sub _label {
     my ( $self, $field ) = @_;
 
