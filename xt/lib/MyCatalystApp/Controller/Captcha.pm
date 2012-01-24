@@ -44,13 +44,15 @@ returns the image belonging to the current captcha
 
 =cut
 
-sub test :Local{
+sub image : Local {
     my ( $self, $c ) = @_;
     my $captcha = $c->session->{captcha};
-    $c->res->content_type($captcha->{type});
-    my $filename = "captcha." . $captcha->{type};
-    $c->res->header('Content-Disposition', qq[attachment; filename=$filename]);
-    $c->res->body($captcha->{image});
+    $c->response->body($captcha->{image});
+    $c->response->content_type('image/'. $captcha->{type});
+    $c->res->headers->expires( time() );
+    $c->res->headers->header( 'Last-Modified' => HTTP::Date::time2str );
+    $c->res->headers->header( 'Pragma'        => 'no-cache' );
+    $c->res->headers->header( 'Cache-Control' => 'no-cache' );
 }
 
 sub get_rnd :Local{
