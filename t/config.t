@@ -3,6 +3,11 @@ use warnings;
 use Test::More;
 use HTML::TreeBuilder;
 
+BEGIN {
+    plan skip_all => 'Install Template Toolkit to test Render::WithTT'
+       unless eval { require Template };
+}
+
 use HTML::FormHandler::Foo;
 use FindBin;
 
