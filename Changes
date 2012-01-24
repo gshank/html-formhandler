@@ -1,4 +1,5 @@
 0.36001 Tues Jan 24, 2012
+    Add two more widget tags: 'no_auto_fieldset' and 'no_compound_wrapper'
     Remove automatic addition of 'class="label"' to labels; if you want that
        behavior, add it in with form sub field_html_attributes.
     Add 'SKIP' to t/config.t test for Template.
