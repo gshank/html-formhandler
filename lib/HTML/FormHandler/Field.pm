@@ -987,9 +987,6 @@ sub label_attributes {
     my $attr = {%{$self->label_attr}};
     $attr->{class} = [@{$attr->{class}}]
         if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
-    if( ! exists $attr->{class} && $self->form && ! $self->form->can('no_label_class')  ) {
-        $attr->{class} = 'label';
-    }
     # call form hook
     $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
     return $attr;

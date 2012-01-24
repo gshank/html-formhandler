@@ -32,8 +32,6 @@ has 'config' => ( isa => 'HashRef', is => 'rw' );
 
 sub submitted_and_valid { shift->validated }
 
-sub no_label_class { 1 }
-
 sub process_config_file {
     my $self = shift;
     return unless $self->config_file;

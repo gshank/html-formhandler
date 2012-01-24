@@ -1,3 +1,9 @@
+0.36001 Tues Jan 24, 2012
+    Remove automatic addition of 'class="label"' to labels; if you want that
+       behavior, add it in with form sub field_html_attributes.
+    Add 'SKIP' to t/config.t test for Template.
+    Update Captcha so it might actually work.
+
 0.36000 Sun Jan 22, 2012
     Switch to using 'process_attrs' function to process attributes in rendering;
     *** There were lots of updates to rendering. You should verify your custom
