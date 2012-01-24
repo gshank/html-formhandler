@@ -23,7 +23,7 @@ ok( $result->has_errors, 'result has errors' );
 is( $result->num_errors, 1, 'number of errors is correct' );
 is( $result->errors->[0], 'Foo required field is required', 'result field has error' );
 is( $result->field('foo_required')->render, '
-<div class="error"><label class="label" for="foo_required">Foo required: </label><input type="text" name="foo_required" id="foo_required" value="" />
+<div class="error"><label for="foo_required">Foo required: </label><input type="text" name="foo_required" id="foo_required" value="" />
 <span class="error_message">Foo required field is required</span></div>
 ', 'error field has error' );
 

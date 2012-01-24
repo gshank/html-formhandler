@@ -24,7 +24,7 @@ like( $rendered, qr/arbitrary="something"/, 'field has arbitrary attribute' );
 like( $rendered, qr/writeonly="1"/, 'field has writeonly attribute' );
 like( $rendered, qr/target="_blank"/, 'form has target attribute');
 like( $rendered, qr{<textarea name="my_text" id="my_text" required="required" rows="5" cols="10"></textarea>}, 'textarea rendered ok');
-like( $rendered, qr{<label class="label" title="Bar Field" for="bar">}, 'label_attr on label' );
+like( $rendered, qr{<label title="Bar Field" for="bar">}, 'label_attr on label' );
 like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
 
 {

@@ -278,6 +278,11 @@ In addition, these 'wrapping method' call a hook method in the form class,
 'field_html_attributes' which you can use to customize and localize the various
 attributes.
 
+   sub field_html_attributes {
+       my ( $self, $field, $type, $attr ) = @_;
+       $attr->{class} = 'label' if $type eq 'label';
+   }
+
 The 'process_attrs' function will handle an array of strings, such as for the
 'class' attribute.
 

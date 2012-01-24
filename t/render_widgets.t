@@ -112,6 +112,10 @@ use HTML::FormHandler::Field::Text;
             '& peas' => '& peas',
         );
     }
+    sub field_html_attributes {
+        my ( $self, $field, $type, $attr ) = @_;
+        $attr->{class} = 'label' if $type eq 'label';
+    }
 }
 
 my $form = Test::Form->new;
@@ -366,6 +370,11 @@ ok( $outputT, 'output from table rendering' );
          {wrapper_start => '<span>', wrapper_end => '</span>'});
     has_field 'baz' => ( widget_tags =>
          {wrapper_start => '', wrapper_end => ''});
+
+    sub field_html_attributes {
+        my ( $self, $field, $type, $attr ) = @_;
+        $attr->{class} = 'label' if $type eq 'label';
+    }
 }
 
 $form = Test::Tags->new;
@@ -395,6 +404,10 @@ is( $form->field('baz')->render, '
     has_field 'my_alt.one' => ( widget_wrapper => 'TableInline' );
     has_field 'my_alt.two' => ( widget_wrapper => 'TableInline' );;
 
+    sub field_html_attributes {
+        my ( $self, $field, $type, $attr ) = @_;
+        $attr->{class} = 'label' if $type eq 'label';
+    }
 }
 
 $form = Test::Rendering->new;

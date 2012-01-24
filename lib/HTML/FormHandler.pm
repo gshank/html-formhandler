@@ -733,6 +733,15 @@ for backward compatibility, etc.
 For field HTML attributes, there is a form method hook, 'field_html_attributes',
 which can be used to customize/modify/localize field HTML attributes.
 
+   sub field_html_attributes {
+       my ( $self, $field, $type, $attr ) = @_;
+       $attr->{class} = 'label' if $type eq 'label';
+       $attr->{placeholder} = $self->_localize($attr->{placeholder})
+           if exists $attr->{placeholder};
+   }
+
+Also see the documentation in L<HTML::FormHandler::Field>.
+
 =cut
 
 # for consistency in api with field nodes

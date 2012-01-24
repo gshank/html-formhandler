@@ -38,17 +38,18 @@ sub render {
         $output .= $fld_result->render;
     }
 
-    $output .= $self->render_end;
+    $output .= $form->render_end;
     return $output;
 }
 
 sub render_start {
     my $self = shift;
 
+    my $auto_fieldset = $self->tag_exists('no_auto_fieldset') ?
+         not( $self->get_tag('no_auto_fieldset') ) : $self->auto_fieldset;
     my $output = $self->html_form_tag;
-
     $output .= '<fieldset class="main_fieldset">'
-        if $self->form->auto_fieldset;
+        if $auto_fieldset;
 
     return $output
 }
@@ -66,8 +67,11 @@ sub render_form_errors {
 
 sub render_end {
     my $self = shift;
+
+    my $auto_fieldset = $self->tag_exists('no_auto_fieldset') ?
+         not( $self->get_tag('no_auto_fieldset') ) : $self->auto_fieldset;
     my $output;
-    $output .= '</fieldset>' if $self->form->auto_fieldset;
+    $output .= '</fieldset>' if $auto_fieldset;
     $output .= "</form>\n";
     return $output;
 }

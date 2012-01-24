@@ -85,6 +85,11 @@ use HTML::FormHandler::Field::Text;
            { value => 3, label => 'gorgonzola' },
        ];
    }
+
+   sub field_html_attributes {
+       my ( $self, $field, $type, $attr ) = @_;
+       $attr->{class} = 'label' if $type eq 'label';
+   }
 }
 
 

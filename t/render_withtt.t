@@ -29,7 +29,7 @@ ok( $dir, 'found template dir' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has 'auto_fieldset' => ( is => 'rw', default => 0 );
+    has '+widget_tags' => ( is => 'rw', default => sub { { no_auto_fieldset => 1 } } );
     has_field 'submit' => ( type => 'Submit' );
     has_field 'foo';
     has_field 'bar';

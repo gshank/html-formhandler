@@ -58,6 +58,8 @@ sub set_captcha {
 
 Default is '/captcha/image'. Override in a form to change.
 
+   sub captcha_image_url { '/my/image/url/' }
+
 Example of a Catalyst action to handle the image:
 
     sub image : Local {
@@ -74,7 +76,6 @@ Example of a Catalyst action to handle the image:
 =cut
 
 sub captcha_image_url {
-    my $self = shift;
     return '/captcha/image';
 }
 
