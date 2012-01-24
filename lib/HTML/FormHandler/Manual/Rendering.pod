@@ -235,7 +235,8 @@ that it uses; you can add your own for your custom rendering code.
     wrapper_start  -- replaces the entire wrapper start html code
     wrapper_end    -- replaces the entire wrapper end html code
     label_no_colon -- don't put a ': ' following the label
-    no_auto_fieldset -- don't put a fieldset around main form 
+    no_auto_fieldset -- don't put a fieldset around main form
+    no_compound_wrapper -- don't put a fieldset wrapper around compound fields
 
 They can be used to switch the Simple
 wrapper from divs to using paragraphs instead, or to suppress the colon in

@@ -35,6 +35,8 @@ has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', lazy => 1, default => 1 );
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
+    return $rendered_widget if ( $self->has_flag('is_compound') && $self->get_tag('no_compound_wrapper') );
+
     my $output = "\n";
 
     my $tag = $self->wrapper_tag;
