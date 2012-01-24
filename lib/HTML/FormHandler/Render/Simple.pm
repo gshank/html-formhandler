@@ -132,6 +132,7 @@ has 'label_types' => (
             radio_group => 'label',
             compound    => 'legend',
             upload      => 'label',
+            captcha     => 'label',
         };
     },
     handles   => { get_label_type => 'get' },
@@ -412,6 +413,16 @@ sub render_reset {
     $output .= ' value="' . $field->html_filter($field->value) . '" />';
     return $output;
 }
+
+sub render_captcha {
+    my ( $self, $field ) = @_;
+
+    my $output .= '<img src="' . $self->captcha_image_url . '"/>';
+    $output .= '<input id="' . $field->id . '" name="';
+    $output .= $field->html_name . '">';
+    return $output;
+}
+
 
 use namespace::autoclean;
 1;

@@ -37,7 +37,8 @@ Get a captcha stored in C<< $form->ctx->{session} >>
 sub get_captcha {
     my $self = shift;
     return unless $self->ctx;
-    my $captcha = $self->ctx->{session}->{captcha};
+    my $captcha;
+    $captcha = $self->ctx->session->{captcha};
     return $captcha;
 }
 
@@ -50,22 +51,31 @@ Set a captcha in C<< $self->ctx->{session} >>
 sub set_captcha {
     my ( $self, $captcha ) = @_;
     return unless $self->ctx;
-    $self->ctx->{session}->{captcha} = $captcha;
+    $self->ctx->session( captcha => $captcha );
 }
 
-sub render_captcha {
-    my ( $self, $field ) = @_;
+=head2 captcha_image_url
 
-    my $output = $self->_label($field);
-    $output .= '<img src="' . $self->captcha_image_url . '"/>';
-    $output .= '<input id="' . $field->id . '" name="';
-    $output .= $field->name . '">';
-    return $output;
-}
+Default is '/captcha/image'. Override in a form to change.
+
+Example of a Catalyst action to handle the image:
+
+    sub image : Local {
+        my ( $self, $c ) = @_;
+        my $captcha = $c->session->{captcha};
+        $c->response->body($captcha->{image});
+        $c->response->content_type('image/'. $captcha->{type});
+        $c->res->headers->expires( time() );
+        $c->res->headers->header( 'Last-Modified' => HTTP::Date::time2str );
+        $c->res->headers->header( 'Pragma'        => 'no-cache' );
+        $c->res->headers->header( 'Cache-Control' => 'no-cache' );
+    }
+
+=cut
 
 sub captcha_image_url {
     my $self = shift;
-    return '/captcha/test';
+    return '/captcha/image';
 }
 
 use namespace::autoclean;

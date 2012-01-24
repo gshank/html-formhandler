@@ -1,5 +1,5 @@
 package HTML::FormHandler::I18N::ja_jp;
-# ABSTRACT: Hungarian message file
+# ABSTRACT: Japanese message file
 
 use strict;
 use warnings;
