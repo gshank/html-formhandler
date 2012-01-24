@@ -28,12 +28,12 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
     my $form = MyCatalystApp::Controller::Captcha::Form->new(
-    	ctx => $c,
+        ctx => $c,
     );
 
     if($form->process($c->req->params)){
-    	$c->res->body("verification succeeded");
-	return;
+        $c->res->body("verification succeeded");
+    return;
     }
     $c->res->body($form->render);
 }
@@ -45,19 +45,19 @@ returns the image belonging to the current captcha
 =cut
 
 sub test :Local{
-	my ( $self, $c ) = @_;
-	my $captcha = $c->session->{captcha};
-	$c->res->content_type($captcha->{type});
-	my $filename = "captcha." . $captcha->{type};
-	$c->res->header('Content-Disposition', qq[attachment; filename=$filename]);
-	$c->res->body($captcha->{image});
+    my ( $self, $c ) = @_;
+    my $captcha = $c->session->{captcha};
+    $c->res->content_type($captcha->{type});
+    my $filename = "captcha." . $captcha->{type};
+    $c->res->header('Content-Disposition', qq[attachment; filename=$filename]);
+    $c->res->body($captcha->{image});
 }
 
 sub get_rnd :Local{
-	my ( $self, $c ) = @_;
-	my $captcha = $c->session->{captcha};
-	die "no captcha in session" unless $captcha;
-	$c->res->body($captcha->{rnd});
+    my ( $self, $c ) = @_;
+    my $captcha = $c->session->{captcha};
+    die "no captcha in session" unless $captcha;
+    $c->res->body($captcha->{rnd});
 }
 
 =head1 AUTHOR
@@ -74,19 +74,19 @@ it under the same terms as Perl itself.
 __PACKAGE__->meta->make_immutable;
 
 {
-	package MyCatalystApp::Controller::Captcha::Form;
+    package MyCatalystApp::Controller::Captcha::Form;
 
-	use HTML::FormHandler::Moose;
-	extends qw/HTML::FormHandler/;
-	with qw/
-		HTML::FormHandler::Render::Simple
-		HTML::FormHandler::TraitFor::Captcha
-	/;
+    use HTML::FormHandler::Moose;
+    extends qw/HTML::FormHandler/;
+    with qw/
+        HTML::FormHandler::Render::Simple
+        HTML::FormHandler::TraitFor::Captcha
+    /;
 
-	has_field submit => ( type => "Submit" );
+    has_field submit => ( type => "Submit" );
 
-	__PACKAGE__->meta->make_immutable;
-	1;
+    __PACKAGE__->meta->make_immutable;
+    1;
 }
 
 1;

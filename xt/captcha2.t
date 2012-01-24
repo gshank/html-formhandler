@@ -24,11 +24,11 @@ use Test::More;
 my @missing;
 eval" use Test::WWW::Mechanize::Catalyst; ";
 if($@){
-	push @missing, "Test::WWW::Mechanize";
+    push @missing, "Test::WWW::Mechanize";
 }
 eval" use GD::SecurityImage; ";
 if($@){
-	push @missing, "GD::SecurityImage";
+    push @missing, "GD::SecurityImage";
 }
 
 if(@missing){
