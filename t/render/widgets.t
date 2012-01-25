@@ -274,9 +274,9 @@ is(
 );
 
 my $output11 = $form->render_start;
-is(
-    $output11, '<form id="testform" method="post" >
-<fieldset class="main_fieldset">', 'Form start OK'
+is( $output11,
+'<fieldset class="main_fieldset"><form id="testform" method="post">',
+'Form start OK'
 );
 
 $output12 = $form->field('comedians')->render;

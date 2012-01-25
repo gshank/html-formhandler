@@ -155,7 +155,8 @@ sub render {
 sub render_start {
     my $self   = shift;
 
-    my $output = $self->html_form_tag;
+    my $attr = process_attrs($self->attributes);
+    my $output = qq{<form$attr>};
 
     my $auto_fieldset = $self->tag_exists('no_auto_fieldset') ?
          not( $self->get_tag('no_auto_fieldset') ) : $self->auto_fieldset;
@@ -384,7 +385,8 @@ sub _label {
     my $attrs = process_attrs( $field->label_attributes );
     my $label = $field->html_filter($field->loc_label);
     $label .= ": " unless $field->get_tag('label_no_colon');
-    return qq{<label$attrs for="} . $field->id . qq{">$label</label>};
+    my $label_tag = $field->tag_exists('label_tag') ? $field->get_tag('label_tag') : 'label';
+    return qq{<$label_tag$attrs for="} . $field->id . qq{">$label</$label_tag>};
 }
 
 sub render_compound {

@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Form::Simple;
 # ABSTRACT: widget to render a form with divs
 
 use Moose::Role;
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 with 'HTML::FormHandler::Widget::Form::Role::HTMLAttributes';
 our $VERSION = 0.01;
@@ -45,11 +46,13 @@ sub render {
 sub render_start {
     my $self = shift;
 
-    my $auto_fieldset = $self->tag_exists('no_auto_fieldset') ?
-         not( $self->get_tag('no_auto_fieldset') ) : $self->auto_fieldset;
-    my $output = $self->html_form_tag;
-    $output .= '<fieldset class="main_fieldset">'
+    my $auto_fieldset = $self->tag_exists('no_form_wrapper') ?
+         not( $self->get_tag('no_form_wrapper') ) : $self->auto_fieldset;
+    my $form_wrapper_tag = $self->tag_exists('form_wrapper_tag') ? $self->get_tag('form_wrapper_tag') : 'fieldset';
+    my $output = qq{<$form_wrapper_tag class="main_fieldset">}
         if $auto_fieldset;
+    my $attrs = process_attrs($self->attributes);
+    $output .= qq{<form$attrs>};
 
     return $output
 }
@@ -68,11 +71,11 @@ sub render_form_errors {
 sub render_end {
     my $self = shift;
 
-    my $auto_fieldset = $self->tag_exists('no_auto_fieldset') ?
-         not( $self->get_tag('no_auto_fieldset') ) : $self->auto_fieldset;
-    my $output;
-    $output .= '</fieldset>' if $auto_fieldset;
-    $output .= "</form>\n";
+    my $auto_fieldset = $self->tag_exists('no_form_wrapper') ?
+         not( $self->get_tag('no_form_wrapper') ) : $self->auto_fieldset;
+    my $form_wrapper_tag = $self->tag_exists('form_wrapper_tag') ? $self->get_tag('form_wrapper_tag') : 'fieldset';
+    my $output .= "</form>\n";
+    $output .= qq{</$form_wrapper_tag>} if $auto_fieldset;
     return $output;
 }
 

@@ -35,7 +35,8 @@ sub render {
 sub render_start {
     my $self   = shift;
 
-    return $self->html_form_tag . "<table>\n";
+    my $attrs = process_attrs($self->attributes);
+    return qq{</form$attrs></table>};
 }
 
 sub render_form_errors {

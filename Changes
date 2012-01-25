@@ -1,3 +1,7 @@
+    Rename 'no_auto_fieldset' to 'no_form_wrapper'. Add 'form_wrapper_tag'.
+       Stop using 'html_form_tag' and use process_attrs($self->attributes)
+       Put form wrapper (fieldset) around form tag instead of inside
+
 0.36001 Tues Jan 24, 2012
     Add two more widget tags: 'no_auto_fieldset' and 'no_compound_wrapper'
     Remove automatic addition of 'class="label"' to labels; if you want that

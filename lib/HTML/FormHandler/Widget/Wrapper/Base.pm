@@ -9,7 +9,8 @@ sub render_label {
     my $attrs = process_attrs($self->label_attributes);
     my $label = $self->html_filter($self->loc_label);
     $label .= ": " unless $self->get_tag('label_no_colon');
-    return qq{<label$attrs for="} . $self->id . qq{">$label</label>};
+    my $label_tag = $self->tag_exists('label_tag') ? $self->get_tag('label_tag') : 'label';
+    return qq{<$label_tag$attrs for="} . $self->id . qq{">$label</$label_tag>};
 }
 
 # this is not actually used any more, but is left here for compatibility

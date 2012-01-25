@@ -38,7 +38,7 @@ Form fields are filled in with input/value by _result_from_object if there's
   an initial object or model object (row), by _result_from_input if
   there are params, and by the '_result_from_fields' if there's neither an
   initial object or params (such as when the form is empty).
- 
+
 There are three methods in InitResult (called by setup_form) to do the
 field initialization:
   _result_from_fields
@@ -49,17 +49,17 @@ If there are parameters (i.e. POST) then validation is performed.
 validate_form in HFH calls _fields_validate in the Fields role.
 
 Validation
-   validate_form (HFH) 
+   validate_form (HFH)
       fields_validate (Fields in HFH & Compound)
          loop through fields doing 'validate_field' (TransformAndCheck in HFH & Field)
             fields_validate ( if field is Compound (recursive))
             _apply_actions (T&C)
             validate (Field subclasses)
             _validate (form method pointed to in Field)
-      
+
 The fields contain weak references to the result objects they contain. Each field
 result object is chained to a parent result object in the _result_from methods.
-Each field contains it's own _result_from methods. The Fields class contains the 
+Each field contains it's own _result_from methods. The Fields class contains the
 methods for form and compound fields. Repeatable contains its own versions of these methods.
 
 

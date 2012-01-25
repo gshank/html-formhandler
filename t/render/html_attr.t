@@ -52,12 +52,13 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
 
 $form = MyApp::Form->new;
 $form->process( params => {} );
-my $expected = '<form id="myapp_form" method="post" name="myapp_form" >
-<fieldset class="main_fieldset">
+my $expected = 
+'<fieldset class="main_fieldset">
+<form id="myapp_form" method="post" name="myapp_form" >
 <div class="wrapper hfh"><label class="label hfh" for="foo">Foo: </label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
 <div class="wrapper hfh"><label class="label hfh" for="bar">Bar: </label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>
 <div class="wrapper hfh"><label class="label hfh" for="mox">Mox: </label><input type="text" name="mox" id="mox" value="" class="input hfh" placeholder="my placeholder" /></div>
-</fieldset></form>';
+</form></fieldset>';
 $rendered = $form->render;
 
 my $exp = HTML::TreeBuilder->new_from_content($expected);

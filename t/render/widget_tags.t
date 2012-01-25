@@ -8,10 +8,11 @@ use Test::More;
     extends 'HTML::FormHandler';
 
     has '+widget_tags' => ( default => sub {{
-        no_auto_fieldset => 1,
+        no_form_wrapper => 1,
         label_no_colon => 1,
         wrapper_tag => 'p',
         no_compound_wrapper => 1,
+        label_tag => 'span',
     }} );
     has_field 'foo';
     has_field 'bar';
@@ -19,6 +20,10 @@ use Test::More;
     has_field 'multi' => ( type => 'Compound' );
     has_field 'multi.one';
     has_field 'multi.two';
+    sub field_html_attributes {
+        my ( $self, $field, $type, $attr ) = @_;
+        $attr->{class} = ['label'] if $type eq 'label';
+    }
 }
 
 my $form = Test::Form->new;
@@ -28,5 +33,6 @@ unlike( $rendered, qr/fieldset/, 'no fieldset rendered' );
 unlike( $rendered, qr/Foo: /, 'no colon in label' );
 like( $rendered, qr/<p/, 'wrapper tag correct' );
 unlike( $rendered, qr/<fieldset class="multi"><legend>Multi<\/legend>/, 'no fieldset around compound' );
+like( $rendered, qr/<span class="label" for="bar">Bar<\/span>/, 'label formatted with span and class' );
 
 done_testing;
