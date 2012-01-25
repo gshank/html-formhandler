@@ -12,6 +12,15 @@ It will have a name like '0', '1'... Users should not need to use this class.
 
 =cut
 
+sub BUILD {
+    my $self = shift;
+
+    $self->set_wrapper_attr('class', ['hfh-repinst']);
+}
+
+
+has '+no_render_label' => ( default => 1 );
+
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
 1;

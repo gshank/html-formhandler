@@ -957,7 +957,8 @@ has 'label_attr' => ( is => 'rw', traits => ['Hash'],
 sub build_label_attr {{}}
 has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
    builder => 'build_wrapper_attr', handles => { has_wrapper_attr => 'count',
-   get_wrapper_attr => 'get', set_wrapper_attr => 'set', delete_wrapper_attr => 'delete' }
+   get_wrapper_attr => 'get', set_wrapper_attr => 'set', delete_wrapper_attr => 'delete',
+   exists_wrapper_attr => 'exists' }
 );
 sub build_wrapper_attr {{}}
 

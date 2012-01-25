@@ -13,20 +13,23 @@ This is the default wrapper role. It will be installed if
 no other wrapper is specified and widget_wrapper is not set to
 'none'.
 
-It used the 'widget_tags' keys 'wrapper_start' and 'wrapper_end',
-so that the default C<< '<div<%class>>' >> and C<< '</div>' >> tags
-may be replaced. The following will cause the fields to be wrapped
-in paragraph tags instead:
+Supported 'widget_tags':
 
-   has '+widget_tags' => ( default => sub { {
-      wrapper_start => '<p>',
-      wrapper_end   => '</p>' }
-   );
+    wrapper_tag    -- the tag to use in the wrapper, default 'div'
 
-Alternatively, 'wrapper_tag' can be set to switch to a tag besides 'div',
-but still use the the wrapper attribute processing:
+    label_none     -- don't render a label
+    label_tag      -- tag to use for label (default 'label')
+    label_after    -- string to append to label, for example ': ' to append a colon
 
-   has '+widget_tags' => ( default => sub { { wrapper_tag => 'p' } } );
+    form_wrapper   -- put a wrapper around main form
+    form_wrapper_tag -- tag for form wrapper; default 'fieldset'
+
+Are these necessary? Really, they should be specified at form level and propagated
+to the appropriate fields.
+
+    compound_wrapper -- put a wrapper around compound fields
+    repeatable_wrapper
+    contains_wrapper
 
 =cut
 
@@ -34,44 +37,29 @@ but still use the the wrapper attribute processing:
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    return $rendered_widget if ( $self->has_flag('is_compound') && ! $self->get_tag('compound_wrapper') );
-
+    my $do_compound_wrapper = ( $self->has_flag('is_repeatable') && $self->get_tag('repeatable_wrapper') ) ||
+                              ( $self->has_flag('is_contains') && $self->get_tag('contains_wrapper') )  ||
+                              ( $self->has_flag('is_compound') && $self->get_tag('compound_wrapper') );
+    return $rendered_widget if ( $self->has_flag('is_compound') && ! $do_compound_wrapper );
     my $output = "\n";
-
-    my $wrapper_tag = $self->wrapper_tag;
-    my $start_tag = $self->get_tag('wrapper_start');
-    if( defined $start_tag ) {
-        $output .= $start_tag;
+    my $wrapper_tag = $self->get_tag('wrapper_tag') || '';
+    my $do_wrapper_tag = ! $self->tag_exists('wrapper_tag') || ( $self->tag_exists('wrapper_tag') && $self->get_tag('wrapper_tag') );
+    if( $do_wrapper_tag ) {
+        $wrapper_tag ||= $self->has_flag('is_repeatable') ? 'fieldset' : 'div';
+        my $attrs = process_attrs( $self->wrapper_attributes($result) );
+        $output .= qq{<$wrapper_tag$attrs>};
     }
-    else {
-        $output .= "<$wrapper_tag" . process_attrs( $self->wrapper_attributes($result) ) . ">";
+    if( $wrapper_tag eq 'fieldset' ) {
+        $output .= '<legend>' . $self->loc_label . '</legend>';
     }
-    # if this a compound field, the accumulated rendered subfields will have
-    # been passed in $rendered_widget, so ... is this double wrapping?
-    if ( $self->has_flag('is_compound') && $self->get_tag('compound_wrapper') ) {
-        my $compound_wrapper_tag = $self->get_tag('compound_wrapper_tag') || 'fieldset';
-        my $html_name = $self->html_name;
-        $output .= qq{<$compound_wrapper_tag class="$html_name">};
-        if( $compound_wrapper_tag eq 'fieldset' ) {
-            $output .= '<legend>' . $self->loc_label . '</legend>';
-        }
-    }
-    elsif ( !$self->has_flag('no_render_label') && length( $self->label ) > 0 ) {
+    elsif ( ! $self->get_tag('label_none') && !$self->has_flag('no_render_label') && length( $self->label ) > 0 ) {
         $output .= $self->render_label;
     }
-
     $output .= $rendered_widget;
     $output .= qq{\n<span class="error_message">$_</span>}
         for $result->all_errors;
-    if ( $self->has_flag('is_compound') && $self->get_tag('compound_wrapper') ) {
-        my $compound_wrapper_tag = $self->get_tag('compound_wrapper_tag') || 'fieldset';
-        $output .= "</$compound_wrapper_tag>";
-    }
-
-    my $end_tag = $self->get_tag('wrapper_end');
-    $output .= defined $end_tag ? $end_tag : "</$wrapper_tag>";
-
-    return "$output\n";
+    $output .= "\n</$wrapper_tag>" if $do_wrapper_tag;
+    return "$output";
 }
 
 1;

@@ -33,7 +33,8 @@ ok( $dir, 'found template dir' );
     has_field 'submit' => ( type => 'Submit' );
     has_field 'foo';
     has_field 'bar';
-    has_field 'fubar' => ( type => 'Compound' );
+    has_field 'fubar' => ( type => 'Compound', 
+        widget_tags => { compound_wrapper => 1, wrapper_tag => 'fieldset' } );
     has_field 'fubar.name';
     has_field 'fubar.country';
     has_field 'opt_in' => ( type => 'Checkbox' );

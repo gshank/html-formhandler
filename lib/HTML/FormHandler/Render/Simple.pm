@@ -117,26 +117,6 @@ Renders field with 'submit' widget
 
 =cut
 
-has 'label_types' => (
-    traits    => ['Hash'],
-    isa       => 'HashRef[Str]',
-    is        => 'rw',
-    default   => sub {
-        {
-            text        => 'label',
-            password    => 'label',
-            'select'    => 'label',
-            checkbox    => 'label',
-            textarea    => 'label',
-            radio_group => 'label',
-            compound    => 'legend',
-            upload      => 'label',
-            captcha     => 'label',
-        };
-    },
-    handles   => { get_label_type => 'get' },
-);
-
 sub render {
     my $self   = shift;
     my $output = $self->render_start;
@@ -205,34 +185,39 @@ sub render_field {
     else {
         die "No widget method found for '" . $field->widget . "' in H::F::Render::Simple";
     }
-    my $wrapper_attrs = process_attrs($field->wrapper_attributes);
-    return $self->render_field_struct( $field, $rendered_field, $wrapper_attrs );
+    return $self->wrap_field( $field, $rendered_field );
 }
 
-sub render_field_struct {
-    my ( $self, $field, $rendered_field, $wrapper_attrs ) = @_;
-    my $output = qq{\n<div$wrapper_attrs>};
-    my $l_type =
-        defined $self->get_label_type( $field->widget ) ?
-        $self->get_label_type( $field->widget ) :
-        '';
-    if ( $l_type eq 'label' && $field->label ) {
-        $output .= $self->_label($field);
+sub wrap_field {
+    my ( $self, $field, $rendered_field ) = @_;
+
+    return $rendered_field if $field->wrapper eq 'none';
+    my $do_compound_wrapper = ( $field->has_flag('is_repeatable') && $field->get_tag('repeatable_wrapper') ) ||
+                              ( $field->has_flag('is_contains') && $field->get_tag('contains_wrapper') )  ||
+                              ( $field->has_flag('is_compound') && $field->get_tag('compound_wrapper') );
+    return $rendered_field if ( $field->has_flag('is_compound') && ! $do_compound_wrapper );
+
+    my $output = "\n";
+
+    my $wrapper_tag = $field->get_tag('wrapper_tag');
+    $wrapper_tag ||= $field->has_flag('is_repeatable') ? 'fieldset' : 'div';
+    my $attrs = process_attrs($field->wrapper_attributes);
+
+    $output .= qq{<$wrapper_tag$attrs>};
+    if( $wrapper_tag eq 'fieldset' ) {
+        $output .= '<legend>' . $field->loc_label . '</legend>';
     }
-    elsif ( $l_type eq 'legend' ) {
-        $output .= '<fieldset class="' . $field->html_name . '">';
-        $output .= '<legend>' . $field->html_filter($field->loc_label) . '</legend>';
-    }
-    $output .= $rendered_field;
-    foreach my $error ($field->all_errors){
-        $output .= qq{\n<span class="error_message">} . $field->html_filter($error) . '</span>';
+    elsif ( ! $field->get_tag('label_none') && !$field->has_flag('no_render_label') && length( $field->label ) > 0 ) {
+        $output .= $self->render_label($field);
     }
 
-    if ( $l_type eq 'legend' ) {
-        $output .= '</fieldset>';
-    }
-    $output .= "</div>\n";
-    return $output;
+    $output .= $rendered_field;
+    $output .= qq{\n<span class="error_message">$_</span>}
+        for $field->all_errors;
+
+    $output .= "\n</$wrapper_tag>";
+
+    return "$output";
 }
 
 sub render_text {
@@ -376,7 +361,7 @@ sub render_upload {
     return $output;
 }
 
-sub _label {
+sub render_label {
     my ( $self, $field ) = @_;
 
     my $attrs = process_attrs( $field->label_attributes );
