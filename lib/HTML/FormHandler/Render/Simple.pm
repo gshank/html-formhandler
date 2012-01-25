@@ -381,7 +381,8 @@ sub _label {
 
     my $attrs = process_attrs( $field->label_attributes );
     my $label = $field->html_filter($field->loc_label);
-    $label .= ": " unless $field->get_tag('label_no_colon');
+    $label .= $field->get_tag('label_after')
+        if( $field->tag_exists('label_after') );
     my $label_tag = $field->tag_exists('label_tag') ? $field->get_tag('label_tag') : 'label';
     return qq{<$label_tag$attrs for="} . $field->id . qq{">$label</$label_tag>};
 }

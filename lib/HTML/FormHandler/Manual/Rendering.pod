@@ -233,25 +233,26 @@ that it uses; you can add your own for your custom rendering code.
     wrapper_tag    -- the tag to use in the wrapper, default 'div'
     wrapper_start  -- replaces the entire wrapper start html code
     wrapper_end    -- replaces the entire wrapper end html code
-    no_label_colon    -- don't put a ': ' following the label
+    label_tag      -- tag to use for label (default 'label')
+    label_after    -- string to append to label, for example ': ' to append a colon
     form_wrapper   -- put a wrapper around main form
     form_wrapper_tag -- tag for form wrapper; default 'fieldset'
     compound_wrapper -- put a wrapper around compound fields
     compound_wrapper_tag -- the tag for the compound wrapper (default 'fieldset')
 
 They can be used to switch the Simple
-wrapper from divs to using paragraphs instead, or to suppress the colon in
+wrapper from divs to using paragraphs instead, or to add a colon in
 label formatting:
 
    has_field 'my_field' => (
-       widget_tags => {wrapper_tag => 'p', label_no_colon => 1  } );
+       widget_tags => {wrapper_tag => 'p', label_after => ': '  } );
 
 If you want just the plain html (including the label) with no wrapping div or
 other element, you can set the wrapper_start and wrapper_end to ''.
 
    has_field 'baz' => ( widget_tags => { wrapper_start => '',
         wrapper_end => '' } );
-   <label class="label" for="baz">Baz: </label><input type="text" name="baz" id="baz" value="" />
+   <label class="label" for="baz">Baz</label><input type="text" name="baz" id="baz" value="" />
 
 Widget tags set for the form will be copied into the fields if the same key
 does not exist in the field 'wrapper_tags' hashref, so you can set the

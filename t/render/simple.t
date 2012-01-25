@@ -121,7 +121,7 @@ is_deeply( $form->value->{starch}, [], 'checkbox group value' );
 
 is( $form->render_field( $form->field('number') ),
     '
-<div><label class="label" for="number">Number: </label><input type="text" name="number" id="number" value="0" /></div>
+<div><label class="label" for="number">Number</label><input type="text" name="number" id="number" value="0" /></div>
 ',
     "value '0' is rendered"
 );
@@ -129,49 +129,49 @@ is( $form->render_field( $form->field('number') ),
 my $output1 = $form->render_field( $form->field('test_field') );
 is( $output1,
    '
-<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" class="test123" /></div>
+<div><label class="label" for="f99">TEST</label><input type="text" name="test_field" id="f99" size="20" value="something" class="test123" /></div>
 ',
    'output from text field');
 
 my $output2 = $form->render_field( $form->field('fruit') );
 is( $output2,
    '
-<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0">apples</option><option value="2" id="fruit.1" selected="selected">oranges</option><option value="3" id="fruit.2">kiwi</option></select></div>
+<div><label class="label" for="fruit">Fruit</label><select name="fruit" id="fruit"><option value="1" id="fruit.0">apples</option><option value="2" id="fruit.1" selected="selected">oranges</option><option value="3" id="fruit.2">kiwi</option></select></div>
 ',
    'output from select field');
 
 my $output12 = $form->render_field( $form->field('cheese') );
 is( $output12,
    '
-<div><label class="label" for="cheese">Cheese: </label><select name="cheese" id="cheese"><option value="1" id="cheese.0">canastra</option><option value="2" id="cheese.1" disabled="disabled">brie</option><option value="3" id="cheese.2">gorgonzola</option></select></div>
+<div><label class="label" for="cheese">Cheese</label><select name="cheese" id="cheese"><option value="1" id="cheese.0">canastra</option><option value="2" id="cheese.1" disabled="disabled">brie</option><option value="3" id="cheese.2">gorgonzola</option></select></div>
 ',
    'output from select field with disabled option');
 
 my $output3 = $form->render_field( $form->field('vegetables') );
 is( $output3,
    '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0">lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2">carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
+<div><label class="label" for="vegetables">Vegetables</label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0">lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2">carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select></div>
 ',
 'output from select multiple field');
 
 my $output13 = $form->render_field( $form->field('grains') );
 is( $output13,
    '
-<div><label class="label" for="grains">Grains: </label><select name="grains" id="grains" multiple="multiple" size="5"><option value="1" id="grains.0">maize</option><option value="2" id="grains.1" disabled="disabled">rice</option><option value="3" id="grains.2">wheat</option></select></div>
+<div><label class="label" for="grains">Grains</label><select name="grains" id="grains" multiple="multiple" size="5"><option value="1" id="grains.0">maize</option><option value="2" id="grains.1" disabled="disabled">rice</option><option value="3" id="grains.2">wheat</option></select></div>
 ',
 'output from select multiple field with disabled option');
 
 my $output4 = $form->render_field( $form->field('active') );
 is( $output4,
    '
-<div><label class="label" for="active">Active: </label><input type="checkbox" name="active" id="active" value="1" /></div>
+<div><label class="label" for="active">Active</label><input type="checkbox" name="active" id="active" value="1" /></div>
 ',
    'output from checkbox field');
 
 my $output5 = $form->render_field( $form->field('comments') );
 is( $output5,
    '
-<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="3" cols="40">Four score and seven years ago...</textarea></div>
+<div><label class="label" for="comments">Comments</label><textarea name="comments" id="comments" rows="3" cols="40">Four score and seven years ago...</textarea></div>
 ',
    'output from textarea' );
 
@@ -185,7 +185,7 @@ is( $output6,
 my $output7 = $form->render_field( $form->field('selected') );
 is( $output7,
    '
-<div><label class="label" for="selected">Selected: </label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" /></div>
+<div><label class="label" for="selected">Selected</label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" /></div>
 ',
    'output from boolean' );
 
@@ -193,11 +193,11 @@ my $output8 = $form->render_field( $form->field('start_date') );
 is( $output8,
    '
 <div><fieldset class="start_date"><legend>Start date</legend>
-<div><label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" /></div>
+<div><label class="label" for="start_date.month">Month</label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" /></div>
 
-<div><label class="label" for="start_date.day">Day: </label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" /></div>
+<div><label class="label" for="start_date.day">Day</label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" /></div>
 
-<div><label class="label" for="start_date.year">Year: </label><input type="text" name="start_date.year" id="start_date.year" size="8" value="2006" /></div>
+<div><label class="label" for="start_date.year">Year</label><input type="text" name="start_date.year" id="start_date.year" size="8" value="2006" /></div>
 </fieldset></div>
 ',
    'output from DateTime' );
@@ -209,7 +209,7 @@ is( $output9, '
 
 my $output10 = $form->render_field( $form->field('opt_in') );
 is( $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />No</label><br /><label for="opt_in.1"><input type="radio" value="1" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
+<div><label class="label" for="opt_in">Opt in</label> <br /><label for="opt_in.0"><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />No</label><br /><label for="opt_in.1"><input type="radio" value="1" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
 ', 'output from radio group' );
 
 my $output11 = $form->render_start;

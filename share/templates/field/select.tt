@@ -1,4 +1,4 @@
-<label [% process_attrs(f.label_attributes) %] for="[% f.html_name %]">[% f.label %]: </label>
+[% INCLUDE field/label.tt %]
 <select name="[% f.html_name %]" id="[% f.id %]" [% process_attrs(f.attriutes) %]
   [% IF f.multiple %] multiple="multiple" size="[% f.size %]" [% END -%]>
   [% FOR option IN f.options -%]

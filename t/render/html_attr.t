@@ -56,9 +56,9 @@ $form->process( params => {} );
 my $expected =
 '<fieldset class="form_wrapper">
 <form id="myapp_form" method="post" name="myapp_form" >
-<div class="wrapper hfh"><label class="label hfh" for="foo">Foo: </label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
-<div class="wrapper hfh"><label class="label hfh" for="bar">Bar: </label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>
-<div class="wrapper hfh"><label class="label hfh" for="mox">Mox: </label><input type="text" name="mox" id="mox" value="" class="input hfh" placeholder="my placeholder" /></div>
+<div class="wrapper hfh"><label class="label hfh" for="foo">Foo</label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
+<div class="wrapper hfh"><label class="label hfh" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>
+<div class="wrapper hfh"><label class="label hfh" for="mox">Mox</label><input type="text" name="mox" id="mox" value="" class="input hfh" placeholder="my placeholder" /></div>
 </form></fieldset>';
 $rendered = $form->render;
 

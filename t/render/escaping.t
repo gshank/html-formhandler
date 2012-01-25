@@ -11,7 +11,7 @@ use HTML::FormHandler::Field::Text;
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Render::Simple';
 
-   sub build_widget_tags { { form_wrapper => 1 } }
+   sub build_widget_tags { { form_wrapper => 1, label_after => ': ' } }
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
                size => 20,

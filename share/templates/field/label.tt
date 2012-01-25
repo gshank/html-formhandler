@@ -1,1 +1,1 @@
-<label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">[% f.label %]: </label>
+<label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">[% f.label %]</label>

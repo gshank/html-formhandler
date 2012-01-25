@@ -8,7 +8,8 @@ sub render_label {
     my $self = shift;
     my $attrs = process_attrs($self->label_attributes);
     my $label = $self->html_filter($self->loc_label);
-    $label .= ": " unless $self->get_tag('label_no_colon');
+    $label .= $self->get_tag('label_after')
+        if( $self->tag_exists('label_after') );
     my $label_tag = $self->tag_exists('label_tag') ? $self->get_tag('label_tag') : 'label';
     return qq{<$label_tag$attrs for="} . $self->id . qq{">$label</$label_tag>};
 }

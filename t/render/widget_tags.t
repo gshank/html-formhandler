@@ -9,10 +9,7 @@ use Test::More;
 
     sub build_widget_tags {
         {
-            no_form_wrapper => 1,
-            label_no_colon => 1,
             wrapper_tag => 'p',
-            no_compound_wrapper => 1,
             label_tag => 'span',
         }
     }

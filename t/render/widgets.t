@@ -125,14 +125,14 @@ ok( $form, 'create form' );
 my $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
+<div><label class="label" for="opt_in">Opt in</label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
 ', 'output from radio group'
 );
 
 my $output12 = $form->field('comedians')->render;
 is(
     $output12, '
-<div><label class="label" for="comedians">Comedians: </label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" />Stan Laurel &amp; Oliver Hardy<br /></div>
+<div><label class="label" for="comedians">Comedians</label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" />Stan Laurel &amp; Oliver Hardy<br /></div>
 ', 'output from checkbox group'
 );
 
@@ -140,7 +140,7 @@ my $output13 = $form->field('hobbies')->render;
 is(
     $output13, '
 <div><fieldset class="hobbies"><legend>Hobbies</legend>
-<div><label class="label" for="hobbies.0">0: </label><input type="text" name="hobbies.0" id="hobbies.0" value="" tabindex="2" /></div>
+<div><label class="label" for="hobbies.0">0</label><input type="text" name="hobbies.0" id="hobbies.0" value="" tabindex="2" /></div>
 </fieldset></div>
 ', 'output from repeatable with num_when_empty == 1'
 );
@@ -170,7 +170,7 @@ $form->process($params);
 is(
     $form->field('number')->render,
     '
-<div><label class="label" for="number">Number: </label><input type="text" name="number" id="number" value="0" /></div>
+<div><label class="label" for="number">Number</label><input type="text" name="number" id="number" value="0" /></div>
 ',
     "value '0' is rendered"
 );
@@ -179,7 +179,7 @@ my $output1 = $form->field('test_field')->render;
 is(
     $output1,
     '
-<div><label class="label" for="f99">TEST: </label><input type="text" name="test_field" id="f99" size="20" value="something" class="test123" /></div>
+<div><label class="label" for="f99">TEST</label><input type="text" name="test_field" id="f99" size="20" value="something" class="test123" /></div>
 ',
     'output from text field'
 );
@@ -188,7 +188,7 @@ my $output2 = $form->field('fruit')->render;
 is(
     $output2,
     '
-<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="&quot;apples&quot;" id="fruit.0">&quot;apples&quot;</option><option value="&lt;oranges&gt;" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="&amp;kiwi&amp;" id="fruit.2">&amp;kiwi&amp;</option></select></div>
+<div><label class="label" for="fruit">Fruit</label><select name="fruit" id="fruit"><option value="&quot;apples&quot;" id="fruit.0">&quot;apples&quot;</option><option value="&lt;oranges&gt;" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="&amp;kiwi&amp;" id="fruit.2">&amp;kiwi&amp;</option></select></div>
 ',
     'output from select field'
 );
@@ -197,7 +197,7 @@ my $output3 = $form->field('vegetables')->render;
 is(
     $output3,
     '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="&lt;lettuce&gt;" id="vegetables.0">&lt;lettuce&gt;</option><option value="broccoli" id="vegetables.1" selected="selected">broccoli</option><option value="carrots" id="vegetables.2">carrots</option><option value="&amp; peas" id="vegetables.3" selected="selected">&amp; peas</option></select></div>
+<div><label class="label" for="vegetables">Vegetables</label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="&lt;lettuce&gt;" id="vegetables.0">&lt;lettuce&gt;</option><option value="broccoli" id="vegetables.1" selected="selected">broccoli</option><option value="carrots" id="vegetables.2">carrots</option><option value="&amp; peas" id="vegetables.3" selected="selected">&amp; peas</option></select></div>
 ',
     'output from select multiple field'
 );
@@ -206,7 +206,7 @@ my $output4 = $form->field('active')->render;
 is(
     $output4,
     '
-<div><label class="label" for="active">Active: </label><input type="checkbox" name="active" id="active" value="1" /></div>
+<div><label class="label" for="active">Active</label><input type="checkbox" name="active" id="active" value="1" /></div>
 ',
     'output from checkbox field'
 );
@@ -215,7 +215,7 @@ my $output5 = $form->field('comments')->render;
 is(
     $output5,
     '
-<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="3" cols="40">Four score and seven years ago...&lt;/textarea&gt;</textarea></div>
+<div><label class="label" for="comments">Comments</label><textarea name="comments" id="comments" rows="3" cols="40">Four score and seven years ago...&lt;/textarea&gt;</textarea></div>
 ',
     'output from textarea'
 );
@@ -233,7 +233,7 @@ my $output7 = $form->field('selected')->render;
 is(
     $output7,
     '
-<div><label class="label" for="selected">Selected: </label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" /></div>
+<div><label class="label" for="selected">Selected</label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" /></div>
 ',
     'output from boolean'
 );
@@ -243,11 +243,11 @@ is(
     $output8,
     '
 <div><fieldset class="start_date"><legend>Start date</legend>
-<div><label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" /></div>
+<div><label class="label" for="start_date.month">Month</label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" /></div>
 
-<div><label class="label" for="start_date.day">Day: </label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" /></div>
+<div><label class="label" for="start_date.day">Day</label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" /></div>
 
-<div><label class="label" for="start_date.year">Year: </label><input type="text" name="start_date.year" id="start_date.year" size="8" value="2006" /></div>
+<div><label class="label" for="start_date.year">Year</label><input type="text" name="start_date.year" id="start_date.year" size="8" value="2006" /></div>
 </fieldset></div>
 ',
     'output from DateTime'
@@ -270,7 +270,7 @@ is(
 $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
+<div><label class="label" for="opt_in">Opt in</label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br /></div>
 ', 'output from radio group'
 );
 
@@ -284,7 +284,7 @@ $output12 = $form->field('comedians')->render;
 is(
     $output12,
     '
-<div><label class="label" for="comedians">Comedians: </label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" checked="checked" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" checked="checked" />Stan Laurel &amp; Oliver Hardy<br /></div>
+<div><label class="label" for="comedians">Comedians</label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" checked="checked" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" checked="checked" />Stan Laurel &amp; Oliver Hardy<br /></div>
 ',
     'output from checkbox group'
 );
@@ -293,11 +293,11 @@ $output13 = $form->field('hobbies')->render;
 is(
     $output13, '
 <div><fieldset class="hobbies"><legend>Hobbies</legend>
-<div><label class="label" for="hobbies.0">0: </label><input type="text" name="hobbies.0" id="hobbies.0" value="eating" tabindex="2" /></div>
+<div><label class="label" for="hobbies.0">0</label><input type="text" name="hobbies.0" id="hobbies.0" value="eating" tabindex="2" /></div>
 
-<div><label class="label" for="hobbies.1">1: </label><input type="text" name="hobbies.1" id="hobbies.1" value="sleeping" tabindex="2" /></div>
+<div><label class="label" for="hobbies.1">1</label><input type="text" name="hobbies.1" id="hobbies.1" value="sleeping" tabindex="2" /></div>
 
-<div><label class="label" for="hobbies.2">2: </label><input type="text" name="hobbies.2" id="hobbies.2" value="not chasing mice" tabindex="2" /></div>
+<div><label class="label" for="hobbies.2">2</label><input type="text" name="hobbies.2" id="hobbies.2" value="not chasing mice" tabindex="2" /></div>
 </fieldset></div>
 ', 'output from repeatable after processing result with 3 items'
 );
@@ -382,15 +382,15 @@ ok( $outputT, 'output from table rendering' );
 $form = Test::Tags->new;
 $form->process( { foo => 'bar' } );
 is( $form->field('foo')->render, '
-<p><label class="label" for="foo">Foo: </label><input type="text" name="foo" id="foo" value="bar" /></p>
+<p><label class="label" for="foo">Foo</label><input type="text" name="foo" id="foo" value="bar" /></p>
 ', 'renders with different tags');
 
 is( $form->field('bar')->render, '
-<span><label class="label" for="bar">Bar: </label><input type="text" name="bar" id="bar" value="" /></span>
+<span><label class="label" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" /></span>
 ', 'field renders with custom widget_tags' );
 
 is( $form->field('baz')->render, '
-<label class="label" for="baz">Baz: </label><input type="text" name="baz" id="baz" value="" />
+<label class="label" for="baz">Baz</label><input type="text" name="baz" id="baz" value="" />
 ', 'field renders with empty widget_tags' );
 
 {
@@ -398,7 +398,7 @@ is( $form->field('baz')->render, '
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags { { form_wrapper => 1, compound_wrapper => 1, label_no_colon => 1 } }
+    sub build_widget_tags { { form_wrapper => 1, compound_wrapper => 1 } }
     has_field 'my_comp' => ( type => 'Compound', widget_wrapper => 'SimpleInline' );
     has_field 'my_comp.one';
     has_field 'my_comp.two';
