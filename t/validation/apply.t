@@ -40,4 +40,3 @@ $field->validate_field;
 is( $field->value, 'This is a test');
 
 done_testing;
-

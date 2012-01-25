@@ -33,4 +33,19 @@ ok( $form, 'get form with roles' );
 ok( $form->field('street'), 'field from Address role' );
 ok( $form->field('email'), 'field from Person role' );
 
+{
+    package Test::HTML::FormHandler::HasFieldArrayRef;
+
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field [qw/home work mobile/] => (type=>'Text', required=>1);
+
+    no HTML::FormHandler::Moose;
+}
+
+$form = Test::HTML::FormHandler::HasFieldArrayRef->new;
+ok( $form, 'Created Form' );
+is( $form->num_fields, 3, 'got 3 fields' );
+
 done_testing;

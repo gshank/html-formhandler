@@ -33,7 +33,7 @@ my $expected =
 </form>
 ';
 
-my $form = HTML::FormHandler::Foo->new( config_file => "$FindBin::Bin/var/form1.yml" );
+my $form = HTML::FormHandler::Foo->new( config_file => "$FindBin::Bin/../var/form1.yml" );
 $form->process({});
 is( $form->num_fields, 4, 'right number of fields');
 my $tt_rendered_form = $form->tt_render;
