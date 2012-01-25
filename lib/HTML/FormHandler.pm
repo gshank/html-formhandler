@@ -884,13 +884,14 @@ has 'widget_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
     is => 'ro',
-    default => sub {{}},
+    builder => 'build_widget_tags',
     handles => {
       get_tag => 'get',
       set_tag => 'set',
       tag_exists => 'exists',
     },
 );
+sub build_widget_tags {{}}
 has 'action' => ( is => 'rw' );
 has 'posted' => ( is => 'rw', isa => 'Bool', clearer => 'clear_posted' );
 has 'params' => (

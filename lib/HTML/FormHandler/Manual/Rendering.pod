@@ -154,7 +154,7 @@ documentation in L<HTML::FormHandler::Field#Attributes_for_creating_HTML>.
 
 =head2 Rendering bare html with no fieldset and no divs
 
-Use a widget_wrapper of 'None', and set widget_tag 'no_auto_fieldset' to 1:
+Use a widget_wrapper of 'None'.
 
     package Test::Form;
     use HTML::FormHandler::Moose;
@@ -162,7 +162,6 @@ Use a widget_wrapper of 'None', and set widget_tag 'no_auto_fieldset' to 1:
 
     has '+name' => ( default => 'testform' );
     has '+widget_wrapper' => ( default => 'None' );
-    has '+widget_tags' => ( default => sub { { no_auto_fieldset => 1 } } );
     has_field 'foo';
     has_field 'bar';
 
@@ -234,9 +233,11 @@ that it uses; you can add your own for your custom rendering code.
     wrapper_tag    -- the tag to use in the wrapper, default 'div'
     wrapper_start  -- replaces the entire wrapper start html code
     wrapper_end    -- replaces the entire wrapper end html code
-    label_no_colon -- don't put a ': ' following the label
-    no_auto_fieldset -- don't put a fieldset around main form
-    no_compound_wrapper -- don't put a fieldset wrapper around compound fields
+    no_label_colon    -- don't put a ': ' following the label
+    form_wrapper   -- put a wrapper around main form
+    form_wrapper_tag -- tag for form wrapper; default 'fieldset'
+    compound_wrapper -- put a wrapper around compound fields
+    compound_wrapper_tag -- the tag for the compound wrapper (default 'fieldset')
 
 They can be used to switch the Simple
 wrapper from divs to using paragraphs instead, or to suppress the colon in

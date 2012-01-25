@@ -8,6 +8,7 @@ use HTML::TreeBuilder;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
+    sub build_widget_tags { { form_wrapper => 1 } }
     has '+name' => ( default => 'test_errors' );
     has_field 'foo' => ( required => 1 );
     has_field 'bar' => ( type => 'Integer' );
@@ -20,7 +21,7 @@ $form->process( params => { bar => 'abc' } );
 is( $form->num_errors, 2, 'got two errors' );
 
 my $expected = 
-'<fieldset class="main_fieldset">
+'<fieldset class="form_wrapper">
 <form id="test_errors" method="post" >
 <div class="error"><label for="foo">Foo: </label><input type="text" name="foo" id="foo" value="" />
 <span class="error_message">Foo field is required</span></div>

@@ -11,6 +11,7 @@ use HTML::FormHandler::Field::Text;
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Render::Simple';
 
+   sub build_widget_tags { { form_wrapper => 1 } }
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
                input_class => 'test123',
@@ -213,7 +214,7 @@ is( $output10, '
 
 my $output11 = $form->render_start;
 is( $output11,
-'<fieldset class="main_fieldset"><form id="testform" method="post">',
+'<fieldset class="form_wrapper"><form id="testform" method="post">',
 'Form start OK' );
 
 my $output = $form->render;

@@ -32,6 +32,7 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
+    sub build_widget_tags { { form_wrapper => 1 } }
     has '+name' => ( default => 'myapp_form' );
     has '+html_attr' => ( default => sub { { name => 'myapp_form' } } );
     has_field 'foo';
@@ -52,8 +53,8 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
 
 $form = MyApp::Form->new;
 $form->process( params => {} );
-my $expected = 
-'<fieldset class="main_fieldset">
+my $expected =
+'<fieldset class="form_wrapper">
 <form id="myapp_form" method="post" name="myapp_form" >
 <div class="wrapper hfh"><label class="label hfh" for="foo">Foo: </label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
 <div class="wrapper hfh"><label class="label hfh" for="bar">Bar: </label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>

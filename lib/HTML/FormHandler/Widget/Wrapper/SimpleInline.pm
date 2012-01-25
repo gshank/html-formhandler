@@ -13,8 +13,6 @@ fields.
 
 =cut
 
-has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', lazy => 1, default => 1 );
-
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 

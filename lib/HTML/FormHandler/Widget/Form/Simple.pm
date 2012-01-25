@@ -15,8 +15,6 @@ Role to apply to form objects to allow rendering. In your form:
 
 =cut
 
-has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', lazy => 1, default => 1 );
-
 sub render {
     my ($self) = @_;
 
@@ -46,11 +44,11 @@ sub render {
 sub render_start {
     my $self = shift;
 
-    my $auto_fieldset = $self->tag_exists('no_form_wrapper') ?
-         not( $self->get_tag('no_form_wrapper') ) : $self->auto_fieldset;
-    my $form_wrapper_tag = $self->tag_exists('form_wrapper_tag') ? $self->get_tag('form_wrapper_tag') : 'fieldset';
-    my $output = qq{<$form_wrapper_tag class="main_fieldset">}
-        if $auto_fieldset;
+    my $output = '';
+    if( $self->get_tag('form_wrapper') ) {
+        my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
+        $output .= qq{<$form_wrapper_tag class="form_wrapper">};
+    }
     my $attrs = process_attrs($self->attributes);
     $output .= qq{<form$attrs>};
 
@@ -71,11 +69,11 @@ sub render_form_errors {
 sub render_end {
     my $self = shift;
 
-    my $auto_fieldset = $self->tag_exists('no_form_wrapper') ?
-         not( $self->get_tag('no_form_wrapper') ) : $self->auto_fieldset;
-    my $form_wrapper_tag = $self->tag_exists('form_wrapper_tag') ? $self->get_tag('form_wrapper_tag') : 'fieldset';
     my $output .= "</form>\n";
-    $output .= qq{</$form_wrapper_tag>} if $auto_fieldset;
+    if( $self->get_tag('form_wrapper') ) {
+        my $form_wrapper_tag = $self->tag_exists('form_wrapper_tag') ? $self->get_tag('form_wrapper_tag') : 'fieldset';
+        $output .= qq{</$form_wrapper_tag>};
+    }
     return $output;
 }
 

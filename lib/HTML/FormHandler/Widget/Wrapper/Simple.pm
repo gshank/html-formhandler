@@ -30,27 +30,29 @@ but still use the the wrapper attribute processing:
 
 =cut
 
-has 'auto_fieldset' => ( isa => 'Bool', is => 'rw', lazy => 1, default => 1 );
 
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    return $rendered_widget if ( $self->has_flag('is_compound') && $self->get_tag('no_compound_wrapper') );
+    return $rendered_widget if ( $self->has_flag('is_compound') && ! $self->get_tag('compound_wrapper') );
 
     my $output = "\n";
 
-    my $tag = $self->wrapper_tag;
+    my $wrapper_tag = $self->wrapper_tag;
     my $start_tag = $self->get_tag('wrapper_start');
     if( defined $start_tag ) {
         $output .= $start_tag;
     }
     else {
-        $output .= "<$tag" . process_attrs( $self->wrapper_attributes($result) ) . ">";
+        $output .= "<$wrapper_tag" . process_attrs( $self->wrapper_attributes($result) ) . ">";
     }
-
-    if ( $self->has_flag('is_compound') ) {
-        if( $self->auto_fieldset ) {
-            $output .= '<fieldset class="' . $self->html_name . '">';
+    # if this a compound field, the accumulated rendered subfields will have
+    # been passed in $rendered_widget, so ... is this double wrapping?
+    if ( $self->has_flag('is_compound') && $self->get_tag('compound_wrapper') ) {
+        my $compound_wrapper_tag = $self->get_tag('compound_wrapper_tag') || 'fieldset';
+        my $html_name = $self->html_name;
+        $output .= qq{<$compound_wrapper_tag class="$html_name">};
+        if( $compound_wrapper_tag eq 'fieldset' ) {
             $output .= '<legend>' . $self->loc_label . '</legend>';
         }
     }
@@ -61,11 +63,13 @@ sub wrap_field {
     $output .= $rendered_widget;
     $output .= qq{\n<span class="error_message">$_</span>}
         for $result->all_errors;
-    $output .= '</fieldset>'
-        if ( $self->has_flag('is_compound') && $self->auto_fieldset );
+    if ( $self->has_flag('is_compound') && $self->get_tag('compound_wrapper') ) {
+        my $compound_wrapper_tag = $self->get_tag('compound_wrapper_tag') || 'fieldset';
+        $output .= "</$compound_wrapper_tag>";
+    }
 
     my $end_tag = $self->get_tag('wrapper_end');
-    $output .= defined $end_tag ? $end_tag : "</$tag>";
+    $output .= defined $end_tag ? $end_tag : "</$wrapper_tag>";
 
     return "$output\n";
 }

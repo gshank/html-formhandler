@@ -13,6 +13,7 @@ use HTML::FormHandler::Field::Text;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
+    sub build_widget_tags { { form_wrapper => 1, compound_wrapper => 1 } }
     has '+name' => ( default => 'testform' );
     has_field 'test_field' => (
         size  => 20,
@@ -275,7 +276,7 @@ is(
 
 my $output11 = $form->render_start;
 is( $output11,
-'<fieldset class="main_fieldset"><form id="testform" method="post">',
+'<fieldset class="form_wrapper"><form id="testform" method="post">',
 'Form start OK'
 );
 
@@ -318,6 +319,7 @@ is( $form->field('boxed')->render, '<fieldset class="boxed"><legend>Boxed</legen
     extends 'HTML::FormHandler';
 
     has '+widget_name_space' => ( default => 'Widget' );
+    sub build_widget_tags { { form_wrapper => 1, compound_wrapper => 1 } }
 
     has_field 'alpha' => ( widget => 'test_widget' );
     has_field 'omega' => ( widget => 'Omega' );
@@ -358,14 +360,14 @@ ok( $outputT, 'output from table rendering' );
     extends 'HTML::FormHandler';
 
     has_field 'foo';
-    has '+widget_tags' => (
-        default => sub {
-            {
-                wrapper_start => '<p>',
-                wrapper_end   => '</p>',
-            };
+    sub build_widget_tags {
+        {
+            form_wrapper => 1,
+            compound_wrapper => 1,
+            wrapper_start => '<p>',
+            wrapper_end   => '</p>',
         }
-    );
+    }
     has_field 'bar' => ( widget_tags =>
          {wrapper_start => '<span>', wrapper_end => '</span>'});
     has_field 'baz' => ( widget_tags =>
@@ -396,7 +398,7 @@ is( $form->field('baz')->render, '
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has '+widget_tags' => ( default => sub { { label_no_colon => 1 } } );
+    sub build_widget_tags { { form_wrapper => 1, compound_wrapper => 1, label_no_colon => 1 } }
     has_field 'my_comp' => ( type => 'Compound', widget_wrapper => 'SimpleInline' );
     has_field 'my_comp.one';
     has_field 'my_comp.two';

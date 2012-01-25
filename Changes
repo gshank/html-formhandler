@@ -1,6 +1,20 @@
-    Rename 'no_auto_fieldset' to 'no_form_wrapper'. Add 'form_wrapper_tag'.
-       Stop using 'html_form_tag' and use process_attrs($self->attributes)
-       Put form wrapper (fieldset) around form tag instead of inside
+    **** There are many changes to rendering, many of them incompatible.
+       These changes *will* break existing form rendering.
+       You must check and upgrade or make a copy of the old rendering code
+       and include the roles (for non-widgets) or specify it in widget_name_space.
+       Maintaining backward compatibility was making the code awkward and weird,
+       unfortunately.
+    Form wrapping fieldset class is now 'form_wrapper' instead of 'main_fieldset'
+    Widget_tags attribute now takes a builder, 'build_widget_tags'. Can no
+       longer set with '+widget_tags'.
+    Remove attribute 'auto_fieldset'; wrapping form is no longer a default;
+       Add back with 'form_wrapper' => 1 in widget_tags
+    Remove automatic wrapping of compounds.
+       Add back with 'compound_wrapper' => 1 in widget_tags
+    Rename 'no_auto_fieldset'.  Set widget_tag 'form_wrapper' => 1.
+       Add 'form_wrapper_tag' to specify wrapping tag. Default 'fieldset'.
+    Stop using 'html_form_tag' and use process_attrs($self->attributes)
+    Put form wrapper (fieldset) around form tag instead of inside
 
 0.36001 Tues Jan 24, 2012
     Add two more widget tags: 'no_auto_fieldset' and 'no_compound_wrapper'
