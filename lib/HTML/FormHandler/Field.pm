@@ -947,17 +947,17 @@ sub input_type {
 
 has 'html_attr' => ( is => 'rw', traits => ['Hash'],
    builder => 'build_html_attr', handles => { has_html_attr => 'count',
-   set_html_attr => 'set', delete_html_attr => 'delete' }
+   get_html_attr => 'get', set_html_attr => 'set', delete_html_attr => 'delete' }
 );
 sub build_html_attr {{}}
 has 'label_attr' => ( is => 'rw', traits => ['Hash'],
    builder => 'build_label_attr', handles => { has_label_attr => 'count',
-   set_label_attr => 'set', delete_label_attr => 'delete' }
+   get_label_attr => 'get', set_label_attr => 'set', delete_label_attr => 'delete' }
 );
 sub build_label_attr {{}}
 has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
    builder => 'build_wrapper_attr', handles => { has_wrapper_attr => 'count',
-   set_wrapper_attr => 'set', delete_wrapper_attr => 'delete' }
+   get_wrapper_attr => 'get', set_wrapper_attr => 'set', delete_wrapper_attr => 'delete' }
 );
 sub build_wrapper_attr {{}}
 

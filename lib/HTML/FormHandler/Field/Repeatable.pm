@@ -6,6 +6,7 @@ extends 'HTML::FormHandler::Field::Compound';
 
 use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
 use HTML::FormHandler::Field::PrimaryKey;
+use Hash::Merge ('merge');
 
 =head1 SYNOPSIS
 
@@ -35,6 +36,12 @@ or use 'contains' with single fields which are compound fields:
 If the MyAddress field contains fields 'address_id', 'street', 'city', and
 'state', then this syntax is functionally equivalent to the first method
 where the fields are declared with dots ('addresses.city');
+
+You can pass attributes to the 'contains' field by supplying a 'contains' hashref.
+
+    has_field 'addresses' => ( type => 'Repeatable,
+       init_contains => { wrapper_attr => { class => ['hfh', 'repinst'] } },
+    );
 
 =head1 DESCRIPTION
 
@@ -116,7 +123,10 @@ This might be useful if the form is being re-presented to the user.
 has 'contains' => (
     isa       => 'HTML::FormHandler::Field',
     is        => 'rw',
-    predicate => 'has_contains'
+    predicate => 'has_contains',
+);
+has 'init_contains' => ( is => 'ro', isa => 'HashRef', traits => ['Hash'],
+handles => { has_init_contains => 'count' },
 );
 
 has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
@@ -160,15 +170,17 @@ sub create_element {
     my ($self) = @_;
 
     my $instance;
-    # TODO - instance has no way to change widgets
     my $instance_attr = {
         name   => 'contains',
         parent => $self,
-        form   => $self->form,
         type   => 'Repeatable::Instance',
         is_contains => 1,
     };
+    if( $self->has_init_contains ) {
+        $instance_attr = merge( $self->init_contains, $instance_attr );
+    }
     if( $self->form ) {
+        $instance_attr->{form} = $self->form;
         $instance = $self->form->new_field_with_traits(
             'HTML::FormHandler::Field::Repeatable::Instance',
             $instance_attr );
