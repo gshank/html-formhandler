@@ -48,10 +48,8 @@ sub render_start {
     $output = $self->render_before_form() if $self->can('render_before_form');
     if( $self->get_tag('form_wrapper') ) {
         my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
-        my $attrs = $self->get_tag('form_wrapper_attr') || {};
-        $attrs->{class} = 'form_wrapper' unless exists $attrs->{class};
-        my $pattrs = process_attrs($attrs);
-        $output .= qq{<$form_wrapper_tag$pattrs>};
+        my $attrs = process_attrs($self->wrapper_attributes);
+        $output .= qq{<$form_wrapper_tag$attrs>};
     }
     my $attrs = process_attrs($self->attributes);
     $output .= qq{<form$attrs>};

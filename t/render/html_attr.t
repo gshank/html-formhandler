@@ -8,7 +8,7 @@ use HTML::TreeBuilder;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has '+html_attr' => ( default => sub { { method => 'GET', class => 'hfh test_form', target => '_blank' } } );
+    sub build_html_attr { { method => 'GET', class => 'hfh test_form', target => '_blank' } }
     has_field 'foo' => ( html_attr => { arbitrary => 'something' } );
     has_field 'bar' => ( html_attr => { writeonly => 1 }, label_attr => { title => 'Bar Field' } );
     has_field 'mox' => ( wrapper_attr => { class => ['minx', 'finx'] } );

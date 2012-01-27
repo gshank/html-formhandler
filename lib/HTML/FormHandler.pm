@@ -17,6 +17,7 @@ use HTML::FormHandler::Field;
 use Try::Tiny;
 use MooseX::Types::LoadableClass qw/ LoadableClass /;
 use namespace::autoclean;
+use Hash::Merge ('merge');
 
 use 5.008;
 
@@ -853,10 +854,11 @@ has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
 has 'is_html5'  => ( isa => 'Bool', is => 'ro', default => 0 );
-has 'html_attr' => ( is => 'rw', traits => ['Hash'],
-   default => sub { {} }, handles => { has_html_attr => 'count',
+has 'html_attr' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
+   builder => 'build_html_attr', handles => { has_html_attr => 'count',
    set_html_attr => 'set', delete_html_attr => 'delete' }
 );
+sub build_html_attr {{}}
 
 sub attributes {
     my $self = shift;
@@ -900,7 +902,9 @@ has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
    get_wrapper_attr => 'get', set_wrapper_attr => 'set', delete_wrapper_attr => 'delete',
    exists_wrapper_attr => 'exists' }
 );
+sub build_wrapper_attr {{}}
 sub wrapper_attributes {
+    my $self = shift;
     my $attr = {%{$self->wrapper_attr}};
     $attr->{class} = [@{$attr->{class}}]
         if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
@@ -911,7 +915,6 @@ sub form_html_attributes {
     my ( $self, $type, $attr ) = @_;
     return $attr;
 }
-sub build_wrapper_attr {{}}
 has 'action' => ( is => 'rw' );
 has 'posted' => ( is => 'rw', isa => 'Bool', clearer => 'clear_posted' );
 has 'params' => (
@@ -1314,10 +1317,12 @@ sub add_form_error {
 sub get_default_value { }
 sub _can_deflate { }
 
+sub build_field_rendering { }
 sub update_fields {
     my $self = shift;
-    if( $self->has_update_field_list ) {
+    if( $self->has_update_field_list || ( my $rendering_updates = $self->build_field_rendering() ) ) {
         my $updates = $self->update_field_list;
+        $updates = merge($rendering_updates, $updates) if $rendering_updates;
         foreach my $field_name ( keys %{$updates} ) {
             $self->update_field($field_name, $updates->{$field_name} );
         }
@@ -1342,7 +1347,12 @@ sub update_field {
     while ( my ( $attr_name, $attr_value ) = each %{$updates} ) {
         confess "invalid attribute '$attr_name' passed to update_field"
             unless $field->can($attr_name);
-        $field->$attr_name($attr_value);
+        if( $attr_name eq 'widget_tags' ) {
+            $field->set_tag(%$attr_value);
+        }
+        else {
+            $field->$attr_name($attr_value);
+        }
     }
 }
 

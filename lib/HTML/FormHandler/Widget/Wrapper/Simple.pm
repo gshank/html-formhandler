@@ -56,6 +56,8 @@ sub wrap_field {
         $output .= $self->render_label;
     }
     $output .= $rendered_widget;
+    my $after_element = $self->get_tag('after_element');
+    $output .= $after_element if $after_element;
     $output .= qq{\n<span class="error_message">$_</span>}
         for $result->all_errors;
     $output .= "\n</$wrapper_tag>" if $do_wrapper_tag;

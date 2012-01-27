@@ -890,7 +890,7 @@ sub wrapper { lc( shift->widget_wrapper || '' ) || 'simple' }
 has 'widget_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
-    is => 'ro',
+    is => 'rw',
     builder => 'build_widget_tags',
     handles => {
       get_tag => 'get',
@@ -902,7 +902,7 @@ sub build_widget_tags {{}}
 sub merge_tags {
     my ( $self, $new ) = @_;
     my $old = $self->widget_tags;
-    return merge($old, $new);
+    $self->widget_tags( merge($old, $new) );
 }
 has 'widget_name_space' => (
     isa => 'HFH::ArrayRefStr',
