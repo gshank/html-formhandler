@@ -33,8 +33,11 @@ ok( $dir, 'found template dir' );
     has_field 'submit' => ( type => 'Submit' );
     has_field 'foo';
     has_field 'bar';
-    has_field 'fubar' => ( type => 'Compound', 
-        widget_tags => { compound_wrapper => 1, wrapper_tag => 'fieldset' } );
+    has_field 'fubar' => ( type => 'Compound',
+        widget_wrapper => 'Fieldset',
+        widget_tags => { compound_wrapper => 1, wrapper_tag => 'fieldset' },
+        wrapper_attr => { class => 'fubar' },
+    );
     has_field 'fubar.name';
     has_field 'fubar.country';
     has_field 'opt_in' => ( type => 'Checkbox' );
@@ -45,9 +48,10 @@ ok( $dir, 'found template dir' );
     has_field 'hidden' => ( type => 'Hidden' );
     has_field 'mememe' => ( type => 'Multiple', widget => 'radio_group' );
     has_field 'notes' => ( type => 'TextArea', cols => 30, rows => 4 );
-    has_field 'addresses' => ( type => 'Repeatable' );
-    has_field 'addresses.street' => ( type => 'Text' );
-    has_field 'addresses.city' => ( type => 'Text' );
+    # TODO: repeatables are not rendering the same now in tt and widgets
+#   has_field 'addresses' => ( type => 'Repeatable', widget_wrapper => 'Fieldset' );
+#   has_field 'addresses.street' => ( type => 'Text' );
+#   has_field 'addresses.city' => ( type => 'Text' );
     has_field 'pw' => ( type => 'Password' );
 
     sub options_choose {

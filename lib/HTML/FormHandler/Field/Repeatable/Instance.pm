@@ -15,7 +15,8 @@ It will have a name like '0', '1'... Users should not need to use this class.
 sub BUILD {
     my $self = shift;
 
-    $self->set_wrapper_attr('class', ['hfh-repinst']);
+    $self->set_wrapper_attr('class', ['hfh-repinst'])
+       unless $self->exists_wrapper_attr('class');
 }
 
 

@@ -1,0 +1,3 @@
+<fieldset[% process_attrs(f.wrapper_attributes)%]><legend>[% f.label %]</legend>
+[% content %]
+</fieldset>

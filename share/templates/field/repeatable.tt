@@ -1,4 +1,4 @@
-<fieldset class="[% f.name %]">
+<fieldset[% process_attrs(f.wrapper_attributes) %]>
 <legend>[% f.label %]</legend>
 [% FOREACH sf IN f.sorted_fields -%]
 [% outerf = f; f = sf; -%]

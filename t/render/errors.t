@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use HTML::TreeBuilder;
+use HTML::FormHandler::Test;
 
 {
     package Test::Form;
@@ -20,7 +20,7 @@ $form->process( params => { bar => 'abc' } );
 
 is( $form->num_errors, 2, 'got two errors' );
 
-my $expected = 
+my $expected =
 '<fieldset class="form_wrapper">
 <form id="test_errors" method="post" >
 <div class="error"><label for="foo">Foo: </label><input type="text" name="foo" id="foo" value="" />
@@ -30,8 +30,6 @@ my $expected =
 </form></fieldset>';
 my $rendered = $form->render;
 
-my $exp_tree = HTML::TreeBuilder->new_from_content($expected);
-my $got_tree = HTML::TreeBuilder->new_from_content($rendered);
-is($exp_tree->as_HTML, $got_tree->as_HTML, 'error rendering matches expected');
+is_html($rendered, $expected, 'html matches' );
 
 done_testing;

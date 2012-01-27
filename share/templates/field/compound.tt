@@ -1,8 +1,5 @@
-<fieldset class="[% f.html_name %]">
-<legend>[% f.label %]</legend>
 [% FOREACH sf IN f.sorted_fields -%]
 [% outerf = f; f = sf; -%]
 <div[% process_atrrs(f.wrapper_attributes) %]>[% PROCESS "field/${f.widget}.tt" -%]</div>
 [% f = outerf -%]
 [% END -%]
-</fieldset>
