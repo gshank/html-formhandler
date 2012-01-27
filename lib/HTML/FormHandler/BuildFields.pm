@@ -296,9 +296,15 @@ sub new_field_with_traits {
     }
     my $field = $class->new( %{$field_attr} );
     if( $field->form && !$field->form->no_widgets ) {
-        foreach my $key ( keys %{$field->form->widget_tags} ) {
-            $field->set_tag( $key, $field->form->widget_tags->{$key} )
-                 unless $field->tag_exists($key);
+        while ( my ( $key, $value ) = each %{$field->form->widget_tags} ) {
+            next if $key =~ /^form_/;
+            if( $key eq 'type' && ( my $href = $field->form->widget_tags->{type}->{$field->type} ) ) {
+                $field->merge_tags($href);
+            }
+            elsif( ! $field->tag_exists($key) ) {
+                $field->set_tag( $key, $field->form->widget_tags->{$key} );
+            }
+
         };
     }
     return $field;

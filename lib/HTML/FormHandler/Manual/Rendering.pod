@@ -231,14 +231,20 @@ rendering behavior on a per-field basis. FormHandler has a number of flags/setti
 that it uses; you can add your own for your custom rendering code.
 
     wrapper_tag    -- the tag to use in the wrapper, default 'div'
-    wrapper_start  -- replaces the entire wrapper start html code
-    wrapper_end    -- replaces the entire wrapper end html code
+    label_none     -- don't render a label
     label_tag      -- tag to use for label (default 'label')
     label_after    -- string to append to label, for example ': ' to append a colon
+
     form_wrapper   -- put a wrapper around main form
     form_wrapper_tag -- tag for form wrapper; default 'fieldset'
+    form_wrapper_attr -- attributes for the wrapping tag (fieldset, div, table...)
+
     compound_wrapper -- put a wrapper around compound fields
     compound_wrapper_tag -- the tag for the compound wrapper (default 'fieldset')
+
+    compound_wrapper
+    repeatable_wrapper
+    contains_wrapper
 
 They can be used to switch the Simple
 wrapper from divs to using paragraphs instead, or to add a colon in

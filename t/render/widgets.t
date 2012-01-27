@@ -116,6 +116,7 @@ use HTML::FormHandler::Field::Text;
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = 'label' if $type eq 'label';
+        return $attr;
     }
 }
 
@@ -374,6 +375,7 @@ ok( $outputT, 'output from table rendering' );
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = 'label' if $type eq 'label';
+        return $attr;
     }
 }
 
@@ -407,6 +409,7 @@ is( $form->field('baz')->render, '
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = 'label' if $type eq 'label';
+        return $attr;
     }
 }
 

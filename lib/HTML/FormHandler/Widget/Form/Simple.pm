@@ -45,9 +45,13 @@ sub render_start {
     my $self = shift;
 
     my $output = '';
+    $output = $self->render_before_form() if $self->can('render_before_form');
     if( $self->get_tag('form_wrapper') ) {
         my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
-        $output .= qq{<$form_wrapper_tag class="form_wrapper">};
+        my $attrs = $self->get_tag('form_wrapper_attr') || {};
+        $attrs->{class} = 'form_wrapper' unless exists $attrs->{class};
+        my $pattrs = process_attrs($attrs);
+        $output .= qq{<$form_wrapper_tag$pattrs>};
     }
     my $attrs = process_attrs($self->attributes);
     $output .= qq{<form$attrs>};
@@ -74,6 +78,7 @@ sub render_end {
         my $form_wrapper_tag = $self->tag_exists('form_wrapper_tag') ? $self->get_tag('form_wrapper_tag') : 'fieldset';
         $output .= qq{</$form_wrapper_tag>};
     }
+    $output .= $self->render_after_form if $self->can('render_after_form' );
     return $output;
 }
 

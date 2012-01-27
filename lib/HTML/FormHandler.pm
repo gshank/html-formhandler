@@ -738,6 +738,7 @@ which can be used to customize/modify/localize field HTML attributes.
        $attr->{class} = 'label' if $type eq 'label';
        $attr->{placeholder} = $self->_localize($attr->{placeholder})
            if exists $attr->{placeholder};
+       return $attr;
    }
 
 Also see the documentation in L<HTML::FormHandler::Field>.
@@ -866,12 +867,14 @@ sub attributes {
     $attr->{enctype} = $self->enctype if $self->enctype;
     $attr->{class} = $self->css_class if $self->css_class;
     $attr->{style} = $self->style if $self->style;
-    return {%$attr, %{$self->html_attr}};
+    $attr = {%$attr, %{$self->html_attr}};
+    $attr = $self->form_html_attributes('form', $attr);
+    return $attr;
 }
 
 sub field_html_attributes {
     my ( $self, $field, $type, $attrs ) = @_;
-    return;
+    return $attrs;
 }
 
 sub has_flag {
@@ -892,6 +895,23 @@ has 'widget_tags'         => (
     },
 );
 sub build_widget_tags {{}}
+has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
+   builder => 'build_wrapper_attr', handles => { has_wrapper_attr => 'count',
+   get_wrapper_attr => 'get', set_wrapper_attr => 'set', delete_wrapper_attr => 'delete',
+   exists_wrapper_attr => 'exists' }
+);
+sub wrapper_attributes {
+    my $attr = {%{$self->wrapper_attr}};
+    $attr->{class} = [@{$attr->{class}}]
+        if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
+    $attr = $self->form_html_attributes('wrapper', $attr);
+    return $attr;
+}
+sub form_html_attributes {
+    my ( $self, $type, $attr ) = @_;
+    return $attr;
+}
+sub build_wrapper_attr {{}}
 has 'action' => ( is => 'rw' );
 has 'posted' => ( is => 'rw', isa => 'Bool', clearer => 'clear_posted' );
 has 'params' => (

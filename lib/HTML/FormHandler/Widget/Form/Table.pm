@@ -21,7 +21,10 @@ Use in a template:
 sub render_start {
     my $self   = shift;
     my $attrs = process_attrs($self->attributes);
-    return qq{<form$attrs><table>\n};
+    my $wrapper_attrs = $self->get_tag('form_wrapper_attr') || {};
+    $wrapper_attrs->{class} = 'form_wrapper' unless exists $attrs->{class};
+    my $pattrs = process_attrs($attrs);
+    return qq{<form$attrs><table$pattrs>\n};
 }
 
 sub render_form_errors {

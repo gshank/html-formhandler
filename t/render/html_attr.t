@@ -48,6 +48,7 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
         if( exists $attr->{placeholder} ) {
             $attr->{placeholder} = $self->_localize($attr->{placeholder});
         }
+        return $attr;
     }
 }
 

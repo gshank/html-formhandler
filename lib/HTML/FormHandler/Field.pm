@@ -5,6 +5,7 @@ use HTML::FormHandler::Moose;
 use HTML::FormHandler::Field::Result;
 use Try::Tiny;
 use Moose::Util::TypeConstraints;
+use Hash::Merge ('merge');
 
 with 'HTML::FormHandler::Traits';
 with 'HTML::FormHandler::Validate';
@@ -281,6 +282,7 @@ attributes.
    sub field_html_attributes {
        my ( $self, $field, $type, $attr ) = @_;
        $attr->{class} = 'label' if $type eq 'label';
+       return $attr;
    }
 
 The 'process_attrs' function will handle an array of strings, such as for the
@@ -897,6 +899,11 @@ has 'widget_tags'         => (
     },
 );
 sub build_widget_tags {{}}
+sub merge_tags {
+    my ( $self, $new ) = @_;
+    my $old = $self->widget_tags;
+    return merge($old, $new);
+}
 has 'widget_name_space' => (
     isa => 'HFH::ArrayRefStr',
     is => 'rw',
@@ -983,7 +990,7 @@ sub attributes {
     $attrs->{class} = $self->input_class if $self->input_class;
     my $all_attrs = {%$attrs, %{$self->html_attr}};
     # call form hook
-    $self->form->field_html_attributes($self, 'input', $all_attrs) if $self->form;
+    $all_attrs = $self->form->field_html_attributes($self, 'input', $all_attrs) if $self->form;
     return $all_attrs;
 }
 
@@ -994,7 +1001,7 @@ sub label_attributes {
     $attr->{class} = [@{$attr->{class}}]
         if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
     # call form hook
-    $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
+    $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
     return $attr;
 }
 
@@ -1019,7 +1026,7 @@ sub wrapper_attributes {
         }
     }
     # call form hook
-    $self->form->field_html_attributes($self, 'wrapper', $attr) if $self->form;
+    $attr = $self->form->field_html_attributes($self, 'wrapper', $attr) if $self->form;
     return $attr;
 }
 
