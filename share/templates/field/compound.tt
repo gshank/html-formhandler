@@ -1,5 +1,5 @@
 [% FOREACH sf IN f.sorted_fields -%]
 [% outerf = f; f = sf; -%]
-[% WRAPPER "wrapper/${f.wrapper}.tt" %][% PROCESS "field/${f.widget}.tt" -%][% END -%]
+[% WRAPPER "wrapper/${f.twrapper}" %][% PROCESS "field/${f.twidget}" -%][% END -%]
 [% f = outerf -%]
 [% END -%]

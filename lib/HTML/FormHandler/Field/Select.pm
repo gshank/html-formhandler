@@ -30,7 +30,7 @@ form ('options_<fieldname>') or from the database.
 
 In a field declaration:
 
-   has_field 'opt_in' => ( type => 'Select', widget => 'radio_group',
+   has_field 'opt_in' => ( type => 'Select', widget => 'RadioGroup',
       options => [{ value => 0, label => 'No'}, { value => 1, label => 'Yes'} ] );
 
 In a custom field class:

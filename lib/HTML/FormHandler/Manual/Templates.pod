@@ -14,36 +14,57 @@ TT parser in FormHandler, and a separate one for the "complete" templates,
 so it seems like the TT renderer would mainly be useful for tests,
 or as an example of how to do TT rendering with HFH.
 
+A common way of using FormHandler with templates is to use the template
+for layout, specifying the divs and spans and wrappers, and then
+use the form object to render just the input fields.
+
+    in your form:
+    has '+widget_wrapper' => ( default => 'None' );
+
+    <form id="myform" action="/myaction" method="post">
+        <div class="span9">
+            <span class="label">My Foo</span>
+            [% form.field('foo').render %]
+        </div>
+        <div class="span7">[% form.field('bar').render %]</div>
+        [% form.field('save').render %]
+    </form>
+
+However, you can also render entirely with templates.
 There are lots of different ways to set up templates. There are sample
 templates installed in FormHandler's 'share' directory. These templates
 are now organized more-or-less similarly to the widget roles, with 'field',
 'wrapper', and 'form' directories, but many other organizations are possible.
 
-Another organization would be to store all template snippets in a 'widget' directory.
+There is also a template which combines the template rendering code into
+one file, 'share/templates/form/form_in_one.tt'. You can copy this template
+into your own TT directories, perhaps as form.tt, and then specify it in
+as the template for your Catalyst actions. You can customize it by adding
+additional widget and widget_wrapper block, and then setting those in your
+field definitions.
 
-You can use the default 'widget' for the field class, or set the 'widget'
-for the field in your form:
+Note that widget names usually are camelcased, like the Moose roles that
+implement them in the Widget directory. You probably want to use the
+non-camelcased widget/wrapper names in your TT templates, though (using
+the C<< $field->uwidget >> and C<< $field->twidget >> convenience methods).
+('MySpecialWidget' is the equivalent of 'my_special_widget')
 
-   fields => [
-      my_special_field => {
-         type => 'Text',
-         widget => 'my_special_widget',
-      },
-      my_second_field => {
-         type => 'Text',
-         widget => 'yet_another_widget',
-      },
-   ]
+   has_field 'my_field' => ( widget => 'MySpecialWidget' );
+   has_field 'another_field' => ( widget => 'YetAnotherWidget' );
 
 And include them in a generic template:
 
    [% PROCESS widget/form_start.tt %]
 
    [% FOREACH f IN form.sorted_fields %]
-      [% PROCESS widget/${f.widget}.tt %]
+      [% PROCESS widget/${f.twidget} %]
    [% END %]
 
    [% PROCESS widget/form_end.tt %]
+
+Note that 'twidget' will provide a de-camelcased widget name plus '.tt'.
+If you want just a de-camelcased widget name, use f.uwidget. See the
+templates supplied in share/templates.
 
 =head1 Field attributes
 
@@ -57,7 +78,7 @@ example:
 
     label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">
     [% f.label %]: </label>
-    <input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]" 
+    <input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]"
     [% process_attrs(f.attributes) %] value="[% f.fif %]">
 
 =head1 Sample templates

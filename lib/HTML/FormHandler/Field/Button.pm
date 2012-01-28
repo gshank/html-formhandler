@@ -14,7 +14,7 @@ Uses the 'button' widget.
 
 =cut
 
-has '+widget' => ( default => 'button' );
+has '+widget' => ( default => 'Button' );
 
 has '+value' => ( default => 'Button' );
 

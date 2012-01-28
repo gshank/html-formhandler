@@ -43,7 +43,7 @@ Widget type is 'upload'
 
 =cut
 
-has '+widget' => ( default => 'upload', );
+has '+widget' => ( default => 'Upload', );
 has min_size   => ( is      => 'rw', isa => 'Maybe[Int]', default => 1 );
 has max_size   => ( is      => 'rw', isa => 'Maybe[Int]', default => 1048576 );
 

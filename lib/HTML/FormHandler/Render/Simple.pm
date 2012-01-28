@@ -5,33 +5,34 @@ use Moose::Role;
 
 requires( 'sorted_fields', 'field' );
 
-use HTML::FormHandler::Render::Util ('process_attrs');
+use HTML::FormHandler::Render::Util ('process_attrs', 'ucc_widget');
 
 our $VERSION = 0.01;
 
 =head1 SYNOPSIS
 
-This is a Moose role that is an example of a very simple rendering
-routine for L<HTML::FormHandler>. It has almost no features, but can
-be used as an example for producing something more complex.
-The idea is to produce your own custom rendering roles...
+This is a Moose role that is an example of a simple rendering
+routine for L<HTML::FormHandler>. It's here as an example of
+how to write a custom renderer in one package, if you prefer
+that to using the widgets. It now uses the field rendering
+by default, because it was becoming a lot of work to update
+the rendering in multiple places.
 
-You are advised to create a copy of this module for use in your
-forms, since it is not possible to make improvements to this module
-and maintain backwards compatibility.
-
-In your Form class:
+For a 'MyApp::Form::Renderer' which you've created and modified,
+in your Form class:
 
    package MyApp::Form::Silly;
    use Moose;
    extends 'HTML::FormHandler::Model::DBIC';
-   with 'HTML::FormHandler::Render::Simple';
+   with 'MyApp::Form::Renderers';
 
 In a template:
 
    [% form.render %]
 
-or for individual fields:
+The widgets are rendered with C<< $field->render >>; rendering
+routines from a class like this use C<< $form->render_field('field_name') >>
+to render individual fields:
 
    [% form.render_field( 'title' ) %]
 
@@ -173,9 +174,11 @@ sub render_field {
     }
     die "must pass field to render_field"
         unless ( defined $field && $field->isa('HTML::FormHandler::Field') );
-    return '' if $field->widget eq 'no_render';
+    # widgets should be in camel case, since they are Perl package names
+    my $widget = ucc_widget($field->widget);
+    return '' if $widget eq 'no_render';
     my $rendered_field;
-    my $form_render = 'render_' . $field->widget;
+    my $form_render = 'render_' . $widget;
     if ( $self->can($form_render) ) {
         $rendered_field = $self->$form_render($field);
     }
@@ -183,7 +186,7 @@ sub render_field {
         $rendered_field = $field->render;
     }
     else {
-        die "No widget method found for '" . $field->widget . "' in H::F::Render::Simple";
+        die "No widget method found for '$widget' in H::F::Render::Simple";
     }
     return $self->wrap_field( $field, $rendered_field );
 }
@@ -191,7 +194,7 @@ sub render_field {
 sub wrap_field {
     my ( $self, $field, $rendered_field ) = @_;
 
-    return $rendered_field if $field->wrapper eq 'none';
+    return $rendered_field if $field->uwrapper eq 'none';
     my $do_compound_wrapper = ( $field->has_flag('is_repeatable') && $field->get_tag('repeatable_wrapper') ) ||
                               ( $field->has_flag('is_contains') && $field->get_tag('contains_wrapper') )  ||
                               ( $field->has_flag('is_compound') && $field->get_tag('compound_wrapper') );

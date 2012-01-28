@@ -35,7 +35,7 @@ Customizable error: 'datetime_invalid' (default = "Not a valid DateTime")
 
 =cut
 
-has '+widget' => ( default => 'compound' );
+has '+widget' => ( default => 'Compound' );
 
 our $class_messages = {
     'datetime_invalid' => 'Not a valid DateTime',

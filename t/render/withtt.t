@@ -26,6 +26,15 @@ ok( $dir, 'found template dir' );
 }
 
 {
+    package Test::Form::WithTT::FormInOne::Role;
+    use Moose::Role;
+    with 'HTML::FormHandler::Render::WithTT' =>
+        { -excludes => [ 'build_tt_template', 'build_tt_include_path' ] };
+    sub build_tt_template     {'form/form_in_one.tt'}
+    sub build_tt_include_path { ['share/templates'] }
+}
+
+{
     package Test::Form;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
@@ -33,6 +42,7 @@ ok( $dir, 'found template dir' );
     sub build_widget_tags { { compound_wrapper => 1 } }
     has_field 'submit' => ( type => 'Submit', widget_wrapper => 'None' );
     has_field 'foo';
+
     has_field 'bar';
     has_field 'fubar' => ( type => 'Compound',
         widget_wrapper => 'Fieldset',
@@ -41,13 +51,13 @@ ok( $dir, 'found template dir' );
     );
     has_field 'fubar.name';
     has_field 'fubar.country';
-    has_field 'opt_in' => ( type => 'Checkbox', label => 'XXXX' );
+    has_field 'opt_in' => ( type => 'Checkbox', label => 'XXXX', default => 1 );
     has_field 'choose' => ( type => 'Select', default => 2 );
     has_field 'picksome' => ( type => 'Multiple', default => [1,2] );
     has_field 'click' => ( type => 'Button' );
     has_field 'reset' => ( type => 'Reset' );
     has_field 'hidden' => ( type => 'Hidden' );
-    has_field 'mememe' => ( type => 'Multiple', widget => 'radio_group' );
+    has_field 'mememe' => ( type => 'Multiple', widget => 'RadioGroup', default => [2] );
     has_field 'notes' => ( type => 'TextArea', cols => 30, rows => 4 );
     has_field 'addresses' => ( type => 'Repeatable', widget_wrapper => 'Fieldset',
         widget_tags => { compound_wrapper => 1, wrapper_tag => 'fieldset' },
@@ -55,6 +65,7 @@ ok( $dir, 'found template dir' );
     has_field 'addresses.street' => ( type => 'Text' );
     has_field 'addresses.city' => ( type => 'Text' );
     has_field 'pw' => ( type => 'Password' );
+    has_field 'categories' => ( type => 'Multiple', widget => 'CheckboxGroup', default => [1] );
 
     sub options_choose {
         return (
@@ -76,6 +87,13 @@ ok( $dir, 'found template dir' );
             1   => 'me',
             2   => 'my',
             3   => 'mine',
+        );
+    }
+    sub options_categories {
+        return (
+            1  => 'fun',
+            2  => 'work',
+            3  => 'boring',
         );
     }
     sub field_html_attributes {
@@ -102,7 +120,21 @@ my $rendered_via_widget;
     ok($rendered_via_widget, 'form simple renders' );
 }
 
+my $rendered_via_tt_in_one;
+{
+    my $form = Test::Form->new_with_traits( traits => ['Test::Form::WithTT::FormInOne::Role'], name => 'test_tt' );
+    ok( $form, 'form builds' );
+    ok( $form->tt_include_path, 'tt include path' );
+    $rendered_via_tt_in_one = $form->tt_render;
+    ok($rendered_via_tt_in_one, 'form tt renders' );
+}
+
+
 is_html($rendered_via_tt, $rendered_via_widget, 'rendering matches' );
+is_html($rendered_via_tt, $rendered_via_tt_in_one, 'rendering matches' );
+
+done_testing;
+exit;
 
 my $tt = HTML::TreeBuilder->new_from_content($rendered_via_tt);
 my $widget = HTML::TreeBuilder->new_from_content($rendered_via_widget);

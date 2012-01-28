@@ -38,7 +38,7 @@ has 'lines'    => ( isa => 'Int', is => 'rw', default => '2' );
 has 'gd_font'  => ( isa => 'Str', is => 'rw', default => 'Large' );
 has 'image'    => ( is  => 'rw' );
 has '+css_class' => ( default => 'captcha' );
-has '+widget' => ( default => 'captcha' );
+has '+widget' => ( default => 'Captcha' );
 
 has '+noupdate' => ( default => 1 );
 
@@ -58,20 +58,23 @@ sub get_default_value {
     my $self = shift;
 
     my $captcha = $self->form->get_captcha;
+    # setting the widget after the field is instantiated
+    # doesn't actually work. The Captcha widget checks for
+    # this setting though.
     if ($captcha) {
         if ( $captcha->{validated} ) {
             $self->required(0);
-            $self->widget('no_render');
+            $self->widget('NoRender');
         }
         else {
             $self->required(1);
-            $self->widget('captcha');
+            $self->widget('Captcha');
             $self->image( $captcha->{image} );
         }
     }
     else {
         $self->required(1);
-        $self->widget('captcha');
+        $self->widget('Captcha');
         $self->gen_captcha;
     }
     return;

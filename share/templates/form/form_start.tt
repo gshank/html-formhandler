@@ -1,1 +1,2 @@
 <form[% process_attrs(form.attributes) %]>
+[% IF form.has_errors %][% END %]

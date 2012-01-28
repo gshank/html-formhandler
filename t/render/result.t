@@ -21,7 +21,7 @@ use_ok('HTML::FormHandler::Result');
    has_field 'number';
    has_field 'fruit' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple' );
-   has_field 'opt_in' => ( type => 'Select', widget => 'radio_group',
+   has_field 'opt_in' => ( type => 'Select', widget => 'RadioGroup',
       options => [{ value => 0, label => 'No'}, { value => 1, label => 'Yes'} ] );
    has_field 'active' => ( type => 'Checkbox' );
    has_field 'comments' => ( type => 'TextArea' );
@@ -46,7 +46,7 @@ use_ok('HTML::FormHandler::Result');
 
    has '+dependency' => ( default => sub { [ ['start_date.month',
          'start_date.day', 'start_date.year'] ] } );
-   has_field 'no_render' => ( widget => 'no_render' );
+   has_field 'no_render' => ( widget => 'NoRender' );
    sub options_fruit {
        return (
            1   => 'apples',

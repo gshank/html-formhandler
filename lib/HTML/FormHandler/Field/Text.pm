@@ -14,7 +14,7 @@ has 'minlength' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has 'minlength_message' => ( isa => 'Str', is => 'rw',
     default => 'Field must be at least [quant,_1,character]. You entered [_2]' );
 
-has '+widget' => ( default => 'text' );
+has '+widget' => ( default => 'Text' );
 
 our $class_messages = {
     'text_maxlength' => 'Field should not exceed [quant,_1,character]. You entered [_2]',

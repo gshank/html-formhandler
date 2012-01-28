@@ -22,7 +22,7 @@ attribute is used for the HTML input field 'value'.
 =cut
 
 has '+value'  => ( default => 'Save' );
-has '+widget' => ( default => 'submit' );
+has '+widget' => ( default => 'Submit' );
 has '+type_attr' => ( default => 'submit' );
 has 'no_render_label' => ( is => 'ro', isa => 'Bool', default => 1 );
 

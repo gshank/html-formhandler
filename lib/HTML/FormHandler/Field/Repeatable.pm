@@ -135,7 +135,7 @@ has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 has '+reload_after_update' => ( default => 1 );
 has 'is_repeatable'        => ( is      => 'ro', default => 1 );
-has '+widget'              => ( default => 'repeatable' );
+has '+widget'              => ( default => 'Repeatable' );
 
 sub _fields_validate {
     my $self = shift;

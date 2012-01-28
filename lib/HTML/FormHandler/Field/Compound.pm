@@ -55,7 +55,7 @@ Widget type is 'compound'
 
 =cut
 
-has '+widget' => ( default => 'compound' );
+has '+widget' => ( default => 'Compound' );
 has 'is_compound' => ( is => 'ro', isa => 'Bool', default => 1 );
 has 'item' => ( is => 'rw', clearer => 'clear_item' );
 

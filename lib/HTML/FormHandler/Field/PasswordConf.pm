@@ -19,7 +19,7 @@ Customize error message 'pass_conf_not_matched'
 
 =cut
 
-has '+widget'           => ( default => 'password' );
+has '+widget'           => ( default => 'Password' );
 has '+password'         => ( default => 1 );
 has '+required'         => ( default => 1 );
 has 'password_field'    => ( isa     => 'Str', is => 'rw', default => 'password' );

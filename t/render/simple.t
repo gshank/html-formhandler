@@ -25,9 +25,9 @@ use HTML::FormHandler::Field::Text;
    has_field 'cheese' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple' );
    has_field 'grains' => ( type => 'Multiple' );
-   has_field 'opt_in' => ( type => 'Select', widget => 'radio_group',
+   has_field 'opt_in' => ( type => 'Select', widget => 'RadioGroup',
       options => [{ value => 0, label => 'No'}, { value => 1, label => 'Yes'} ] );
-   has_field 'starch' => ( type => 'Multiple', widget => 'checkbox_group',
+   has_field 'starch' => ( type => 'Multiple', widget => 'CheckboxGroup',
       options => [{ value => 1, label => 'One'}, { value => 2, label => 'Two'},
                   { value => 3, label => 'Three' },
       ] );
@@ -57,7 +57,7 @@ use HTML::FormHandler::Field::Text;
 
    has '+dependency' => ( default => sub { [ ['start_date.month',
          'start_date.day', 'start_date.year'] ] } );
-   has_field 'no_render' => ( widget => 'no_render' );
+   has_field 'no_render' => ( widget => 'NoRender' );
    sub options_fruit {
        return (
            1   => 'apples',

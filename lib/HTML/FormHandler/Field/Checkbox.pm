@@ -36,7 +36,7 @@ set 'inactive' to 1 instead.
 
 =cut
 
-has '+widget'              => ( default => 'checkbox' );
+has '+widget'              => ( default => 'Checkbox' );
 has '+widget_wrapper'      => ( default => 'WrapLabel' );
 has 'checkbox_value'       => ( is      => 'rw', default => 1 );
 has '+input_without_param' => ( default => 0 );

@@ -14,7 +14,7 @@ Uses the 'reset' widget.
 
 =cut
 
-has '+widget' => ( default => 'reset' );
+has '+widget' => ( default => 'Reset' );
 
 has '+value' => ( default => 'Reset' );
 

@@ -1,0 +1,111 @@
+[% PROCESS form_start -%]
+[% FOREACH f IN form.sorted_fields -%]
+[% WRAPPER "wrapper_${f.uwrapper}" -%][% PROCESS "${f.uwidget}" -%][% END -%]
+[% END -%]
+[% PROCESS form_end -%]
+
+[% BLOCK form_start -%]
+<form[% process_attrs(form.attributes) %]>
+[% END -%]
+
+[% BLOCK form_end -%]
+</form>
+[% END -%]
+
+[% BLOCK button -%]
+<input type="button" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.value %]" />
+[% END -%]
+
+[% BLOCK checkbox -%]
+<input type="checkbox" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.checkbox_value -%]"[% IF f.fif == f.checkbox_value -%] checked="checked"[% END ~%] />[%~ ~%]
+[% END -%]
+
+[% BLOCK checkbox_group -%]
+<br />[% FOR option IN f.options -%]
+<input type="checkbox" value="[% option.value %]" name="[% f.name %]" id="[% f.name %].[% loop.index %]"[% FOREACH selval IN f.fif -%][% IF selval == option.value %] checked="checked"[% END -%][% END -%]>[% option.label | html -%]<br />
+[% END -%]
+[% END -%]
+
+[% BLOCK compound -%]
+[% FOREACH sf IN f.sorted_fields -%]
+[% outerf = f; f = sf; -%]
+[% WRAPPER "wrapper_${f.uwrapper}" %][% PROCESS "${f.uwidget}" -%][% END -%]
+[% f = outerf -%]
+[% END -%]
+[% END -%]
+
+[% BLOCK hidden -%]
+<input type="hidden" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.fif %]" />
+[% END -%]
+
+[% BLOCK password -%]
+<input type="password" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.fif %]" />
+[% END -%]
+
+[% BLOCK radio_group -%]
+<br />
+[% FOR option IN f.options -%]
+  <label for="[% f.id %].[% loop.index %]"><input type="radio" value="[% option.value %]" name="[% f.name %]" id="[% f.id %].[% loop.index %]" [% IF option.value == f.fif %] checked="checked"[% END %] />[% option.label %]</label><br />
+[% END -%]
+[% END -%]
+
+[% BLOCK repeatable -%]
+[% FOREACH rf IN f.sorted_fields -%]
+[% outerrf = f; f = rf; -%]
+[% WRAPPER "wrapper_${f.uwrapper}" %][% PROCESS "${f.uwidget}" -%][% END -%]
+[% f = outerrf -%]
+[% END -%]
+[% END -%]
+
+[% BLOCK reset -%]
+<input type="reset" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.value %]" />
+[% END -%]
+
+[% BLOCK select -%]
+<select name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %][% IF f.multiple %] multiple="multiple" size="[% f.size %]" [% END -%]>
+  [% FOR option IN f.options -%]
+  <option id="[% f.id %].[% loop.index %]" value="[% option.value -%]"[% FOREACH selval IN f.fif -%][% IF selval == option.value %] selected="selected"[% END -%][% END -%]>[% option.label | html %]</option>
+  [% END -%]
+</select>
+[% END -%]
+
+[% BLOCK submit -%]
+<input type="submit" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.value %]" />
+[% END -%]
+
+[% BLOCK text -%]
+<input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.fif %]" />
+[% END -%]
+
+[% BLOCK textarea -%]
+<textarea name="[% f.html_name %]" id="[% f.id %]" rows="[% f.rows %]" cols="[% f.cols %]" [% process_attrs(f.attributes) %]>[% f.fif %]</textarea>
+[% END -%]
+
+[% BLOCK upload -%]
+<input type="file" name="[% f.html_name %]" id="[% f.html_name %]"[% process_attrs(f.attributes) %] />
+[% END -%]
+
+[% BLOCK wrapper_simple -%]
+<div[% process_attrs(f.wrapper_attributes) -%]>
+[% IF ! f.no_render_label %][% PROCESS label %][% END -%]
+[% content -%]
+</div>
+[% END -%]
+
+[% BLOCK label -%]
+<label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">[% f.label %]</label>
+[% END -%]
+
+[% BLOCK wrapper_wrap_label -%]
+<div[% process_attrs(f.wrapper_attributes) %]><label[% process_attrs(f.label_attributes) %] for="[% f.html_name %]">[%~ content ~%][%~ f.label %]</label></div>
+[% END -%]
+
+[% BLOCK wrapper_none -%]
+[% content %]
+[% END -%]
+
+[% BLOCK wrapper_fieldset -%]
+<fieldset[% process_attrs(f.wrapper_attributes)%]><legend>[% f.label %]</legend>
+[% content -%]
+</fieldset>
+[% END -%]

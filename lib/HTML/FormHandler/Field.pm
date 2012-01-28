@@ -6,6 +6,7 @@ use HTML::FormHandler::Field::Result;
 use Try::Tiny;
 use Moose::Util::TypeConstraints;
 use Hash::Merge ('merge');
+use HTML::FormHandler::Render::Util('cc_widget', 'ucc_widget');
 
 with 'HTML::FormHandler::Traits';
 with 'HTML::FormHandler::Validate';
@@ -297,47 +298,43 @@ It is used when the form has the is_html5 flag on.
 
 The 'widget' attribute is used in rendering, so if you are
 not using FormHandler's rendering facility, you don't need this
-attribute.
-It is intended for use in generating HTML, in templates and the
-rendering roles, and is used in L<HTML::FormHandler::Render::Simple>.
-Fields of different type can use the same widget.
+attribute.  It is used in generating HTML, in templates and the
+rendering roles. Fields of different type can use the same widget.
 
 This attribute is set in the field classes, or in the fields
-defined in the form. If you want a new widget type, use a new
-name and provide a C<< 'widget_<name>' >> method in your copy
-of Render::Simple or in your form class.
+defined in the form. If you want a new widget type, create a
+widget role, such as MyApp::Form::Widget::Field::MyWidget. Provide
+the name space in the 'widget_name_space' attribute, and set
+the 'widget' of your field to the package name after the
+Field/Form/Wrapper:
+
+   has_field 'my_field' => ( widget => 'MyWidget' );
 
 If you are using a template based rendering system you will want
 to create a widget template.
 (see L<HTML::FormHandler::Manual::Templates>)
 
-If you are using the widget roles, you can specify the widget
-with the short class name instead.
-
 Widget types for the provided field classes:
 
     Widget         : Field classes
     ---------------:-----------------------------------
-    text (Text)            : Text, Integer
-    checkbox (Checkbox)    : Checkbox, Boolean
-    radio_group
-       (RadioGroup)        : Select, Multiple, IntRange (etc)
-    select (Select)        : Select, Multiple, IntRange (etc)
-    checkbox_group
-       (CheckboxGroup)     : Multiple select
-    textarea (Textarea)    : TextArea, HtmlArea
-    compound (Compound)    : Compound, Repeatable, DateTime
-    password (Password)    : Password
-    hidden (Hidden)        : Hidden
-    submit (Submit)        : Submit
-    reset (Reset)          : Reset
-    no_render (NoRender)   :
-    upload (Upload)        : Upload
+    Text                   : Text, Integer
+    Checkbox               : Checkbox, Boolean
+    RadioGroup             : Select, Multiple, IntRange (etc)
+    Select                 : Select, Multiple, IntRange (etc)
+    CheckboxGroup          : Multiple select
+    TextArea               : TextArea, HtmlArea
+    Compound               : Compound, Repeatable, DateTime
+    Password               : Password
+    Hidden                 : Hidden
+    Submit                 : Submit
+    Reset                  : Reset
+    NoRender               :
+    Upload                 : Upload
 
 Widget roles are automatically applied to field classes
-unless they already have a 'render' method. Render::Simple
-will fall back to doing C<< $field->render >> if the corresponding
-widget method does not exist.
+unless they already have a 'render' method, and if the
+'no_widgets' flag in the form is not set.
 
 You can create your own widget roles and specify the namespace
 in 'widget_name_space'. In the form:
@@ -886,7 +883,11 @@ sub build_html_name {
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
 has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw' );
-sub wrapper { lc( shift->widget_wrapper || '' ) || 'simple' }
+sub wrapper { shift->widget_wrapper || '' }
+sub uwrapper { ucc_widget( shift->widget_wrapper || '' ) || 'simple' }
+sub twrapper { shift->uwrapper . ".tt" }
+sub uwidget { ucc_widget( shift->widget || '' ) || 'simple' }
+sub twidget { shift->uwidget . ".tt" }
 has 'widget_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',

@@ -17,7 +17,7 @@ That primary key is in the 'item_id' attribute.
 =cut
 
 has 'is_primary_key' => ( isa => 'Bool', is => 'ro', default => '1' );
-has '+widget' => ( default => 'hidden' );
+has '+widget' => ( default => 'Hidden' );
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

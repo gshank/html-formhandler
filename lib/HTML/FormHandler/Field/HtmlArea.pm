@@ -9,7 +9,7 @@ our $VERSION = '0.01';
 
 my $tidy;
 
-has '+widget' => ( default => 'textarea' );
+has '+widget' => ( default => 'TextArea' );
 
 sub validate {
     my $field = shift;

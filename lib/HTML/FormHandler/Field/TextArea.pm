@@ -5,7 +5,7 @@ use Moose;
 extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.02';
 
-has '+widget' => ( default => 'textarea' );
+has '+widget' => ( default => 'Textarea' );
 has 'cols'    => ( isa     => 'Int', is => 'rw' );
 has 'rows'    => ( isa     => 'Int', is => 'rw' );
 

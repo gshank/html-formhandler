@@ -95,7 +95,7 @@ use HTML::FormHandler::Field::Text;
             [ [ 'start_date.month', 'start_date.day', 'start_date.year' ] ];
         }
     );
-    has_field 'no_render' => ( widget => 'no_render' );
+    has_field 'no_render' => ( widget => 'NoRender' );
     has_field 'plain' => ( widget_wrapper => 'None' );
     has_field 'boxed' => ( widget_wrapper => 'Fieldset', wrapper_attr => { class => 'boxed' } );
 
@@ -330,7 +330,7 @@ is( $form->field('gamma')->render, '<p>The test succeeded.</p>', 'alpha rendered
     extends 'HTML::FormHandler';
 
     has '+widget_name_space' => ( default => sub { ['Widget'] } );
-    has_field 'no_widget' => ( widget => 'no_widget' );
+    has_field 'no_widget' => ( widget => 'NoWidget' );
 }
 dies_ok( sub { Test::NoWidget->new }, 'dies on no widget' );
 throws_ok( sub { Test::NoWidget->new }, qr/Can't find /, 'no widget throws message' );
