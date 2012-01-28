@@ -1,8 +1,5 @@
-<fieldset[% process_attrs(f.wrapper_attributes) %]>
-<legend>[% f.label %]</legend>
-[% FOREACH sf IN f.sorted_fields -%]
-[% outerf = f; f = sf; -%]
-<div[% process_attrs(f.wrapper_attributes)%]>[% PROCESS "field/${f.widget}.tt" -%]</div>
-[% f = outerf -%]
+[% FOREACH rf IN f.sorted_fields -%]
+[% outerrf = f; f = rf; -%]
+[% WRAPPER "wrapper/${f.wrapper}.tt" %][% PROCESS "field/${f.widget}.tt" -%][% END -%]
+[% f = outerrf -%]
 [% END -%]
-</fieldset>

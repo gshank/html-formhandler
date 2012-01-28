@@ -1,2 +1,1 @@
-[% INCLUDE field/label.tt %]
-<input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]" [% process_attrs(f.attributes) %] value="[% f.fif %]">
+<input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.fif %]" />

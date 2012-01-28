@@ -24,6 +24,7 @@ attribute is used for the HTML input field 'value'.
 has '+value'  => ( default => 'Save' );
 has '+widget' => ( default => 'submit' );
 has '+type_attr' => ( default => 'submit' );
+has 'no_render_label' => ( is => 'ro', isa => 'Bool', default => 1 );
 
 sub _result_from_input {
     my ( $self, $result, $input, $exists ) = @_;

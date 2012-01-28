@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use HTML::TreeBuilder;
+use HTML::FormHandler::Test;
 
 {
     package Test::Form;
@@ -9,6 +9,7 @@ use HTML::TreeBuilder;
     extends 'HTML::FormHandler';
 
     sub build_html_attr { { method => 'GET', class => 'hfh test_form', target => '_blank' } }
+#   sub build_wrapper_attr { { class => 'form_wrapper' } }
     has_field 'foo' => ( html_attr => { arbitrary => 'something' } );
     has_field 'bar' => ( html_attr => { writeonly => 1 }, label_attr => { title => 'Bar Field' } );
     has_field 'mox' => ( wrapper_attr => { class => ['minx', 'finx'] } );
@@ -34,7 +35,8 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
 
     sub build_widget_tags { { form_wrapper => 1 } }
     has '+name' => ( default => 'myapp_form' );
-    has '+html_attr' => ( default => sub { { name => 'myapp_form' } } );
+    sub build_html_attr { { name => 'myapp_form' } }
+    sub build_wrapper_attr { { class => 'form_wrapper' } }
     has_field 'foo';
     has_field 'bar';
     has_field 'mox' => ( html_attr => { placeholder => 'my placeholder' } );;
@@ -63,8 +65,6 @@ my $expected =
 </form></fieldset>';
 $rendered = $form->render;
 
-my $exp = HTML::TreeBuilder->new_from_content($expected);
-my $got = HTML::TreeBuilder->new_from_content($rendered);
-is( $exp->as_HTML, $got->as_HTML, "got expected rendering" );
+is_html($rendered, $expected, 'renders correctly');
 
 done_testing;

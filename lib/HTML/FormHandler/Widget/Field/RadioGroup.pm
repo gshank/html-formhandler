@@ -9,7 +9,7 @@ sub render {
     my $self = shift;
     my $result = shift || $self->result;
     my $id = $self->id;
-    my $output = " <br />";
+    my $output = "<br />";
     my $index  = 0;
 
     my $fif = $result->fif;

@@ -1,1 +1,1 @@
-<input type="button" name="[% f.html_name %]" id="[% f.id %]" [% process_attrs(f.attributes) %] value="[% f.value %]">
+<input type="button" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.value %]" />

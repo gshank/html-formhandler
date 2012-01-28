@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Exception;
+use HTML::FormHandler::Test;
 
 use lib 't/lib';
 
@@ -14,6 +15,7 @@ use HTML::FormHandler::Field::Text;
     extends 'HTML::FormHandler';
 
     sub build_widget_tags { { form_wrapper => 1, compound_wrapper => 1 } }
+    sub build_wrapper_attr { { class => 'form_wrapper' } }
     has '+name' => ( default => 'testform' );
     has_field 'test_field' => (
         size  => 20,
@@ -95,7 +97,7 @@ use HTML::FormHandler::Field::Text;
     );
     has_field 'no_render' => ( widget => 'no_render' );
     has_field 'plain' => ( widget_wrapper => 'None' );
-    has_field 'boxed' => ( widget_wrapper => 'Fieldset' );
+    has_field 'boxed' => ( widget_wrapper => 'Fieldset', wrapper_attr => { class => 'boxed' } );
 
     sub options_fruit {
         return (
@@ -123,27 +125,20 @@ use HTML::FormHandler::Field::Text;
 my $form = Test::Form->new;
 ok( $form, 'create form' );
 
-my $output10 = $form->field('opt_in')->render;
-is(
-    $output10, '
-<div><label class="label" for="opt_in">Opt in</label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br />
-</div>', 'output from radio group'
-);
+my $expected = '
+<div><label class="label" for="opt_in">Opt in</label><br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br />
+</div>';
+is_html( $form->field('opt_in')->render, $expected, 'output from radio group');
 
-my $output12 = $form->field('comedians')->render;
-is(
-    $output12, '
+$expected = '
 <div><label class="label" for="comedians">Comedians</label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" />Stan Laurel &amp; Oliver Hardy<br />
-</div>', 'output from checkbox group'
-);
+</div>';
+is_html( $form->field('comedians')->render, $expected, 'output from checkbox group');
 
-my $output13 = $form->field('hobbies')->render;
-is(
-    $output13, '
-<fieldset><legend>Hobbies</legend>
-<div><label class="label" for="hobbies.0">0</label><input type="text" name="hobbies.0" id="hobbies.0" value="" tabindex="2" />
-</div>
-</fieldset>', 'output from repeatable with num_when_empty == 1'
+$expected = '<fieldset><legend>Hobbies</legend>
+<div><label class="label" for="hobbies.0">0</label><input type="text" name="hobbies.0" id="hobbies.0" value="" tabindex="2" /></div>
+</fieldset>';
+is_html( $form->field('hobbies')->render, $expected, 'output from repeatable with num_when_empty == 1'
 );
 
 my $params = {
@@ -203,14 +198,8 @@ is(
     'output from select multiple field'
 );
 
-my $output4 = $form->field('active')->render;
-is(
-    $output4,
-    '
-<div><label class="label" for="active">Active</label><input type="checkbox" name="active" id="active" value="1" />
-</div>',
-    'output from checkbox field'
-);
+$expected = '<div><label class="label" for="active"><input type="checkbox" name="active" id="active" value="1" />Active</label></div>',
+is_html( $form->field('active')->render, $expected, 'output from checkbox field');
 
 my $output5 = $form->field('comments')->render;
 is(
@@ -268,10 +257,10 @@ is(
 );
 
 
-$output10 = $form->field('opt_in')->render;
+my $output10 = $form->field('opt_in')->render;
 is(
     $output10, '
-<div><label class="label" for="opt_in">Opt in</label> <br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br />
+<div><label class="label" for="opt_in">Opt in</label><br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br />
 </div>', 'output from radio group'
 );
 
@@ -281,7 +270,7 @@ is( $output11,
 'Form start OK'
 );
 
-$output12 = $form->field('comedians')->render;
+my $output12 = $form->field('comedians')->render;
 is(
     $output12,
     '
@@ -290,7 +279,7 @@ is(
     'output from checkbox group'
 );
 
-$output13 = $form->field('hobbies')->render;
+my $output13 = $form->field('hobbies')->render;
 is(
     $output13, '
 <fieldset><legend>Hobbies</legend>
@@ -414,7 +403,7 @@ is( $form->field('baz')->render, '
 }
 
 $form = Test::Rendering->new;
-my $expected = '
+$expected = '
 <div><label class="label" for="my_comp.one">One</label><input type="text" name="my_comp.one" id="my_comp.one" value="" />
 </div>
 <div><label class="label" for="my_comp.two">Two</label><input type="text" name="my_comp.two" id="my_comp.two" value="" />

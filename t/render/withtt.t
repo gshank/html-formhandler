@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 use File::ShareDir;
 use HTML::TreeBuilder;
+use HTML::FormHandler::Test;
 
 BEGIN {
     plan skip_all => 'Install Template Toolkit to test Render::WithTT'
@@ -30,7 +31,7 @@ ok( $dir, 'found template dir' );
     extends 'HTML::FormHandler';
 
     sub build_widget_tags { { compound_wrapper => 1 } }
-    has_field 'submit' => ( type => 'Submit' );
+    has_field 'submit' => ( type => 'Submit', widget_wrapper => 'None' );
     has_field 'foo';
     has_field 'bar';
     has_field 'fubar' => ( type => 'Compound',
@@ -40,7 +41,7 @@ ok( $dir, 'found template dir' );
     );
     has_field 'fubar.name';
     has_field 'fubar.country';
-    has_field 'opt_in' => ( type => 'Checkbox' );
+    has_field 'opt_in' => ( type => 'Checkbox', label => 'XXXX' );
     has_field 'choose' => ( type => 'Select', default => 2 );
     has_field 'picksome' => ( type => 'Multiple', default => [1,2] );
     has_field 'click' => ( type => 'Button' );
@@ -48,10 +49,11 @@ ok( $dir, 'found template dir' );
     has_field 'hidden' => ( type => 'Hidden' );
     has_field 'mememe' => ( type => 'Multiple', widget => 'radio_group' );
     has_field 'notes' => ( type => 'TextArea', cols => 30, rows => 4 );
-    # TODO: repeatables are not rendering the same now in tt and widgets
-#   has_field 'addresses' => ( type => 'Repeatable', widget_wrapper => 'Fieldset' );
-#   has_field 'addresses.street' => ( type => 'Text' );
-#   has_field 'addresses.city' => ( type => 'Text' );
+    has_field 'addresses' => ( type => 'Repeatable', widget_wrapper => 'Fieldset',
+        widget_tags => { compound_wrapper => 1, wrapper_tag => 'fieldset' },
+    );
+    has_field 'addresses.street' => ( type => 'Text' );
+    has_field 'addresses.city' => ( type => 'Text' );
     has_field 'pw' => ( type => 'Password' );
 
     sub options_choose {
@@ -67,7 +69,7 @@ ok( $dir, 'found template dir' );
             1   => 'blue',
             2   => 'red',
             3   => 'orange',
-        );
+       );
     }
     sub options_mememe {
         return (
@@ -75,6 +77,11 @@ ok( $dir, 'found template dir' );
             2   => 'my',
             3   => 'mine',
         );
+    }
+    sub field_html_attributes {
+        my ( $self, $field, $type, $attr ) = @_;
+        $attr->{id} = 'wr_' . $field->name if $type eq 'wrapper';
+        return $attr;
     }
 }
 
@@ -95,9 +102,21 @@ my $rendered_via_widget;
     ok($rendered_via_widget, 'form simple renders' );
 }
 
-my $widget = HTML::TreeBuilder->new_from_content($rendered_via_widget);
+is_html($rendered_via_tt, $rendered_via_widget, 'rendering matches' );
+
 my $tt = HTML::TreeBuilder->new_from_content($rendered_via_tt);
-is( $tt->as_HTML, $widget->as_HTML,
-    "TT Rendering and Widget Rendering matches");
+my $widget = HTML::TreeBuilder->new_from_content($rendered_via_widget);
+my $tt_ele = $tt->find_by_attribute('name', 'submit');
+my $wt_ele = $widget->find_by_attribute('name', 'submit');
+is_html($tt_ele->as_HTML, $wt_ele->as_HTML, "submit matches" );
+my @elements = ('foo', 'bar', 'opt_in', 'choose', 'picksome' );
+check_elements( "wr_" . $_ ) for @elements;
+
+sub check_elements {
+    my $ele = shift;
+    my $tt_ele = $tt->find_by_attribute('id', $ele);
+    my $wt_ele = $widget->find_by_attribute('id', $ele);
+    is_html($tt_ele->as_HTML, $wt_ele->as_HTML, "$ele matches" );
+}
 
 done_testing;

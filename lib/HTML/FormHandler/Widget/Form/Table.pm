@@ -20,11 +20,9 @@ Use in a template:
 
 sub render_start {
     my $self   = shift;
-    my $attrs = process_attrs($self->attributes);
-    my $wrapper_attrs = $self->get_tag('form_wrapper_attr') || {};
-    $wrapper_attrs->{class} = 'form_wrapper' unless exists $attrs->{class};
-    my $pattrs = process_attrs($attrs);
-    return qq{<form$attrs><table$pattrs>\n};
+    my $fattrs = process_attrs($self->attributes);
+    my $wattrs = process_attrs($self->wrapper_attributes);
+    return qq{<form$fattrs><table$wattrs>\n};
 }
 
 sub render_form_errors {

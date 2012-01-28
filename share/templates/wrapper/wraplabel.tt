@@ -1,0 +1,1 @@
+<div[% process_attrs(f.wrapper_attributes) %]><label[% process_attrs(f.label_attributes) %] for="[% f.html_name %]">[%~ content ~%][%~ f.label %]</label></div>

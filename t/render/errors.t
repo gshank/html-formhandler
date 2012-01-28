@@ -9,6 +9,7 @@ use HTML::FormHandler::Test;
     extends 'HTML::FormHandler';
 
     sub build_widget_tags { { form_wrapper => 1, label_after => ': ' } }
+    sub build_wrapper_attr { { class => 'form_wrapper' } }
     has '+name' => ( default => 'test_errors' );
     has_field 'foo' => ( required => 1 );
     has_field 'bar' => ( type => 'Integer' );

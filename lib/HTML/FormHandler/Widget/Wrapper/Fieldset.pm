@@ -5,6 +5,7 @@ use Moose::Role;
 use namespace::autoclean;
 
 with 'HTML::FormHandler::Widget::Wrapper::Base';
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 =head1 NAME
 
@@ -19,7 +20,8 @@ Wraps a single field in a fieldset.
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    my $output .= '<fieldset class="' . $self->html_name . '">';
+    my $wattrs = process_attrs($self->wrapper_attributes);
+    my $output .= qq{<fieldset$wattrs>};
     $output .= '<legend>' . $self->loc_label . '</legend>';
 
     $output .= $rendered_widget;
