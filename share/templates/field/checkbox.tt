@@ -1,1 +1,1 @@
-<input type="checkbox" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.checkbox_value -%]"[% IF f.fif == f.checkbox_value -%] checked="checked"[% END ~%] />[%~ ~%]
+<input type="checkbox" name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %] value="[% f.checkbox_value -%]"[% IF f.fif == f.checkbox_value -%] checked="checked"[% END ~%] />

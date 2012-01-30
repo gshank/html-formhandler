@@ -4,6 +4,7 @@
        of the old code (the widget and rendering roles) may be helpful.
        Maintaining backward compatibility was making the code awkward and weird,
        unfortunately.
+       (You do have tests for your forms, don't you?)
     Switch to having widget names by default be camel case; provide convenience
        methods for templates - uwidget, uwrapper, twidget, twrapper.
        ** this change will affect existing template systems, if they use the

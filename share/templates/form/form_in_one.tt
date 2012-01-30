@@ -87,7 +87,7 @@
 
 [% BLOCK wrapper_simple -%]
 <div[% process_attrs(f.wrapper_attributes) -%]>
-[% IF ! f.no_render_label %][% PROCESS label %][% END -%]
+[% IF f.render_label %][% PROCESS label %][% END -%]
 [% content -%]
 </div>
 [% END -%]

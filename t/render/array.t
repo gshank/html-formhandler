@@ -18,6 +18,7 @@ use HTML::FormHandler::Test;
 }
 
 my $form = Test::Repeatable::Array->new;
+
 my $expected =
 '<div><label for="my_array.0">0</label><input type="text" name="my_array.0" id="my_array.0" value="" />
 </div>

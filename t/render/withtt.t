@@ -51,7 +51,9 @@ ok( $dir, 'found template dir' );
     );
     has_field 'fubar.name';
     has_field 'fubar.country';
-    has_field 'opt_in' => ( type => 'Checkbox', label => 'XXXX', default => 1 );
+    has_field 'opt_in' => ( type => 'Checkbox', label => 'XXXX', default => 1,
+        widget_tags => { checkbox_unwrapped => 1 },
+    );
     has_field 'choose' => ( type => 'Select', default => 2 );
     has_field 'picksome' => ( type => 'Multiple', default => [1,2] );
     has_field 'click' => ( type => 'Button' );

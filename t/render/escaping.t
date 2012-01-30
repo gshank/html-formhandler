@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 
+use HTML::FormHandler::Test;
 use HTML::FormHandler::Field::Text;
 
 
@@ -138,8 +139,8 @@ is( $rendered,
    'output from textarea' );
 
 $rendered = $form->render_field( $form->field('hidden') );
-is( $rendered,
-   '<input type="hidden" name="hidden" id="hidden" value="&lt;1234&gt;" />',
+is_html( $rendered,
+   '<div><input type="hidden" name="hidden" id="hidden" value="&lt;1234&gt;" /></div>',
    'output from hidden field' );
 
 $rendered = $form->render_field( $form->field('selected') );

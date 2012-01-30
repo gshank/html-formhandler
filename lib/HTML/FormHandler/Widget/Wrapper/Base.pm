@@ -4,7 +4,7 @@ package HTML::FormHandler::Widget::Wrapper::Base;
 use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
 
-sub render_label {
+sub do_render_label {
     my $self = shift;
     my $attrs = process_attrs($self->label_attributes);
     my $label = $self->html_filter($self->loc_label);

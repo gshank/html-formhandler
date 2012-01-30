@@ -847,7 +847,7 @@ has 'label' => (
     lazy    => 1,
     builder => 'build_label',
 );
-has 'no_render_label' => ( isa => 'Bool', is => 'rw' );
+has 'render_label' => ( isa => 'Bool', is => 'rw', default => 1 );
 sub build_label {
     my $self = shift;
     my $label = $self->name;

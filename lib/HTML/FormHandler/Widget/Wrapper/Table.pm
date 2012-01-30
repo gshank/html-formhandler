@@ -12,10 +12,10 @@ sub wrap_field {
 
     my $output = "\n<tr" . process_attrs($self->wrapper_attributes($result)) . ">";
     if ( $self->has_flag('is_compound') ) {
-        $output .= '<td>' . $self->render_label . '</td></tr>';
+        $output .= '<td>' . $self->do_render_label . '</td></tr>';
     }
-    elsif ( !$self->has_flag('no_render_label') && length( $self->label ) > 0 ) {
-        $output .= '<td>' . $self->render_label . '</td>';
+    elsif ( $self->render_label && length( $self->label ) > 0 ) {
+        $output .= '<td>' . $self->do_render_label . '</td>';
     }
     if ( !$self->has_flag('is_compound') ) {
         $output .= '<td>';

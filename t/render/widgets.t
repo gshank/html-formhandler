@@ -198,6 +198,8 @@ is(
     'output from select multiple field'
 );
 
+my $do_we_want = '<div><label class="label" for="active">Active</label>
+                  <input id="active" name="active" type="checkbox" value="1" /></div>';
 $expected = '<div><label class="label" for="active"><input type="checkbox" name="active" id="active" value="1" />Active</label></div>',
 is_html( $form->field('active')->render, $expected, 'output from checkbox field');
 
@@ -211,20 +213,16 @@ is(
 );
 
 my $output6 = $form->field('hidden')->render;
-is(
+is_html(
     $output6,
-    '
-<input type="hidden" name="hidden" id="hidden" value="1234" />
-',
+    '<div><input type="hidden" name="hidden" id="hidden" value="1234" /></div>',
     'output from hidden field'
 );
 
 my $output7 = $form->field('selected')->render;
-is(
+is_html(
     $output7,
-    '
-<div><label class="label" for="selected">Selected</label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" />
-</div>',
+    '<div><label class="label" for="selected"><input type="checkbox" name="selected" id="selected" value="1" checked="checked" />Selected</label></div>',
     'output from boolean'
 );
 

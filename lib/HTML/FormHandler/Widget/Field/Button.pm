@@ -5,8 +5,6 @@ use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
 use namespace::autoclean;
 
-has 'no_render_label' => ( is => 'ro', isa => 'Bool', default => 1 );
-
 sub render {
     my ( $self, $result ) = @_;
 

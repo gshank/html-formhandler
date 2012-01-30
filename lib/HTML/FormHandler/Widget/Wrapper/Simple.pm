@@ -41,27 +41,58 @@ sub wrap_field {
                               ( $self->has_flag('is_contains') && $self->get_tag('contains_wrapper') )  ||
                               ( $self->has_flag('is_compound') && $self->get_tag('compound_wrapper') );
     return $rendered_widget if ( $self->has_flag('is_compound') && ! $do_compound_wrapper );
+
     my $output = "\n";
     my $wrapper_tag = $self->get_tag('wrapper_tag') || '';
     my $do_wrapper_tag = ! $self->tag_exists('wrapper_tag') || ( $self->tag_exists('wrapper_tag') && $self->get_tag('wrapper_tag') );
+    $do_wrapper_tag = 1 if $self->has_flag('is_contains');
     if( $do_wrapper_tag ) {
         $wrapper_tag ||= $self->has_flag('is_repeatable') ? 'fieldset' : 'div';
         my $attrs = process_attrs( $self->wrapper_attributes($result) );
         $output .= qq{<$wrapper_tag$attrs>};
     }
+    my $do_label = ( ! $self->get_tag('label_none') && $self->render_label );
     if( $wrapper_tag eq 'fieldset' ) {
         $output .= '<legend>' . $self->loc_label . '</legend>';
+        $do_label = 0;
     }
-    elsif ( ! $self->get_tag('label_none') && !$self->has_flag('no_render_label') && length( $self->label ) > 0 ) {
-        $output .= $self->render_label;
+    if( $do_label && ($self->type_attr ne 'checkbox' ||
+            $self->get_tag('checkbox_double_label') || $self->get_tag('checkbox_unwrapped'))) {
+        $output .= $self->do_render_label;
     }
-    $output .= $rendered_widget;
+    if( $self->type_attr eq 'checkbox' && ! $self->get_tag('checkbox_unwrapped') ) {
+        my $before_element = $self->get_tag('before_element');
+        $output .= $before_element if $before_element;
+        $output .= $self->render_checkbox( $rendered_widget );
+    }
+    else {
+        my $before_element = $self->get_tag('before_element');
+        $output .= $before_element if $before_element;
+        $output .= $rendered_widget;
+    }
     my $after_element = $self->get_tag('after_element');
     $output .= $after_element if $after_element;
     $output .= qq{\n<span class="error_message">$_</span>}
         for $result->all_errors;
     $output .= "\n</$wrapper_tag>" if $do_wrapper_tag;
     return "$output";
+}
+
+sub render_checkbox {
+    my ( $self, $rendered_widget ) = @_;
+
+    my $lattr = process_attrs($self->label_attributes);
+    my $id = $self->id;
+    my $label = $self->get_tag('checkbox_double_label') ?
+       ( $self->get_tag('comment') || $self->label ) :
+       $self->label;
+    $label = $self->html_filter($self->_localize($label));
+    my $output = qq{<label$lattr for="$id">};
+    my $label_left = $self->get_tag('label_left');
+    $output .= $label if $label_left;
+    $output .= $rendered_widget;
+    $output .= $label if ! $label_left;
+    $output .= "</label>";
 }
 
 1;

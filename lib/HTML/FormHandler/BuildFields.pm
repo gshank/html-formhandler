@@ -5,6 +5,7 @@ use Moose::Role;
 use Try::Tiny;
 use Class::Load qw/ load_optional_class /;
 use namespace::autoclean;
+use Hash::Merge ('merge');
 
 =head1 SYNOPSIS
 
@@ -200,8 +201,8 @@ sub _make_field {
     die "Could not load field class '$type' for field '$name'"
        unless $class;
 
-    $field_attr->{form} = $self->form if $self->form;
     # parent and name correction for names with dots
+    my $parent;
     if ( $field_attr->{name} =~ /\./ ) {
         my @names       = split /\./, $field_attr->{name};
         my $simple_name = pop @names;
@@ -209,18 +210,30 @@ sub _make_field {
         # use special 'field' method call that starts from
         # $self, because names aren't always starting from
         # the form
-        my $parent      = $self->field($parent_name, undef, $self);
+        $parent      = $self->field($parent_name, undef, $self);
         if ($parent) {
             die "The parent of field " . $field_attr->{name} . " is not a Compound Field"
                 unless $parent->isa('HTML::FormHandler::Field::Compound');
-            $field_attr->{parent} = $parent;
             $field_attr->{name}   = $simple_name;
         }
     }
     elsif ( !( $self->form && $self == $self->form ) ) {
         # set parent
-        $field_attr->{parent} = $self;
+        $parent = $self;
     }
+
+    # merge in field updates, before blessed objects are set (form/parent) 
+    my $full_name = $field_attr->{name};
+    $full_name = $parent->full_name . "." . $field_attr->{name}
+        if $parent;
+    if( $self->form && exists $self->form->{field_updates}->{$full_name} ) {
+        $field_attr = merge($field_attr, $self->form->{field_updates}->{$full_name});
+    }
+
+    # set form and parents
+    $field_attr->{form} = $self->form if $self->form;
+    $field_attr->{parent} = $parent;
+
     $self->_update_or_create( $field_attr->{parent} || $self->form,
         $field_attr, $class, $do_update );
 }
@@ -284,6 +297,7 @@ sub new_field_with_traits {
             $widget_wrapper = $attr->default if $attr;
             $widget_wrapper ||= $field_attr->{form}->widget_wrapper if $field_attr->{form};
             $widget_wrapper ||= 'Simple';
+            $field_attr->{widget_wrapper} = $widget_wrapper;
         }
         if( $widget ) {
             my $widget_role = $self->get_widget_role( $widget, 'Field' );

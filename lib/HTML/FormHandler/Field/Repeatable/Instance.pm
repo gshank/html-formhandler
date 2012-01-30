@@ -20,7 +20,7 @@ sub BUILD {
 }
 
 
-has '+no_render_label' => ( default => 1 );
+has '+render_label' => ( default => 0 );
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

@@ -798,8 +798,9 @@ has 'widget_name_space' => (
         add_widget_name_space => 'push',
     },
 );
-has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple' );
-has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple' );
+# it only really makes sense to set these before widget_form is applied in BUILD
+has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple', writer => 'set_widget_form' );
+has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple', writer => 'set_widget_wrapper' );
 has 'no_widgets'        => ( is => 'ro', isa => 'Bool' );
 has 'no_preload'        => ( is => 'ro', isa => 'Bool' );
 has 'active' => (
@@ -837,6 +838,12 @@ has 'update_field_list'   => ( is => 'rw',
         has_update_field_list => 'count',
     },
 );
+# sigh. too many ways to do things. this is for updates applied via roles, so that you
+# can do both updates on the process call and updates from class applied roles
+has 'do_update_fields' => ( is => 'rw', isa => 'HashRef', builder => 'build_update_fields',
+    traits => ['Hash'], handles => { clear_do_update_fields => 'clear',
+    has_do_update_fields => 'count' }, init_arg => undef );
+sub build_update_fields {{}}
 has 'defaults' => ( is => 'rw', isa => 'HashRef', default => sub {{}}, traits => ['Hash'],
     handles => { has_defaults => 'count', clear_defaults => 'clear' },
 );
@@ -995,8 +1002,9 @@ sub BUILD {
 
     $self->before_build; # hook to allow customizing forms
     $self->apply_widget_role( $self, $self->widget_form, 'Form' ) unless $self->no_widgets;
-    $self->_build_fields($self->field_traits);    # create the form fields (BuildFields.pm)
+    $self->build_fields;    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
+    $self->after_build; # hook for customizing
     return if defined $self->item_id && !$self->item;
     # load values from object (if any)
     # would rather not load results at all here, but I'm afraid it might
@@ -1015,8 +1023,17 @@ sub BUILD {
     $self->dump_fields if $self->verbose;
     return;
 }
-
+sub build_fields {
+    my $self = shift;
+    $self->{field_updates} = merge($self->update_field_list, $self->do_update_fields);
+    $self->_build_fields($self->field_traits);
+    delete $self->{field_updates};
+    $self->clear_update_field_list;
+    # set do_update_fields instead of clear, so that builder methods won't run again
+    $self->do_update_fields({});
+}
 sub before_build {}
+sub after_build {}
 
 sub process {
     my $self = shift;
@@ -1320,13 +1337,15 @@ sub _can_deflate { }
 sub build_field_rendering { }
 sub update_fields {
     my $self = shift;
-    if( $self->has_update_field_list || ( my $rendering_updates = $self->build_field_rendering() ) ) {
+    if( $self->has_update_field_list || $self->has_do_update_fields ) {
+        my $do_updates = $self->build_update_fields;
         my $updates = $self->update_field_list;
-        $updates = merge($rendering_updates, $updates) if $rendering_updates;
+        $updates = merge($do_updates, $updates);
         foreach my $field_name ( keys %{$updates} ) {
             $self->update_field($field_name, $updates->{$field_name} );
         }
         $self->clear_update_field_list;
+        $self->clear_do_update_fields;
     }
     if( $self->has_defaults ) {
         my $defaults = $self->defaults;

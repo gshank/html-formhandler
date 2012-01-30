@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 
+use HTML::FormHandler::Test;
 use HTML::FormHandler::Field::Text;
 
 
@@ -181,8 +182,8 @@ is( $output5,
    'output from textarea' );
 
 my $output6 = $form->render_field( $form->field('hidden') );
-is( $output6,
-   '<input type="hidden" name="hidden" id="hidden" value="1234" />',
+is_html( $output6,
+   '<div><input type="hidden" name="hidden" id="hidden" value="1234" /></div>',
    'output from hidden field' );
 
 my $output7 = $form->render_field( $form->field('selected') );
@@ -233,7 +234,7 @@ is( $form->render_field( $form->field('no_render')), '', 'no_render' );
     has_field 'my_html' => ( type => 'Display', html => '<h2>You got here!</h2>' );
     has_field 'explanation' => ( type => 'Display' );
     has_field 'between' => ( type => 'Display', set_html => 'between_html' );
-    has_field 'nolabel' => ( type => 'Text', no_render_label => 1 );
+    has_field 'nolabel' => ( type => 'Text', render_label => 0 );
 
     sub html_explanation {
        my ( $self, $field ) = @_;
@@ -255,6 +256,6 @@ is( $form->field('between')->render, '<div>Somewhere, over the rainbow...</div>'
     'set_html field renders' );
 is( $form->field('nolabel')->render, '
 <div><input type="text" name="nolabel" id="nolabel" value="" />
-</div>', 'no_render_label works');
+</div>', 'render_label => 0 works');
 
 done_testing;

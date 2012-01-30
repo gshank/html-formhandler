@@ -15,8 +15,9 @@ Uses the 'reset' widget.
 =cut
 
 has '+widget' => ( default => 'Reset' );
-
 has '+value' => ( default => 'Reset' );
+has '+render_label' => ( default => 0 );
+has '+type_attr' => ( default => 'reset' );
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

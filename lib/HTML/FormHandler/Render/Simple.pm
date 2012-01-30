@@ -210,7 +210,7 @@ sub wrap_field {
     if( $wrapper_tag eq 'fieldset' ) {
         $output .= '<legend>' . $field->loc_label . '</legend>';
     }
-    elsif ( ! $field->get_tag('label_none') && !$field->has_flag('no_render_label') && length( $field->label ) > 0 ) {
+    elsif ( ! $field->get_tag('label_none') && $field->render_label && length( $field->label ) > 0 ) {
         $output .= $self->render_label($field);
     }
 
