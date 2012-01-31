@@ -46,6 +46,7 @@ Widget type is 'upload'
 has '+widget' => ( default => 'Upload', );
 has min_size   => ( is      => 'rw', isa => 'Maybe[Int]', default => 1 );
 has max_size   => ( is      => 'rw', isa => 'Maybe[Int]', default => 1048576 );
+has '+type_attr' => ( default => 'file' );
 
 our $class_messages = {
         'upload_file_not_found' => 'File not found for upload field',

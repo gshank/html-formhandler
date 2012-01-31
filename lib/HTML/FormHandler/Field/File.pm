@@ -13,5 +13,6 @@ See L<HTML::FormHandler::Field::Upload>
 =cut
 
 has '+widget' => ( default => 'Upload' );
+has '+type_attr' => ( default => 'file' );
 
 1;
