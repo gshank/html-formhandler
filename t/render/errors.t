@@ -3,6 +3,8 @@ use warnings;
 use Test::More;
 use HTML::FormHandler::Test;
 
+use HTML::FormHandler::I18N;
+$ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
 {
     package Test::Form;
     use HTML::FormHandler::Moose;

@@ -4,8 +4,10 @@ use Test::More;
 use HTML::TreeBuilder;
 
 BEGIN {
-    plan skip_all => 'Install Template Toolkit to test Render::WithTT'
+    plan skip_all => 'Template Toolkit required'
        unless eval { require Template };
+    plan skip_all => 'Config::Any required'
+       unless eval { require Config::Any };
 }
 
 use HTML::FormHandler::Foo;
