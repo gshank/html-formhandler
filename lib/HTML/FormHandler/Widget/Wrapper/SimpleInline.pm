@@ -29,7 +29,7 @@ sub wrap_field {
     }
 
     if ( $self->render_label && length( $self->label ) > 0 ) {
-        $output .= $self->do_render_label;
+        $output .= $self->do_render_label($result);
     }
 
     $output .= $rendered_widget;

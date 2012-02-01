@@ -5,8 +5,8 @@ use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub do_render_label {
-    my $self = shift;
-    my $attrs = process_attrs($self->label_attributes);
+    my ( $self, $result ) = @_;
+    my $attrs = process_attrs($self->label_attributes($result));
     my $label = $self->html_filter($self->loc_label);
     $label .= $self->get_tag('label_after')
         if( $self->tag_exists('label_after') );
@@ -18,24 +18,8 @@ sub do_render_label {
 # with user created widgets
 sub render_class {
     my ( $self, $result ) = @_;
-
     $result ||= $self->result;
-
-    my %attr = %{$self->wrapper_attr};
-
-    if( ! exists $attr{class} && $self->css_class ) {
-        $attr{class} = $self->css_class;
-    }
-    if( $result->has_errors ) {
-        if( ref $attr{class} eq 'ARRAY' ) {
-            push @{$attr{class}}, 'error';
-        }
-        else {
-            $attr{class} .= $attr{class} ? ' error' : 'error';
-        }
-    }
-    my $output = process_attrs(\%attr);
-    return $output;
+    return process_attrs($self->wrapper_attributes($result));
 }
 
 use namespace::autoclean;

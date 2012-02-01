@@ -21,7 +21,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    set_default   Name of the form method used to initialize a field
    required      Field is required
    order         Set the order for fields. Used by sorted_fields, templates.
-   widget        Determines which rendering widget to use for the field 
+   widget        Determines which rendering widget to use for the field
    password      Remove from params and do not display in forms.
    noupdate      Don't update this field in the database
    writeonly     Do not retrieve initial values
@@ -44,22 +44,21 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    input_without_param  The value of the field if there is no input from the submitted form
    default       Default value for the field
    not_nullable  Don't convert an empty field ('', etc) to undef
-   trim          Transform to trim the field 
+   trim          Transform to trim the field
    deflation     Function to transform the field
 
 =head2 Field Attributes for creating HTML
 
-   html_attr   - Hashref to store arbitrary html attributes.
-   label_attr  - Hashref for html attributes for the label
+   element_attr - Hashref to store arbitrary html attributes.
+   label_attr   - Hashref for html attributes for the label
    wrapper_attr - Hashref for html attributes for the wrapping element (div, etc)
-   label       - Text label for this field. Defaults to ucfirst field name.
-   title       - Place to put title for field.
-   style       - Place to put field style string
-   css_class   - use wrapper_attr  { class => '..' } instead 
-   input_class - use html_attr  { class => '..' } instead 
-   id          - Useful for javascript (default is html_name. to prefix with
-                 form name, use 'html_prefix' in your form)
-   javascript  - for a Javascript string
+   element_class - Arrayref for classes for the form element
+   wrapper_class - Arrayref for classes for the form element wrapper
+   label_class   - Arrayref for classes for the form element label
+   label        - Text label for this field. Defaults to ucfirst field name.
+   id           - Useful for javascript (default is html_name. to prefix with
+                  form name, use 'html_prefix' in your form)
+   javascript   - for a Javascript string
 
 =head2 Field attributes not set in a user form
 

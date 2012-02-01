@@ -882,7 +882,7 @@ sub attributes {
 }
 
 sub field_html_attributes {
-    my ( $self, $field, $type, $attrs ) = @_;
+    my ( $self, $field, $type, $attrs, $result ) = @_;
     return $attrs;
 }
 

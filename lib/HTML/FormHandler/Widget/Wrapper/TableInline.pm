@@ -12,7 +12,7 @@ sub wrap_field {
 
     my $output = "\n<tr" . process_attrs($self->wrapper_attributes($result)) . ">";
     if ( $self->render_label && length( $self->label ) > 0 ) {
-        $output .= '<td>' . $self->do_render_label . '</td>';
+        $output .= '<td>' . $self->do_render_label($result) . '</td>';
     }
     $output .= '<td>';
     $output .= $rendered_widget;

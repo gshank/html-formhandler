@@ -16,7 +16,7 @@ sub render {
 
     my $output =
         qq(<textarea name="$name" id="$id")
-        . process_attrs($self->attributes)
+        . process_attrs($self->element_attributes($result))
         . qq( rows="$rows" cols="$cols">$fif</textarea>);
 
     return $self->wrap_field( $result, $output );

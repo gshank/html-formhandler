@@ -20,7 +20,7 @@ sub render {
             . $self->html_name . qq{" id="$id.$index"};
         $output .= ' checked="checked"'
             if $fif eq $value;
-        $output .= process_attrs($self->attributes);
+        $output .= process_attrs($self->element_attributes($result));
         $output .= ' />';
         $output .= $self->html_filter($option->{label}) . '</label><br />';
         $index++;

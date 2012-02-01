@@ -13,7 +13,7 @@ sub render {
     my $rendered = $self->html_filter($result->fif);
     my $output = '<button type="' . $self->input_type . '" name="'
         . $self->html_name . '" id="' . $self->id . '"';
-    $output .= process_attrs($self->attributes);
+    $output .= process_attrs($self->element_attributes($result));
     $output .= '/>';
     $output .= $self->value;
     $output .= "</button>";

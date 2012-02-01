@@ -12,7 +12,7 @@ sub render {
     my $index  = 0;
     my $multiple = $self->multiple;
     my $id = $self->id;
-    my $html_attributes = process_attrs($self->attributes);
+    my $ele_attributes = process_attrs($self->element_attributes($result));
 
     my $fif = $result->fif;
     my %fif_lookup;
@@ -33,7 +33,7 @@ sub render {
                 $output .= ' checked="checked"';
             }
         }
-        $output .= $html_attributes;
+        $output .= $ele_attributes;
         my $label = $option->{label};
         $label = $self->_localize($label) if $self->localize_labels;
         $output .= ' />' . ( $self->html_filter($label) || '' ) . '<br />';

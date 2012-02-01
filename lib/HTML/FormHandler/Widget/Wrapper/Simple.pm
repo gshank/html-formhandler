@@ -58,12 +58,12 @@ sub wrap_field {
     }
     if( $do_label && ($self->type_attr ne 'checkbox' ||
             $self->get_tag('checkbox_double_label') || $self->get_tag('checkbox_unwrapped'))) {
-        $output .= $self->do_render_label;
+        $output .= $self->do_render_label($result);
     }
     if( $self->type_attr eq 'checkbox' && ! $self->get_tag('checkbox_unwrapped') ) {
         my $before_element = $self->get_tag('before_element');
         $output .= $before_element if $before_element;
-        $output .= $self->render_checkbox( $rendered_widget );
+        $output .= $self->render_checkbox( $result, $rendered_widget );
     }
     else {
         my $before_element = $self->get_tag('before_element');
@@ -79,9 +79,9 @@ sub wrap_field {
 }
 
 sub render_checkbox {
-    my ( $self, $rendered_widget ) = @_;
+    my ( $self, $result, $rendered_widget ) = @_;
 
-    my $lattr = process_attrs($self->label_attributes);
+    my $lattr = process_attrs($self->label_attributes($result));
     my $id = $self->id;
     my $label = $self->get_tag('checkbox_double_label') ?
        ( $self->get_tag('comment') || $self->label ) :

@@ -13,7 +13,7 @@ sub render {
     $output .= $self->html_name . '"';
     $output .= ' id="' . $self->id . '"';
     $output .= ' value="' . $self->html_filter($result->fif) . '"';
-    $output .= process_attrs($self->attributes);
+    $output .= process_attrs($self->element_attributes($result));
     $output .= " />\n";
 
     return $self->wrap_field( $result, $output );

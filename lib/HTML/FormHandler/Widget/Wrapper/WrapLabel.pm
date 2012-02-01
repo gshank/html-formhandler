@@ -24,7 +24,7 @@ sub wrap_field {
     }
 
     # create label
-    my $lattrs = process_attrs($self->label_attributes);
+    my $lattrs = process_attrs($self->label_attributes($result));
     my $label_tag = $self->tag_exists('label_tag') ? $self->get_tag('label_tag') : 'label';
     $output .= qq{<$label_tag$lattrs for="} . $self->id . qq{">};
 

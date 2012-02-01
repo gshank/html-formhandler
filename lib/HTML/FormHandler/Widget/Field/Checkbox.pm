@@ -15,7 +15,7 @@ sub render {
         . $self->html_filter($checkbox_value) . '"';
     $output .= ' checked="checked"'
         if $result->fif eq $checkbox_value;
-    $output .= process_attrs($self->attributes);
+    $output .= process_attrs($self->element_attributes($result));
     $output .= ' />';
 
     return $self->wrap_field( $result, $output );

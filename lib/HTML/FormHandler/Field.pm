@@ -7,6 +7,7 @@ use Try::Tiny;
 use Moose::Util::TypeConstraints;
 use Hash::Merge ('merge');
 use HTML::FormHandler::Render::Util('cc_widget', 'ucc_widget');
+use Sub::Name;
 
 with 'HTML::FormHandler::Traits';
 with 'HTML::FormHandler::Validate';
@@ -228,10 +229,10 @@ Compound fields will have an array of errors from the subfields.
 
 =head2 Attributes for creating HTML
 
-There's a generic 'html_attr' hashref attribute that can be used to set
+There's a generic 'element_attr' hashref attribute that can be used to set
 arbitrary HTML attributes on a field's input tag.
 
-   has_field 'foo' => ( html_attr => { readonly => 1, my_attr => 'abc' } );
+   has_field 'foo' => ( element_attr => { readonly => 1, my_attr => 'abc' } );
 
 The 'label_attr' hashref is for label attributes, and the 'wrapper_attr'
 is for attributes on the wrapping element (a 'div' for the standard 'simple'
@@ -254,27 +255,27 @@ The order attribute may be used to set the order in which fields are rendered.
    order       - Used for sorting errors and fields. Built automatically,
                  but may also be explicitly set
 
-The following are deprecated. Use 'html_attr', 'label_attr', and 'wrapper_attr'
+The following are deprecated. Use 'element_attr', 'label_attr', and 'wrapper_attr'
 instead.
 
    css_class   - instead use wrapper_attr => { class => '...' }
-   input_class - instead use html_attr => { class => '...' }
-   title       - instead use html_attr => { title => '...' }
-   style       - instead use html_attr => { style => '...' }
-   disabled    - instead use html_attr => { disabled => 'disabled' }
-   tabindex    - instead use html_attr => { tabindex => 1 }
-   readonly    - instead use html_attr => { readonly => 'readonly' }
+   input_class - instead use element_attr => { class => '...' }
+   title       - instead use element_attr => { title => '...' }
+   style       - instead use element_attr => { style => '...' }
+   disabled    - instead use element_attr => { disabled => 'disabled' }
+   tabindex    - instead use element_attr => { tabindex => 1 }
+   readonly    - instead use element_attr => { readonly => 'readonly' }
 
 Rendering of the various HTML attributes is done by calling the 'process_attrs'
 function (from HTML::FormHandler::Render::Util) and passing in a method that
 adds in error classes, provides backward compatibility with the deprecated
 attributes, etc.
 
-    attribute hashref            wrapping method
-    =================            ================
-    html_attr                    attributes
-    label_attr                   label_attributes
-    wrapper_attr                 wrapper_attributes
+    attribute hashref  class attr            wrapping method
+    =================  =================     ================
+    element_attr       element_class         element_attributes
+    label_attr         label_class           label_attributes
+    wrapper_attr       wrapper_class         wrapper_attributes
 
 In addition, these 'wrapping method' call a hook method in the form class,
 'field_html_attributes' which you can use to customize and localize the various
@@ -859,10 +860,20 @@ sub loc_label {
     my $self = shift;
     return $self->_localize($self->label);
 }
-has 'title'     => ( isa => 'Str',               is => 'rw' );
-has 'style'     => ( isa => 'Str',               is => 'rw' );
-has 'css_class' => ( isa => 'Str',               is => 'rw' );
-has 'input_class' => ( isa => 'Str',             is => 'rw' );
+has 'title'     => ( isa => 'Str', is => 'rw' );
+has 'style'     => ( isa => 'Str', is => 'rw' );
+# deprecated; remove in six months.
+has 'css_class' => ( isa => 'Str', is => 'rw', trigger => \&_css_class_set );
+sub _css_class_set {
+    my ( $self, $value ) = @_;
+    $self->add_wrapper_class($value);
+}
+# deprecated; remove in six months;
+has 'input_class' => ( isa => 'Str', is => 'rw', trigger => \&_input_class_set );
+sub _input_class_set {
+    my ( $self, $value ) = @_;
+    $self->add_element_class($value);
+}
 has 'form'      => (
     isa => 'HTML::FormHandler',
     is => 'rw',
@@ -897,6 +908,7 @@ has 'widget_tags'         => (
       get_tag => 'get',
       set_tag => 'set',
       tag_exists => 'exists',
+      delete_tag => 'delete',
     },
 );
 sub build_widget_tags {{}}
@@ -939,12 +951,13 @@ has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'b
 sub build_id { shift->html_name }
 
 # html attributes
-has 'javascript' => ( isa => 'Str',  is => 'rw' );
+# deprecated ===========
 has 'password'   => ( isa => 'Bool', is => 'rw' );
 has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
 has 'disabled'   => ( isa => 'Bool', is => 'rw' );
 has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'tabindex' => ( is => 'rw', isa => 'Int' );
+# =======================
 has 'type_attr' => ( is => 'rw', isa => 'Str', default => 'text' );
 has 'html5_type_attr' => ( isa => 'Str', is => 'ro', default => 'text' );
 sub input_type {
@@ -952,83 +965,107 @@ sub input_type {
     return $self->html5_type_attr if ( $self->form && $self->form->has_flag('is_html5') );
     return $self->type_attr;
 }
+# temporary methods for compatibility after name change
+sub html_attr { shift->element_attr(@_) }
+sub has_html_attr { shift->has_element_attr(@_) }
+sub get_html_attr { shift->get_element_attr(@_) }
+sub set_html_attr { shift->set_element_attr(@_) }
 
-has 'html_attr' => ( is => 'rw', traits => ['Hash'],
-   builder => 'build_html_attr', handles => { has_html_attr => 'count',
-   get_html_attr => 'get', set_html_attr => 'set', delete_html_attr => 'delete' }
-);
-sub build_html_attr {{}}
-has 'label_attr' => ( is => 'rw', traits => ['Hash'],
-   builder => 'build_label_attr', handles => { has_label_attr => 'count',
-   get_label_attr => 'get', set_label_attr => 'set', delete_label_attr => 'delete' }
-);
-sub build_label_attr {{}}
-has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
-   builder => 'build_wrapper_attr', handles => { has_wrapper_attr => 'count',
-   get_wrapper_attr => 'get', set_wrapper_attr => 'set', delete_wrapper_attr => 'delete',
-   exists_wrapper_attr => 'exists' }
-);
-sub build_wrapper_attr {{}}
+{
+    # create the attributes and methods for
+    # element_attr, build_element_attr, element_class,
+    # label_attr, build_label_attr, label_class,
+    # wrapper_attr, build_wrapper_atrr, wrapper_class
+    no strict 'refs';
+    foreach my $attr ('wrapper', 'element', 'label' ) {
+        # trigger to move 'class' set via _attr to the class slot
+        my $add_meth = "add_${attr}_class";
+        my $trigger_sub = sub {
+            my ( $self, $value ) = @_;
+            if( my $class = delete $self->{"${attr}_attr"}->{class} ) {
+                $self->$add_meth($class);
+            }
+        };
+        has "${attr}_attr" => ( is => 'rw', traits => ['Hash'],
+            builder => "build_${attr}_attr",
+            handles => {
+                "has_${attr}_attr" => 'count',
+                "get_${attr}_attr" => 'get',
+                "set_${attr}_attr" => 'set',
+                "delete_${attr}_attr" => 'delete',
+                "exists_${attr}_attr" => 'exists',
+            },
+            trigger => $trigger_sub,
+        );
+        # create builders fo _attrs
+        my $attr_builder = __PACKAGE__ . "::build_${attr}_attr";
+        *$attr_builder = subname $attr_builder, sub {{}};
+        # create the 'class' slots
+        has "${attr}_class" => ( is => 'rw', isa => 'HFH::ArrayRefStr', traits => ['Array'],
+            builder => "build_${attr}_class",
+            handles => {
+                "has_${attr}_class" => 'count',
+                "_add_${attr}_class" => 'push',
+           },
+        );
+        # create builders for classes
+        my $class_builder = __PACKAGE__ . "::build_${attr}_class";
+        *$class_builder = subname $class_builder, sub {[]};
+        # create wrapper for add_to_ to accept arrayref
+        my $add_to_class = __PACKAGE__ . "::add_${attr}_class";
+        my $_add_meth = __PACKAGE__ . "::_add_${attr}_class";
+        *$add_to_class = subname $add_to_class, sub { shift->$_add_meth((ref $_[0] eq 'ARRAY' ? @{$_[0]} : @_)); }
+    }
+}
 
-sub attributes {
-    my $self = shift;
-
-    # copy html_attr, with deep copy of 'class' if it's an array
-    my $html_attr = {%{$self->html_attr}};
-    $html_attr->{class} = [@{$html_attr->{class}}]
-        if ( exists $html_attr->{class} && ref( $html_attr->{class} eq 'ARRAY' ) );
-    my $attrs = {};
+sub attributes { shift->element_attributes(@_) }
+sub element_attributes {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $attr = {};
     # handle html5 attributes
     if ($self->form && $self->form->has_flag('is_html5')) {
-        $attrs->{required} = 'required' if $self->required;
-        $attrs->{min} = $self->range_start if defined $self->range_start;
-        $attrs->{max} = $self->range_end if defined $self->range_end;
+        $attr->{required} = 'required' if $self->required;
+        $attr->{min} = $self->range_start if defined $self->range_start;
+        $attr->{max} = $self->range_end if defined $self->range_end;
     }
     # pull in deprecated attributes for backward compatibility
-    for my $attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
-        $attrs->{$attr} = $self->$attr if $self->$attr;
+    for my $dep_attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
+        $attr->{$dep_attr} = $self->$dep_attr if $self->$dep_attr;
     }
-    $attrs->{class} = $self->input_class if $self->input_class;
-    my $all_attrs = {%$attrs, %{$self->html_attr}};
+    $attr = {%$attr, %{$self->element_attr}};
+    my $class = [@{$self->element_class}];
+    push @$class, 'error' if $result->has_errors;
+    $attr->{class} = $class if @$class;
     # call form hook
-    $all_attrs = $self->form->field_html_attributes($self, 'input', $all_attrs) if $self->form;
-    return $all_attrs;
+    my $mod_attr = $self->form->field_html_attributes($self, 'input', $attr, $result) if $self->form;
+    return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 
 sub label_attributes {
-    my $self = shift;
-    # copy label_attr, with deep copy of 'class' if it's an array
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    # local copy of label_attr
     my $attr = {%{$self->label_attr}};
-    $attr->{class} = [@{$attr->{class}}]
-        if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
+    my $class = [@{$self->label_class}];
+    $attr->{class} = $class if @$class;
     # call form hook
-    $attr = $self->form->field_html_attributes($self, 'label', $attr) if $self->form;
-    return $attr;
+    my $mod_attr = $self->form->field_html_attributes($self, 'label', $attr, $result) if $self->form;
+    return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 
 sub wrapper_attributes {
     my ( $self, $result ) = @_;
     $result ||= $self->result;
-    # copy wrapper_attr, with deep copy of 'class' if it's an array
+    # copy wrapper
     my $attr = {%{$self->wrapper_attr}};
-    $attr->{class} = [@{$attr->{class}}]
-        if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
-    # pull in deprecated css_class
-    if( ! exists $attr->{class} && defined $self->css_class ) {
-        $attr->{class} = $self->css_class;
-    }
+    my $class = [@{$self->wrapper_class}];
     # add 'error' to class
-    if( $result->has_errors ) {
-        if( ref $attr->{class} eq 'ARRAY' ) {
-            push @{$attr->{class}}, 'error';
-        }
-        else {
-            $attr->{class} .= $attr->{class} ? ' error' : 'error';
-        }
-    }
+    push @$class, 'error' if $result->has_errors;
+    $attr->{class} = $class if @$class;
     # call form hook
-    $attr = $self->form->field_html_attributes($self, 'wrapper', $attr) if $self->form;
-    return $attr;
+    my $mod_attr = $self->form->field_html_attributes($self, 'wrapper', $attr, $result) if $self->form;
+    return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 
 sub wrapper_tag {
@@ -1268,7 +1305,12 @@ sub all_messages {
 sub BUILDARGS {
     my $class = shift;
 
-    return $class->SUPER::BUILDARGS(@_);
+    # for backwards compatibility, change html_attr to
+    #  element_attr 
+    my @new;
+    push @new, ('element_attr', {@_}->{html_attr} )
+        if( exists {@_}->{html_attr} );
+    return $class->SUPER::BUILDARGS(@_, @new);
 }
 
 sub BUILD {

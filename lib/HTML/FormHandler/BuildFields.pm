@@ -6,6 +6,7 @@ use Try::Tiny;
 use Class::Load qw/ load_optional_class /;
 use namespace::autoclean;
 use Hash::Merge ('merge');
+use Data::Clone;
 
 =head1 SYNOPSIS
 
@@ -92,19 +93,15 @@ sub _process_field_list {
     my ( $self, $flist ) = @_;
 
     if ( ref $flist eq 'ARRAY' ) {
-        my @flist_copy = @{$flist};
-        $self->_process_field_array( $self->_array_fields( \@flist_copy ) );
-        return;
+        $self->_process_field_array( $self->_array_fields( $flist ) );
     }
-    my %flist_copy = %{$flist};
-    $flist = \%flist_copy;
 }
 
 # loops through all inherited classes and composed roles
 # to find fields specified with 'has_field'
 sub _build_meta_field_list {
     my $self = shift;
-    my @field_list;
+    my $field_list = [];
 
     foreach my $sc ( reverse $self->meta->linearized_isa ) {
         my $meta = $sc->meta;
@@ -112,20 +109,20 @@ sub _build_meta_field_list {
             foreach my $role ( reverse $meta->calculate_all_roles ) {
                 if ( $role->can('field_list') && $role->has_field_list ) {
                     foreach my $fld_def ( @{ $role->field_list } ) {
-                        my %new_fld = %{$fld_def};    # copy hashref
-                        push @field_list, \%new_fld;
+                        push @$field_list, $fld_def;
                     }
                 }
             }
         }
         if ( $meta->can('field_list') && $meta->has_field_list ) {
             foreach my $fld_def ( @{ $meta->field_list } ) {
-                my %new_fld = %{$fld_def};            # copy hashref
-                push @field_list, \%new_fld;
+                push @$field_list, $fld_def;
             }
         }
     }
-    return \@field_list if scalar @field_list;
+
+    # must clone field_list to avoid shared copies of field definitions
+    return clone($field_list) if scalar @$field_list;
 }
 
 # munges the field_list array into an array of field attributes
@@ -227,7 +224,10 @@ sub _make_field {
     $full_name = $parent->full_name . "." . $field_attr->{name}
         if $parent;
     if( $self->form && exists $self->form->{field_updates}->{$full_name} ) {
-        $field_attr = merge($field_attr, $self->form->{field_updates}->{$full_name});
+        # deleting this here means that change from fields with '+' in
+        # the field_list will not be re-changed
+        my $updates = delete $self->form->{field_updates}->{$full_name};
+        $field_attr = merge($field_attr, $updates);
     }
 
     # set form and parents

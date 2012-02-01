@@ -9,6 +9,7 @@ sub process_attrs {
     my ($attrs) = @_;
 
     my @use_attrs;
+    my $javascript = delete $attrs->{javascript} || '';
     for my $attr( sort keys %$attrs ) {
         my $value = '';
         if( defined $attrs->{$attr} ) {
@@ -23,6 +24,7 @@ sub process_attrs {
     }
     my $output = join( ' ', @use_attrs );
     $output = " $output" if length $output;
+    $output .= " $javascript" if $javascript;
     return $output;
 }
 

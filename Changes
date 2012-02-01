@@ -5,6 +5,11 @@
        Maintaining backward compatibility was making the code awkward and weird,
        unfortunately.
        (You do have tests for your forms, don't you?)
+    Put wrapper class 'repinst' on Repeatable Instances unless they already have a wrapper class
+    Remove 'javascript' field attribute. Put into *_attr hashref.
+    Automatically put 'error' on element and wrapper.
+    Switch to having the 'class' as a separate attribute from the _attr collection.
+       It's used too often and is an arrayref.
     Switch to having widget names by default be camel case; provide convenience
        methods for templates - uwidget, uwrapper, twidget, twrapper.
        ** this change will affect existing template systems, if they use the

@@ -46,7 +46,7 @@ ok( $dir, 'found template dir' );
     has_field 'bar';
     has_field 'fubar' => ( type => 'Compound',
         widget_wrapper => 'Fieldset',
-        widget_tags => { compound_wrapper => 1, wrapper_tag => 'fieldset' },
+        widget_tags => { compound_wrapper => 1 },
         wrapper_attr => { class => 'fubar' },
     );
     has_field 'fubar.name';
@@ -132,8 +132,8 @@ my $rendered_via_tt_in_one;
 }
 
 
-is_html($rendered_via_tt, $rendered_via_widget, 'rendering matches' );
-is_html($rendered_via_tt, $rendered_via_tt_in_one, 'rendering matches' );
+is_html($rendered_via_tt, $rendered_via_widget, 'tt rendering matches widget rendering' );
+is_html($rendered_via_tt, $rendered_via_tt_in_one, 'tt rendering matches tt-in-one rendering' );
 
 done_testing;
 exit;
