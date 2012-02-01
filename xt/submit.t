@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use HTML::FormHandler::Test;
 
 use_ok( 'HTML::FormHandler::Field::Submit' );
 
@@ -29,14 +30,16 @@ is( $form->field('submit')->input, undef, 'no input for submit field');
 $form->process( { some_field => 'test', submit => 'Submit' } );
 is( $form->field('submit')->input, 'Submit', 'input for submit field');
 my $rendered = $form->render;
-is( $rendered,
-   '<form id="test_submit" method="post" >
-<fieldset class="main_fieldset">
-<div><label class="label" for="some_field">Some field: </label><input type="text" name="some_field" id="some_field" value="test" /></div>
-
-<div><input type="submit" name="submit" id="submit" value="Submit" /></div>
-</fieldset></form>
-',
+is_html( $rendered,
+'<form id="test_submit" method="post">
+  <div>
+    <label for="some_field">Some field</label>
+    <input type="text" name="some_field" id="some_field" value="test" />
+  </div>
+  <div>
+    <input type="submit" name="submit" id="submit" value="Submit" />
+  </div>
+</form>',
 'form renders');
 
 

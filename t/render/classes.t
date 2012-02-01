@@ -24,6 +24,7 @@ use Test::More;
 
     has_field 'foo' => ( element_class => ['fld_def'] );
     has_field 'bar' => ( widget_tags => { field_tag => 1 } );
+    has_field 'rox' => ( wrapper_class => 'frmwrp' );
 
 }
 

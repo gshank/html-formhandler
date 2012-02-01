@@ -58,6 +58,7 @@ sub _build_fields {
     $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
     my $flist = $self->has_field_list;
     if( $flist ) {
+        $flist = clone($flist);
         if( ref($flist) eq 'ARRAY' && ref( $flist->[0] ) eq 'HASH' ) {
             $self->_process_field_array( $flist );
         }
@@ -219,7 +220,7 @@ sub _make_field {
         $parent = $self;
     }
 
-    # merge in field updates, before blessed objects are set (form/parent) 
+    # merge in field updates, before blessed objects are set (form/parent)
     my $full_name = $field_attr->{name};
     $full_name = $parent->full_name . "." . $field_attr->{name}
         if $parent;

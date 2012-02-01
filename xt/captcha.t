@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use HTML::FormHandler::Test;
 
 BEGIN {
    eval "use GD::SecurityImage";
@@ -18,7 +19,7 @@ use_ok( 'HTML::FormHandler::Field::Captcha' );
 
    has_field 'some_field';
    has_field 'subject';
-   has_field '+captcha' => ( id => 'captcha' );
+   has_field '+captcha' => ( id => 'captcha', wrapper_class => 'captcha' );
 
    sub validate_subject {
        my ( $self, $field ) = @_;
@@ -75,8 +76,8 @@ $form->process( ctx => $ctx, params => $params );
 ok( $form->validated, 'form validated; old captcha, valid fields' );
 
 my $render = $form->render_field('captcha');
-is( $render, '
-<div class="captcha"><label class="label" for="captcha">Verification: </label><img src="/captcha/test"/><input id="captcha" name="captcha"></div>
+is_html( $render, '
+<div class="captcha"><label for="captcha">Verification</label><img src="/captcha/image"/><input id="captcha" name="captcha"></div>
 ', 'captcha renders ok' );
 
 

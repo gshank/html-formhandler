@@ -9,7 +9,7 @@ Deprecated. Only here for interim compatibility, to provide
 =cut
 
 use Moose::Role;
-use 
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 sub _add_html_attributes {
     my $self = shift;

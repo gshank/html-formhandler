@@ -1001,7 +1001,9 @@ sub set_html_attr { shift->set_element_attr(@_) }
         my $attr_builder = __PACKAGE__ . "::build_${attr}_attr";
         *$attr_builder = subname $attr_builder, sub {{}};
         # create the 'class' slots
-        has "${attr}_class" => ( is => 'rw', isa => 'HFH::ArrayRefStr', traits => ['Array'],
+        has "${attr}_class" => ( is => 'rw', isa => 'HFH::ArrayRefStr',
+            traits => ['Array'],
+            coerce => 1,
             builder => "build_${attr}_class",
             handles => {
                 "has_${attr}_class" => 'count',
@@ -1306,7 +1308,7 @@ sub BUILDARGS {
     my $class = shift;
 
     # for backwards compatibility, change html_attr to
-    #  element_attr 
+    #  element_attr
     my @new;
     push @new, ('element_attr', {@_}->{html_attr} )
         if( exists {@_}->{html_attr} );

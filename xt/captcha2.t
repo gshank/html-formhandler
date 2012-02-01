@@ -42,7 +42,7 @@ my $mech = Test::WWW::Mechanize::Catalyst->new(catalyst_app => "MyCatalystApp");
 $mech->get_ok("/captcha");
 #diag explain $mech;
 
-$mech->content_contains('<img src="/captcha/image"/><input id="captcha" name="captcha"></div>');
+$mech->content_contains('<img src="/captcha/image"/><input id="captcha" name="captcha"/>');
 
 $mech->get_ok("/captcha/get_rnd");
 

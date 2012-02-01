@@ -377,7 +377,7 @@ is( $form->field('bar')->render, '
 </span>', 'field renders with custom widget_tags' );
 
 is( $form->field('baz')->render, '
-<label class="label" for="baz">Baz</label><input type="text" name="baz" id="baz" value="" />', 
+<label class="label" for="baz">Baz</label><input type="text" name="baz" id="baz" value="" />',
 'field renders with false wrapper_tag' );
 
 {
