@@ -27,10 +27,10 @@ use HTML::FormHandler::Test;
     }
     # update individual fields
     sub build_update_fields {{
-        email => { html_attr => { class => 'input-small', placeholder => 'Email' } },
-        password => { html_attr => { class => 'input-small', placeholder => 'Password' },
+        email => { element_class => ['input-small'], element_attr => { placeholder => 'Email' } },
+        password => { element_class => ['input-small'], element_attr => { placeholder => 'Password' },
             widget_tags => { wrapper_tag => 0 } },
-        go => { html_attr => { class => 'btn' } },
+        go => { element_class => ['btn'] },
     }}
 
 }

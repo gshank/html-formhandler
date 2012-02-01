@@ -915,7 +915,7 @@ sub build_widget_tags {{}}
 sub merge_tags {
     my ( $self, $new ) = @_;
     my $old = $self->widget_tags;
-    $self->widget_tags( merge($old, $new) );
+    $self->widget_tags( merge($new, $old) );
 }
 has 'widget_name_space' => (
     isa => 'HFH::ArrayRefStr',

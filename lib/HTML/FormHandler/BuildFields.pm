@@ -227,7 +227,7 @@ sub _make_field {
         # deleting this here means that change from fields with '+' in
         # the field_list will not be re-changed
         my $updates = delete $self->form->{field_updates}->{$full_name};
-        $field_attr = merge($field_attr, $updates);
+        $field_attr = merge($updates, $field_attr);
     }
 
     # set form and parents
@@ -304,23 +304,18 @@ sub new_field_with_traits {
             my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
             push @traits, $widget_role, $wrapper_role;
         }
+        # merge the form's widget_tags into the field attr
+        my $fwtags = $self->form->widget_tags if $self->form;
+        if( scalar keys %$fwtags ) {
+            my %fwidgets = map { $_ => $fwtags->{$_} } grep { $_ !~ /^form_/ && $_ ne 'type' } keys %{$fwtags};
+            my $new_href = merge($field_attr->{widget_tags} || {}, \%fwidgets);
+            $field_attr->{widget_tags} = $new_href if keys %$new_href;
+        }
     }
     if( @traits ) {
         $class = $class->with_traits( @traits );
     }
     my $field = $class->new( %{$field_attr} );
-    if( $field->form && !$field->form->no_widgets ) {
-        while ( my ( $key, $value ) = each %{$field->form->widget_tags} ) {
-            next if $key =~ /^form_/;
-            if( $key eq 'type' && ( my $href = $field->form->widget_tags->{type}->{$field->type} ) ) {
-                $field->merge_tags($href);
-            }
-            elsif( ! $field->tag_exists($key) ) {
-                $field->set_tag( $key, $field->form->widget_tags->{$key} );
-            }
-
-        };
-    }
     return $field;
 }
 

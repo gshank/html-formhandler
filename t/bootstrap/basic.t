@@ -31,10 +31,10 @@ use HTML::FormHandler::Test;
     # widget_wrapper, labels strings,
     # extra bits of rendering (after_element)
     sub build_update_fields {{
-       foo => { html_attr => { class => 'span3', placeholder => 'Type something…' },
+       foo => { element_class => ['span3'], element_attr => { placeholder => 'Type something…' },
            widget_tags => { after_element => '<span class="help-inline">Associated help text!</span>' } },
-       bar => { widget_wrapper => 'WrapLabel', label => 'Check me out', label_attr => { class => 'checkbox' } },
-       submit_btn => { html_attr => { class => 'btn' } },
+       bar => { label => 'Check me out', label_class => ['checkbox'] },
+       submit_btn => { element_class => ['btn'] },
     }}
 }
 
