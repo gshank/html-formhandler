@@ -2,10 +2,11 @@ package HTML::FormHandler::Test;
 # ABSTRACT: provides is_html method used in tests
 use strict;
 use warnings;
+use base 'Test::Builder::Module';
 use HTML::TreeBuilder;
 use Test::Builder::Module;
-use base 'Test::Builder::Module';
 our @EXPORT = ('is_html');
+use Encode ('decode');
 
 =head1 SYNOPSIS
 
@@ -34,7 +35,9 @@ sub is_html {
     # TreeBuilder collapses a newline or a newline followed by space into
     # a single space, which won't match against no space, so remove.
     $got =~ s/\n\s*//sg;
+    $got = decode('utf8', $got);
     $expected =~ s/\n\s*//sg;
+    $expected = decode('utf8', $expected);
     $t1->parse($got);
     $t1->eof;
     $t2->parse($expected);

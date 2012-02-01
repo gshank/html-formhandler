@@ -1,3 +1,5 @@
+0.40000 Wed Feb 15, 2012
+
     **** There are many changes to rendering, many of them incompatible.
        These changes *will* break existing form rendering.
        You must check that your rendering works before upgrading. Making a copy
@@ -21,16 +23,16 @@
     Switch default rendering of checkbox to have label wrap input
     Add 'render_before_form' and 'render_after_form' subs; kind of silly, but
        might be useful in some cases.
-    Add 'build_field_rendering' to 'update_fields' processing to allow moving
+    Add 'build_update_fields' to 'update_fields' processing to allow moving
        more of rendering settings into a separate role
     Change form 'html_attr' to use build_html_attr instead of default
-    Change interface of html_field_attributes to return attr (instead of in-place)
+    Change interface of html_field_attributes to also return attr (instead of in-place)
     Remove 'label_no_colon', make labels without colon the default.
        Add widget tag 'label_after'. Use "label_after => ': '" for old behavior
     Add widget tag 'label_tag'. Default 'label'.
-    Form wrapping fieldset class is now 'form_wrapper' instead of 'main_fieldset'
     Widget_tags attribute now takes a builder, 'build_widget_tags'. Can no
        longer set with '+widget_tags'.
+    Repeatable elements get automatic 'div' wrapper
     Remove attribute 'auto_fieldset'; wrapping form is no longer a default;
        Add back with 'form_wrapper' => 1 in widget_tags
     Remove automatic wrapping of compounds.

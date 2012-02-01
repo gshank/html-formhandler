@@ -10,7 +10,7 @@ my $args = {
    name => 'test_field',
    init_contains => { wrapper_class => ['hfh', 'repinst'] },
 };
-my $field = HTML::FormHandler::Field::Repeatable->new( $args );
+my $field = HTML::FormHandler::Field::Repeatable->new( %$args );
 ok( $field, 'field built' );
 $field->init_state;
 is_deeply( $field->contains->wrapper_class, ['hfh', 'repinst'], 'attribute set' );
