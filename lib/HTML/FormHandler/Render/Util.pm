@@ -1,8 +1,28 @@
 package HTML::FormHandler::Render::Util;
 # ABSTRACT: rendering utility
-
 use Sub::Exporter;
 Sub::Exporter::setup_exporter({ exports => [ 'process_attrs', 'cc_widget', 'ucc_widget' ] } );
+
+=head1 SYNOPSIS
+
+The 'process_attrs' takes a hashref and creates an attribute string
+for constructing HTML.
+
+    my $attrs => {
+        some_attr => 1,
+        placeholder => 'Enter email...",
+        class => ['help', 'special'],
+    };
+    my $string = process_attrs($attrs);
+
+...will produce:
+
+    ' some_attr="1" placeholder="Enter email..." class="help special"'
+
+If an arrayref is empty, it will be skipped. For a hash key of 'javascript'
+only the value will be appended (without '$key=""');
+
+=cut
 
 # this is a function for processing various attribute flavors
 sub process_attrs {
@@ -14,6 +34,8 @@ sub process_attrs {
         my $value = '';
         if( defined $attrs->{$attr} ) {
             if( ref $attrs->{$attr} eq 'ARRAY' ) {
+                # we don't want class="" if no classes specified
+                next unless scalar @{$attrs->{$attr}};
                 $value = join (' ', @{$attrs->{$attr}} );
             }
             else {
