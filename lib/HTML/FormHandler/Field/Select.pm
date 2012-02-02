@@ -50,6 +50,11 @@ In a custom field class:
        ];
    }
 
+With a coderef:
+
+   has_field 'flim' => ( type => 'Select', options_method => \&flim_options );
+   sub flim_options {  <return options array> }
+
 In a form:
 
    has_field 'fruit' => ( type => 'Select' );
@@ -133,9 +138,9 @@ selected options at the top of the list.
 This is an array of hashes for this field.
 Each has must have a label and value keys.
 
-=head2 set_options
+=head2 options_method
 
-Name of form method that sets options
+Coderef of method to return options
 
 =head2 multiple
 
@@ -268,6 +273,16 @@ sub BUILD {
     }
     $self->input_without_param; # vivify
 }
+
+has 'options_method' => (
+    traits  => ['Code'],
+    is      => 'rw',
+    isa     => 'CodeRef',
+    predicate => 'has_options_method',
+    handles => {
+        get_options => 'execute_method',
+    },
+);
 
 has 'set_options' => ( isa => 'Str', is => 'ro');
 sub _set_options_meth {
@@ -431,7 +446,11 @@ sub _load_options {
         if ( $self->options_from eq 'build' ||
         ( $self->has_options && $self->do_not_reload ) );
     my @options;
-    if ( $self->_can_form_options ) {
+    if( $self->has_options_method ) {
+        @options = $self->get_options;
+        $self->options_from('method');
+    }
+    elsif ( $self->_can_form_options ) {
         @options = $self->_form_options;
         $self->options_from('method');
     }
