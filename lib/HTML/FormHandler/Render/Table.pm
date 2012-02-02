@@ -5,6 +5,7 @@ use Moose::Role;
 
 with 'HTML::FormHandler::Render::Simple' =>
     { -excludes => [ 'render', 'render_field_struct', 'render_end', 'render_start' ] };
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 =head1 SYNOPSIS
 

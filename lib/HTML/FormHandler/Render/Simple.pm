@@ -133,15 +133,21 @@ sub render {
 }
 
 sub render_start {
-    my $self   = shift;
+    my $self = shift;
 
-    my $attr = process_attrs($self->attributes);
-    my $output = qq{<form$attr>};
-    if ( $self->get_tag('form_wrapper') ) {
-        my $wrapper_tag = $self->get('wrapper_tag') || 'fieldset';
-        $output .= qq{<$wrapper_tag class="form_wrapper">};
+    my $output = '';
+    $output = $self->render_before_form() if $self->can('render_before_form');
+    if( $self->get_tag('form_wrapper') ) {
+        my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
+        my $attrs = process_attrs($self->wrapper_attributes);
+        $output .= qq{<$form_wrapper_tag$attrs>};
     }
-    return $output;
+    my $attrs = process_attrs($self->attributes);
+    $output .= qq{<form$attrs>};
+    my $after_form_start = $self->get_tag('after_form_start');
+    $output .= $after_form_start if $after_form_start;
+
+    return $output
 }
 
 sub render_form_errors {
@@ -160,7 +166,7 @@ sub render_end {
 
     my $output = "</form>\n";
     if( $self->get_tag('form_wrapper') ) {
-        my $wrapper_tag = $self->get('wrapper_tag') || 'fieldset';
+        my $wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         $output .= "</$wrapper_tag>";
     }
     return $output;
@@ -412,7 +418,7 @@ sub render_captcha {
 
     my $output .= '<img src="' . $self->captcha_image_url . '"/>';
     $output .= '<input id="' . $field->id . '" name="';
-    $output .= $field->html_name . '">';
+    $output .= $field->html_name . '"/>';
     return $output;
 }
 

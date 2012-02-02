@@ -1001,7 +1001,9 @@ sub BUILD {
     my $self = shift;
 
     $self->before_build; # hook to allow customizing forms
-    $self->apply_widget_role( $self, $self->widget_form, 'Form' ) unless $self->no_widgets;
+    # HTML::FormHandler::Widget::Form::Simple is applied in Base
+    $self->apply_widget_role( $self, $self->widget_form, 'Form' )
+        unless (  $self->no_widgets || $self->widget_form eq 'Simple' );
     $self->build_fields;    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     $self->after_build; # hook for customizing

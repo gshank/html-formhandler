@@ -1317,7 +1317,7 @@ sub BUILDARGS {
 sub BUILD {
     my ( $self, $params ) = @_;
 
-    $self->build_default_method; 
+    $self->build_default_method;
     $self->add_widget_name_space( $self->form->widget_name_space ) if $self->form;
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;
