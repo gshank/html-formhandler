@@ -363,20 +363,26 @@ on a particular field.
 
 =over
 
-=item set_validate
+=item validate_method, set_validate
 
-Specify a form method to be used to validate this field.
-The default is C<< 'validate_' . $field->name >>. Periods in field names
-will be replaced by underscores, so that the field 'addresses.city' will
-use the 'validate_addresses_city' method for validation.
+Supply a coderef (which will be a method on the field) with 'validate_method'
+or the name of a form method with 'set_validate' (which will be a method on
+the form). If not specified and a form method with a name of
+C<< validate_<field_name> >> exists, it will be used.
 
+Periods in field names will be replaced by underscores, so that the field
+'addresses.city' will use the 'validate_addresses_city' method for validation.
+
+   has_field 'my_foo' => ( validate_method => \&my_foo_validation );
+   sub my_foo_validation { ... }
    has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
-   has_field 'subtitle' => ( isa => 'Str', set_validate => 'check_title' );
 
-=item set_default
+=item default_method, set_default
 
-The name of the method in the form that provides a field's default value.
-Default is C<< 'default_' . $field->name >>. Periods replaced by underscores.
+Supply a coderef (which will be a method on the field) with 'validate_method'
+or the name of a form method with 'set_default' (which will be a method on
+the form). If not specified and a form method with a name of
+C<< default_<field_name> >> exists, it will be used.
 
 =item default
 
@@ -1089,64 +1095,57 @@ sub label_tag {
 #===================
 
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
+
+#==============
+sub convert_full_name {
+    my $full_name = shift;
+    $full_name =~ s/\.\d+\./_/g;
+    $full_name =~ s/\./_/g;
+    return $full_name;
+}
+has 'validate_method' => (
+     traits => ['Code'],
+     is     => 'ro',
+     isa    => 'CodeRef',
+     lazy   => 1,
+     builder => 'build_validate_method',
+     handles => { '_validate' => 'execute_method' },
+);
 has 'set_validate' => ( isa => 'Str', is => 'ro',);
-sub _can_validate {
+sub build_validate_method {
     my $self = shift;
-    my $set_validate = $self->_set_validate_meth;
-    return
-        unless $self->form &&
-            $set_validate &&
-            $self->form->can( $set_validate );
-    return $set_validate;
+    my $set_validate = $self->set_validate;
+    $set_validate ||= "validate_" . convert_full_name($self->full_name);
+    return sub { $self = shift; $self->form->$set_validate($self); }
+        if ( $self->form && $self->form->can($set_validate) );
+    return sub { };
 }
-sub _set_validate_meth {
-    my $self = shift;
-    return $self->set_validate if $self->set_validate;
-    my $name = $self->full_name;
-    if( $name =~ /\./ ) {
-        $name =~ s/\.\d+\./_/g;
-        $name =~ s/\./_/g;
-    }
-    return 'validate_' . $name;
-}
-sub _validate {
-    my $self = shift;
-    return unless (my $meth = $self->_can_validate);
-    $self->form->$meth($self);
-}
+
+has 'default_method' => (
+     traits => ['Code'],
+     is     => 'ro',
+     isa    => 'CodeRef',
+     writer => '_set_default_method',
+     predicate => 'has_default_method',
+     handles => { '_default' => 'execute_method' },
+);
 has 'set_default' => ( isa => 'Str', is => 'ro', writer => '_set_default');
-sub _can_default {
+# this is not a "true" builder, because sometimes 'default_method' is not set
+sub build_default_method {
     my $self = shift;
-    my $set_default = $self->_set_default_meth;
-    return
-        unless $self->form &&
-            $set_default &&
-            $self->form->can( $set_default );
-    return $set_default;
-}
-sub _comp_default_meth {
-    my $self = shift;
-    my $name = $self->full_name;
-    if( $name =~ /\./ ) {
-        $name =~ s/\.\d+\./_/g;
-        $name =~ s/\./_/g;
+    my $set_default = $self->set_default;
+    $set_default ||= "default_" . convert_full_name($self->full_name);
+    if ( $self->form && $self->form->can($set_default) ) {
+        $self->_set_default_method(
+            sub { $self = shift; return $self->form->$set_default($self, $self->form->item); }
+        );
     }
-    return 'init_value_' . $name;
 }
-sub _set_default_meth {
-    my $self = shift;
-    return $self->set_default if $self->set_default;
-    my $name = $self->full_name;
-    if( $name =~ /\./ ) {
-        $name =~ s/\.\d+\./_/g;
-        $name =~ s/\./_/g;
-    }
-    return 'default_' . $name;
-}
+
 sub get_default_value {
     my $self = shift;
-    if ( my $meth = $self->_can_default ) {
-        return $self->form->$meth( $self, $self->form->item );
+    if ( $self->has_default_method ) {
+        return $self->_default;
     }
     elsif ( defined $self->default ) {
         return $self->default;
@@ -1318,8 +1317,7 @@ sub BUILDARGS {
 sub BUILD {
     my ( $self, $params ) = @_;
 
-    $self->_set_default( $self->_comp_default_meth )
-        if( $self->form && $self->form->can( $self->_comp_default_meth ) );
+    $self->build_default_method; 
     $self->add_widget_name_space( $self->form->widget_name_space ) if $self->form;
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;

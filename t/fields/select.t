@@ -20,7 +20,7 @@ use HTML::FormHandler::Field::Text;
    has_field 'empty' => ( type => 'Multiple' );
    has_field 'build_attr' => ( type => 'Select' );
 
-   sub init_value_fruit { 2 }
+   sub default_fruit { 2 }
 
    # the following sometimes happens with db options
    sub options_empty { ([]) }

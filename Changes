@@ -1,5 +1,8 @@
 0.40000 Wed Feb 15, 2012
 
+    Re-do code for default & validate method construction; now provides
+       'default_method' and 'validate_method' coderef setting
+    Remove 'init_value_*' from Field (deprecated for years).
     **** There are many changes to rendering, many of them incompatible.
        These changes *will* break existing form rendering.
        You must check that your rendering works before upgrading. Making a copy

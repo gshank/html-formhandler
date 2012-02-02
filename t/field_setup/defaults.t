@@ -75,11 +75,9 @@ is( $form->field('reqname')->fif, 'Starting Perl',
    has '+name' => ( default => 'initform_' );
    has_field 'foo';
    has_field 'bar';
-   has_field 'baz';
    has_field 'bax' => ( default => 'default_bax' );
    has '+init_object' => ( default => sub { { foo => 'initfoo' } } );
    sub default_bar { 'init_value_bar' }
-   sub init_value_baz { 'init_value_baz' }
 }
 
 $form = My::Form->new;
@@ -90,8 +88,6 @@ is( $form->field('foo')->value, 'initfoo', 'value from init_object' );
 is( $form->field('foo')->fif,   'initfoo', 'fif ok' );
 is( $form->field('bar')->value, 'init_value_bar', 'value from field default meth' );
 is( $form->field('bar')->fif,   'init_value_bar', 'fif ok' );
-is( $form->field('baz')->value, 'init_value_baz', 'value from init_value meth'   );
-is( $form->field('baz')->fif,   'init_value_baz', 'fif ok' );
 is( $form->field('bax')->value, 'default_bax', 'value from field default' );
 is( $form->field('bax')->fif,   'default_bax', 'fif ok' );
 
