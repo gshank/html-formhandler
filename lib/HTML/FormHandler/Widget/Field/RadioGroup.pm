@@ -22,7 +22,9 @@ sub render {
             if $fif eq $value;
         $output .= process_attrs($self->element_attributes($result));
         $output .= ' />';
-        $output .= $self->html_filter($option->{label}) . '</label><br />';
+        my $label = $option->{label};
+        $label = $self->_localize($label) if $self->localize_labels;
+        $output .= $self->html_filter($label) . '</label><br />';
         $index++;
     }
     return $self->wrap_field( $result, $output );
