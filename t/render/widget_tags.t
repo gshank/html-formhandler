@@ -7,13 +7,11 @@ use Test::More;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags {
-        {
-            form_wrapper_attr => {},
-            wrapper_tag => 'p',
-            label_tag => 'span',
-        }
-    }
+    sub build_widget_tags {{
+        form_text => 'testing',
+        wrapper_tag => 'p',
+        label_tag => 'span',
+    }}
     has_field 'foo';
     has_field 'bar';
     has_field 'vax';
@@ -35,7 +33,7 @@ unlike( $rendered, qr/Foo: /, 'no colon in label' );
 like( $rendered, qr/<p/, 'wrapper tag correct' );
 unlike( $rendered, qr/<fieldset class="multi"><legend>Multi<\/legend>/, 'no fieldset around compound' );
 like( $rendered, qr/<span class="label" for="bar">Bar<\/span>/, 'label formatted with span and class' );
-ok( ! exists $form->field('foo')->widget_tags->{form_wrapper_attr}, 'no form widgets tags in fields' );
+ok( ! exists $form->field('foo')->widget_tags->{form_text}, 'no form widgets tags in fields' );
 
 {
     package MyApp::Form::Theme::Basic;

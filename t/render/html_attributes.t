@@ -22,7 +22,7 @@ ok( $dir, 'found template dir' );
     extends 'HTML::FormHandler';
 
     has_field 'foo' => ( css_class => 'schoen', style => 'bunt', title => 'MyTitle' );
-    has_field 'bar' => ( html_attr => { arbitrary => 'something', title => 'AltTitle' } );
+    has_field 'bar' => ( element_attr => { arbitrary => 'something', title => 'AltTitle' } );
 
 }
 
@@ -74,7 +74,7 @@ while ( my ( $key, $res ) = each %results ) {
     like( $res, qr/arbitrary="something"/,   "$key Field got the arbitrary attribute" );
 
     like( $res, qr/title="MyTitle"/,   "$key Field got the title" );
-    like( $res, qr/title="AltTitle"/,   "$key Field got the title from html_attr" );
+    like( $res, qr/title="AltTitle"/,   "$key Field got the title from element_attr" );
 
 }
 

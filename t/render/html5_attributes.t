@@ -21,7 +21,7 @@ use_ok('HTML::FormHandler::Render::Table');
     has '+is_html5' => (default => 1);
 
     has_field 'foo' => ( css_class => 'schoen', style => 'bunt', title => 'MyTitle', required => 1, maxlength=> 10 );
-    has_field 'bar' => ( html_attr => { arbitrary => 'something', title => 'AltTitle' } );
+    has_field 'bar' => ( element_attr => { arbitrary => 'something', title => 'AltTitle' } );
     has_field 'range' => ( type => "Integer", range_start => 5, range_end => 10 );
     has_field 'email' => ( type => "Email");
     has_field 'date' => ( type => "Date");
@@ -76,7 +76,7 @@ while ( my ( $key, $res ) = each %results ) {
     like( $res, qr/arbitrary="something"/,   "$key Field got the arbitrary attribute" );
 
     like( $res, qr/title="MyTitle"/,   "$key Field got the title" );
-    like( $res, qr/title="AltTitle"/,   "$key Field got the title from html_attr" );
+    like( $res, qr/title="AltTitle"/,   "$key Field got the title from element_attr" );
 
     like( $res, qr/required="required"/,    "$key Form got the html5 required" );
     like( $res, qr/input type="number" name="money"/,    "$key Form got the html5 type" );

@@ -139,7 +139,7 @@ sub render_start {
     $output .= $self->get_tag('before_form') if $self->tag_exists('before_form');
     if( $self->get_tag('form_wrapper') ) {
         my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
-        my $attrs = process_attrs($self->wrapper_attributes);
+        my $attrs = process_attrs($self->form_wrapper_attributes);
         $output .= qq{<$form_wrapper_tag$attrs>};
     }
     my $attrs = process_attrs($self->attributes);
@@ -236,7 +236,7 @@ sub render_text {
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
     $output .= ' value="' . $field->html_filter($field->fif) . '"';
-    $output .= process_attrs($field->attributes);
+    $output .= process_attrs($field->element_attributes);
     $output .= ' />';
     return $output;
 }
@@ -249,7 +249,7 @@ sub render_password {
     $output .= ' size="' . $field->size . '"' if $field->size;
     $output .= ' maxlength="' . $field->maxlength . '"' if $field->maxlength;
     $output .= ' value="' . $field->html_filter($field->fif) . '"';
-    $output .= process_attrs($field->attributes);
+    $output .= process_attrs($field->element_attributes);
     $output .= ' />';
     return $output;
 }
@@ -260,7 +260,7 @@ sub render_hidden {
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
     $output .= ' value="' . $field->html_filter($field->fif) . '"';
-    $output .= process_attrs($field->attributes);
+    $output .= process_attrs($field->element_attributes);
     $output .= ' />';
     return $output;
 }
@@ -274,7 +274,7 @@ sub render_select {
     $output .= qq{ id="$id"};
     $output .= ' multiple="multiple"' if $multiple == 1;
     $output .= ' size="' . $field->size . '"' if $field->size;
-    my $html_attributes = process_attrs($field->attributes);
+    my $html_attributes = process_attrs($field->element_attributes);
     $output .= $html_attributes;
     $output .= '>';
     my $index = 0;
@@ -317,7 +317,7 @@ sub render_checkbox {
     $output .= ' id="' . $field->id . '"';
     $output .= ' value="' . $field->html_filter($field->checkbox_value) . '"';
     $output .= ' checked="checked"' if $field->fif eq $field->checkbox_value;
-    $output .= process_attrs($field->attributes);
+    $output .= process_attrs($field->element_attributes);
     $output .= ' />';
     return $output;
 }
@@ -349,7 +349,7 @@ sub render_textarea {
 
     my $output =
         qq(<textarea name="$name" id="$id" )
-        . process_attrs($field->attributes)
+        . process_attrs($field->element_attributes)
         . qq(rows="$rows" cols="$cols">)
         . $field->html_filter($fif)
         . q(</textarea>);
@@ -364,7 +364,7 @@ sub render_upload {
     $output = '<input type="file" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= process_attrs($field->attributes);
+    $output .= process_attrs($field->element_attributes);
     $output .= ' />';
     return $output;
 }
@@ -396,7 +396,7 @@ sub render_submit {
     my $output = '<input type="submit" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= process_attrs($field->attributes);
+    $output .= process_attrs($field->element_attributes);
     $output .= ' value="' . $field->html_filter($field->_localize($field->value)) . '" />';
     return $output;
 }
@@ -407,7 +407,7 @@ sub render_reset {
     my $output = '<input type="reset" name="';
     $output .= $field->html_name . '"';
     $output .= ' id="' . $field->id . '"';
-    $output .= process_attrs($field->attributes);
+    $output .= process_attrs($field->element_attributes);
     $output .= ' value="' . $field->html_filter($field->value) . '" />';
     return $output;
 }

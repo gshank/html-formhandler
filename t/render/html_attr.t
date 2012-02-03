@@ -8,12 +8,11 @@ use HTML::FormHandler::Test;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_html_attr { { method => 'GET', class => 'hfh test_form', target => '_blank' } }
-#   sub build_wrapper_attr { { class => 'form_wrapper' } }
-    has_field 'foo' => ( html_attr => { arbitrary => 'something' } );
-    has_field 'bar' => ( html_attr => { writeonly => 1 }, label_attr => { title => 'Bar Field' } );
+    sub build_form_element_attr { { method => 'GET', class => 'hfh test_form', target => '_blank' } }
+    has_field 'foo' => ( element_attr => { arbitrary => 'something' } );
+    has_field 'bar' => ( element_attr => { writeonly => 1 }, label_attr => { title => 'Bar Field' } );
     has_field 'mox' => ( wrapper_attr => { class => ['minx', 'finx'] } );
-    has_field 'my_text' => ( type => 'TextArea', html_attr => { required => "required" } );
+    has_field 'my_text' => ( type => 'TextArea', element_attr => { required => "required" } );
 }
 
 my $form = Test::Form->new;
@@ -35,11 +34,11 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
 
     sub build_widget_tags { { form_wrapper => 1 } }
     has '+name' => ( default => 'myapp_form' );
-    sub build_html_attr { { name => 'myapp_form' } }
-    sub build_wrapper_attr { { class => 'form_wrapper' } }
+    sub form_element_attr { { name => 'myapp_form' } }
+    sub build_form_wrapper_attr { { class => 'form_wrapper' } }
     has_field 'foo';
     has_field 'bar';
-    has_field 'mox' => ( html_attr => { placeholder => 'my placeholder' } );;
+    has_field 'mox' => ( element_attr => { placeholder => 'my placeholder' } );;
 
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;

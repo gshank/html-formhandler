@@ -21,7 +21,7 @@ Use in a template:
 sub render_start {
     my $self   = shift;
     my $fattrs = process_attrs($self->attributes);
-    my $wattrs = process_attrs($self->wrapper_attributes);
+    my $wattrs = process_attrs($self->form_wrapper_attributes);
     return qq{<form$fattrs><table$wattrs>\n};
 }
 

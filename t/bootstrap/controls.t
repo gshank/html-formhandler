@@ -12,8 +12,8 @@ use HTML::FormHandler::Test;
         my $self = shift;
         $self->set_widget_wrapper('Bootstrap');
     }
-    sub build_html_attr {{ class => 'form-horizontal' }}
-    sub build_wrapper_attr {{ class => 'span8' }}
+    sub build_form_element_attr {{ class => 'form-horizontal' }}
+    sub build_form_wrapper_attr {{ class => 'span8' }}
     sub build_widget_tags {{
         form_wrapper => 1,
         form_wrapper_tag => 'div',
@@ -23,14 +23,14 @@ use HTML::FormHandler::Test;
 
     sub build_update_fields {{
         input01 => { widget_tags => { after_element => '<p class="help-block">In addition to freeform text, any HTML5 text-based input appears like so.</p>' },
-                     html_attr => { class => 'input-xlarge' },
+                     element_attr => { class => 'input-xlarge' },
                    },
         optionsCheckbox => { widget_tags => { after_element =>
                 'Option one is this and that&mdash;be sure to include why it’s great' }
         },
-        fileInput => { html_attr => { class => 'input-file' } },
-        textarea => { html_attr => { class => 'input-xlarge' } },
-        actions => { html_attr => { class => 'form-actions' } },
+        fileInput => { element_attr => { class => 'input-file' } },
+        textarea => { element_attr => { class => 'input-xlarge' } },
+        actions => { element_attr => { class => 'form-actions' } },
     }}
 }
 
@@ -42,10 +42,10 @@ use HTML::FormHandler::Test;
         widget_tags => { compound_wrapper => 1 },
         render_label => 0, wrapper_attr => { class => 'form-actions' }  );
     has_field 'actions.save' => ( type => 'Submit', widget => 'ButtonTag',
-        html_attr => { class => ['btn', 'primary'] },
+        element_attr => { class => ['btn', 'primary'] },
         widget_wrapper => 'None', value => "Save changes" );
     has_field 'actions.cancel' => ( type => 'Reset', widget => 'ButtonTag',
-        html_attr => { class => ['btn'] },
+        element_attr => { class => ['btn'] },
         widget_wrapper => 'None', value => "Cancel" );
 }
 

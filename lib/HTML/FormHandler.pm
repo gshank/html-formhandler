@@ -683,14 +683,15 @@ to be used for defaults instead of the item.
 
 =head2 For use in HTML
 
-   html_attr - hashref for setting arbitrary HTML attributes
-         has '+html_attr' =>
-           ( default => sub { { class => '...', method => '...' } } );
+   form_element_attr - hashref for setting arbitrary HTML attributes
+      set in form with: sub build_form_element_attr {...}
+   form_wrapper_attr - hashref for form wrapper element attributes
+      set in form with: sub build_form_wrapper_attr {...}
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    uuid - generates a string containing an HTML field with UUID
 
-Deprecated (use html_attr instead):
+Deprecated (use form_element_attr instead):
 
    css_class - adds a 'class' attribute to the form tag
    style - adds a 'style' attribute to the form tag
@@ -698,10 +699,10 @@ Deprecated (use html_attr instead):
 
 Note that the form tag contains an 'id' attribute which is set to the
 form name. The standards have been flip-flopping over whether a 'name'
-attribute is valid. It can be set with 'html_attr'.
+attribute is valid. It can be set with 'form_element_attr'.
 
 The rendering of the HTML attributes is done using the 'process_attrs'
-function and the 'attributes' method, which munges the 'html_attr' hash
+function and the 'attributes' method, which munges the 'form_element_attr' hash
 for backward compatibility, etc.
 
 For field HTML attributes, there is a form method hook, 'field_html_attributes',
@@ -834,13 +835,23 @@ has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
 has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
 has 'is_html5'  => ( isa => 'Bool', is => 'ro', default => 0 );
-has 'html_attr' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
-   builder => 'build_html_attr', handles => { has_html_attr => 'count',
-   set_html_attr => 'set', delete_html_attr => 'delete' }
+has 'html_attr' => ( is => 'rw', traits => ['Hash'],
+   default => sub { {} }, handles => { has_html_attr => 'count',
+   set_html_attr => 'set', delete_html_attr => 'delete' },
+   trigger => \&_html_attr_set,
 );
-sub build_html_attr {{}}
+sub _html_attr_set {
+    my ( $self, $value ) = @_;
+    $self->form_element_attr($value);
+}
+has 'form_element_attr' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
+   builder => 'build_form_element_attr', handles => { has_form_element_attr => 'count',
+   set_form_element_attr => 'set', delete_form_element_attr => 'delete' }
+);
+sub build_form_element_attr {{}}
 
-sub attributes {
+sub attributes { shift->form_element_attributes(@_) }
+sub form_element_attributes {
     my $self = shift;
     my $attr = {};
     $attr->{id} = $self->name;
@@ -849,7 +860,7 @@ sub attributes {
     $attr->{enctype} = $self->enctype if $self->enctype;
     $attr->{class} = $self->css_class if $self->css_class;
     $attr->{style} = $self->style if $self->style;
-    $attr = {%$attr, %{$self->html_attr}};
+    $attr = {%$attr, %{$self->form_element_attr}};
     $attr = $self->form_html_attributes('form', $attr);
     return $attr;
 }
@@ -877,15 +888,15 @@ has 'widget_tags'         => (
     },
 );
 sub build_widget_tags {{}}
-has 'wrapper_attr' => ( is => 'rw', traits => ['Hash'],
-   builder => 'build_wrapper_attr', handles => { has_wrapper_attr => 'count',
-   get_wrapper_attr => 'get', set_wrapper_attr => 'set', delete_wrapper_attr => 'delete',
-   exists_wrapper_attr => 'exists' }
+has 'form_wrapper_attr' => ( is => 'rw', traits => ['Hash'],
+   builder => 'build_form_wrapper_attr', handles => { has_form_wrapper_attr => 'count',
+   get_form_wrapper_attr => 'get', set_form_wrapper_attr => 'set', delete_form_wrapper_attr => 'delete',
+   exists_form_wrapper_attr => 'exists' }
 );
-sub build_wrapper_attr {{}}
-sub wrapper_attributes {
+sub build_form_wrapper_attr {{}}
+sub form_wrapper_attributes {
     my $self = shift;
-    my $attr = {%{$self->wrapper_attr}};
+    my $attr = {%{$self->form_wrapper_attr}};
     $attr->{class} = [@{$attr->{class}}]
         if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
     $attr = $self->form_html_attributes('wrapper', $attr);

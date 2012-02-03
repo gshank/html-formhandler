@@ -11,7 +11,7 @@ $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
     extends 'HTML::FormHandler';
 
     sub build_widget_tags { { form_wrapper => 1, label_after => ': ' } }
-    sub build_wrapper_attr { { class => 'form_wrapper' } }
+    sub build_form_wrapper_attr { { class => 'form_wrapper' } }
     has '+name' => ( default => 'test_errors' );
     has_field 'foo' => ( required => 1 );
     has_field 'bar' => ( type => 'Integer' );

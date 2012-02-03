@@ -8,9 +8,9 @@ use HTML::FormHandler::Test;
     use Moose::Role;
 
     # form tag classes
-    sub build_html_attr { { class => ['well', 'form-search'] } }
+    sub build_form_element_attr { { class => ['well', 'form-search'] } }
     # form wrapper class
-    sub build_wrapper_attr { { class => 'span9' } }
+    sub build_form_wrapper_attr { { class => 'span9' } }
     # turn on form wrapper, set the tag to 'div' (default is fieldset)
     sub build_widget_tags {{
         form_wrapper => 1, form_wrapper_tag => 'div',

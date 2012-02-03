@@ -48,7 +48,7 @@ sub render_start {
     $output = $self->get_tag('before_form') if $self->tag_exists('before_form');
     if( $self->get_tag('form_wrapper') ) {
         my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
-        my $attrs = process_attrs($self->wrapper_attributes);
+        my $attrs = process_attrs($self->form_wrapper_attributes);
         $output .= qq{<$form_wrapper_tag$attrs>};
     }
     my $attrs = process_attrs($self->attributes);

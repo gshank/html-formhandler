@@ -119,7 +119,8 @@ These attributes are usually accessed in a subroutine or in a template.
 
 =head2 Form attributes useful in HTML
 
-   html_attr - For arbitrary html attributes in the 'form' tag
+   form_element_attr - For arbitrary html attributes in the 'form' tag
+   form_wrapper_attr - for arbitrary html attributes on the form wrapper
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    enctype - Request enctype

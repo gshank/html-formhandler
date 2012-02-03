@@ -148,8 +148,8 @@ attributes in the form, or do it on new:
 =head2 HTML attributes
 
 Arbitrary HTML attributes on form elements (such as 'input' elements) can be specified
-with 'html_attr' on the field. You can also set html attributes for the label with
-'label_attr' and html attributes for the wrapper with 'wrapper_attr'. See the
+with 'element_attr' on the field. You can also set attributes for the label with
+'label_attr' and attributes for the wrapper with 'wrapper_attr'. See the
 documentation in L<HTML::FormHandler::Field#Attributes_for_creating_HTML>.
 
 =head2 Rendering bare html with no fieldset and no divs

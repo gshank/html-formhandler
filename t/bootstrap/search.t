@@ -12,11 +12,11 @@ use HTML::FormHandler::Test;
         after_form => '</div></div>',
     }}
     # classes for form element
-    sub build_html_attr { { class => ['well', 'form-search'] } }
+    sub build_form_element_attr { { class => ['well', 'form-search'] } }
     # field updates
     sub build_update_fields {{
-        searchterm => { widget_wrapper => 'None', html_attr => { class => ['input-medium', 'search-query'] }},
-        submitbtn  => { widget => 'ButtonTag', widget_wrapper => 'None', html_attr => { class => ['btn'] } },
+        searchterm => { widget_wrapper => 'None', element_attr => { class => ['input-medium', 'search-query'] }},
+        submitbtn  => { widget => 'ButtonTag', widget_wrapper => 'None', element_attr => { class => ['btn'] } },
     }}
 }
 {
