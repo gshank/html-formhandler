@@ -365,7 +365,7 @@ See also the section in L<HTML::FormHandler::Manual::Intro#Defaults>.
 
 =item default_method, set_default
 
-Supply a coderef (which will be a method on the field) with 'validate_method'
+Supply a coderef (which will be a method on the field) with 'default_method'
 or the name of a form method with 'set_default' (which will be a method on
 the form). If not specified and a form method with a name of
 C<< default_<field_name> >> exists, it will be used.

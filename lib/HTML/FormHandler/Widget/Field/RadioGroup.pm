@@ -1,6 +1,14 @@
 package HTML::FormHandler::Widget::Field::RadioGroup;
 # ABSTRACT: radio group rendering widget
 
+=head1 SYNOPSIS
+
+Renders a radio group (from a 'Select' field);
+
+Tags: radio_br_after
+
+=cut
+
 use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
@@ -24,7 +32,8 @@ sub render {
         $output .= ' />';
         my $label = $option->{label};
         $label = $self->_localize($label) if $self->localize_labels;
-        $output .= $self->html_filter($label) . '</label><br />';
+        $output .= $self->html_filter($label) . '</label>';
+        $output .= '<br />' if $self->get_tag('radio_br_after');
         $index++;
     }
     return $self->wrap_field( $result, $output );

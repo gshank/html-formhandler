@@ -26,21 +26,6 @@ use HTML::FormHandler::Field::Text;
     has_field 'number';
     has_field 'fruit'      => ( type => 'Select' );
     has_field 'vegetables' => ( type => 'Multiple' );
-    has_field 'opt_in'     => (
-        type    => 'Select',
-        widget  => 'radio_group',
-        options => [
-            {
-                value => 'no & never',
-                label => 'No & Never',
-                # this can depend on something else,
-                # with fixed value will cause field be
-                # always checked even after process
-                checked => 1,
-            },
-            { value => '"yes"', label => 'Yes' },
-        ]
-    );
     has_field 'comedians' => (
         type => 'Multiple',
         widget => 'checkbox_group',
@@ -126,11 +111,6 @@ my $form = Test::Form->new;
 ok( $form, 'create form' );
 
 my $expected = '
-<div><label class="label" for="opt_in">Opt in</label><br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br />
-</div>';
-is_html( $form->field('opt_in')->render, $expected, 'output from radio group');
-
-$expected = '
 <div><label class="label" for="comedians">Comedians</label> <br /><input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br /><input type="checkbox" value="chaplin" name="comedians" id="comedians.1" />Charly Chaplin<br /><input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" />Stan Laurel &amp; Oliver Hardy<br />
 </div>';
 is_html( $form->field('comedians')->render, $expected, 'output from checkbox group');
@@ -154,7 +134,6 @@ my $params = {
     'start_date.day'   => '14',
     'start_date.year'  => '2006',
     two_errors         => 'aaa',
-    opt_in             => 'no & never',
     plain              => 'No divs!!',
     comedians          => [ 'chaplin', 'laurel & hardy' ],
     hobbies            => [ 'eating', 'sleeping', 'not chasing mice' ],
@@ -254,13 +233,6 @@ is(
 </div>', 'output from Reset'
 );
 
-
-my $output10 = $form->field('opt_in')->render;
-is(
-    $output10, '
-<div><label class="label" for="opt_in">Opt in</label><br /><label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br /><label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br />
-</div>', 'output from radio group'
-);
 
 my $output11 = $form->render_start;
 is( $output11,
