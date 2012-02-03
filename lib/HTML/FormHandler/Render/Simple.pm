@@ -136,7 +136,7 @@ sub render_start {
     my $self = shift;
 
     my $output = '';
-    $output = $self->render_before_form() if $self->can('render_before_form');
+    $output .= $self->get_tag('before_form') if $self->tag_exists('before_form');
     if( $self->get_tag('form_wrapper') ) {
         my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
         my $attrs = process_attrs($self->wrapper_attributes);
@@ -144,8 +144,7 @@ sub render_start {
     }
     my $attrs = process_attrs($self->attributes);
     $output .= qq{<form$attrs>};
-    my $after_form_start = $self->get_tag('after_form_start');
-    $output .= $after_form_start if $after_form_start;
+    $output .= $self->get_tag('after_form_start') if $self->tag_exists('after_form_start');
 
     return $output
 }

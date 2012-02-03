@@ -7,24 +7,21 @@ use HTML::FormHandler::Test;
     package MyApp::Form::InLine::Theme;
     use Moose::Role;
 
-    # wrap the form in a header and close the div. Probably better done in a template
-    sub render_before_form {
-       '<h3>Inline form</h3>
-        <div class="row">
-        <div class="span3">
-          <p>Inputs are block level to start. For <code>.form-inline</code> and <code>.form-horizontal</code>, we use inline-block.</p>
-        </div>'
-    }
-    sub render_after_form { '</div>' }
-
     # form tag classes
     sub build_html_attr { { class => ['well', 'form-search'] } }
     # form wrapper class
     sub build_wrapper_attr { { class => 'span9' } }
     # turn on form wrapper, set the tag to 'div' (default is fieldset)
-    sub build_widget_tags {
-        { form_wrapper => 1, form_wrapper_tag => 'div' }
-    }
+    sub build_widget_tags {{
+        form_wrapper => 1, form_wrapper_tag => 'div',
+        before_form =>
+'<h3>Inline form</h3>
+<div class="row">
+<div class="span3">
+  <p>Inputs are block level to start. For <code>.form-inline</code> and <code>.form-horizontal</code>, we use inline-block.</p>
+</div>',
+        after_form => '</div>',
+    }}
     # update individual fields
     sub build_update_fields {{
         email => { element_class => ['input-small'], element_attr => { placeholder => 'Email' } },

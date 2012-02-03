@@ -9,21 +9,16 @@ use HTML::FormHandler::Test;
     package MyApp::Form::Basic::Theme;
     use Moose::Role;
 
-    # before and after the form. probably better done in a template, unless you
-    # need to construct them based on form information
-    sub render_before_form {
-        qq{<div class="row"><div class="span3"><p>With v2.0, we have lighter and smarter defaults for form styles. No extra markup, just form controls.</p></div>\n}
-    }
-    sub render_after_form { '</div>' }
-
     # set class for form tag (html_attr) and form wrapper (wrapper_attr)
     sub build_wrapper_attr { { class => 'span9' } }
     sub build_html_attr { { class => 'well' } }
-
     sub build_widget_tags {
         # wrap the form with outside div (form_wrapper = 1, form_wrapper_tag = div)
         # wrap the fields (to get label) but with no wrapping div ( wrapper_tag => 0 )
-        { form_wrapper => 1, form_wrapper_tag => 'div', wrapper_tag => 0 }
+        { form_wrapper => 1, form_wrapper_tag => 'div', wrapper_tag => 0,
+            before_form => qq{<div class="row"><div class="span3"><p>With v2.0, we have lighter and smarter defaults for form styles. No extra markup, just form controls.</p></div>\n},
+            after_form => '</div>',
+        }
     }
 
     # individual field settings, including classes for form elements (html_attr),

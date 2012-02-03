@@ -7,9 +7,10 @@ use HTML::FormHandler::Test;
     package MyApp::Form::Search::Theme;
     use Moose::Role;
 
-    # wrap the form in custom html
-    sub render_before_form { '<h3>Search form</h3><div class="row"><div class="span3"><p>Reflecting default WebKit styles, just add <code>.form-search</code> for extra rounded search fields.</p></div><div class="span9">' }
-    sub render_after_form { '</div></div>' }
+    sub build_widget_tags {{
+        before_form => '<h3>Search form</h3><div class="row"><div class="span3"><p>Reflecting default WebKit styles, just add <code>.form-search</code> for extra rounded search fields.</p></div><div class="span9">',
+        after_form => '</div></div>',
+    }}
     # classes for form element
     sub build_html_attr { { class => ['well', 'form-search'] } }
     # field updates

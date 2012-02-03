@@ -182,8 +182,9 @@ has changed by comparing 'init_value' and 'value'. Read only.
 
 =item input_without_param
 
-Input for this field if there is no param. Needed for checkbox,
-since an unchecked checkbox does not return a parameter.
+Input for this field if there is no param. Set by default for Checkbox,
+and Select, since an unchecked checkbox or unselected pulldown
+does not return a parameter.
 
 =back
 
@@ -229,7 +230,7 @@ Compound fields will have an array of errors from the subfields.
 
 =head2 Attributes for creating HTML
 
-There's a generic 'element_attr' hashref attribute that can be used to set
+The 'element_attr' hashref attribute that can be used to set
 arbitrary HTML attributes on a field's input tag.
 
    has_field 'foo' => ( element_attr => { readonly => 1, my_attr => 'abc' } );
@@ -271,13 +272,15 @@ function (from HTML::FormHandler::Render::Util) and passing in a method that
 adds in error classes, provides backward compatibility with the deprecated
 attributes, etc.
 
-    attribute hashref  class attr            wrapping method
+    attribute hashref  class attribute       wrapping method
     =================  =================     ================
     element_attr       element_class         element_attributes
     label_attr         label_class           label_attributes
     wrapper_attr       wrapper_class         wrapper_attributes
 
-In addition, these 'wrapping method' call a hook method in the form class,
+The slots for the class attributes are arrayrefs; they will coerce a
+string into an arrayref.
+In addition, these 'wrapping methods' call a hook method in the form class,
 'field_html_attributes' which you can use to customize and localize the various
 attributes.
 
@@ -287,7 +290,7 @@ attributes.
        return $attr;
    }
 
-The 'process_attrs' function will handle an array of strings, such as for the
+The 'process_attrs' function will also handle an array of strings, such as for the
 'class' attribute.
 
 =head2 html5_type_attr [string]
@@ -356,26 +359,9 @@ For more about widgets, see L<HTML::FormHandler::Manual::Rendering>.
    noupdate  - Do not update this field in the database (does not appear in $form->value)
 
 
-=head2 Form methods for fields
+=head2 Defaults
 
-These provide the name of a method in a form (not the field ) which will act
-on a particular field.
-
-=over
-
-=item validate_method, set_validate
-
-Supply a coderef (which will be a method on the field) with 'validate_method'
-or the name of a form method with 'set_validate' (which will be a method on
-the form). If not specified and a form method with a name of
-C<< validate_<field_name> >> exists, it will be used.
-
-Periods in field names will be replaced by underscores, so that the field
-'addresses.city' will use the 'validate_addresses_city' method for validation.
-
-   has_field 'my_foo' => ( validate_method => \&my_foo_validation );
-   sub my_foo_validation { ... }
-   has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
+See also the section in L<HTML::FormHandler::Manual::Intro#Defaults>.
 
 =item default_method, set_default
 
@@ -404,14 +390,13 @@ flags 'use_defaults_over_obj' and 'use_init_obj_over_item'.
 
 You could also put your defaults into your row or init_object instead.
 
-See also L<HTML::FormHandler::Manual::Intro#Defaults>.
-
 =item default_over_obj
 
 This is deprecated; look into using 'use_defaults_over_obj' or 'use_init_obj_over_item'
 flags instead. They allow using the standard 'default' attribute.
 
 Allows setting defaults which will override values provided with an item/init_object.
+(And only those. Will not be used for defaults without an item/init_object.)
 
    has_field 'quux' => ( default_over_obj => 'default quux' );
 
@@ -446,8 +431,6 @@ hashref. Some field subclasses have additional settable messages.
 
 required:  Error message text added to errors if required field is not present
 The default is "Field <field label> is required".
-
-unique: message for when 'unique' is set, but field is not unique
 
 =item range_start
 
@@ -508,14 +491,21 @@ smart match operator.
 
 The Moose type action first tries to coerce the value -
 then it checks the result, so you can use it instead of both constraints and
-tranformations - TIMTOWTDI.  For most constraints and transformations it is
+tranformations.  For most constraints and transformations it is
 your choice as to whether you use a Moose type or use a 'check' or 'transform'.
 
 All three types define a message to be presented to the user in the case of
-failure. Messages are passed to L<Locale::MakeText>, and can either be simple
-strings or an array suitable for MakeText, such as:
+failure. Messages are passed to L<Locale::MakeText>, and can be simple
+strings, an array suitable for MakeText, or a coderef.
+Coderefs will be passed a reference to the field and the original value.
 
-     message => ['Email should be of the format [_1]',
+   apply [ { check => ['abc'], message => \&err_message } ];
+   sub err_message {
+      my ( $value, $field ) = @_;
+      return $field->name . ": must .... ";
+   }
+   ....
+   message => ['Email should be of the format [_1]',
                  'someuser@example.com' ]
 
 Transformations and coercions are called in an eval
@@ -539,15 +529,6 @@ To declare actions inside a field class use L<HTML::FormHandler::Moose> and
 
 Actions specified with apply are cumulative. Actions may be specified in
 field classes and additional actions added in the 'has_field' declaration.
-
-In addition to being a string, Messages may be arrayrefs, for localization,
-or coderefs, which will be passed a reference to the field and the original value.
-
-   apply [ { check => ['abc'], message => \&err_message } ];
-   sub err_message {
-      my ( $value, $field ) = @_;
-      return $field->name . ": must .... ";
-   }
 
 You can see examples of field classes with 'apply' actions in the source for
 L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>, and
@@ -699,6 +680,21 @@ errors with C<< $field->add_error >>.
         my $value = $field->value;
         return $field->add_error( ... ) if ( ... );
     }
+
+=head2 validate_method, set_validate
+
+Supply a coderef (which will be a method on the field) with 'validate_method'
+or the name of a form method with 'set_validate' (which will be a method on
+the form). If not specified and a form method with a name of
+C<< validate_<field_name> >> exists, it will be used.
+
+Periods in field names will be replaced by underscores, so that the field
+'addresses.city' will use the 'validate_addresses_city' method for validation.
+
+   has_field 'my_foo' => ( validate_method => \&my_foo_validation );
+   sub my_foo_validation { ... }
+   has_field 'title' => ( isa => 'Str', set_validate => 'check_title' );
+
 
 =cut
 

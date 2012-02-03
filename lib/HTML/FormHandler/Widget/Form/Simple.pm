@@ -45,7 +45,7 @@ sub render_start {
     my $self = shift;
 
     my $output = '';
-    $output = $self->render_before_form() if $self->can('render_before_form');
+    $output = $self->get_tag('before_form') if $self->tag_exists('before_form');
     if( $self->get_tag('form_wrapper') ) {
         my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
         my $attrs = process_attrs($self->wrapper_attributes);
@@ -53,8 +53,7 @@ sub render_start {
     }
     my $attrs = process_attrs($self->attributes);
     $output .= qq{<form$attrs>};
-    my $after_form_start = $self->get_tag('after_form_start');
-    $output .= $after_form_start if $after_form_start;
+    $output .= $self->get_tag('after_form_start') if $self->tag_exists('after_form_start');
 
     return $output
 }
@@ -73,14 +72,13 @@ sub render_form_errors {
 sub render_end {
     my $self = shift;
 
-    my $before_form_end = $self->get_tag('before_form_end');
-    my $output .= $before_form_end if $before_form_end;
+    my $output = $self->get_tag('before_form_end') if $self->tag_exists('before_form_end');
     $output .= "</form>\n";
     if( $self->get_tag('form_wrapper') ) {
         my $form_wrapper_tag = $self->tag_exists('form_wrapper_tag') ? $self->get_tag('form_wrapper_tag') : 'fieldset';
         $output .= qq{</$form_wrapper_tag>};
     }
-    $output .= $self->render_after_form if $self->can('render_after_form' );
+    $output .= $self->get_tag('after_form') if $self->tag_exists('after_form' );
     return $output;
 }
 use namespace::autoclean;

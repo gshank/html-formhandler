@@ -139,8 +139,8 @@ One of its goals is to keep the controller/application program interface as
 simple as possible, and to minimize the duplication of code. In most cases,
 interfacing your controller to your form is only a few lines of code.
 
-With FormHandler you'll never spend hours trying to figure out how to make a
-simple HTML change that would take one minute by hand. Because you CAN do it
+With FormHandler you shouldn't have to spend hours trying to figure out how to make a
+simple HTML change that would take one minute by hand. Because you _can_ do it
 by hand. Or you can automate HTML generation as much as you want, with
 template widgets or pure Perl rendering classes, and stay completely in
 control of what, where, and how much is done automatically. You can define
@@ -182,7 +182,7 @@ The new constructor takes name/value pairs:
     );
 
 No attributes are required on new. The form's fields will be built from
-the form definitions. If no initial data object has been provided, the form
+the form definitions. If no initial data object or defaults have been provided, the form
 will be empty. Most attributes can be set on either 'new' or 'process'.
 The common attributes to be passed in to the constructor for a database form
 are either item_id and schema or item:
@@ -191,7 +191,7 @@ are either item_id and schema or item:
    item     - database row object
    schema   - (for DBIC) the DBIx::Class schema
 
-The following are occasionally passed in, but are more often set
+The following are sometimes passed in, but are more often set
 in the form class:
 
    item_class  - source name of row
@@ -265,7 +265,7 @@ a database form) can be retrieved with C<< $form->value >>.
 
 =head3 params
 
-Parameters are passed in or already set when you call 'process'.
+Parameters are passed in when you call 'process'.
 HFH gets data to validate and store in the database from the params hash.
 If the params hash is empty, no validation is done, so it is not necessary
 to check for POST before calling C<< $form->process >>. (Although see
@@ -318,7 +318,7 @@ a form with empty params. Most of the time this works OK, but if you
 have a small form with only the controls that do not return a post
 parameter if unselected (checkboxes and select lists), then the form
 will not be validated if everything is unselected. For this case you
-can either add a hidden field, or use the 'posted' flag:
+can either add a hidden field as an 'indicator', or use the 'posted' flag:
 
    $form->process( posted => ($c->req->method eq 'POST'), params => ... );
 
@@ -389,8 +389,9 @@ alternative to 'has_field' in small, dynamic forms to create fields.
        field_two => 'Text,
     ]
 
-Or the field list can be set inside a form class, when you want to
-add fields to the form depending on some other state.
+The field list can be set inside a form class, when you want to
+add fields to the form depending on some other state, although
+you can also create all the fields and set some of them inactive.
 
    sub field_list {
       my $self = shift;
@@ -420,6 +421,7 @@ which can also be used in a form to do specific field updates:
         my $self = shift;
         $self->field('foo')->temp( 'foo_temp' );
         $self->field('bar')->default( 'foo_value' );
+        $self->next::method();
     }
 
 (Note that you although you can set a field's 'default', you can't set a
@@ -504,35 +506,6 @@ Pass a second true value to die on errors.
 
 Most validation is performed on a per-field basis, and there are a number
 of different places in which validation can be performed.
-
-=head3 Apply actions
-
-The 'actions' array contains a sequence of transformations and constraints
-(including Moose type constraints) which will be applied in order. The 'apply'
-sugar is used to add to the actions array in field classes. In a field definition
-elements of the 'apply' array will added to the 'actions' array.
-
-The current value of the field is passed in to the subroutines, but it has
-no access to other field information. If you need more information to
-perform validation, you should use one of the other validation methods.
-
-L<HTML::FormHandler::Field::Compound> fields receive as value
-a hash containing values of their child fields - this may be used for
-easy creation of objects (like DateTime).
-See L<HTML::FormHandler::Field/apply> for more documentation.
-
-   has_field 'test' => ( apply => [ 'MyConstraint',
-                         { check => sub {... },
-                           message => '....' },
-                         { transform => sub { ... },
-                           message => '....' }
-                         ] );
-
-=head3 Field class validate method
-
-The 'validate' method can be used in custom field classes to perform additional
-validation.  It has access to the field ($self).  This method is called after the
-actions are performed.
 
 =head3 Form class validation for individual fields
 
@@ -1336,7 +1309,6 @@ sub add_form_error {
 sub get_default_value { }
 sub _can_deflate { }
 
-sub build_field_rendering { }
 sub update_fields {
     my $self = shift;
     if( $self->has_update_field_list || $self->has_do_update_fields ) {
