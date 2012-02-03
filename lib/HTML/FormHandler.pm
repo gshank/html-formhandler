@@ -21,7 +21,7 @@ use namespace::autoclean;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.36001';
+our $VERSION = '0.36002';
 
 =head1 SYNOPSIS
 
@@ -970,7 +970,8 @@ sub BUILD {
     my $self = shift;
 
     $self->before_build; # hook to allow customizing forms
-    $self->apply_widget_role( $self, $self->widget_form, 'Form' ) unless $self->no_widgets;
+    $self->apply_widget_role( $self, $self->widget_form, 'Form' )
+        unless ( $self->no_widgets || $self->widget_form eq 'Simple' );
     $self->_build_fields($self->field_traits);    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     return if defined $self->item_id && !$self->item;

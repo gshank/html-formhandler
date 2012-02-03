@@ -38,13 +38,13 @@ sub index :Path :Args(0) {
     $c->res->body($form->render);
 }
 
-=head2 test
+=head2 image
 
 returns the image belonging to the current captcha
 
 =cut
 
-sub test :Local{
+sub image :Local{
     my ( $self, $c ) = @_;
     my $captcha = $c->session->{captcha};
     $c->res->content_type($captcha->{type});

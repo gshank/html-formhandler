@@ -32,7 +32,7 @@ my $rendered = $form->render;
 is( $rendered,
    '<form id="test_submit" method="post" >
 <fieldset class="main_fieldset">
-<div><label class="label" for="some_field">Some field: </label><input type="text" name="some_field" id="some_field" value="test" /></div>
+<div><label for="some_field">Some field: </label><input type="text" name="some_field" id="some_field" value="test" /></div>
 
 <div><input type="submit" name="submit" id="submit" value="Submit" /></div>
 </fieldset></form>

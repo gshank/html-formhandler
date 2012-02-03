@@ -84,7 +84,7 @@ my $form = My::Form::Upload->new;
 ok( $form, 'created form with upload field' );
 
 is( $form->field('file')->render, '
-<div><label class="label" for="file">File: </label><input type="file" name="file" id="file" /></div>
+<div><label for="file">File: </label><input type="file" name="file" id="file" /></div>
 ', 'renders ok' );
 
 my $upload = Mock::Upload->new( filename => 'test.txt', size => 1024 );

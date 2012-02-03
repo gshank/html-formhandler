@@ -1,3 +1,9 @@
+0.36002 Fri Feb 2, 2012
+    Fixed bug introduced in last release where rendering roles are overwritten
+       by HTML::FormHandler::Render::Simple being applied on top.
+    Add skip to t/config.t test for Config::Any
+    Set language handle in t/render_errors.t test.
+
 0.36001 Tues Jan 24, 2012
     Add two more widget tags: 'no_auto_fieldset' and 'no_compound_wrapper'
     Remove automatic addition of 'class="label"' to labels; if you want that

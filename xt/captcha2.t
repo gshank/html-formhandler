@@ -48,7 +48,7 @@ $mech->get_ok("/captcha/get_rnd");
 
 my $rnd = $mech->content;
 
-$mech->get_ok("/captcha/test");
+$mech->get_ok("/captcha/image");
 
 is $mech->res->content_type, "png";
 

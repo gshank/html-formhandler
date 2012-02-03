@@ -4,7 +4,6 @@ use Test::More;
 
 use HTML::FormHandler::Field::Text;
 
-
 {
    package Test::Form;
    use HTML::FormHandler::Moose;
