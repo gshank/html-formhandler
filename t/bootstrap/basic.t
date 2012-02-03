@@ -16,8 +16,8 @@ use HTML::FormHandler::Test;
         # wrap the form with outside div (form_wrapper = 1, form_wrapper_tag = div)
         # wrap the fields (to get label) but with no wrapping div ( wrapper_tag => 0 )
         { form_wrapper => 1, form_wrapper_tag => 'div', wrapper_tag => 0,
-            before_form => qq{<div class="row"><div class="span3"><p>With v2.0, we have lighter and smarter defaults for form styles. No extra markup, just form controls.</p></div>\n},
-            after_form => '</div>',
+            form_before => qq{<div class="row"><div class="span3"><p>With v2.0, we have lighter and smarter defaults for form styles. No extra markup, just form controls.</p></div>\n},
+            form_after => '</div>',
         }
     }
 

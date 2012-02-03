@@ -17,8 +17,8 @@ use HTML::FormHandler::Test;
     sub build_widget_tags {{
         form_wrapper => 1,
         form_wrapper_tag => 'div',
-        after_form_start => '<fieldset><legend>Controls Bootstrap supports</legend>',
-        before_form_end => '</fieldset>',
+        form_after_start => '<fieldset><legend>Controls Bootstrap supports</legend>',
+        form_before_end => '</fieldset>',
     }}
 
     sub build_update_fields {{

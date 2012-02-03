@@ -14,13 +14,13 @@ use HTML::FormHandler::Test;
     # turn on form wrapper, set the tag to 'div' (default is fieldset)
     sub build_widget_tags {{
         form_wrapper => 1, form_wrapper_tag => 'div',
-        before_form =>
+        form_before =>
 '<h3>Inline form</h3>
 <div class="row">
 <div class="span3">
   <p>Inputs are block level to start. For <code>.form-inline</code> and <code>.form-horizontal</code>, we use inline-block.</p>
 </div>',
-        after_form => '</div>',
+        form_after => '</div>',
     }}
     # update individual fields
     sub build_update_fields {{

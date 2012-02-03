@@ -8,8 +8,8 @@ use HTML::FormHandler::Test;
     use Moose::Role;
 
     sub build_widget_tags {{
-        before_form => '<h3>Search form</h3><div class="row"><div class="span3"><p>Reflecting default WebKit styles, just add <code>.form-search</code> for extra rounded search fields.</p></div><div class="span9">',
-        after_form => '</div></div>',
+        form_before => '<h3>Search form</h3><div class="row"><div class="span3"><p>Reflecting default WebKit styles, just add <code>.form-search</code> for extra rounded search fields.</p></div><div class="span9">',
+        form_after => '</div></div>',
     }}
     # classes for form element
     sub build_form_element_attr { { class => ['well', 'form-search'] } }
