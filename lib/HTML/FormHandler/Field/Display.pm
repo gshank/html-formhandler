@@ -102,4 +102,5 @@ after 'clear_data' => sub {
 };
 
 __PACKAGE__->meta->make_immutable;
+use namespace::autoclean;
 1;

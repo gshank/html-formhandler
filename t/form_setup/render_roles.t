@@ -6,7 +6,12 @@ use Test::More;
     package Test::Render;
     use Moose::Role;
 
-    sub render { "This is the rendering role" }
+    sub render {
+        my $self = shift;
+        my $output .= $self->render_start;
+        $output .= '<p>This is the rendering role</p>';
+        $output .= $self->render_end;
+    }
 }
 
 {
@@ -21,6 +26,7 @@ use Test::More;
 
 my $form = Test::Form->new;
 my $render = $form->render;
-is( $render, "This is the rendering role", 'rendered using role' );
+like( $render, qr/This is the rendering role/, 'rendered using role' );
+like( $render, qr/<form/, 'form tag rendered' );
 
 done_testing;

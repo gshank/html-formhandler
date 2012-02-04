@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use HTML::FormHandler::Test;
 
 {
     package Test::Form;
@@ -65,5 +66,46 @@ ok( ! exists $form->field('foo')->widget_tags->{form_text}, 'no form widgets tag
     has_field 'my_comp' => ( type => 'Compound' );
     has_field 'my_text' => ( type => 'Text' );
 }
+
+$form = MyApp::Form->new;
+
+{
+
+    package Test::Tags;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo';
+    sub build_widget_tags {
+        {
+            form_wrapper => 1,
+            compound_wrapper => 1,
+            wrapper_tag   => 'p',
+        }
+    }
+    has_field 'bar' => ( widget_tags =>
+         {wrapper_tag => 'span'});
+    has_field 'baz' => ( widget_tags => { wrapper_tag => 0 } );
+
+    sub field_html_attributes {
+        my ( $self, $field, $type, $attr ) = @_;
+        $attr->{class} = 'label' if $type eq 'label';
+        return $attr;
+    }
+}
+
+$form = Test::Tags->new;
+$form->process( { foo => 'bar' } );
+is_html( $form->field('foo')->render, '
+<p><label class="label" for="foo">Foo</label><input type="text" name="foo" id="foo" value="bar" />
+</p>', 'renders with different tags');
+
+is_html( $form->field('bar')->render, '
+<span><label class="label" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" />
+</span>', 'field renders with custom widget_tags' );
+
+is_html( $form->field('baz')->render, '
+<label class="label" for="baz">Baz</label><input type="text" name="baz" id="baz" value="" />',
+'field renders with false wrapper_tag' );
 
 done_testing;

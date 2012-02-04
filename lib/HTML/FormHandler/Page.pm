@@ -33,5 +33,6 @@ sub field {
     return $self->form->field($field_name);
 }
 
-
+__PACKAGE__->meta->make_immutable;
+use namespace::autoclean;
 1;

@@ -124,4 +124,6 @@ sub save_page {
     }
 }
 
+__PACKAGE__->meta->make_immutable;
+use namespace::autoclean;
 1;

@@ -59,4 +59,6 @@ sub process_config {
     }
 }
 
+__PACKAGE__->meta->make_immutable;
+use namespace::autoclean;
 1;

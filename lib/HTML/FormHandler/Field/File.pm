@@ -15,4 +15,6 @@ See L<HTML::FormHandler::Field::Upload>
 has '+widget' => ( default => 'Upload' );
 has '+type_attr' => ( default => 'file' );
 
+__PACKAGE__->meta->make_immutable;
+use namespace::autoclean;
 1;
