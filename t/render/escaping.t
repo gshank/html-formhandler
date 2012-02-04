@@ -13,7 +13,7 @@ use HTML::FormHandler::Field::Text;
    with 'HTML::FormHandler::Render::Simple';
 
    sub build_widget_tags { { form_wrapper => 1, label_after => ': ', compound_wrapper => 1 } }
-   sub build_form_wrapper_attr { { class => 'form_wrapper' } }
+   sub build_form_wrapper_class { 'form_wrapper' }
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
                size => 20,
@@ -29,7 +29,8 @@ use HTML::FormHandler::Field::Text;
    has_field 'comments' => ( type => 'TextArea' );
    has_field 'hidden' => ( type => 'Hidden' );
    has_field 'selected' => ( type => 'Boolean' );
-   has_field 'start_date' => ( type => 'DateTime', widget_tags => { wrapper_tag => 'fieldset' }, wrapper_attr => { class=>'start_date' } );
+   has_field 'start_date' => ( type => 'DateTime', widget_tags => { wrapper_tag => 'fieldset' },
+       wrapper_class => 'start_date' );
    has_field 'start_date.month' => ( type => 'Integer', range_start => 1,
        range_end => 12 );
    has_field 'start_date.day' => ( type => 'Integer', range_start => 1,
@@ -68,7 +69,6 @@ use HTML::FormHandler::Field::Text;
 
    sub field_html_attributes {
        my ( $self, $field, $type, $attr ) = @_;
-       $attr->{class} = 'label' if $type eq 'label';
        return $attr;
    }
 }
@@ -97,7 +97,7 @@ $form->process( $params );
 
 is( $form->render_field( $form->field('number') ),
     '
-<div><label class="label" for="number">Number: </label><input type="text" name="number" id="number" value="0" />
+<div><label for="number">Number: </label><input type="text" name="number" id="number" value="0" />
 </div>',
     "value '0' is rendered"
 );
@@ -105,7 +105,7 @@ is( $form->render_field( $form->field('number') ),
 my $rendered = $form->render_field( $form->field('test_field') );
 
 my $expected =   '
-<div><label class="label" for="f99">&quot;TEST&quot;: </label><input type="text" name="test_field" id="f99" size="20" value="something&lt;br&gt;" />
+<div><label for="f99">&quot;TEST&quot;: </label><input type="text" name="test_field" id="f99" size="20" value="something&lt;br&gt;" />
 </div>';
 is( $rendered, $expected, 'output from text field');
 is( $form->field('test_field')->render, $rendered, 'text field with widgets' );
@@ -113,28 +113,28 @@ is( $form->field('test_field')->render, $rendered, 'text field with widgets' );
 
 $rendered = $form->render_field( $form->field('fruit') );
 $expected =  '
-<div><label class="label" for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0">&quot;apples&quot;</option><option value="2" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="3" id="fruit.2">&amp;kiwi&amp;</option></select>
+<div><label for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0">&quot;apples&quot;</option><option value="2" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="3" id="fruit.2">&amp;kiwi&amp;</option></select>
 </div>';
 is( $rendered, $expected, 'output from select field');
 
 $rendered = $form->render_field( $form->field('vegetables') );
 is( $rendered,
    '
-<div><label class="label" for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0">&lt;lettuce&gt;</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2">carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select>
+<div><label for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0">&lt;lettuce&gt;</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2">carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select>
 </div>',
 'output from select multiple field');
 
 $rendered = $form->render_field( $form->field('active') );
 is( $rendered,
    '
-<div><label class="label" for="active">Active: </label><input type="checkbox" name="active" id="active" value="1" />
+<div><label for="active">Active: </label><input type="checkbox" name="active" id="active" value="1" />
 </div>',
    'output from checkbox field');
 
 $rendered = $form->render_field( $form->field('comments') );
 is( $rendered,
    '
-<div><label class="label" for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...&lt;/textarea&gt;</textarea>
+<div><label for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...&lt;/textarea&gt;</textarea>
 </div>',
    'output from textarea' );
 
@@ -146,7 +146,7 @@ is_html( $rendered,
 $rendered = $form->render_field( $form->field('selected') );
 is( $rendered,
    '
-<div><label class="label" for="selected">Selected: </label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" />
+<div><label for="selected">Selected: </label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" />
 </div>',
    'output from boolean' );
 
@@ -154,11 +154,11 @@ $rendered = $form->render_field( $form->field('start_date') );
 is( $rendered,
    '
 <fieldset class="start_date"><legend>Start date</legend>
-<div><label class="label" for="start_date.month">Month: </label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" />
+<div><label for="start_date.month">Month: </label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" />
 </div>
-<div><label class="label" for="start_date.day">Day: </label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" />
+<div><label for="start_date.day">Day: </label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" />
 </div>
-<div><label class="label" for="start_date.year">Year: </label><input type="text" name="start_date.year" id="start_date.year" size="8" value="2006" />
+<div><label for="start_date.year">Year: </label><input type="text" name="start_date.year" id="start_date.year" size="8" value="2006" />
 </div>
 </fieldset>',
    'output from DateTime' );
@@ -170,12 +170,12 @@ is( $rendered, q{
 
 $rendered = $form->render_field( $form->field('opt_in') );
 is( $rendered, q{
-<div><label class="label" for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />&lt;No&gt;</label><br /><label for="opt_in.1"><input type="radio" value="1" name="opt_in" id="opt_in.1" />&lt;Yes&gt;</label><br />
+<div><label for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />&lt;No&gt;</label><br /><label for="opt_in.1"><input type="radio" value="1" name="opt_in" id="opt_in.1" />&lt;Yes&gt;</label><br />
 </div>}, 'output from radio group' );
 
 $rendered = $form->render_start;
 is( $rendered,
-'<fieldset class="form_wrapper"><form id="testform" method="post">',
+'<fieldset class="form_wrapper error"><form class="error" id="testform" method="post">',
 'Form start OK' );
 
 my $output = $form->render;

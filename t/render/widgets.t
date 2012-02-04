@@ -14,7 +14,7 @@ use HTML::FormHandler::Field::Text;
     extends 'HTML::FormHandler';
 
     sub build_widget_tags { { form_wrapper => 1, compound_wrapper => 1 } }
-    sub build_form_wrapper_attr { { class => 'form_wrapper' } }
+    sub build_form_wrapper_class { 'form_wrapper' }
     has '+name' => ( default => 'testform' );
     has_field 'test_field' => (
         size  => 20,
@@ -195,7 +195,7 @@ is_html( $rendered,
 
 $rendered = $form->render_start;
 is_html( $rendered,
-'<fieldset class="form_wrapper"><form id="testform" method="post">',
+'<fieldset class="form_wrapper error"><form class="error" id="testform" method="post">',
 'Form start OK'
 );
 

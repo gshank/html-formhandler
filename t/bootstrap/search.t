@@ -12,7 +12,7 @@ use HTML::FormHandler::Test;
         form_after => '</div></div>',
     }}
     # classes for form element
-    sub build_form_element_attr { { class => ['well', 'form-search'] } }
+    sub build_form_element_class { ['well', 'form-search'] }
     # field updates
     sub build_update_fields {{
         searchterm => { widget_wrapper => 'None', element_attr => { class => ['input-medium', 'search-query'] }},

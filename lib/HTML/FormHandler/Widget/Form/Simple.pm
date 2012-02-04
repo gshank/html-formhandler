@@ -28,8 +28,8 @@ sub render {
         $result = $self->result;
         $form   = $self;
     }
-    my $output = $form->render_start;
-    $output .= $form->render_form_errors( $form, $result );
+    my $output = $form->render_start($result);
+    $output .= $form->render_form_errors( $result );
 
     foreach my $fld_result ( $result->results ) {
         die "no field in result for " . $fld_result->name
@@ -42,16 +42,17 @@ sub render {
 }
 
 sub render_start {
-    my $self = shift;
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
 
     my $output = '';
     $output = $self->get_tag('form_before') if $self->tag_exists('form_before');
     if( $self->get_tag('form_wrapper') ) {
         my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
-        my $attrs = process_attrs($self->form_wrapper_attributes);
+        my $attrs = process_attrs($self->form_wrapper_attributes($result));
         $output .= qq{<$form_wrapper_tag$attrs>};
     }
-    my $attrs = process_attrs($self->attributes);
+    my $attrs = process_attrs($self->attributes($result));
     $output .= qq{<form$attrs>};
     $output .= $self->get_tag('form_after_start') if $self->tag_exists('form_after_start');
 
@@ -59,7 +60,7 @@ sub render_start {
 }
 
 sub render_form_errors {
-    my ( $self, $form, $result ) = @_;
+    my ( $self, $result ) = @_;
 
     return '' unless $result->has_form_errors;
     my $output = "\n<div class=\"form_errors\">";

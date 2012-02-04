@@ -12,8 +12,8 @@ use HTML::FormHandler::Test;
         my $self = shift;
         $self->set_widget_wrapper('Bootstrap');
     }
-    sub build_form_element_attr {{ class => 'form-horizontal' }}
-    sub build_form_wrapper_attr {{ class => 'span8' }}
+    sub build_form_element_class {['form-horizontal']}
+    sub build_form_wrapper_class {['span8']}
     sub build_widget_tags {{
         form_wrapper => 1,
         form_wrapper_tag => 'div',

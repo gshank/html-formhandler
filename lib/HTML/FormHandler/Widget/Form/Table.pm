@@ -19,14 +19,15 @@ Use in a template:
 =cut
 
 sub render_start {
-    my $self   = shift;
-    my $fattrs = process_attrs($self->attributes);
-    my $wattrs = process_attrs($self->form_wrapper_attributes);
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $fattrs = process_attrs($self->attributes($result));
+    my $wattrs = process_attrs($self->form_wrapper_attributes($result));
     return qq{<form$fattrs><table$wattrs>\n};
 }
 
 sub render_form_errors {
-    my ( $self, $form, $result ) = @_;
+    my ( $self, $result ) = @_;
 
     return '' unless $result->has_form_errors;
     my $output = "\n<tr class=\"form_errors\"><td colspan=\"2\">";

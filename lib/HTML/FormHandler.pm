@@ -18,6 +18,7 @@ use Try::Tiny;
 use MooseX::Types::LoadableClass qw/ LoadableClass /;
 use namespace::autoclean;
 use Hash::Merge ('merge');
+use Sub::Name;
 
 use 5.008;
 
@@ -832,9 +833,12 @@ has 'html_prefix'   => ( isa => 'Bool', is  => 'ro' );
 has 'active_column' => ( isa => 'Str',  is  => 'ro' );
 has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
+# deprecated
 has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
+
 has 'is_html5'  => ( isa => 'Bool', is => 'ro', default => 0 );
+# deprecated. use form_element_attr instead
 has 'html_attr' => ( is => 'rw', traits => ['Hash'],
    default => sub { {} }, handles => { has_html_attr => 'count',
    set_html_attr => 'set', delete_html_attr => 'delete' },
@@ -842,17 +846,56 @@ has 'html_attr' => ( is => 'rw', traits => ['Hash'],
 );
 sub _html_attr_set {
     my ( $self, $value ) = @_;
+    my $class = delete $value->{class};
     $self->form_element_attr($value);
+    $self->add_form_element_class if $class;
 }
-has 'form_element_attr' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
-   builder => 'build_form_element_attr', handles => { has_form_element_attr => 'count',
-   set_form_element_attr => 'set', delete_form_element_attr => 'delete' }
-);
-sub build_form_element_attr {{}}
+
+{
+    # create the attributes and methods for
+    # form_element_attr, build_form_element_attr, form_element_class,
+    # form_wrapper_attr, build_form_wrapper_atrr, form_wrapper_class
+    no strict 'refs';
+    foreach my $attr ('form_wrapper', 'form_element' ) {
+        my $add_meth = "add_${attr}_class";
+        has "${attr}_attr" => ( is => 'rw', traits => ['Hash'],
+            builder => "build_${attr}_attr",
+            handles => {
+                "has_${attr}_attr" => 'count',
+                "get_${attr}_attr" => 'get',
+                "set_${attr}_attr" => 'set',
+                "delete_${attr}_attr" => 'delete',
+                "exists_${attr}_attr" => 'exists',
+            },
+        );
+        # create builders for _attr
+        my $attr_builder = __PACKAGE__ . "::build_${attr}_attr";
+        *$attr_builder = subname $attr_builder, sub {{}};
+        # create the 'class' slots
+        has "${attr}_class" => ( is => 'rw', isa => 'HFH::ArrayRefStr',
+            traits => ['Array'],
+            coerce => 1,
+            builder => "build_${attr}_class",
+            handles => {
+                "has_${attr}_class" => 'count',
+                "_add_${attr}_class" => 'push',
+           },
+        );
+        # create builders for classes
+        my $class_builder = __PACKAGE__ . "::build_${attr}_class";
+        *$class_builder = subname $class_builder, sub {[]};
+        # create wrapper for add_to_ to accept arrayref
+        my $add_to_class = __PACKAGE__ . "::add_${attr}_class";
+        my $_add_meth = __PACKAGE__ . "::_add_${attr}_class";
+        # create add method that takes an arrayref
+        *$add_to_class = subname $add_to_class, sub { shift->$_add_meth((ref $_[0] eq 'ARRAY' ? @{$_[0]} : @_)); }
+    }
+}
 
 sub attributes { shift->form_element_attributes(@_) }
 sub form_element_attributes {
-    my $self = shift;
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
     my $attr = {};
     $attr->{id} = $self->name;
     $attr->{action} = $self->action if $self->action;
@@ -861,8 +904,22 @@ sub form_element_attributes {
     $attr->{class} = $self->css_class if $self->css_class;
     $attr->{style} = $self->style if $self->style;
     $attr = {%$attr, %{$self->form_element_attr}};
-    $attr = $self->form_html_attributes('form', $attr);
-    return $attr;
+    my $class = [@{$self->form_element_class}];
+    push @$class, 'error' if $result->has_errors;
+    $attr->{class} = $class if @$class;
+    my $mod_attr = $self->form_html_attributes('form', $attr);
+    return ref $mod_attr eq 'HASH' ? $mod_attr : $attr;
+}
+sub form_wrapper_attributes {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $attr = {%{$self->form_wrapper_attr}};
+    my $class = [@{$self->form_wrapper_class}];
+    # add 'error' to class
+    push @$class, 'error' if $result->has_errors;
+    $attr->{class} = $class if @$class;
+    my $mod_attr = $self->form_html_attributes('wrapper', $attr);
+    return ref $mod_attr eq 'HASH' ? $mod_attr : $attr;
 }
 
 sub field_html_attributes {
@@ -888,20 +945,6 @@ has 'widget_tags'         => (
     },
 );
 sub build_widget_tags {{}}
-has 'form_wrapper_attr' => ( is => 'rw', traits => ['Hash'],
-   builder => 'build_form_wrapper_attr', handles => { has_form_wrapper_attr => 'count',
-   get_form_wrapper_attr => 'get', set_form_wrapper_attr => 'set', delete_form_wrapper_attr => 'delete',
-   exists_form_wrapper_attr => 'exists' }
-);
-sub build_form_wrapper_attr {{}}
-sub form_wrapper_attributes {
-    my $self = shift;
-    my $attr = {%{$self->form_wrapper_attr}};
-    $attr->{class} = [@{$attr->{class}}]
-        if ( exists $attr->{class} && ref( $attr->{class} eq 'ARRAY' ) );
-    $attr = $self->form_html_attributes('wrapper', $attr);
-    return $attr;
-}
 sub form_html_attributes {
     my ( $self, $type, $attr ) = @_;
     return $attr;
