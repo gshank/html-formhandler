@@ -686,8 +686,10 @@ to be used for defaults instead of the item.
 
    form_element_attr - hashref for setting arbitrary HTML attributes
       set in form with: sub build_form_element_attr {...}
+   form_element_class - arrayref for setting form tag class
    form_wrapper_attr - hashref for form wrapper element attributes
       set in form with: sub build_form_wrapper_attr {...}
+   form_wrapper_class - arrayref for setting wrapper class
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    uuid - generates a string containing an HTML field with UUID
@@ -718,6 +720,9 @@ which can be used to customize/modify/localize field HTML attributes.
    }
 
 Also see the documentation in L<HTML::FormHandler::Field>.
+
+There is an equivalent hook, 'form_html_attributes' for the form element
+and form wrapper attributes.
 
 =cut
 
@@ -905,7 +910,6 @@ sub form_element_attributes {
     $attr->{style} = $self->style if $self->style;
     $attr = {%$attr, %{$self->form_element_attr}};
     my $class = [@{$self->form_element_class}];
-    push @$class, 'error' if $result->has_errors;
     $attr->{class} = $class if @$class;
     my $mod_attr = $self->form_html_attributes('form', $attr);
     return ref $mod_attr eq 'HASH' ? $mod_attr : $attr;

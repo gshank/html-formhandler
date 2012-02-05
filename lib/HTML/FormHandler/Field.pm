@@ -250,6 +250,7 @@ The following are used in rendering HTML, but are handled specially.
                  form name, use 'html_prefix' in your form)
    render_filter - Coderef for filtering fields before rendering. By default
                  changes >, <, &, " to the html entities
+   disabled    - Boolean to set field disabled 
 
 The order attribute may be used to set the order in which fields are rendered.
 
@@ -263,7 +264,6 @@ instead.
    input_class - instead use element_attr => { class => '...' }
    title       - instead use element_attr => { title => '...' }
    style       - instead use element_attr => { style => '...' }
-   disabled    - instead use element_attr => { disabled => 'disabled' }
    tabindex    - instead use element_attr => { tabindex => 1 }
    readonly    - instead use element_attr => { readonly => 'readonly' }
 
@@ -723,7 +723,8 @@ has 'result' => (
     handles   => [
         '_set_input',   '_clear_input', '_set_value', '_clear_value',
         'errors',       'all_errors',   'push_errors',  'num_errors', 'has_errors',
-        'clear_errors', 'validated',
+        'clear_errors', 'validated', 'add_warning', 'all_warnings', 'num_warnings',
+        'has_warnings', 'warnings',
     ],
 );
 has '_pin_result' => ( is => 'ro', reader => '_get_pin_result', writer => '_set_pin_result' );
@@ -1035,11 +1036,13 @@ sub element_attributes {
     }
     # pull in deprecated attributes for backward compatibility
     for my $dep_attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
-        $attr->{$dep_attr} = $self->$dep_attr if $self->$dep_attr;
+        $attr->{$dep_attr} = $dep_attr if $self->$dep_attr;
     }
     $attr = {%$attr, %{$self->element_attr}};
     my $class = [@{$self->element_class}];
     push @$class, 'error' if $result->has_errors;
+    push @$class, 'warning' if $result->has_warnings;
+    push @$class, 'disabled' if $self->disabled;
     $attr->{class} = $class if @$class;
     # call form hook
     my $mod_attr = $self->form->field_html_attributes($self, 'input', $attr, $result) if $self->form;
@@ -1066,6 +1069,7 @@ sub wrapper_attributes {
     my $class = [@{$self->wrapper_class}];
     # add 'error' to class
     push @$class, 'error' if $result->has_errors;
+    push @$class, 'warning' if $result->has_warnings;
     $attr->{class} = $class if @$class;
     # call form hook
     my $mod_attr = $self->form->field_html_attributes($self, 'wrapper', $attr, $result) if $self->form;

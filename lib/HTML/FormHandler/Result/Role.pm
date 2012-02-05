@@ -67,6 +67,20 @@ has 'errors' => (
     }
 );
 
+has 'warnings' => (
+    traits     => ['Array'],
+    is         => 'rw',
+    isa        => 'ArrayRef[Str]',
+    default    => sub { [] },
+    handles   => {
+        all_warnings  => 'elements',
+        add_warning => 'push',
+        num_warnings => 'count',
+        has_warnings => 'count',
+        clear_warnings => 'clear',
+    }
+);
+
 sub validated { !$_[0]->has_error_results && $_[0]->has_input }
 sub is_valid { shift->validated }
 
