@@ -37,7 +37,7 @@ use HTML::FormHandler::Field::Text;
    has_field 'hidden' => ( type => 'Hidden' );
    has_field 'selected' => ( type => 'Boolean' );
    has_field 'start_date' => ( type => 'DateTime',
-       widget_tags => { compound_wrapper => 1, wrapper_tag => 'fieldset' },
+       widget_tags => { wrapper => 1, wrapper_tag => 'fieldset' },
        wrapper_attr => { class => 'start_date' },
    );
    has_field 'start_date.month' => ( type => 'Integer', range_start => 1,
@@ -218,7 +218,7 @@ is( $output10, '
 
 my $output11 = $form->render_start;
 is( $output11,
-'<fieldset class="form_wrapper error"><form class="error" id="testform" method="post">',
+'<fieldset class="form_wrapper"><form id="testform" method="post">',
 'Form start OK' );
 
 my $output = $form->render;

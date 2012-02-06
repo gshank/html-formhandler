@@ -39,7 +39,7 @@ use HTML::FormHandler::Test;
     use HTML::FormHandler::Moose::Role;
 
     has_field 'actions' => ( type => 'Compound', order => 99, widget_wrapper => 'Simple',
-        widget_tags => { compound_wrapper => 1 },
+        widget_tags => { wrapper => 1 },
         render_label => 0, wrapper_attr => { class => 'form-actions' }  );
     has_field 'actions.save' => ( type => 'Submit', widget => 'ButtonTag',
         element_attr => { class => ['btn', 'primary'] },

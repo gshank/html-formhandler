@@ -25,8 +25,8 @@ $form->process( params => { bar => 'abc' } );
 is( $form->num_errors, 2, 'got two errors' );
 
 my $expected =
-'<fieldset class="form_wrapper error">
-  <form id="test_errors" method="post" class="error" >
+'<fieldset class="form_wrapper">
+  <form id="test_errors" method="post">
   <div class="error">
     <label for="foo">Foo: </label>
     <input class="error" type="text" name="foo" id="foo" value="" />

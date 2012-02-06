@@ -19,6 +19,7 @@ sub BUILD {
        unless $self->has_wrapper_class;
 }
 
+sub build_widget_tags {{ wrapper => 1 }}
 
 has '+render_label' => ( default => 0 );
 

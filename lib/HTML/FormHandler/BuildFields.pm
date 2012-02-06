@@ -308,7 +308,7 @@ sub new_field_with_traits {
         # merge the form's widget_tags into the field attr
         my $fwtags = $self->form->widget_tags if $self->form;
         if( scalar keys %$fwtags ) {
-            my %fwidgets = map { $_ => $fwtags->{$_} } grep { $_ !~ /^form_/ && $_ ne 'type' } keys %{$fwtags};
+            my %fwidgets = map { $_ => $fwtags->{$_} } grep { $_ !~ /^form_/ && $_ ne 'by_flag' } keys %{$fwtags};
             my $new_href = merge($field_attr->{widget_tags} || {}, \%fwidgets);
             $field_attr->{widget_tags} = $new_href if keys %$new_href;
         }
@@ -317,7 +317,24 @@ sub new_field_with_traits {
         $class = $class->with_traits( @traits );
     }
     my $field = $class->new( %{$field_attr} );
+    $self->copy_widget_tags($field);
     return $field;
+}
+
+sub copy_widget_tags {
+    my ( $self, $field ) = @_;
+    if( $self->form && $self->form->tag_exists('by_flag') ) {
+        my $flag_tags = $self->form->get_tag('by_flag');
+        if( exists $flag_tags->{repeatable} && $field->has_flag('is_repeatable') ) {
+            $field->set_tag( %{$flag_tags->{repeatable}} );
+        }
+        elsif ( exists $flag_tags->{contains} && $field->has_flag('is_contains') ) {
+            $field->set_tag( %{$flag_tags->{contains}} );
+        }
+        elsif ( exists $flag_tags->{compound} && $field->has_flag('is_compound') ) {
+            $field->set_tag( %{$flag_tags->{compound}} );
+        }
+    }
 }
 
 use namespace::autoclean;

@@ -50,9 +50,15 @@ use HTML::FormHandler::Test;
     my $rendered = $form->render;
     my $expected =
     '<form id="test_compound" method="post">
-    <div><label for="my_comp.one">One</label><input id="my_comp.one" name="my_comp.one" type="text" value="" /></div>
-    <div><label for="my_comp.two">Two</label><input id="my_comp.two" name="my_comp.two" type="text" value="" /></div>
-    </form></body></html>';
+      <div>
+        <label for="my_comp.one">One</label>
+        <input id="my_comp.one" name="my_comp.one" type="text" value="" />
+      </div>
+      <div>
+        <label for="my_comp.two">Two</label>
+        <input id="my_comp.two" name="my_comp.two" type="text" value="" />
+      </div>
+    </form>';
     is_html( $rendered, $expected, 'got expected rendering for compound' );
 }
 
@@ -71,15 +77,21 @@ use HTML::FormHandler::Test;
     my $form = Test::Form::Repeatable->new;
     $form->process;
     my $rendered = $form->render;
+    # by default, repeatable instances are wrapped, with the class
+    # 'hfh-repinst'
     my $expected =
-    '<html><head></head><body><form id="test_rep" method="post">
-    <div><label for="my_rep.0.one">One</label>
-         <input id="my_rep.0.one" name="my_rep.0.one" type="text" value="" />
-    </div>
-    <div><label for="my_rep.0.two">Two</label>
-         <input id="my_rep.0.two" name="my_rep.0.two" type="text" value="" />
-    </div>
-    </form></body></html>';
+    '<form id="test_rep" method="post">
+      <div class="hfh-repinst">
+        <div>
+          <label for="my_rep.0.one">One</label>
+          <input id="my_rep.0.one" name="my_rep.0.one" type="text" value="" />
+        </div>
+        <div>
+          <label for="my_rep.0.two">Two</label>
+          <input id="my_rep.0.two" name="my_rep.0.two" type="text" value="" />
+        </div>
+      </div>
+    </form>';
     is_html( $rendered, $expected, 'got expected rendering for repeatable');
 }
 

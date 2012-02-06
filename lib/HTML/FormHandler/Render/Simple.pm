@@ -200,10 +200,7 @@ sub wrap_field {
     my ( $self, $field, $rendered_field ) = @_;
 
     return $rendered_field if $field->uwrapper eq 'none';
-    my $do_compound_wrapper = ( $field->has_flag('is_repeatable') && $field->get_tag('repeatable_wrapper') ) ||
-                              ( $field->has_flag('is_contains') && $field->get_tag('contains_wrapper') )  ||
-                              ( $field->has_flag('is_compound') && $field->get_tag('compound_wrapper') );
-    return $rendered_field if ( $field->has_flag('is_compound') && ! $do_compound_wrapper );
+    return $rendered_field if ( $field->has_flag('is_compound') && ! $field->get_tag('wrapper') );
 
     my $output = "\n";
 

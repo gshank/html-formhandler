@@ -21,13 +21,10 @@ in your form code.
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    return if $self->tag_exists('wrapper') && ! $self->get_tag('wrapper');
-    my $do_compound_wrapper = ( $self->has_flag('is_repeatable') && $self->get_tag('repeatable_wrapper') ) ||
-                              ( $self->has_flag('is_contains') && $self->get_tag('contains_wrapper') )  ||
-                              ( $self->has_flag('is_compound') && $self->get_tag('compound_wrapper') );
-    return $rendered_widget if ( $self->has_flag('is_compound') && ! $do_compound_wrapper );
-    my $output = "\n";
+    return $rendered_widget if $self->tag_exists('wrapper') && ! $self->get_tag('wrapper');
+    return $rendered_widget if ( $self->has_flag('is_compound') && ! $self->get_tag('wrapper') );
 
+    my $output = "\n";
     my $attr = $self->wrapper_attributes($result);
     my $non_control_group = 1 if ( $self->name eq 'form_actions' || $self->type_attr eq 'submit' );
     if( $non_control_group ) {

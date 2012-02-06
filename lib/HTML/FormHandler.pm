@@ -919,8 +919,6 @@ sub form_wrapper_attributes {
     $result ||= $self->result;
     my $attr = {%{$self->form_wrapper_attr}};
     my $class = [@{$self->form_wrapper_class}];
-    # add 'error' to class
-    push @$class, 'error' if $result->has_errors;
     $attr->{class} = $class if @$class;
     my $mod_attr = $self->form_html_attributes('wrapper', $attr);
     return ref $mod_attr eq 'HASH' ? $mod_attr : $attr;
@@ -946,6 +944,7 @@ has 'widget_tags'         => (
       get_tag => 'get',
       set_tag => 'set',
       tag_exists => 'exists',
+      has_tag => 'exists',
     },
 );
 sub build_widget_tags {{}}

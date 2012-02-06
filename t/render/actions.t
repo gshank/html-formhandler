@@ -10,7 +10,7 @@ use HTML::FormHandler::Test;
 
     has '+name' => ( default => 'action_form' );
     has_field 'foo';
-    has_field 'actions' => ( type => 'Compound', widget_tags => { compound_wrapper => 1 },
+    has_field 'actions' => ( type => 'Compound', widget_tags => { wrapper => 1 },
         render_label => 0, wrapper_attr => { class => 'form-actions' }  );
     has_field 'actions.save' => ( type => 'Submit', widget_wrapper => 'None' );
     has_field 'actions.cancel' => ( type => 'Reset', widget_wrapper => 'None' );

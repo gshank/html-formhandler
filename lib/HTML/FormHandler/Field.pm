@@ -250,7 +250,7 @@ The following are used in rendering HTML, but are handled specially.
                  form name, use 'html_prefix' in your form)
    render_filter - Coderef for filtering fields before rendering. By default
                  changes >, <, &, " to the html entities
-   disabled    - Boolean to set field disabled 
+   disabled    - Boolean to set field disabled
 
 The order attribute may be used to set the order in which fields are rendered.
 
@@ -910,6 +910,7 @@ has 'widget_tags'         => (
     handles => {
       get_tag => 'get',
       set_tag => 'set',
+      has_tag => 'exists',
       tag_exists => 'exists',
       delete_tag => 'delete',
     },
@@ -1035,8 +1036,11 @@ sub element_attributes {
         $attr->{max} = $self->range_end if defined $self->range_end;
     }
     # pull in deprecated attributes for backward compatibility
-    for my $dep_attr ( 'readonly', 'disabled', 'style', 'title', 'tabindex' ) {
+    for my $dep_attr ( 'readonly', 'disabled' ) {
         $attr->{$dep_attr} = $dep_attr if $self->$dep_attr;
+    }
+    for my $dep_attr ( 'style', 'title', 'tabindex' ) {
+        $attr->{$dep_attr} = $self->$dep_attr if defined $self->$dep_attr;
     }
     $attr = {%$attr, %{$self->element_attr}};
     my $class = [@{$self->element_class}];

@@ -21,15 +21,10 @@ Supported 'widget_tags':
     label_tag      -- tag to use for label (default 'label')
     label_after    -- string to append to label, for example ': ' to append a colon
 
-    form_wrapper   -- put a wrapper around main form
-    form_wrapper_tag -- tag for form wrapper; default 'fieldset'
-
 Are these necessary? Really, they should be specified at form level and propagated
 to the appropriate fields.
 
-    compound_wrapper -- put a wrapper around compound fields
-    repeatable_wrapper
-    contains_wrapper
+    wrapper -- for repeatable, compound, contains fields, check if to be wrapped
 
 =cut
 
@@ -37,10 +32,10 @@ to the appropriate fields.
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    my $do_compound_wrapper = ( $self->has_flag('is_repeatable') && $self->get_tag('repeatable_wrapper') ) ||
-                              ( $self->has_flag('is_contains') && $self->get_tag('contains_wrapper') )  ||
-                              ( $self->has_flag('is_compound') && $self->get_tag('compound_wrapper') );
-    return $rendered_widget if ( $self->has_flag('is_compound') && ! $do_compound_wrapper );
+    # don't wrap if wrapper flag is set and it's false
+    return $rendered_widget if ( $self->has_tag('wrapper') && ! $self->get_tag('wrapper') );
+    # compound (also includes Repeatable and repeatable instance) are only wrapped if wrapper flag is set
+    return $rendered_widget if ( $self->has_flag('is_compound') && ! $self->get_tag('wrapper') );
 
     my $output = "\n";
     my $wrapper_tag = $self->get_tag('wrapper_tag') || '';

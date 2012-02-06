@@ -36,38 +36,6 @@ unlike( $rendered, qr/<fieldset class="multi"><legend>Multi<\/legend>/, 'no fiel
 like( $rendered, qr/<span class="label" for="bar">Bar<\/span>/, 'label formatted with span and class' );
 ok( ! exists $form->field('foo')->widget_tags->{form_text}, 'no form widgets tags in fields' );
 
-{
-    package MyApp::Form::Theme::Basic;
-    use Moose::Role;
-    sub build_widget_tags {
-        {
-            form_wrapper => 1,
-            form_wrapper_tag => 'div',
-            label_tag => 'span',
-            type => {
-                'Compound' => { wrapper => 1, wrapper_tag => 'span' },
-            }
-        }
-    }
-    sub field_html_attributes {
-        my ( $self, $field, $type, $attr ) = @_;
-        $attr->{class} = ['frm', 'ele'] if $type eq 'input';
-        $attr->{class} = ['frm', 'lbl'] if $type eq 'label';
-        $attr->{class} = ['frm', 'wrp'] if $type eq 'wrapper';
-        return $attr;
-    }
-}
-{
-    package MyApp::Form;
-    use HTML::FormHandler::Moose;
-    extends 'HTML::FormHandler';
-    with 'MyApp::Form::Theme::Basic';
-
-    has_field 'my_comp' => ( type => 'Compound' );
-    has_field 'my_text' => ( type => 'Text' );
-}
-
-$form = MyApp::Form->new;
 
 {
 
@@ -79,7 +47,6 @@ $form = MyApp::Form->new;
     sub build_widget_tags {
         {
             form_wrapper => 1,
-            compound_wrapper => 1,
             wrapper_tag   => 'p',
         }
     }

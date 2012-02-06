@@ -8,11 +8,14 @@ use HTML::FormHandler::Test;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
+#   sub build_widget_tags { { by_flag => { contains => { wrapper => 0 } } } }
+
     has_field 'foo';
-    has_field 'my_array' => ( type => 'Repeatable', num_when_empty => 2 );
-    has_field 'my_array.contains' => ( type => 'Text' );
+    has_field 'my_array' => ( type => 'Repeatable', num_when_empty => 2, widget_tags => { wrapper => 1 } );
+    has_field 'my_array.contains' => ( type => 'Text', widget_tags => { wrapper => 0 } );
     has_field 'my_rep' => ( type => 'Repeatable', 'num_when_empty' => 2 );
-    has_field 'my_rep.foo';
+    # wrapper = 1, because we want a label; wrapper_tag => 0 because we don't want a div
+    has_field 'my_rep.foo' => ( widget_tags => { wrapper => 1, wrapper_tag => 0 } );
     has_field 'bar';
 
 }
@@ -20,17 +23,22 @@ use HTML::FormHandler::Test;
 my $form = Test::Repeatable::Array->new;
 
 my $expected =
-'<div><label for="my_array.0">0</label><input type="text" name="my_array.0" id="my_array.0" value="" />
-</div>
-<div><label for="my_array.1">1</label><input type="text" name="my_array.1" id="my_array.1" value="" />
-</div>';
+'<fieldset><legend>My array</legend>
+  <input type="text" name="my_array.0" id="my_array.0" value="" />
+  <input type="text" name="my_array.1" id="my_array.1" value="" />
+</fieldset>';
 my $rendered = $form->field('my_array')->render;
 is_html($rendered, $expected, 'repeatable array field renders correctly');
 
 $rendered = $form->field('my_rep')->render;
-$expected = '<div><label for="my_rep.0.foo">Foo</label><input type="text" name="my_rep.0.foo" id="my_rep.0.foo" value="" />
+$expected =
+'<div class="hfh-repinst">
+  <label for="my_rep.0.foo">Foo</label>
+  <input type="text" name="my_rep.0.foo" id="my_rep.0.foo" value="" />
 </div>
-<div><label for="my_rep.1.foo">Foo</label><input type="text" name="my_rep.1.foo" id="my_rep.1.foo" value="" />
+<div class="hfh-repinst">
+  <label for="my_rep.1.foo">Foo</label>
+  <input type="text" name="my_rep.1.foo" id="my_rep.1.foo" value="" />
 </div>';
 is_html($rendered, $expected, 'simple repeatable renders correctly');
 
@@ -39,33 +47,45 @@ my $rendered_form = $form->render;
 
 $rendered = $form->field('my_array')->render;
 $expected =
-'<div><label for="my_array.0">0</label><input type="text" name="my_array.0" id="my_array.0" value="" />
-</div>
-<div><label for="my_array.1">1</label><input type="text" name="my_array.1" id="my_array.1" value="" />
-</div>';
+'<fieldset><legend>My array</legend>
+  <input type="text" name="my_array.0" id="my_array.0" value="" />
+  <input type="text" name="my_array.1" id="my_array.1" value="" />
+</fieldset>';
 is_html($rendered, $expected, 'repeatable array renders after process' );
 
 $rendered = $form->field('my_rep')->render;
-$expected = '<div><label for="my_rep.0.foo">Foo</label><input type="text" name="my_rep.0.foo" id="my_rep.0.foo" value="" />
+$expected =
+'<div class="hfh-repinst">
+  <label for="my_rep.0.foo">Foo</label>
+  <input type="text" name="my_rep.0.foo" id="my_rep.0.foo" value="" />
 </div>
-<div><label for="my_rep.1.foo">Foo</label><input type="text" name="my_rep.1.foo" id="my_rep.1.foo" value="" />
+<div class="hfh-repinst">
+  <label for="my_rep.1.foo">Foo</label>
+  <input type="text" name="my_rep.1.foo" id="my_rep.1.foo" value="" />
 </div>';
 is_html($rendered, $expected, 'simple repeatable renders correctly after process');
 
 $form->process( params => { foo => 'xxx', bar => 'yyy',
-   'my_array.0' => '', 'my_array.1' => '',
-   'my_rep.0.foo' => '', 'my_rep.1.foo' => '' } );
+   'my_array.0' => 'one', 'my_array.1' => 'two',
+   'my_rep.0.foo' => 'fee', 'my_rep.1.foo' => 'fie' } );
 $rendered = $form->render;
 $rendered = $form->field('my_array')->render;
-$expected = '<div><label for="my_array.0">0</label><input type="text" name="my_array.0" id="my_array.0" value="" />
-</div>
-<div><label for="my_array.1">1</label><input type="text" name="my_array.1" id="my_array.1" value="" />
-</div>';
+$expected =
+'<fieldset><legend>My array</legend>
+  <input type="text" name="my_array.0" id="my_array.0" value="one" />
+  <input type="text" name="my_array.1" id="my_array.1" value="two" />
+</fieldset>';
 is_html($rendered, $expected, 'array renders ok after processing with params' );
+
 $rendered = $form->field('my_rep')->render;
-$expected = '<div><label for="my_rep.0.foo">Foo</label><input type="text" name="my_rep.0.foo" id="my_rep.0.foo" value="" />
+$expected =
+'<div class="hfh-repinst">
+  <label for="my_rep.0.foo">Foo</label>
+  <input type="text" name="my_rep.0.foo" id="my_rep.0.foo" value="fee" />
 </div>
-<div><label for="my_rep.1.foo">Foo</label><input type="text" name="my_rep.1.foo" id="my_rep.1.foo" value="" />
+<div class="hfh-repinst">
+  <label for="my_rep.1.foo">Foo</label>
+  <input type="text" name="my_rep.1.foo" id="my_rep.1.foo" value="fie" />
 </div>';
 is_html($rendered, $expected, 'repeatable renders ok after processing with params' );
 

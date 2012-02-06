@@ -27,7 +27,7 @@ use HTML::FormHandler::Test;
             widget_tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
         selectError => { wrapper_class => ['success'],
             widget_tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
-        form_actions => { widget_tags => { compound_wrapper => 1, label_none => 1 } },
+        form_actions => { widget_tags => { wrapper => 1, label_none => 1 } },
         'form_actions.save' => { widget_wrapper => 'None', element_class => ['btn', 'primary'] },
         'form_actions.cancel' => { widget_wrapper => 'None', element_class => ['btn'] },
     }}
@@ -54,7 +54,7 @@ use HTML::FormHandler::Test;
             { value => 3, label => '3'},
             { value => 4, label => '4' }, { value => 5, label => '5' } ],
     );
-    has_field 'form_actions' => ( type => 'Compound', compound_wrapper => 1 );
+    has_field 'form_actions' => ( type => 'Compound' );
     has_field 'form_actions.save' => ( widget => 'ButtonTag', type => 'Submit',
         value => 'Save changes' );
     has_field 'form_actions.cancel' => ( widget => 'ButtonTag', type => 'Reset',

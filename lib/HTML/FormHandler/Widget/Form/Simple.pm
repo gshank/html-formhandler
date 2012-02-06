@@ -13,6 +13,15 @@ Role to apply to form objects to allow rendering. In your form:
 
    has '+widget_form' => ( default => 'Simple' );
 
+Supported widget_tags:
+
+    form_wrapper   -- put a wrapper around main form
+    form_wrapper_tag -- tag for form wrapper; default 'fieldset'
+    form_before
+    form_after
+    form_after_start
+    form_before_end
+
 =cut
 
 sub render {

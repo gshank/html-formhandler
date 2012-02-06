@@ -12,7 +12,7 @@ use HTML::FormHandler::Field::Text;
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Render::Simple';
 
-   sub build_widget_tags { { form_wrapper => 1, label_after => ': ', compound_wrapper => 1 } }
+   sub build_widget_tags { { form_wrapper => 1, label_after => ': ', by_flag => { compound => { wrapper => 1 }}}}
    sub build_form_wrapper_class { 'form_wrapper' }
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
@@ -29,15 +29,6 @@ use HTML::FormHandler::Field::Text;
    has_field 'comments' => ( type => 'TextArea' );
    has_field 'hidden' => ( type => 'Hidden' );
    has_field 'selected' => ( type => 'Boolean' );
-   has_field 'start_date' => ( type => 'DateTime', widget_tags => { wrapper_tag => 'fieldset' },
-       wrapper_class => 'start_date' );
-   has_field 'start_date.month' => ( type => 'Integer', range_start => 1,
-       range_end => 12 );
-   has_field 'start_date.day' => ( type => 'Integer', range_start => 1,
-       range_end => 31 );
-   has_field 'start_date.year' => ( type => 'Integer', range_start => 2000,
-       range_end => 2020 );
-
    has_field 'two_errors' => (
        apply => [
           { check   => [ ], message => 'First constraint error' },
@@ -86,9 +77,6 @@ my $params = {
    comments => 'Four score and seven years ago...</textarea>',
    hidden => '<1234>',
    selected => '1',
-   'start_date.month' => '7',
-   'start_date.day' => '14',
-   'start_date.year' => '2006',
    two_errors => 'aaa',
    opt_in => 0,
 };
@@ -150,19 +138,6 @@ is( $rendered,
 </div>',
    'output from boolean' );
 
-$rendered = $form->render_field( $form->field('start_date') );
-is( $rendered,
-   '
-<fieldset class="start_date"><legend>Start date</legend>
-<div><label for="start_date.month">Month: </label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" />
-</div>
-<div><label for="start_date.day">Day: </label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" />
-</div>
-<div><label for="start_date.year">Year: </label><input type="text" name="start_date.year" id="start_date.year" size="8" value="2006" />
-</div>
-</fieldset>',
-   'output from DateTime' );
-
 $rendered = $form->render_field( $form->field('submit') );
 is( $rendered, q{
 <div><input type="submit" name="submit" id="submit" value="Update" />
@@ -175,7 +150,7 @@ is( $rendered, q{
 
 $rendered = $form->render_start;
 is( $rendered,
-'<fieldset class="form_wrapper error"><form class="error" id="testform" method="post">',
+'<fieldset class="form_wrapper"><form id="testform" method="post">',
 'Form start OK' );
 
 my $output = $form->render;

@@ -39,14 +39,13 @@ ok( $dir, 'found template dir' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags { { compound_wrapper => 1 } }
     has_field 'submit' => ( type => 'Submit', widget_wrapper => 'None' );
     has_field 'foo';
 
     has_field 'bar';
     has_field 'fubar' => ( type => 'Compound',
         widget_wrapper => 'Fieldset',
-        widget_tags => { compound_wrapper => 1 },
+        widget_tags => { wrapper => 1 },
         wrapper_attr => { class => 'fubar' },
     );
     has_field 'fubar.name';
@@ -62,7 +61,7 @@ ok( $dir, 'found template dir' );
     has_field 'mememe' => ( type => 'Multiple', widget => 'RadioGroup', default => [2] );
     has_field 'notes' => ( type => 'TextArea', cols => 30, rows => 4 );
     has_field 'addresses' => ( type => 'Repeatable', widget_wrapper => 'Fieldset',
-        widget_tags => { compound_wrapper => 1, wrapper_tag => 'fieldset' },
+        widget_tags => { wrapper => 1, wrapper_tag => 'fieldset' },
     );
     has_field 'addresses.street' => ( type => 'Text' );
     has_field 'addresses.city' => ( type => 'Text' );
