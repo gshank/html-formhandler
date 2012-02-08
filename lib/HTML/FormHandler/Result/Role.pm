@@ -84,7 +84,10 @@ has 'warnings' => (
 sub validated { !$_[0]->has_error_results && $_[0]->has_input }
 sub is_valid { shift->validated }
 
-sub field {
+# this ought to be named 'result' for consistency,
+# but the result objects are named 'result'.
+# also providing 'field' method for compatibility
+sub get_result {
     my ( $self, $name, $die ) = @_;
 
     my $index;
@@ -92,22 +95,23 @@ sub field {
     # walk through the fields to get to it
     if ( $name =~ /\./ ) {
         my @names = split /\./, $name;
-        my $f = $self;
-        foreach my $fname (@names) {
-            $f = $f->field($fname);
-            return unless $f;
+        my $result = $self;
+        foreach my $rname (@names) {
+            $result = $result->get_result($rname);
+            return unless $result
         }
-        return $f;
+        return $result;
     }
     else    # not a compound name
     {
-        for my $field ( $self->results ) {
-            return $field if ( $field->name eq $name );
+        for my $result ( $self->results ) {
+            return $result if ( $result->name eq $name );
         }
     }
     return unless $die;
     die "Field '$name' not found in '$self'";
 }
+sub field { shift->get_result(@_) }
 
 use namespace::autoclean;
 1;

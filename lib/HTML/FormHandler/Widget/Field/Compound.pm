@@ -19,7 +19,6 @@ sub render {
     foreach my $subfield ( $self->sorted_fields ) {
         $output .= $self->render_subfield( $result, $subfield );
     }
-$DB::single=1;
     return $self->wrap_field( $result, $output );
 }
 

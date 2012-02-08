@@ -21,7 +21,9 @@ This is the Result object that maps to the Form.
 
 =head2 DESCRIPTION
 
-This is currently experimental. Interfaces and interface names may change.
+Although not experimental, the 'results' have not been exercised as much
+as the other parts of the code. If there is missing functionality or
+things that don't work, please ask or report bugs.
 
 The original FormHandler 'process' method, when used with persistent forms,
 leaves behind state data for a particular execution of 'process'. This is

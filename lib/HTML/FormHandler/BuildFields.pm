@@ -235,8 +235,9 @@ sub _make_field {
     $field_attr->{form} = $self->form if $self->form;
     $field_attr->{parent} = $parent;
 
-    $self->_update_or_create( $field_attr->{parent} || $self->form,
+    my $field = $self->_update_or_create( $field_attr->{parent} || $self->form,
         $field_attr, $class, $do_update );
+    $self->form->add_to_index( $full_name => $field ) if $self->form;
 }
 
 # update, replace, or create field
@@ -275,6 +276,7 @@ sub _update_or_create {
     }
     $field->form->reload_after_update(1)
         if ( $field->form && $field->reload_after_update );
+    return $field;
 }
 
 sub new_field_with_traits {

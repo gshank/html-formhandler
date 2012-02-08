@@ -24,7 +24,7 @@ Use this module instead of C< use Moose; >
 =cut
 
 Moose::Exporter->setup_import_methods(
-    with_meta => [ 'has_field', 'has_page', 'apply' ],
+    with_meta => [ 'has_field', 'has_page', 'has_block', 'apply' ],
     also        => 'Moose',
 );
 
@@ -64,6 +64,11 @@ sub has_page {
     my $names = ( ref($name) eq 'ARRAY' ) ? $name : [ ($name) ];
 
     $meta->add_to_page_list( { name => $_, %options } ) for @$names;
+}
+
+sub has_block {
+    my ( $meta, $name, %options ) = @_;
+    $meta->add_to_block_list( { name => $name, %options } );
 }
 
 sub apply {

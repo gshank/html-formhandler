@@ -766,6 +766,16 @@ sub build_result {
     return $result;
 }
 
+has 'index' => (
+    is => 'ro', isa => 'HashRef[HTML::FormHandler::Field]', traits => ['Hash'],
+    default => sub {{}},
+    handles => {
+        add_to_index => 'set',
+        field_from_index => 'get',
+        field_in_index => 'exists',
+    }
+);
+
 has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef',
     default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
 has 'widget_name_space' => (
