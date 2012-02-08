@@ -102,10 +102,7 @@ sub make_block {
         $class = 'HTML::FormHandler::Widget::Block';
     }
     else {
-        my @widget_name_space;
-        my $widget_ns = $self->widget_name_space;
-        my $class;
-        foreach my $ns ( @widget_name_space, 'HTML::FormHandler::Widget' ) {
+        foreach my $ns ( @{$self->widget_name_space}, 'HTML::FormHandler::Widget' ) {
             my $try_class = $ns . "::Block::" . $type;
             last if $class = load_optional_class($try_class) ? $try_class : undef;
         }
