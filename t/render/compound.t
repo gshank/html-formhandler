@@ -69,6 +69,8 @@ is_html( $rendered, $expected, 'compound rendered ok' );
 }
 
 $form = Test::DT->new;
+my $params = { 'start_date.month' => 7, 'start_date.day' => 14, 'start_date.year' => '2006' };
+$form->process( $params );
 
 $rendered = $form->field('start_date')->render;
 is_html( $rendered,

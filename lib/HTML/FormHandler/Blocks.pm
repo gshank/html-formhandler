@@ -35,6 +35,7 @@ use Try::Tiny;
 use Class::Load qw/ load_optional_class /;
 use namespace::autoclean;
 use Data::Clone;
+use HTML::FormHandler::Widget::Block;
 
 has 'blocks' => (
     isa     => 'HashRef[HTML::FormHandler::Widget::Block]',
