@@ -25,8 +25,8 @@ use HTML::FormHandler::Test;
         input01 => { widget_tags => { after_element => '<p class="help-block">In addition to freeform text, any HTML5 text-based input appears like so.</p>' },
                      element_attr => { class => 'input-xlarge' },
                    },
-        optionsCheckbox => { widget_tags => { after_element =>
-                'Option one is this and that&mdash;be sure to include why it’s great' }
+        optionsCheckbox => { widget_tags => { checkbox_label =>
+                'Option one is this and that—be sure to include why it’s great' }
         },
         fileInput => { element_attr => { class => 'input-file' } },
         textarea => { element_attr => { class => 'input-xlarge' } },

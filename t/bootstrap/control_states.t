@@ -22,7 +22,7 @@ use HTML::FormHandler::Test;
         disabledInput => { element_class => ['input-xlarge'],
             element_attr => { placeholder => 'Disabled input here…' } },
         optionsCheckbox2 => { element_class => ['checkbox'],
-            widget_tags => { after_element => 'This is a disabled checkbox' } },
+            widget_tags => { checkbox_label => 'This is a disabled checkbox' } },
         inputError3 => { wrapper_class => ['success'],
             widget_tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
         selectError => { wrapper_class => ['success'],
