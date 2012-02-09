@@ -150,7 +150,7 @@ sub render_process_list {
             else {
                 # block can't be called from a field, so this should
                 # always be the for result
-                my $block = $self->block($fb);
+                my $block = $self->form->block($fb);
                 die "found no field or block named $fb\n" unless $block;
                 $output .= $block->render($result);
             }
