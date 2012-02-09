@@ -1,5 +1,5 @@
 package HTML::FormHandler::Widget::Wrapper::Bootstrap;
-# ABSTRACT: simple field wrapper
+# ABSTRACT: Twitter Bootstrap 2.0 field wrapper
 
 use Moose::Role;
 use namespace::autoclean;
@@ -9,11 +9,15 @@ with 'HTML::FormHandler::Widget::Wrapper::Base';
 
 =head1 SYNOPSIS
 
-Wrapper to implement Bootstrap style form element rendering. This wrapper
+Wrapper to implement Bootstrap 2.0 style form element rendering. This wrapper
 does some very specific Bootstrap things, like wrap the form elements
-is divs with non-changeable classes. It is not as flexible as the
+in divs with non-changeable classes. It is not as flexible as the
 'Simple' wrapper, but means that you don't have to specify those classes
 in your form code.
+
+It wraps form elements with 'control-group' divs, and form 'actions' with
+'form-actions' divs. It adds special additional wrappers for checkboxes and radio
+buttons, with wrapped labels.
 
 =cut
 
@@ -42,16 +46,15 @@ sub wrap_field {
     $output .=  $self->get_tag('before_element') if $self->tag_exists('before_element');
     # the controls div for ... controls
     $output .= '<div class="controls">' unless $form_actions;
-    # special extra wrapped label for checkbox, including checkbox class
-    $output .= '<label class="checkbox">' if $self->type_attr eq 'checkbox';
-    # the actual rendered input element
-    $output .= $rendered_widget;
-    # end special checkbox label
-    if( $self->type_attr eq 'checkbox' ) {
-        my $label2 = $self->get_tag('checkbox_label') if $self->tag_exists('checkbox_label');
-        $label2 ||= $self->label;
-        $label2 = $self->html_filter($self->_localize($label2));
-        $output .= "$label2</label>";
+    # do extra wrappers for checkbox and radio
+    if ( $self->type_attr eq 'checkbox' ) {
+        $output .= $self->wrap_checkbox($rendered_widget);
+    }
+    elsif ( $self->type_attr eq 'radio' ) {
+        $output .= $self->wrap_radio($rendered_widget);
+    }
+    else {
+        $output .= $rendered_widget;
     }
     # various 'help-inline' bits: errors, warnings
     $output .= qq{\n<span class="help-inline">$_</span>}
@@ -59,11 +62,31 @@ sub wrap_field {
     $output .= qq{\n<span class="help-inline">$_</span>} for $result->all_warnings;
     # extra after element stuff
     $output .= $self->get_tag('after_element') if $self->tag_exists('after_element');
-    # if it's an action, no div to close
+    # close 'control' div
     $output .= '</div>' unless $form_actions;
     # close wrapper
     $output .= "\n</div>";
     return "$output";
+}
+
+sub wrap_checkbox {
+    my ( $self, $rendered_widget ) = @_;
+
+    # special extra wrapped label for checkbox, including checkbox class
+    my $output .= '<label class="checkbox">' if $self->type_attr eq 'checkbox';
+    # the actual rendered input element
+    $output .= $rendered_widget;
+    # end special checkbox label
+    my $label2 = $self->get_tag('checkbox_label') if $self->tag_exists('checkbox_label');
+    $label2 ||= $self->label;
+    $label2 = $self->html_filter($self->_localize($label2));
+    $output .= "$label2</label>";
+    return $output;
+}
+sub wrap_radio {
+    my ( $self, $rendered_widget ) = @_;
+    # stub
+    return $rendered_widget;
 }
 
 1;
