@@ -1,5 +1,8 @@
 0.40000 Wed Feb 15, 2012
 
+    Switch to using coderef for deflate_method; custom fields with deflate sub
+        will need to be modified.
+    Add block rendering (HTML::FormHandler::Blocks)
     Re-do code for default & validate method construction; now provides
        'default_method' and 'validate_method' coderef setting
     Remove 'init_value_*' from Field (deprecated for years).

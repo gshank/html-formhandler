@@ -59,6 +59,7 @@ has 'time_zone'  => ( is => 'rw', isa => 'Str' );                               
 has 'date_start' => ( is => 'rw', isa => 'Str', clearer => 'clear_date_start' );
 has 'date_end'   => ( is => 'rw', isa => 'Str', clearer => 'clear_date_end' );
 has '+size' => ( default => '10' );
+has '+deflate_method' => ( default => sub { \&date_deflate } );
 
 # translator for Datepicker formats to DateTime strftime formats
 my $dp_to_dt = {
@@ -89,7 +90,7 @@ sub get_class_messages  {
     }
 }
 
-sub deflate {
+sub date_deflate {
     my ( $self, $value ) = @_;
 
     # if not a DateTime, assume correctly formated string and return

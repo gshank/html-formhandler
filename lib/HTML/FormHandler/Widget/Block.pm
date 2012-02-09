@@ -77,7 +77,7 @@ sub build_attr { {} }
 
 has 'tag' => ( is => 'rw', isa => 'Str', default => 'div' );
 
-has 'label'     => ( is => 'rw', isa => 'Str' );
+has 'label'     => ( is => 'rw', isa => 'Str', predicate => 'has_label' );
 has 'label_tag' => ( is => 'rw', isa => 'Str' );
 has 'label_class' => (
     isa     => 'HFH::ArrayRefStr',
@@ -120,7 +120,7 @@ sub render {
 
     # create label
     my $label = '';
-    if ( length $self->label ) {
+    if ( $self->has_label ) {
         my $label_tag = $self->label_tag || 'span';
         $label_tag = 'legend' if lc $self->tag eq 'fieldset';
         my $label_str = $self->form->_localize( $self->label );

@@ -36,6 +36,7 @@ Customizable error: 'datetime_invalid' (default = "Not a valid DateTime")
 =cut
 
 has '+widget' => ( default => 'Compound' );
+has '+deflate_method' => ( default => sub { \&datetime_deflate } );
 
 our $class_messages = {
     'datetime_invalid' => 'Not a valid DateTime',
@@ -48,7 +49,7 @@ sub get_class_messages {
     }
 }
 
-sub deflate {
+sub datetime_deflate {
     my ( $self, $value ) = @_;
     return $value unless ref $value eq 'DateTime';
     my %hash;

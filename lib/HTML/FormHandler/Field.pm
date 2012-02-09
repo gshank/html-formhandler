@@ -1156,6 +1156,14 @@ sub get_default_value {
     }
     return;
 }
+has 'deflate_method' => (
+     traits => ['Code'],
+     is     => 'ro',
+     isa    => 'CodeRef',
+     writer => '_set_deflate_method',
+     predicate => 'has_deflate_method',
+     handles => { 'deflate' => 'execute_method' },
+);
 has 'deflation' => (
     is        => 'rw',
     predicate => 'has_deflation',
@@ -1423,14 +1431,14 @@ sub _apply_deflation {
     if ( $self->has_deflation ) {
         $value = $self->deflation->($value);
     }
-    elsif ( $self->can('deflate') ) {
+    elsif ( $self->has_deflate_method ) {
         $value = $self->deflate($value);
     }
     return $value;
 }
 sub _can_deflate {
     my $self = shift;
-    return $self->has_deflation || $self->can('deflate');
+    return $self->has_deflation || $self->has_deflate_method;
 }
 
 # use Class::MOP to clone
