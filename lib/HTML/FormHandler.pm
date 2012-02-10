@@ -9,6 +9,7 @@ with 'HTML::FormHandler::Model', 'HTML::FormHandler::Fields',
 with 'HTML::FormHandler::InitResult';
 with 'HTML::FormHandler::Widget::ApplyRole';
 with 'HTML::FormHandler::Traits';
+with 'HTML::FormHandler::Blocks';
 
 use Carp;
 use Class::MOP;

@@ -77,8 +77,10 @@ after '_build_fields' => sub {
     my $self = shift;
 
     my $meta_blist = $self->_build_meta_block_list;
-    foreach my $block_attr (@$meta_blist) {
-        $self->make_block($block_attr);
+    if( @$meta_blist ) {
+        foreach my $block_attr (@$meta_blist) {
+            $self->make_block($block_attr);
+        }
     }
 };
 
@@ -148,7 +150,7 @@ sub _build_meta_block_list {
             }
         }
     }
-    return clone( \@block_list ) if scalar @block_list;
+    return clone( \@block_list );
 }
 
 

@@ -908,7 +908,7 @@ has 'widget_tags'         => (
     is => 'rw',
     builder => 'build_widget_tags',
     handles => {
-      get_tag => 'get',
+      _get_tag => 'get',
       set_tag => 'set',
       has_tag => 'exists',
       tag_exists => 'exists',
@@ -921,6 +921,18 @@ sub merge_tags {
     my $old = $self->widget_tags;
     $self->widget_tags( merge($new, $old) );
 }
+sub get_tag {
+    my ( $self, $name ) = @_;
+    return '' unless $self->tag_exists($name);
+    my $tag = $self->_get_tag($name);
+    return $self->$tag if ref $tag eq 'CODE';
+    return $tag unless $tag =~ /^%/;
+    ( my $block_name = $tag ) =~ s/^%//;
+    return $self->form->block($block_name)->render
+        if ( $self->form && $self->form->block_exists($block_name) );
+    return '';
+}
+
 has 'widget_name_space' => (
     isa => 'HFH::ArrayRefStr',
     is => 'rw',

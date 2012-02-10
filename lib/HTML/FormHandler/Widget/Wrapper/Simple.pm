@@ -15,11 +15,15 @@ no other wrapper is specified and widget_wrapper is not set to
 
 Supported 'widget_tags':
 
+    wrapper        -- flag saying whether to wrap or not
     wrapper_tag    -- the tag to use in the wrapper, default 'div'
 
     label_none     -- don't render a label
     label_tag      -- tag to use for label (default 'label')
     label_after    -- string to append to label, for example ': ' to append a colon
+
+    before_element -- string that goes right before the element
+    after_element  -- string that goes right after the element
 
 Are these necessary? Really, they should be specified at form level and propagated
 to the appropriate fields.
@@ -38,7 +42,7 @@ sub wrap_field {
     return $rendered_widget if ( $self->has_flag('is_compound') && ! $self->get_tag('wrapper') );
 
     my $output = "\n";
-    my $wrapper_tag = $self->get_tag('wrapper_tag') || '';
+    my $wrapper_tag = $self->get_tag('wrapper_tag');
     my $do_wrapper_tag = ! $self->tag_exists('wrapper_tag') || ( $self->tag_exists('wrapper_tag') && $self->get_tag('wrapper_tag') );
     $do_wrapper_tag = 1 if $self->has_flag('is_contains');
     if( $do_wrapper_tag ) {
@@ -56,17 +60,14 @@ sub wrap_field {
         $output .= $self->do_render_label($result);
     }
     if( $self->type_attr eq 'checkbox' && ! $self->get_tag('checkbox_unwrapped') ) {
-        my $before_element = $self->get_tag('before_element');
-        $output .= $before_element if $before_element;
+        $output .= $self->get_tag('before_element');
         $output .= $self->render_checkbox( $result, $rendered_widget );
     }
     else {
-        my $before_element = $self->get_tag('before_element');
-        $output .= $before_element if $before_element;
+        $output .= $self->get_tag('before_element');
         $output .= $rendered_widget;
     }
-    my $after_element = $self->get_tag('after_element');
-    $output .= $after_element if $after_element;
+    $output .= $self->get_tag('after_element');
     $output .= qq{\n<span class="error_message">$_</span>}
         for $result->all_errors;
     $output .= "\n</$wrapper_tag>" if $do_wrapper_tag;
@@ -79,7 +80,7 @@ sub render_checkbox {
     my $lattr = process_attrs($self->label_attributes($result));
     my $id = $self->id;
     my $label = $self->get_tag('checkbox_double_label') ?
-       ( $self->get_tag('comment') || $self->label ) :
+       ( $self->get_tag('option_label') || $self->label ) :
        $self->label;
     $label = $self->html_filter($self->_localize($label));
     my $output = qq{<label$lattr for="$id">};

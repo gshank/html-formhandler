@@ -12,7 +12,7 @@ use HTML::FormHandler::Test;
        has_field 'option1' => ( type => 'Checkbox' );
        has_field 'option2' => ( type => 'Checkbox', widget_tags => { label_left => 1 } );
        has_field 'option3' => ( type => 'Checkbox',
-           widget_tags => { checkbox_double_label => 1, comment => 'Try this one' } );
+           widget_tags => { checkbox_double_label => 1, option_label => 'Try this one' } );
        has_field 'option4' => ( type => 'Checkbox', widget_tags => { checkbox_unwrapped => 1 } );
    }
    my $form = Test::Form->new;

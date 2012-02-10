@@ -43,7 +43,7 @@ sub wrap_field {
         my $label = $self->html_filter($self->loc_label);
         $output .= qq{<label class="control-label" for="} . $self->id . qq{">$label</label>};
     }
-    $output .=  $self->get_tag('before_element') if $self->tag_exists('before_element');
+    $output .=  $self->get_tag('before_element');
     # the controls div for ... controls
     $output .= '<div class="controls">' unless $form_actions;
     # do extra wrappers for checkbox and radio
@@ -61,7 +61,7 @@ sub wrap_field {
         for $result->all_errors;
     $output .= qq{\n<span class="help-inline">$_</span>} for $result->all_warnings;
     # extra after element stuff
-    $output .= $self->get_tag('after_element') if $self->tag_exists('after_element');
+    $output .= $self->get_tag('after_element');
     # close 'control' div
     $output .= '</div>' unless $form_actions;
     # close wrapper
@@ -77,7 +77,7 @@ sub wrap_checkbox {
     # the actual rendered input element
     $output .= $rendered_widget;
     # end special checkbox label
-    my $label2 = $self->get_tag('checkbox_label') if $self->tag_exists('checkbox_label');
+    my $label2 = $self->get_tag('option_label');
     $label2 ||= $self->label;
     $label2 = $self->html_filter($self->_localize($label2));
     $output .= "$label2</label>";

@@ -106,6 +106,7 @@ has 'content' => ( is => 'rw', isa => 'Str', predicate => 'has_content' );
 
 sub render {
     my ( $self, $result ) = @_;
+    $result ||= $self->form->result;
     my $tag = $self->tag;
 
     # get rendering of contained fields, if any

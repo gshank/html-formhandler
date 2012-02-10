@@ -11,7 +11,6 @@ use lib ('t/lib');
     package Test::Form;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    with 'HTML::FormHandler::Blocks';
 
     has '+name' => ( default => 'test_form' );
     has '+widget_name_space' => ( default => sub {'Widget'} );
