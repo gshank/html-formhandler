@@ -9,9 +9,9 @@ our $VERSION = 0.01;
 
 =head1 SYNOPSIS
 
-Role to apply to form objects to allow rendering. In your form:
-
-   has '+widget_form' => ( default => 'Simple' );
+Role to apply to form objects to allow rendering. This rendering
+role is applied to HTML::FormHandler by default. It supports block
+rendering. (L<HTML::FormHandler::Blocks>, L<HTML::FormHandler::Widget::Block>)
 
 Supported widget_tags:
 
@@ -38,15 +38,34 @@ sub render {
         $form   = $self;
     }
     my $output = $form->render_start($result);
-    $output .= $form->render_form_errors( $result );
+    $output .= $form->render_form_messages($result);
 
-    foreach my $fld_result ( $result->results ) {
-        die "no field in result for " . $fld_result->name
-            unless $fld_result->field_def;
-        $output .= $fld_result->render;
+    if ( $form->has_render_list ) {
+        foreach my $fb ( @{ $form->render_list } ) {
+            # it's a Field
+            if ( $self->field_in_index($fb) ) {
+                # find field result and use that
+                my $fld_result = $result->get_result($fb);
+                # if no result, then we shouldn't be rendering this field
+                next unless $fld_result;
+                $output .= $fld_result->render;
+            }
+            # it's a Block
+            else {
+                # always use form level result for blocks
+                my $block = $self->block($fb);
+                die "found no field or block named $fb\n" unless $block;
+                $output .= $block->render($result);
+            }
+        }
+    }
+    else {
+        foreach my $fld_result ( $result->results ) {
+            $output .= $fld_result->render;
+        }
     }
 
-    $output .= $form->render_end;
+    $output .= $form->render_end($result);
     return $output;
 }
 
@@ -68,7 +87,8 @@ sub render_start {
     return $output
 }
 
-sub render_form_errors {
+sub render_form_errors { shift->render_form_messages(@_) }
+sub render_form_messages {
     my ( $self, $result ) = @_;
 
     return '' unless $result->has_form_errors;

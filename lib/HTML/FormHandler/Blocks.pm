@@ -63,8 +63,6 @@ has 'render_list' => (
     }
 );
 
-sub build_render_list { [] }
-
 sub get_renderer {
     my ( $self, $name ) = @_;
     die "must provide a name to get_renderer" unless $name;
@@ -153,49 +151,5 @@ sub _build_meta_block_list {
     return clone( \@block_list ) if scalar @block_list;
 }
 
-sub render {
-    my ($self) = @_;
-
-    my $result;
-    my $form;
-    if ( $self->DOES('HTML::FormHandler::Result') ) {
-        $result = $self;
-        $form   = $self->form;
-    }
-    else {
-        $result = $self->result;
-        $form   = $self;
-    }
-    my $output = $form->render_start($result);
-    $output .= $form->render_form_errors($result);
-
-    if ( $form->has_render_list ) {
-        foreach my $fb ( @{ $form->render_list } ) {
-            # it's a Field
-            if ( $self->field_in_index($fb) ) {
-                # find field result and use that
-                my $fld_result = $result->get_result($fb);
-                # if no result, then we shouldn't be rendering this field
-                next unless $fld_result;
-                $output .= $fld_result->render;
-            }
-            # it's a Block
-            else {
-                # always use form level result for blocks
-                my $block = $self->block($fb);
-                die "found no field or block named $fb\n" unless $block;
-                $output .= $block->render($result);
-            }
-        }
-    }
-    else {
-        foreach my $fld_result ( $result->results ) {
-            $output .= $fld_result->render;
-        }
-    }
-
-    $output .= $form->render_end($result);
-    return $output;
-}
 
 1;

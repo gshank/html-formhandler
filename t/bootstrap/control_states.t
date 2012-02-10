@@ -6,12 +6,8 @@ use HTML::FormHandler::Test;
 {
     package MyApp::Form::CtrlStates::Theme;
     use Moose::Role;
+    with 'HTML::FormHandler::Widget::Theme::BootstrapHoriz';
 
-    sub before_build {
-        my $self = shift;
-        $self->set_widget_wrapper('Bootstrap');
-    }
-    sub build_form_element_class { ['form-horizontal'] }
     sub build_widget_tags {{
         form_after_start => '<fieldset><legend>Form control states</legend>',
         form_before_end => '</fieldset>',

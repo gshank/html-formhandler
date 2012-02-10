@@ -6,7 +6,7 @@ use HTML::FormHandler::Test;
 {
     package MyApp::Form::Nested::View;
     use HTML::FormHandler::Moose::Role;
-    with 'HTML::FormHandler::Blocks' => { -excludes => 'build_render_list' };
+    with 'HTML::FormHandler::Blocks';
 
     sub build_render_list { ['fset1'] }
     has_block 'fset1' => ( tag => 'fieldset', label => 'First Fieldset',

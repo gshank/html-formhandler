@@ -94,15 +94,17 @@ Widgets in a widget directory (specified in widget_name_space) are located in ei
 a 'Field', 'Wrapper', or 'Form' subdirectory.
 
 The form's rendering role is looked for in the widget name space plus 'Form'. The
-default form rendering roles are in HTML::FormHandler::Widget::Form (Simple
-and Table).  The form widget is specified in the form with 'widget_form'.
+supplied form rendering roles are in HTML::FormHandler::Widget::Form (Simple
+and Table). By default the 'HTML::FormHandler::Widget::Form::Simple' role is used.
+Specify a different form rendering widget (or other rendering class
+containing a 'render' sub) by including the role in your form class:
 
    package MyApp::Form;
-   ....
-   has '+widget_form' => ( default => 'Simple' );
-   ...
+   with 'HTML::FormHandler::Widget::Form::Table';
+   -- or --
+   with 'MyApp::Form::Render::Special';
 
-The 'wrapper' for field rendering can also be specified with 'widget_wrapper'.
+The 'wrapper' for field rendering can be specified with 'widget_wrapper'.
 The widget specified will be looked for in the widget directories' 'Wrapper'
 subdirectory. It contains a 'wrap_field' method which is called from the Field
 widgets.  The wrap_field method takes the basic rendered field (passed from the
