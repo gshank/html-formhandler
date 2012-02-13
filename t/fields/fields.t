@@ -513,7 +513,7 @@ ok( $field->has_errors, '2100 makes the author really old' );
 
 $class = 'HTML::FormHandler::Field::Float';
 use_ok( $class );
-$field = $class->new( name => 'foat_test' );
+$field = $class->new( name => 'float_test' );
 ok( defined $field, 'field built' );
 $field->_set_input( '2.0' );
 $field->validate_field;
@@ -530,5 +530,21 @@ is( $field->errors->[0], 'Total size of number must be less than or equal to 4, 
 $field->_set_input( '12.30' );
 $field->validate_field;
 ok( $field->validated, 'field validated' );
+
+# Boolean select
+
+$class = 'HTML::FormHandler::Field::BoolSelect';
+use_ok( $class );
+$field = $class->new( name => 'boolselect' );
+ok( defined $field, 'field built' );
+$field->_set_input( '' );
+$field->validate_field;
+ok( !$field->has_errors, 'accepted null value' );
+$field->_set_input( 1 );
+$field->validate_field;
+ok( !$field->has_errors, 'accepted 1 value' );
+$field->_set_input( 0 );
+$field->validate_field;
+ok( !$field->has_errors, 'accepted 0 value' );
 
 done_testing;

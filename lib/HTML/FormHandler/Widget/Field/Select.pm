@@ -22,7 +22,8 @@ sub render {
 
     if( defined $self->empty_select ) {
         $t = $self->_localize($self->empty_select);
-        $output .= qq{<option value="">$t</option>};
+        $output .= qq{<option value="" id="$id.$index">$t</option>};
+        $index++;
     }
 
     my $fif = $result->fif;

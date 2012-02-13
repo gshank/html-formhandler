@@ -11,6 +11,7 @@ use HTML::FormHandler::Test;
     has '+name' => ( default => 'test_form' );
     has_field 'fruit'      => ( type => 'Select' );
     has_field 'vegetables' => ( type => 'Multiple' );
+    has_field 'my_option' => ( type => 'BoolSelect' );
     sub options_fruit {
         return (
             '"apples"' => '"apples"',
@@ -60,5 +61,17 @@ $expected =
   </select>
 </div>';
 is_html( $rendered, $expected, 'output from select multiple field');
+
+$rendered = $form->field('my_option')->render;
+$expected =
+'<div>
+  <label for="my_option">My option</label>
+  <select name="my_option" id="my_option">
+    <option value="" id="my_option.0">Select One</option>
+    <option value="1" id="my_option.1">True</option>
+    <option value="0" id="my_option.2">False</option>
+  </select>
+</div>';
+is_html( $rendered, $expected, 'output from BoolSelect field' );
 
 done_testing;
