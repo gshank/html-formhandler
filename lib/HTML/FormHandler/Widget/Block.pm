@@ -74,12 +74,12 @@ has 'attr' => (
     },
 );
 sub build_attr { {} }
-
+has 'wrapper' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'tag' => ( is => 'rw', isa => 'Str', default => 'div' );
-
 has 'label'     => ( is => 'rw', isa => 'Str', predicate => 'has_label' );
 has 'label_tag' => ( is => 'rw', isa => 'Str' );
 has 'label_class' => (
+    is      => 'rw',
     isa     => 'HFH::ArrayRefStr',
     traits  => ['Array'],
     builder => 'build_label_class',
@@ -102,24 +102,45 @@ has 'render_list' => (
 );
 sub build_render_list { [] }
 
-has 'content' => ( is => 'rw', isa => 'Str', predicate => 'has_content' );
+has 'content' => ( is => 'rw' );
+has 'after_plist' => ( is => 'rw' );
 
 sub render {
     my ( $self, $result ) = @_;
     $result ||= $self->form->result;
-    my $tag = $self->tag;
+
+    my $start_wrapper = '';
+    my $end_wrapper = '';
+    if( $self->wrapper ) {
+        my $tag = $self->tag;
+        # create attribute string
+        my $attr_str = $self->render_attribute_string;
+        $start_wrapper = qq{<$tag$attr_str>};
+        $end_wrapper = qq{</$tag>};
+    }
 
     # get rendering of contained fields, if any
     my $rendered_fb = $self->render_process_list($result);
 
-    # create attribute string
+    my $content = $self->content || '';
+    my $after_plist = $self->after_plist || '';
+
+    # create label
+    my $label = $self->render_label;
+    my $block = qq{\n$start_wrapper$label$content$rendered_fb$after_plist$end_wrapper};
+
+}
+
+sub render_attribute_string {
+    my $self = shift;
     my $attr = { %{ $self->attr } };
     $attr->{class} = $self->class if $self->has_class;
     my $attr_str = process_attrs($attr);
+    return $attr_str;
+}
 
-    my $content = $self->content || '';
-
-    # create label
+sub render_label {
+    my $self = shift;
     my $label = '';
     if ( $self->has_label ) {
         my $label_tag = $self->label_tag || 'span';
@@ -129,8 +150,7 @@ sub render {
         $attr_str = process_attrs( { class => $self->label_class } ) if $self->has_label_class;
         $label = qq{<$label_tag$attr_str>$label_str</$label_tag>};
     }
-    my $block = qq{\n<$tag$attr_str>$label$content$rendered_fb</$tag>};
-
+    return $label;
 }
 
 sub render_process_list {

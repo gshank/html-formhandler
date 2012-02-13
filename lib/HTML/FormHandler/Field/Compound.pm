@@ -58,6 +58,8 @@ Widget type is 'compound'
 has '+widget' => ( default => 'Compound' );
 has 'is_compound' => ( is => 'ro', isa => 'Bool', default => 1 );
 has 'item' => ( is => 'rw', clearer => 'clear_item' );
+has '+render_wrapper' => ( default => 0 );
+has '+render_label'   => ( default => 0 );
 
 has '+field_name_space' => (
     default => sub {
@@ -70,7 +72,16 @@ has '+field_name_space' => (
 
 sub BUILD {
     my $self = shift;
+    $self->build_fields;
+}
+
+sub build_fields {
+    my $self = shift;
+    $self->{field_updates} = $self->update_subfields;
     $self->_build_fields;
+    delete $self->{field_updates};
+    # set update_subfields instead of clear, so that builder methods won't run again
+    $self->update_subfields({});
 }
 
 # this is for testing compound fields outside

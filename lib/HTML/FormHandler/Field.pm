@@ -897,16 +897,17 @@ sub build_html_name {
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
 has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw' );
+has 'render_wrapper'    => ( is => 'rw', clearer => 'clear_wrapper', default => 1 );
 sub wrapper { shift->widget_wrapper || '' }
 sub uwrapper { ucc_widget( shift->widget_wrapper || '' ) || 'simple' }
 sub twrapper { shift->uwrapper . ".tt" }
 sub uwidget { ucc_widget( shift->widget || '' ) || 'simple' }
 sub twidget { shift->uwidget . ".tt" }
-has 'widget_tags'         => (
+has 'tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
     is => 'rw',
-    builder => 'build_widget_tags',
+    builder => 'build_tags',
     handles => {
       _get_tag => 'get',
       set_tag => 'set',
@@ -915,11 +916,11 @@ has 'widget_tags'         => (
       delete_tag => 'delete',
     },
 );
-sub build_widget_tags {{}}
+sub build_tags {{}}
 sub merge_tags {
     my ( $self, $new ) = @_;
-    my $old = $self->widget_tags;
-    $self->widget_tags( merge($new, $old) );
+    my $old = $self->tags;
+    $self->tags( merge($new, $old) );
 }
 sub get_tag {
     my ( $self, $name ) = @_;

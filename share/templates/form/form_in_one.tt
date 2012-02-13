@@ -1,4 +1,9 @@
 [% PROCESS form_start -%]
+<div class="form_messages">
+[% FOREACH err IN form.form_errors -%]
+<span class="error_message">[% err %]</span>
+[% END -%]
+</div>
 [% FOREACH f IN form.sorted_fields -%]
 [% WRAPPER "wrapper_${f.uwrapper}" -%][% PROCESS "${f.uwidget}" -%][% END -%]
 [% END -%]

@@ -19,9 +19,10 @@ sub BUILD {
        unless $self->has_wrapper_class;
 }
 
-sub build_widget_tags {{ wrapper => 1 }}
+sub build_tags {{ wrapper => 1 }}
 
 has '+render_label' => ( default => 0 );
+has '+render_wrapper' => ( default => 1 );
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

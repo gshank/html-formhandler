@@ -25,8 +25,7 @@ buttons, with wrapped labels.
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    return $rendered_widget if $self->tag_exists('wrapper') && ! $self->get_tag('wrapper');
-    return $rendered_widget if ( $self->has_flag('is_compound') && ! $self->get_tag('wrapper') );
+    return $rendered_widget if ( ! $self->render_wrapper && ! $self->render_label );
 
     my $output = "\n";
     # is this a control group or a form action?
@@ -46,16 +45,15 @@ sub wrap_field {
     $output .=  $self->get_tag('before_element');
     # the controls div for ... controls
     $output .= '<div class="controls">' unless $form_actions;
-    # do extra wrappers for checkbox and radio
-    if ( $self->type_attr eq 'checkbox' ) {
-        $output .= $self->wrap_checkbox($rendered_widget);
+    # handle input-prepend and input-append
+    if( my $ip_tag = $self->get_tag('input_prepend' ) ) {
+        $rendered_widget = $self->input_prepend($rendered_widget, $ip_tag);
     }
-    elsif ( $self->type_attr eq 'radio' ) {
-        $output .= $self->wrap_radio($rendered_widget);
+    elsif ( my $ia_tag = $self->get_tag('input_append' ) ) {
+        $rendered_widget = $self->input_append($rendered_widget, $ia_tag);
     }
-    else {
-        $output .= $rendered_widget;
-    }
+    # extra wrappers for checkbox will be handled by checkbox field
+     $output .= $rendered_widget;
     # various 'help-inline' bits: errors, warnings
     $output .= qq{\n<span class="help-inline">$_</span>}
         for $result->all_errors;
@@ -69,6 +67,26 @@ sub wrap_field {
     return "$output";
 }
 
+sub input_prepend {
+    my ( $self, $rendered_widget, $ip_tag ) = @_;
+    my $rendered =
+qq{<div class="input-prepend">
+  <span class="add-on">$ip_tag</span>
+  $rendered_widget
+</div>};
+    return $rendered;
+}
+
+sub input_append {
+    my ( $self, $rendered_widget, $ia_tag ) = @_;
+    my $rendered =
+qq{<div class="input-append">
+  $rendered_widget
+  <span class="add-on">$ia_tag</span>
+</div>};
+    return $rendered;
+}
+
 sub wrap_checkbox {
     my ( $self, $rendered_widget ) = @_;
 
@@ -77,8 +95,7 @@ sub wrap_checkbox {
     # the actual rendered input element
     $output .= $rendered_widget;
     # end special checkbox label
-    my $label2 = $self->get_tag('option_label');
-    $label2 ||= $self->label;
+    my $label2 = $self->option_label || $self->label;
     $label2 = $self->html_filter($self->_localize($label2));
     $output .= "$label2</label>";
     return $output;

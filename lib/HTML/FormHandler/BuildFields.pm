@@ -43,17 +43,9 @@ sub has_field_list {
 # orders the fields after processing in order to skip
 # fields which have had the 'order' attribute set
 sub _build_fields {
-    my ($self, $field_traits) = @_;
+    my $self = shift;
 
     my $meta_flist = $self->_build_meta_field_list;
-
-    # If there are field_traits at the form level, prepend them
-    # to the traits list of each individual field.
-    if ($meta_flist && $field_traits) {
-        for my $field (@{ $meta_flist }) {
-            unshift(@{ $field->{traits} }, @{ $field_traits });
-        }
-    }
 
     $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
     my $flist = $self->has_field_list;
@@ -68,35 +60,13 @@ sub _build_fields {
     }
     my $mlist = $self->model_fields if $self->fields_from_model;
     $self->_process_field_list( $mlist ) if $mlist;
+
     return unless $self->has_fields;
 
-    # order the fields
-    # There's a hole in this... if child fields are defined at
-    # a level above the containing parent, then they won't
-    # exist when this routine is called and won't be ordered.
-    # This probably needs to be moved out of here into
-    # a separate recursive step that's called after build_fields.
+    $self->_order_fields;
 
-    # get highest order number
-    my $order = 0;
-    foreach my $field ( $self->all_fields ) {
-        $order++ if $field->order > $order;
-    }
-    $order++;
-    # number all unordered fields
-    foreach my $field ( $self->all_fields ) {
-        $field->order($order) unless $field->order;
-        $order++;
-    }
 }
 
-sub _process_field_list {
-    my ( $self, $flist ) = @_;
-
-    if ( ref $flist eq 'ARRAY' ) {
-        $self->_process_field_array( $self->_array_fields( $flist ) );
-    }
-}
 
 # loops through all inherited classes and composed roles
 # to find fields specified with 'has_field'
@@ -124,6 +94,14 @@ sub _build_meta_field_list {
 
     # must clone field_list to avoid shared copies of field definitions
     return clone($field_list) if scalar @$field_list;
+}
+
+sub _process_field_list {
+    my ( $self, $flist ) = @_;
+
+    if ( ref $flist eq 'ARRAY' ) {
+        $self->_process_field_array( $self->_array_fields( $flist ) );
+    }
 }
 
 # munges the field_list array into an array of field attributes
@@ -169,16 +147,38 @@ sub _process_field_array {
 sub _make_field {
     my ( $self, $field_attr ) = @_;
 
-    $field_attr->{type} ||= 'Text';
-    my $type = $field_attr->{type};
+    my $type = $field_attr->{type} ||= 'Text';
     my $name = $field_attr->{name};
-    return unless $name;
 
     my $do_update;
     if ( $name =~ /^\+(.*)/ ) {
         $field_attr->{name} = $name = $1;
         $do_update = 1;
     }
+
+    my $class = $self->_find_field_class( $type, $name );
+
+    my $parent = $self->_find_parent( $field_attr );
+
+    $field_attr = $self->_merge_updates( $field_attr, $class );
+
+    my $field = $self->_update_or_create( $parent, $field_attr, $class, $do_update );
+
+    $self->form->add_to_index( $field->full_name => $field ) if $self->form;
+}
+
+sub _make_adhoc_field {
+    my ( $self, $class, $field_attr ) = @_;
+
+    $field_attr = $self->_merge_updates( $field_attr, $class );
+    my $field = $self->new_field_with_traits( $class, $field_attr );
+    $self->_after_create($field);
+    return $field;
+}
+
+
+sub _find_field_class {
+    my ( $self, $type, $name ) = @_;
 
     my $field_ns = $self->field_name_space;
     my @classes;
@@ -198,6 +198,12 @@ sub _make_field {
     }
     die "Could not load field class '$type' for field '$name'"
        unless $class;
+
+    return $class;
+}
+
+sub _find_parent {
+    my ( $self, $field_attr ) = @_;
 
     # parent and name correction for names with dots
     my $parent;
@@ -220,35 +226,85 @@ sub _make_field {
         $parent = $self;
     }
 
-    # merge in field updates, before blessed objects are set (form/parent)
+    # get full_name
     my $full_name = $field_attr->{name};
     $full_name = $parent->full_name . "." . $field_attr->{name}
         if $parent;
-    if( $self->form && exists $self->form->{field_updates}->{$full_name} ) {
+    $field_attr->{full_name} = $full_name;
+    return $parent;
+
+}
+
+sub _merge_updates {
+    my ( $self, $field_attr, $class ) = @_;
+
+    # remove form/parent if in field_attr; merge messes them up
+    my $form = delete $field_attr->{form};
+    my $parent = delete $field_attr->{parent};
+    # If there are field_traits at the form level, prepend them
+    unshift @{$field_attr->{traits}}, @{$self->form->field_traits} if $self->form;
+    my $full_name = delete $field_attr->{full_name} || $field_attr->{name};
+    my $updates = {};
+    my $single_updates = {};
+    my $all_updates = {};
+    if( $self->form && exists $self->form->{field_updates} ) {
         # deleting this here means that change from fields with '+' in
         # the field_list will not be re-changed
-        my $updates = delete $self->form->{field_updates}->{$full_name};
-        $field_attr = merge($updates, $field_attr);
+        $single_updates = delete $self->form->{field_updates}->{$full_name} || {};
+        $all_updates = $self->form->{field_updates}->{all} || {};
+    }
+    if( $self->has_flag('is_compound') && exists $self->{field_updates} ) {
+        my $comp_single_updates = delete $self->{field_updates}->{$field_attr->{name}} || {};
+        $single_updates = merge( $comp_single_updates, $single_updates )
+            if keys %$comp_single_updates;
+        my $comp_all_updates = $self->{field_updates}->{all} || {};
+        $all_updates = merge( $comp_all_updates, $all_updates )
+            if keys %$comp_all_updates;
     }
 
-    # set form and parents
-    $field_attr->{form} = $self->form if $self->form;
-    $field_attr->{parent} = $parent;
+    # attributes set on the field through update_subfields override has_fields
+    # attributes set by 'all' only happen if no field attributes
+    $field_attr = merge( $field_attr, $all_updates ) if keys %$all_updates;
+    $field_attr = merge( $single_updates, $field_attr ) if keys %$single_updates;
 
-    my $field = $self->_update_or_create( $field_attr->{parent} || $self->form,
-        $field_attr, $class, $do_update );
-    $self->form->add_to_index( $full_name => $field ) if $self->form;
+    unless( $self->form && $self->form->no_widgets ) {
+        my $widget = $field_attr->{widget};
+        unless( $widget ) {
+            my $attr = $class->meta->find_attribute_by_name( 'widget' );
+            $widget = $attr->default if $attr;
+        }
+        my $widget_wrapper = $field_attr->{widget_wrapper};
+        unless( $widget_wrapper ) {
+            my $attr = $class->meta->get_attribute('widget_wrapper');
+            $widget_wrapper = $attr->default if $attr;
+            $widget_wrapper ||= $self->form->widget_wrapper if $self->form;
+            $widget_wrapper ||= 'Simple';
+            $field_attr->{widget_wrapper} = $widget_wrapper;
+        }
+        if( $widget ) {
+            my $widget_role = $self->get_widget_role( $widget, 'Field' );
+            my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
+            push @{$field_attr->{traits}}, $widget_role, $wrapper_role;
+        }
+    }
+    # put back form/parent if in field_attr
+    $field_attr->{form} = $form if $form;
+    $field_attr->{parent} = $parent if $parent;
+    return $field_attr;
 }
 
 # update, replace, or create field
 # Create makes the field object and passes in the properties as constructor args.
-# Update changes properties on a previously created object.
+# Update changed properties on a previously created object.
 # Replace overwrites a field with a different configuration.
 # (The update/replace business is much the same as you'd see with inheritance.)
 # This function populates/updates the base object's 'field' array.
 sub _update_or_create {
     my ( $self, $parent, $field_attr, $class, $do_update ) = @_;
 
+    $field_attr->{parent} = $parent if $parent;
+    $parent ||= $self->form;
+    $field_attr->{form} = $self->form if $self->form;
     my $index = $parent->field_index( $field_attr->{name} );
     my $field;
     if ( defined $index ) {
@@ -282,60 +338,75 @@ sub _update_or_create {
 sub new_field_with_traits {
     my ( $self, $class, $field_attr ) = @_;
 
-    my @traits;
-    if( $field_attr->{traits} ) {
-        @traits = @{$field_attr->{traits}};
-        delete $field_attr->{traits};
-    }
-
-    unless( $self->form && $self->form->no_widgets ) {
-        my $widget = $field_attr->{widget};
-        unless( $widget ) {
-            my $attr = $class->meta->find_attribute_by_name( 'widget' );
-            $widget = $attr->default if $attr;
-        }
-        my $widget_wrapper = $field_attr->{widget_wrapper};
-        unless( $widget_wrapper ) {
-            my $attr = $class->meta->get_attribute('widget_wrapper');
-            $widget_wrapper = $attr->default if $attr;
-            $widget_wrapper ||= $field_attr->{form}->widget_wrapper if $field_attr->{form};
-            $widget_wrapper ||= 'Simple';
-            $field_attr->{widget_wrapper} = $widget_wrapper;
-        }
-        if( $widget ) {
-            my $widget_role = $self->get_widget_role( $widget, 'Field' );
-            my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
-            push @traits, $widget_role, $wrapper_role;
-        }
-        # merge the form's widget_tags into the field attr
-        my $fwtags = $self->form->widget_tags if $self->form;
-        if( scalar keys %$fwtags ) {
-            my %fwidgets = map { $_ => $fwtags->{$_} } grep { $_ !~ /^form_/ && $_ ne 'by_flag' } keys %{$fwtags};
-            my $new_href = merge($field_attr->{widget_tags} || {}, \%fwidgets);
-            $field_attr->{widget_tags} = $new_href if keys %$new_href;
-        }
-    }
-    if( @traits ) {
-        $class = $class->with_traits( @traits );
+    my $traits = delete $field_attr->{traits} || [];
+    if( @$traits ) {
+        $class = $class->with_traits( @$traits );
     }
     my $field = $class->new( %{$field_attr} );
-    $self->copy_widget_tags($field);
+
+    $self->_after_create($field);
+
     return $field;
 }
 
-sub copy_widget_tags {
+# these updates can't be done by merging attributes, since these particular
+# attributes aren't set in field definitions. Could look for the attribute in the class, but
+# it's probably faster to just set them.
+sub _after_create {
     my ( $self, $field ) = @_;
-    if( $self->form && $self->form->tag_exists('by_flag') ) {
-        my $flag_tags = $self->form->get_tag('by_flag');
-        if( exists $flag_tags->{repeatable} && $field->has_flag('is_repeatable') ) {
-            $field->set_tag( %{$flag_tags->{repeatable}} );
+
+    my $by_flag = $self->form->{field_updates}->{by_flag} || {} if $self->form;
+    my $comp_by_flag = $self->{field_updates}->{by_flag} || {}
+        if $self->has_flag('is_compound');;
+    return unless keys %$by_flag || keys %$comp_by_flag;
+    $by_flag = merge( $comp_by_flag, $by_flag ) if keys %$comp_by_flag ;
+
+    if( exists $by_flag->{repeatable} && $field->has_flag('is_repeatable') ) {
+        $self->_set_attributes($field, $by_flag->{repeatable});
+    }
+    elsif ( exists $by_flag->{contains} && $field->has_flag('is_contains') ) {
+        $self->_set_attributes($field, $by_flag->{contains});
+    }
+    elsif ( exists $by_flag->{compound} && $field->has_flag('is_compound') ) {
+        $self->_set_attributes($field, $by_flag->{compound});
+    }
+}
+sub _set_attributes {
+    my ( $self, $field, $attr ) = @_;
+
+    foreach my $key ( keys %$attr ) {
+        if( ref $attr->{$key} eq 'HASH' ) {
+            (my $meth = $key ) =~ s/s$//;
+            $meth = 'set_' . $meth;
+            if( $field->can($meth) ) {
+                $field->$meth(%{$attr->{$key}});
+                next;
+            }
         }
-        elsif ( exists $flag_tags->{contains} && $field->has_flag('is_contains') ) {
-            $field->set_tag( %{$flag_tags->{contains}} );
-        }
-        elsif ( exists $flag_tags->{compound} && $field->has_flag('is_compound') ) {
-            $field->set_tag( %{$flag_tags->{compound}} );
-        }
+        $field->$key($attr->{$key});
+    }
+}
+
+sub _order_fields {
+    my $self = shift;
+
+    # order the fields
+    # There's a hole in this... if child fields are defined at
+    # a level above the containing parent, then they won't
+    # exist when this routine is called and won't be ordered.
+    # This probably needs to be moved out of here into
+    # a separate recursive step that's called after build_fields.
+
+    # get highest order number
+    my $order = 0;
+    foreach my $field ( $self->all_fields ) {
+        $order++ if $field->order > $order;
+    }
+    $order++;
+    # number all unordered fields
+    foreach my $field ( $self->all_fields ) {
+        $field->order($order) unless $field->order;
+        $order++;
     }
 }
 

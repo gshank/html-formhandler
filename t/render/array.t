@@ -8,14 +8,16 @@ use HTML::FormHandler::Test;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-#   sub build_widget_tags { { by_flag => { contains => { wrapper => 0 } } } }
-
     has_field 'foo';
-    has_field 'my_array' => ( type => 'Repeatable', num_when_empty => 2, widget_tags => { wrapper => 1 } );
-    has_field 'my_array.contains' => ( type => 'Text', widget_tags => { wrapper => 0 } );
+    has_field 'my_array' => ( type => 'Repeatable', num_when_empty => 2,
+        render_wrapper => 1, render_label => 1 );
+    has_field 'my_array.contains' => ( type => 'Text', render_wrapper => 0, render_label => 0 );
+    has_field 'my_array2' => ( type => 'Repeatable', num_when_empty => 2,
+        render_wrapper => 1, render_label => 1 );
+    has_field 'my_array2.contains' => ( type => 'Text', widget_wrapper => 'None' );
     has_field 'my_rep' => ( type => 'Repeatable', 'num_when_empty' => 2 );
-    # wrapper = 1, because we want a label; wrapper_tag => 0 because we don't want a div
-    has_field 'my_rep.foo' => ( widget_tags => { wrapper => 1, wrapper_tag => 0 } );
+    #  we want a label but not a div wrapper
+    has_field 'my_rep.foo' => ( render_wrapper => 0 );
     has_field 'bar';
 
 }
@@ -28,6 +30,14 @@ my $expected =
   <input type="text" name="my_array.1" id="my_array.1" value="" />
 </fieldset>';
 my $rendered = $form->field('my_array')->render;
+is_html($rendered, $expected, 'repeatable array field renders correctly');
+
+$expected =
+'<fieldset><legend>My array2</legend>
+  <input type="text" name="my_array2.0" id="my_array2.0" value="" />
+  <input type="text" name="my_array2.1" id="my_array2.1" value="" />
+</fieldset>';
+$rendered = $form->field('my_array2')->render;
 is_html($rendered, $expected, 'repeatable array field renders correctly');
 
 $rendered = $form->field('my_rep')->render;

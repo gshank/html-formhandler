@@ -8,10 +8,11 @@ use HTML::FormHandler::Test;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags {{
+    sub build_form_tags {{
         form_text => 'testing',
-        wrapper_tag => 'p',
-        label_tag => 'span',
+    }}
+    sub build_update_subfields {{
+        all => { tags => { wrapper_tag => 'p', label_tag => 'span', } },
     }}
     has_field 'foo';
     has_field 'bar';
@@ -33,8 +34,8 @@ unlike( $rendered, qr/fieldset/, 'no fieldset rendered' );
 unlike( $rendered, qr/Foo: /, 'no colon in label' );
 like( $rendered, qr/<p/, 'wrapper tag correct' );
 unlike( $rendered, qr/<fieldset class="multi"><legend>Multi<\/legend>/, 'no fieldset around compound' );
-like( $rendered, qr/<span class="label" for="bar">Bar<\/span>/, 'label formatted with span and class' );
-ok( ! exists $form->field('foo')->widget_tags->{form_text}, 'no form widgets tags in fields' );
+like( $rendered, qr/<span class="label">Bar<\/span>/, 'label formatted with span and class' );
+ok( ! exists $form->field('foo')->tags->{form_text}, 'no form widgets tags in fields' );
 
 
 {
@@ -44,15 +45,11 @@ ok( ! exists $form->field('foo')->widget_tags->{form_text}, 'no form widgets tag
     extends 'HTML::FormHandler';
 
     has_field 'foo';
-    sub build_widget_tags {
-        {
-            form_wrapper => 1,
-            wrapper_tag   => 'p',
-        }
-    }
-    has_field 'bar' => ( widget_tags =>
+    sub build_render_form_wrapper {1}
+    sub build_update_subfields {{ all => { tags => { wrapper_tag => 'p' } } }}
+    has_field 'bar' => ( tags =>
          {wrapper_tag => 'span'});
-    has_field 'baz' => ( widget_tags => { wrapper_tag => 0 } );
+    has_field 'baz' => ( render_wrapper => 0 );
 
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
@@ -69,7 +66,7 @@ is_html( $form->field('foo')->render, '
 
 is_html( $form->field('bar')->render, '
 <span><label class="label" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" />
-</span>', 'field renders with custom widget_tags' );
+</span>', 'field renders with custom tags' );
 
 is_html( $form->field('baz')->render, '
 <label class="label" for="baz">Baz</label><input type="text" name="baz" id="baz" value="" />',

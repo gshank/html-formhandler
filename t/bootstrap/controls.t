@@ -12,22 +12,21 @@ use HTML::FormHandler::Test;
         my $self = shift;
         $self->set_widget_wrapper('Bootstrap');
     }
+    sub build_render_form_wrapper {1}
     sub build_form_element_class {['form-horizontal']}
     sub build_form_wrapper_class {['span8']}
-    sub build_widget_tags {{
-        form_wrapper => 1,
-        form_wrapper_tag => 'div',
-        form_after_start => '<fieldset><legend>Controls Bootstrap supports</legend>',
-        form_before_end => '</fieldset>',
+    sub build_form_tags {{
+        wrapper => 1,
+        wrapper_tag => 'div',
+        after_start => '<fieldset><legend>Controls Bootstrap supports</legend>',
+        before_end => '</fieldset>',
     }}
 
-    sub build_update_fields {{
-        input01 => { widget_tags => { after_element => '<p class="help-block">In addition to freeform text, any HTML5 text-based input appears like so.</p>' },
+    sub build_update_subfields {{
+        input01 => { tags => { after_element => '<p class="help-block">In addition to freeform text, any HTML5 text-based input appears like so.</p>' },
                      element_attr => { class => 'input-xlarge' },
                    },
-        optionsCheckbox => { widget_tags => { option_label =>
-                'Option one is this and that—be sure to include why it’s great' }
-        },
+        optionsCheckbox => { option_label => 'Option one is this and that—be sure to include why it’s great' },
         fileInput => { element_attr => { class => 'input-file' } },
         textarea => { element_attr => { class => 'input-xlarge' } },
         actions => { element_attr => { class => 'form-actions' } },
@@ -39,7 +38,7 @@ use HTML::FormHandler::Test;
     use HTML::FormHandler::Moose::Role;
 
     has_field 'actions' => ( type => 'Compound', order => 99, widget_wrapper => 'Simple',
-        widget_tags => { wrapper => 1 },
+        render_wrapper => 1,
         render_label => 0, wrapper_attr => { class => 'form-actions' }  );
     has_field 'actions.save' => ( type => 'Submit', widget => 'ButtonTag',
         element_attr => { class => ['btn', 'primary'] },
@@ -95,7 +94,7 @@ $expected =
 '<div class="control-group">
   <label class="control-label" for="optionsCheckbox">Checkbox</label>
   <div class="controls">
-    <label class="checkbox">
+    <label class="checkbox" for="optionsCheckbox">
       <input type="checkbox" id="optionsCheckbox" name="optionsCheckbox" value="option1" />
       Option one is this and that&mdash;be sure to include why it’s great
     </label>
@@ -175,6 +174,7 @@ $expected = '
       <form class="form-horizontal" id="control_form" method="post">
         <fieldset>
           <legend>Controls Bootstrap supports</legend>
+          <div class="form_messages"></div>
           <div class="control-group">
             <label class="control-label" for="input01">Text input</label>
             <div class="controls">
@@ -185,7 +185,7 @@ $expected = '
           <div class="control-group">
             <label class="control-label" for="optionsCheckbox">Checkbox</label>
             <div class="controls">
-              <label class="checkbox">
+              <label class="checkbox" for="optionsCheckbox">
                 <input type="checkbox" id="optionsCheckbox" name="optionsCheckbox" value="option1" />
                 Option one is this and that&mdash;be sure to include why it’s great
               </label>

@@ -12,10 +12,7 @@ use HTML::FormHandler::Test;
         type    => 'Select',
         widget  => 'RadioGroup',
         options => [
-            {
-                value => 'no & never',
-                label => 'No & Never',
-            },
+            { value => 'no & never', label => 'No & Never', },
             { value => '"yes"', label => 'Yes' },
         ]
     );
@@ -36,7 +33,7 @@ is_html( $rendered, $expected, 'radio group rendered ok' );
 my $params = {
     opt_in             => 'no & never',
 };
-$form->process( update_field_list => { opt_in => { widget_tags => { 'radio_br_after' => 1 }}}, params => $params);
+$form->process( update_field_list => { opt_in => { tags => { 'radio_br_after' => 1 }}}, params => $params);
 $rendered = $form->field('opt_in')->render;
 $expected =
 '<div>

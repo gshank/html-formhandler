@@ -226,9 +226,9 @@ widget name space:
 
 Your rendering widgets will be applied into your field classes.
 
-=head2 widget_tags
+=head2 tags
 
-The 'widget_tags' hashref attribute has been provided to allow customizing
+The 'tags' hashref attribute has been provided to allow customizing
 rendering behavior on a per-field basis. FormHandler has a number of flags/settings
 that it uses; you can add your own for your custom rendering code.
 
@@ -253,22 +253,22 @@ wrapper from divs to using paragraphs instead, or to add a colon in
 label formatting:
 
    has_field 'my_field' => (
-       widget_tags => {wrapper_tag => 'p', label_after => ': '  } );
+       tags => {wrapper_tag => 'p', label_after => ': '  } );
 
 If you want just the plain html (including the label) with no wrapping div or
 other element, you can set the wrapper_start and wrapper_end to ''.
 
-   has_field 'baz' => ( widget_tags => { wrapper_start => '',
+   has_field 'baz' => ( tags => { wrapper_start => '',
         wrapper_end => '' } );
    <label class="label" for="baz">Baz</label><input type="text" name="baz" id="baz" value="" />
 
 Widget tags set for the form will be copied into the fields if the same key
 does not exist in the field 'wrapper_tags' hashref, so you can set the
-widget_tags in a form to apply them to all the fields:
+widget 'tags' in a form to apply them to all the fields:
 
    package MyApp::Form;
    ....
-   has '+widget_tags' => ( default => sub { {wrapper_start => '<p>',
+   has '+tags' => ( default => sub { {wrapper_start => '<p>',
       wrapper_end => '</p>' } } );
 
 =head2 Creating Widgets

@@ -8,7 +8,6 @@ use HTML::FormHandler::Test;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags { { form_wrapper => 1 } }
     has_field 'my_comp' => ( type => 'Compound', widget_wrapper => 'SimpleInline', wrapper => 1 );
     has_field 'my_comp.one';
     has_field 'my_comp.two';

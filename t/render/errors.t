@@ -10,8 +10,9 @@ $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags { { form_wrapper => 1, label_after => ': ' } }
     sub build_form_wrapper_class { 'form_wrapper' }
+    sub build_render_form_wrapper {1}
+    sub build_update_subfields {{ all => { render_wrapper => 1, tags => { label_after => ': '} } }}
     has '+name' => ( default => 'test_errors' );
     has_field 'foo' => ( required => 1 );
     has_field 'bar' => ( type => 'Integer' );
@@ -27,6 +28,7 @@ is( $form->num_errors, 2, 'got two errors' );
 my $expected =
 '<fieldset class="form_wrapper">
   <form id="test_errors" method="post">
+  <div class="form_messages"></div>
   <div class="error">
     <label for="foo">Foo: </label>
     <input class="error" type="text" name="foo" id="foo" value="" />

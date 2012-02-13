@@ -22,6 +22,7 @@ use HTML::FormHandler::Test;
     my $rendered = $form->render;
     my $expected =
     '<form id="test_text" method="post">
+    <div class="form_messages"></div>
     <div><label for="foo">Foo</label><input type="text" name="foo" id="foo" value="" />
     </div>
     <div><label for="bar">Bar</label><input type="text" name="bar" id="bar" value="" />
@@ -50,7 +51,8 @@ use HTML::FormHandler::Test;
     my $rendered = $form->render;
     my $expected =
     '<form id="test_compound" method="post">
-      <div>
+      <div class="form_messages"></div>
+       <div>
         <label for="my_comp.one">One</label>
         <input id="my_comp.one" name="my_comp.one" type="text" value="" />
       </div>
@@ -81,6 +83,7 @@ use HTML::FormHandler::Test;
     # 'hfh-repinst'
     my $expected =
     '<form id="test_rep" method="post">
+      <div class="form_messages"></div>
       <div class="hfh-repinst">
         <div>
           <label for="my_rep.0.one">One</label>

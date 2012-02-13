@@ -7,14 +7,15 @@ use HTML::FormHandler::Test;
     package MyApp::Form::Search::Theme;
     use Moose::Role;
 
-    sub build_widget_tags {{
-        form_before => '<h3>Search form</h3><div class="row"><div class="span3"><p>Reflecting default WebKit styles, just add <code>.form-search</code> for extra rounded search fields.</p></div><div class="span9">',
-        form_after => '</div></div>',
+    sub build_form_tags {{
+        before => '<h3>Search form</h3><div class="row"><div class="span3"><p>Reflecting default WebKit styles, just add <code>.form-search</code> for extra rounded search fields.</p></div><div class="span9">',
+        after => '</div></div>',
+        no_form_message_div => 1,
     }}
     # classes for form element
     sub build_form_element_class { ['well', 'form-search'] }
     # field updates
-    sub build_update_fields {{
+    sub build_update_subfields {{
         searchterm => { widget_wrapper => 'None', element_attr => { class => ['input-medium', 'search-query'] }},
         submitbtn  => { widget => 'ButtonTag', widget_wrapper => 'None', element_attr => { class => ['btn'] } },
     }}

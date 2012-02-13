@@ -8,22 +8,22 @@ use HTML::FormHandler::Test;
     use Moose::Role;
     with 'HTML::FormHandler::Widget::Theme::BootstrapHoriz';
 
-    sub build_widget_tags {{
-        form_after_start => '<fieldset><legend>Form control states</legend>',
-        form_before_end => '</fieldset>',
+    sub build_form_tags {{
+        after_start => '<fieldset><legend>Form control states</legend>',
+        before_end => '</fieldset>',
     }}
 
-    sub build_update_fields {{
+    sub build_update_subfields {{
         focusedInput => { element_class => ['input-xlarge', 'focused'] },
         disabledInput => { element_class => ['input-xlarge'],
             element_attr => { placeholder => 'Disabled input here…' } },
         optionsCheckbox2 => { element_class => ['checkbox'],
-            widget_tags => { option_label => 'This is a disabled checkbox' } },
+            option_label => 'This is a disabled checkbox' },
         inputError3 => { wrapper_class => ['success'],
-            widget_tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
+            tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
         selectError => { wrapper_class => ['success'],
-            widget_tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
-        form_actions => { widget_tags => { wrapper => 1, label_none => 1 } },
+            tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
+        form_actions => { render_wrapper => 1, render_label => 0 },
         'form_actions.save' => { widget_wrapper => 'None', element_class => ['btn', 'primary'] },
         'form_actions.cancel' => { widget_wrapper => 'None', element_class => ['btn'] },
     }}
@@ -97,7 +97,7 @@ $expected =
 '<div class="control-group">
   <label class="control-label" for="optionsCheckbox2">Disabled checkbox</label>
   <div class="controls">
-    <label class="checkbox">
+    <label class="checkbox" for="optionsCheckbox2">
       <input class="checkbox disabled" type="checkbox" id="optionsCheckbox2" name="optionsCheckbox2" value="option1" disabled="disabled" />
       This is a disabled checkbox
     </label>
@@ -185,7 +185,7 @@ $expected =
   <div class="control-group">
     <label class="control-label" for="optionsCheckbox2">Disabled checkbox</label>
     <div class="controls">
-      <label class="checkbox">
+      <label class="checkbox" for="optionsCheckbox2">
         <input class="checkbox disabled" type="checkbox" id="optionsCheckbox2" name="optionsCheckbox2" value="option1" disabled="disabled" />
         This is a disabled checkbox
       </label>

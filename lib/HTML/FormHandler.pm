@@ -691,6 +691,7 @@ to be used for defaults instead of the item.
    form_wrapper_attr - hashref for form wrapper element attributes
       set in form with: sub build_form_wrapper_attr {...}
    form_wrapper_class - arrayref for setting wrapper class
+   render_form_wrapper - flag to wrap the form
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    uuid - generates a string containing an HTML field with UUID
@@ -792,6 +793,8 @@ has 'widget_name_space' => (
 # it only really makes sense to set these before widget_form is applied in BUILD
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple', writer => 'set_widget_form' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple', writer => 'set_widget_wrapper' );
+has 'render_form_wrapper' => ( is => 'rw', builder => 'build_render_form_wrapper' );
+sub build_render_form_wrapper { 0 }
 has 'no_widgets'        => ( is => 'ro', isa => 'Bool' );
 has 'no_preload'        => ( is => 'ro', isa => 'Bool' );
 has 'active' => (
@@ -829,12 +832,6 @@ has 'update_field_list'   => ( is => 'rw',
         has_update_field_list => 'count',
     },
 );
-# sigh. too many ways to do things. this is for updates applied via roles, so that you
-# can do both updates on the process call and updates from class applied roles
-has 'do_update_fields' => ( is => 'rw', isa => 'HashRef', builder => 'build_update_fields',
-    traits => ['Hash'], handles => { clear_do_update_fields => 'clear',
-    has_do_update_fields => 'count' }, init_arg => undef );
-sub build_update_fields {{}}
 has 'defaults' => ( is => 'rw', isa => 'HashRef', default => sub {{}}, traits => ['Hash'],
     handles => { has_defaults => 'count', clear_defaults => 'clear' },
 );
@@ -946,19 +943,31 @@ sub has_flag {
     return $self->$flag_name;
 }
 
-has 'widget_tags'         => (
+has 'form_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
     is => 'ro',
-    builder => 'build_widget_tags',
+    builder => 'build_form_tags',
     handles => {
-      get_tag => 'get',
+      _get_tag => 'get',
       set_tag => 'set',
       tag_exists => 'exists',
       has_tag => 'exists',
     },
 );
-sub build_widget_tags {{}}
+sub build_form_tags {{}}
+sub get_tag {
+    my ( $self, $name ) = @_;
+    return '' unless $self->tag_exists($name);
+    my $tag = $self->_get_tag($name);
+    return $self->$tag if ref $tag eq 'CODE';
+    return $tag unless $tag =~ /^%/;
+    ( my $block_name = $tag ) =~ s/^%//;
+    return $self->form->block($block_name)->render
+        if ( $self->form && $self->form->block_exists($block_name) );
+    return '';
+}
+
 sub form_html_attributes {
     my ( $self, $type, $attr ) = @_;
     return $attr;
@@ -1068,12 +1077,13 @@ sub BUILD {
 }
 sub build_fields {
     my $self = shift;
-    $self->{field_updates} = merge($self->update_field_list, $self->do_update_fields);
-    $self->_build_fields($self->field_traits);
+    my $field_updates = merge($self->update_field_list, $self->update_subfields);
+    $self->{field_updates} = $field_updates if keys %$field_updates;
+    $self->_build_fields;
     delete $self->{field_updates};
     $self->clear_update_field_list;
-    # set do_update_fields instead of clear, so that builder methods won't run again
-    $self->do_update_fields({});
+    # set update_subfields instead of clear, so that builder methods won't run again
+    $self->update_subfields({});
 }
 sub before_build {}
 sub after_build {}
@@ -1379,15 +1389,15 @@ sub _can_deflate { }
 
 sub update_fields {
     my $self = shift;
-    if( $self->has_update_field_list || $self->has_do_update_fields ) {
-        my $do_updates = $self->build_update_fields;
+    if( $self->has_update_field_list || $self->has_update_subfields ) {
+        my $do_updates = $self->build_update_subfields;
         my $updates = $self->update_field_list;
         $updates = merge($do_updates, $updates);
         foreach my $field_name ( keys %{$updates} ) {
             $self->update_field($field_name, $updates->{$field_name} );
         }
         $self->clear_update_field_list;
-        $self->clear_do_update_fields;
+        $self->clear_update_subfields;
     }
     if( $self->has_defaults ) {
         my $defaults = $self->defaults;
@@ -1408,7 +1418,7 @@ sub update_field {
     while ( my ( $attr_name, $attr_value ) = each %{$updates} ) {
         confess "invalid attribute '$attr_name' passed to update_field"
             unless $field->can($attr_name);
-        if( $attr_name eq 'widget_tags' ) {
+        if( $attr_name eq 'tags' ) {
             $field->set_tag(%$attr_value);
         }
         else {

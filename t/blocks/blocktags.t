@@ -11,8 +11,8 @@ use HTML::FormHandler::Test;
     has '+name' => ( default => 'test_form' );
     has_block 'comment' => ( tag => 'a', content => 'This is a comment from a block',
         class => ['comment' ] );
-    has_field 'foo' => ( widget_tags => { before_element => '%comment' } );
-    has_field 'bar' => ( widget_tags => { before_element => \&bar_element } );
+    has_field 'foo' => ( tags => { before_element => '%comment' } );
+    has_field 'bar' => ( tags => { before_element => \&bar_element } );
 
     sub bar_element {
         my $self = shift;
@@ -26,6 +26,7 @@ $form->process;
 my $rendered = $form->render;
 my $expected =
 '<form id="test_form" method="post">
+  <div class="form_messages"></div>
   <div>
     <label for="foo">Foo</label>
     <a class="comment">This is a comment from a block</a>

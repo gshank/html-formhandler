@@ -16,8 +16,8 @@ Uses the 'reset' widget.
 
 has '+widget' => ( default => 'Reset' );
 has '+value' => ( default => 'Reset' );
-has '+render_label' => ( default => 0 );
 has '+type_attr' => ( default => 'reset' );
+sub render_label {0}
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

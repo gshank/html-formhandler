@@ -126,7 +126,8 @@ has 'contains' => (
     predicate => 'has_contains',
 );
 has 'init_contains' => ( is => 'ro', isa => 'HashRef', traits => ['Hash'],
-handles => { has_init_contains => 'count' },
+    default => sub {{}},
+    handles => { has_init_contains => 'count' },
 );
 
 has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
@@ -181,7 +182,7 @@ sub create_element {
     }
     if( $self->form ) {
         $instance_attr->{form} = $self->form;
-        $instance = $self->form->new_field_with_traits(
+        $instance = $self->form->_make_adhoc_field(
             'HTML::FormHandler::Field::Repeatable::Instance',
             $instance_attr );
     }
@@ -198,9 +199,10 @@ sub create_element {
     if ( $self->auto_id ) {
         unless ( grep $_->can('is_primary_key') && $_->is_primary_key, $instance->all_fields ) {
             my $field;
-            my $field_attr = { name => 'id', parent => $instance, form => $self->form };
+            my $field_attr = { name => 'id', parent => $instance };
             if ( $self->form ) { # this will pull in the widget role
-                $field = $self->form->new_field_with_traits(
+                $field_attr->{form} = $self->form;
+                $field = $self->form->_make_adhoc_field(
                     'HTML::FormHandler::Field::PrimaryKey', $field_attr );
             }
             else { # the following won't have a widget role applied

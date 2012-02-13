@@ -45,13 +45,13 @@ ok( $dir, 'found template dir' );
     has_field 'bar';
     has_field 'fubar' => ( type => 'Compound',
         widget_wrapper => 'Fieldset',
-        widget_tags => { wrapper => 1 },
+        render_wrapper => 1,
         wrapper_attr => { class => 'fubar' },
     );
     has_field 'fubar.name';
     has_field 'fubar.country';
     has_field 'opt_in' => ( type => 'Checkbox', label => 'XXXX', default => 1,
-        widget_tags => { checkbox_unwrapped => 1 },
+        tags => { checkbox_unwrapped => 1 },
     );
     has_field 'choose' => ( type => 'Select', default => 2 );
     has_field 'picksome' => ( type => 'Multiple', default => [1,2] );
@@ -61,7 +61,7 @@ ok( $dir, 'found template dir' );
     has_field 'mememe' => ( type => 'Multiple', widget => 'RadioGroup', default => [2] );
     has_field 'notes' => ( type => 'TextArea', cols => 30, rows => 4 );
     has_field 'addresses' => ( type => 'Repeatable', widget_wrapper => 'Fieldset',
-        widget_tags => { wrapper => 1, wrapper_tag => 'fieldset' },
+        render_wrapper => 1, tags => {  wrapper_tag => 'fieldset' },
     );
     has_field 'addresses.street' => ( type => 'Text' );
     has_field 'addresses.city' => ( type => 'Text' );

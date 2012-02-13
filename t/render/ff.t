@@ -7,7 +7,7 @@ use HTML::FormHandler::Test;
     package HTML::FormHandler::Render::FFTheme;
     use Moose::Role;
 
-    sub build_widget_tags { { checkbox_unwrapped => 1 } }
+    sub build_update_subfields {{ all => { tags => { checkbox_unwrapped => 1 } } }}
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         my $class = $attr->{class} || [];
@@ -44,6 +44,7 @@ use HTML::FormHandler::Test;
 
 my $expected =
 '<form action="/form" method="post" id="test_form" >
+  <div class="form_messages"></div>
   <div class="text label">
     <label for="user">Username</label>
     <input name="user" type="text" id="user" value="" />

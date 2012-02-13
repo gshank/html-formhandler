@@ -11,7 +11,7 @@ use HTML::FormHandler::Test;
     sub build_form_element_attr { { method => 'GET', class => 'hfh test_form', target => '_blank' } }
     has_field 'foo' => ( element_attr => { arbitrary => 'something' } );
     has_field 'bar' => ( element_attr => { writeonly => 1 }, label_attr => { title => 'Bar Field' } );
-    has_field 'mox' => ( wrapper_attr => { class => ['minx', 'finx'] } );
+    has_field 'mox' => ( wrapper_class => ['minx', 'finx'] );
     has_field 'my_text' => ( type => 'TextArea', element_attr => { required => "required" } );
 }
 
@@ -32,10 +32,10 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags { { form_wrapper => 1 } }
+    sub build_render_form_wrapper {1}
     has '+name' => ( default => 'myapp_form' );
     sub form_element_attr { { name => 'myapp_form' } }
-    sub build_form_wrapper_attr { { class => 'form_wrapper' } }
+    sub build_form_wrapper_class { 'form_wrapper' }
     has_field 'foo';
     has_field 'bar';
     has_field 'mox' => ( element_attr => { placeholder => 'my placeholder' } );;
@@ -58,9 +58,10 @@ $form->process( params => {} );
 my $expected =
 '<fieldset class="form_wrapper">
 <form id="myapp_form" method="post" name="myapp_form" >
-<div class="wrapper hfh"><label class="label hfh" for="foo">Foo</label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
-<div class="wrapper hfh"><label class="label hfh" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>
-<div class="wrapper hfh"><label class="label hfh" for="mox">Mox</label><input type="text" name="mox" id="mox" value="" class="input hfh" placeholder="my placeholder" /></div>
+  <div class="form_messages"></div>
+  <div class="wrapper hfh"><label class="label hfh" for="foo">Foo</label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
+  <div class="wrapper hfh"><label class="label hfh" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>
+  <div class="wrapper hfh"><label class="label hfh" for="mox">Mox</label><input type="text" name="mox" id="mox" value="" class="input hfh" placeholder="my placeholder" /></div>
 </form></fieldset>';
 $rendered = $form->render;
 

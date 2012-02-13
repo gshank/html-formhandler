@@ -40,6 +40,7 @@ has '+widget'              => ( default => 'Checkbox' );
 has 'checkbox_value'       => ( is      => 'rw', default => 1 );
 has '+input_without_param' => ( default => 0 );
 has '+type_attr'           => ( default => 'checkbox' );
+has 'option_label'         => ( is => 'rw' );
 
 sub value {
     my $field = shift;

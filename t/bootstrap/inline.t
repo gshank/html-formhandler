@@ -12,21 +12,23 @@ use HTML::FormHandler::Test;
     # form wrapper class
     sub build_form_wrapper_class { ['span9'] }
     # turn on form wrapper, set the tag to 'div' (default is fieldset)
-    sub build_widget_tags {{
-        form_wrapper => 1, form_wrapper_tag => 'div',
-        form_before =>
+    sub build_render_form_wrapper {1}
+    sub build_form_tags {{
+        wrapper_tag => 'div',
+        before =>
 '<h3>Inline form</h3>
 <div class="row">
 <div class="span3">
   <p>Inputs are block level to start. For <code>.form-inline</code> and <code>.form-horizontal</code>, we use inline-block.</p>
 </div>',
-        form_after => '</div>',
+        after => '</div>',
+        no_form_message_div => 1,
     }}
     # update individual fields
-    sub build_update_fields {{
+    sub build_update_subfields {{
         email => { element_class => ['input-small'], element_attr => { placeholder => 'Email' } },
         password => { element_class => ['input-small'], element_attr => { placeholder => 'Password' },
-            widget_tags => { wrapper_tag => 0 } },
+            tags => { wrapper_tag => 0 } },
         go => { element_class => ['btn'] },
     }}
 

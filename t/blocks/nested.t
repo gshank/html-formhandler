@@ -45,6 +45,7 @@ $form->process;
 my $rendered = $form->render;
 my $expected =
 '<form id="nested_form" method="post">
+  <div class="form_messages"></div>
   <fieldset><legend>First Fieldset</legend>
     <div>
       <label for="foo">Foo</label>

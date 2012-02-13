@@ -34,6 +34,7 @@ $form->process;
 my $rendered = $form->render;
 my $expected =
 '<form id="test_form" method="post">
+  <div class="form_messages"></div>
   <h2>You got to the Block! Congratulations.</h2>
   <div>
     <label for="foo">Foo</label>

@@ -12,7 +12,7 @@ use HTML::FormHandler::Field::Text;
    extends 'HTML::FormHandler';
    with 'HTML::FormHandler::Render::Simple';
 
-   sub build_widget_tags { { form_wrapper => 1 } }
+   sub build_render_form_wrapper { 1 }
    sub build_form_wrapper_class { 'form_wrapper' }
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
@@ -36,8 +36,8 @@ use HTML::FormHandler::Field::Text;
    has_field 'comments' => ( type => 'TextArea', cols => 40, rows => 3 );
    has_field 'hidden' => ( type => 'Hidden' );
    has_field 'selected' => ( type => 'Boolean' );
-   has_field 'start_date' => ( type => 'DateTime',
-       widget_tags => { wrapper => 1, wrapper_tag => 'fieldset' },
+   has_field 'start_date' => ( type => 'DateTime', render_wrapper => 1,
+       tags => { wrapper_tag => 'fieldset' },
        wrapper_attr => { class => 'start_date' },
    );
    has_field 'start_date.month' => ( type => 'Integer', range_start => 1,

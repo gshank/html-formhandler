@@ -8,9 +8,10 @@ use HTML::TreeBuilder;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags {
-        { by_flag => { repeatable => { wrapper => 1 }, contains => { wrapper => 1 } } }
-    }
+    sub build_update_subfields {{
+        by_flag => { repeatable => { render_wrapper => 1, render_label => 1 },
+                     contains => { render_wrapper => 1 } },
+    }}
     has '+name' => ( default => 'test_form' );
     has_field 'foo' => ( type => 'Repeatable', num_when_empty => 2,
         wrapper_attr => { class => 'hfhrep' }, label => 'Foo Records' );
@@ -34,6 +35,7 @@ ok( $form, 'form built' );
 my $rendered = $form->render;
 my $expected =
 '<form id="test_form" method="post">
+  <div class="form_messages"></div>
   <fieldset class="hfhrep"><legend>Foo Records</legend>
     <div class="hfh repinst">
       <div>

@@ -12,7 +12,6 @@ use lib 't/lib';
     extends 'HTML::FormHandler';
 
     has '+widget_name_space' => ( default => 'Widget' );
-    sub build_widget_tags { { form_wrapper => 1, by_type => { compound => { wrapper => 1 }}}}
 
     has_field 'alpha' => ( widget => 'test_widget' );
     has_field 'omega' => ( widget => 'Omega' );

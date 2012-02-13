@@ -13,14 +13,23 @@ Role to apply to form objects to allow rendering. This rendering
 role is applied to HTML::FormHandler by default. It supports block
 rendering. (L<HTML::FormHandler::Blocks>, L<HTML::FormHandler::Widget::Block>)
 
-Supported widget_tags:
+Relevant flags:
 
-    form_wrapper   -- put a wrapper around main form
-    form_wrapper_tag -- tag for form wrapper; default 'fieldset'
-    form_before
-    form_after
-    form_after_start
-    form_before_end
+    render_form_wrapper - put a wrapper around the form
+
+Supported tags:
+
+    wrapper_tag -- tag for form wrapper; default 'fieldset'
+    before
+    after
+    after_start
+    before_end
+
+    messages_wrapper_class -- default 'form_messages'
+    error_class -- default 'error_message'
+    error_message -- message to issue when form contains errors
+    success_class -- default 'success_message'
+    success_message -- message to issue when form was submitted successfully
 
 =cut
 
@@ -74,15 +83,15 @@ sub render_start {
     $result ||= $self->result;
 
     my $output = '';
-    $output = $self->get_tag('form_before') if $self->tag_exists('form_before');
-    if( $self->get_tag('form_wrapper') ) {
-        my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
+    $output = $self->get_tag('before');
+    if( $self->render_form_wrapper ) {
+        my $form_wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         my $attrs = process_attrs($self->form_wrapper_attributes($result));
         $output .= qq{<$form_wrapper_tag$attrs>};
     }
     my $attrs = process_attrs($self->attributes($result));
     $output .= qq{<form$attrs>};
-    $output .= $self->get_tag('form_after_start') if $self->tag_exists('form_after_start');
+    $output .= $self->get_tag('after_start');
 
     return $output
 }
@@ -91,10 +100,25 @@ sub render_form_errors { shift->render_form_messages(@_) }
 sub render_form_messages {
     my ( $self, $result ) = @_;
 
-    return '' unless $result->has_form_errors;
-    my $output = qq{\n<div class="form_errors">};
-    $output .= qq{\n<span class="error_message">$_</span>}
-        for $result->all_form_errors;
+    return '' if $self->get_tag('no_form_message_div');
+    my $messages_wrapper_class = $self->get_tag('messages_wrapper_class') || 'form_messages';
+    my $output = qq{\n<div class="$messages_wrapper_class">};
+    my $error_class = $self->get_tag('error_class') || 'error_message';
+    if ( $result->has_form_errors ) {
+        $output .= qq{\n<span class="$error_class">$_</span>}
+            for $result->all_form_errors;
+    }
+    if( $self->get_tag('error_message' ) && $self->has_errors ) {
+        my $error_message = $self->get_tag('error_message');
+        $error_message = $self->_localize($error_message);
+        $output .= qq{\n<span class="$error_class">$error_message</span>};
+    }
+    if( $self->get_tag('success_message') ) {
+        my $success_message = $self->get_tag('success_message');
+        $success_message = $self->_localize($success_message);
+        my $success_class = $self->get_tag('success_class') || 'success_message';
+        $output .= qq{\n<span class="$success_class">$success_message</span>};
+    }
     $output .= "\n</div>";
     return $output;
 }
@@ -102,13 +126,13 @@ sub render_form_messages {
 sub render_end {
     my $self = shift;
 
-    my $output = $self->get_tag('before_form_end') if $self->tag_exists('before_form_end');
+    my $output = $self->get_tag('before_end');
     $output .= "</form>\n";
-    if( $self->get_tag('form_wrapper') ) {
-        my $form_wrapper_tag = $self->tag_exists('form_wrapper_tag') ? $self->get_tag('form_wrapper_tag') : 'fieldset';
+    if( $self->render_form_wrapper) {
+        my $form_wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         $output .= qq{</$form_wrapper_tag>};
     }
-    $output .= $self->get_tag('form_after') if $self->tag_exists('form_after' );
+    $output .= $self->get_tag('after');
     return $output;
 }
 use namespace::autoclean;

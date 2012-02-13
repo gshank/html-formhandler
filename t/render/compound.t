@@ -6,16 +6,14 @@ use HTML::FormHandler::Test;
 {
     package MyApp::Form::Theme::Basic;
     use Moose::Role;
-    sub build_widget_tags {
-        {
-            form_wrapper => 1,
-            form_wrapper_tag => 'div',
-            label_tag => 'span',
-            by_flag => {
-                'compound' => { wrapper => 1, wrapper_tag => 'span' },
-            }
-        }
-    }
+
+    sub build_render_form_wrapper {1}
+    sub build_form_tags {{  wrapper_tag => 'div' }}
+    sub build_update_subfields {{
+        all => { tags => { label_tag => 'span' } },
+        by_flag => { 'compound' => { render_wrapper => 1, render_label => 1,
+           tags => {  wrapper_tag => 'span' }}},
+    }}
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = ['frm', 'ele'] if $type eq 'input';
@@ -40,13 +38,13 @@ my $form = MyApp::Form->new;
 my $rendered = $form->field('my_comp')->render;
 my $expected =
 '<span class="frm wrp">
-  <span class="frm lbl" for="my_comp">My comp</span>
+  <span class="frm lbl">My comp</span>
   <div class="frm wrp">
-    <span class="frm lbl" for="my_comp.one">One</span>
+    <span class="frm lbl">One</span>
     <input class="frm ele" type="text" name="my_comp.one" id="my_comp.one" value="" />
   </div>
   <div class="frm wrp">
-    <span class="frm lbl" for="my_comp.two">Two</span>
+    <span class="frm lbl">Two</span>
     <input class="frm ele" type="text" name="my_comp.two" id="my_comp.two" value="" />
   </div>
 </span>';
@@ -57,9 +55,9 @@ is_html( $rendered, $expected, 'compound rendered ok' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags {{ label_after => ': ' }}
-    has_field 'start_date' => ( type => 'DateTime', widget_tags => { wrapper => 1,
-        wrapper_tag => 'fieldset' }, wrapper_class => 'start_date' );
+    sub build_update_subfields {{ all => { tags => { label_after => ': ' }}}}
+    has_field 'start_date' => ( type => 'DateTime', render_wrapper => 1, render_label => 1,
+        tags => { wrapper_tag => 'fieldset' }, wrapper_class => 'start_date' );
     has_field 'start_date.month' => ( type => 'Integer', range_start => 1,
         range_end => 12 );
     has_field 'start_date.day' => ( type => 'Integer', range_start => 1,

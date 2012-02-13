@@ -13,7 +13,12 @@ use HTML::FormHandler::Field::Text;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_widget_tags { { form_wrapper => 1, by_flag => { compound => { wrapper => 1 }}}}
+    sub build_render_form_wrapper {1}
+    sub build_update_subfields {{
+        by_flag => { compound => { render_wrapper => 1, render_label => 1 },
+            repeatable => { render_wrapper => 1, render_label => 1 },
+        },
+    }}
     sub build_form_wrapper_class { 'form_wrapper' }
     has '+name' => ( default => 'testform' );
     has_field 'test_field' => (
@@ -36,7 +41,7 @@ use HTML::FormHandler::Field::Text;
     has_field 'comments'   => ( type => 'TextArea', cols => 40, rows => 3 );
     has_field 'hidden'     => ( type => 'Hidden' );
     has_field 'selected'   => ( type => 'Boolean' );
-    has_field 'start_date' => ( type => 'DateTime', widget_tags => { wrapper_tag => 'fieldset' } );
+    has_field 'start_date' => ( type => 'DateTime', tags => { wrapper_tag => 'fieldset' } );
     has_field 'start_date.month' => (
         type        => 'Integer',
         range_start => 1,
@@ -84,7 +89,7 @@ ok( $form, 'create form' );
 
 
 my $expected =
-'<fieldset><legend>Hobbies</legend>
+'<fieldset><legend class="label">Hobbies</legend>
   <div>
     <label class="label" for="hobbies.0">0</label>
     <input type="text" name="hobbies.0" id="hobbies.0" value="" tabindex="2" />
@@ -129,10 +134,10 @@ is_html( $rendered,
     'output from text field'
 );
 
-
 $expected =
 '<div>
-  <label class="label" for="active"><input type="checkbox" name="active" id="active" value="1" />Active</label>
+  <label class="label">Active</label>
+    <label class="checkbox" for="active"><input id="active" name="active" type="checkbox" value="1" />Active</label>
 </div>';
 is_html( $form->field('active')->render, $expected, 'output from checkbox field');
 
@@ -156,14 +161,15 @@ is_html( $rendered,
 $rendered = $form->field('selected')->render;
 is_html( $rendered,
 '<div>
-  <label class="label" for="selected"><input type="checkbox" name="selected" id="selected" value="1" checked="checked" />Selected</label>
+  <label class="label">Selected</label>
+  <label class="checkbox" for="selected"><input checked="checked" id="selected" name="selected" type="checkbox" value="1" />Selected</label>
 </div>',
     'output from boolean'
 );
 
 $rendered = $form->field('start_date')->render;
 is_html( $rendered,
-'<fieldset><legend>Start date</legend>
+'<fieldset><legend class="label">Start date</legend>
   <div>
     <label class="label" for="start_date.month">Month</label>
     <input type="text" name="start_date.month" id="start_date.month" size="8" value="7" />
@@ -201,7 +207,7 @@ is_html( $rendered,
 
 $rendered = $form->field('hobbies')->render;
 is_html( $rendered, '
-<fieldset><legend>Hobbies</legend>
+<fieldset><legend class="label">Hobbies</legend>
   <div>
     <label class="label" for="hobbies.0">0</label>
     <input type="text" name="hobbies.0" id="hobbies.0" value="eating" tabindex="2" />

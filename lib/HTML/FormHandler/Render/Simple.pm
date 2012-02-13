@@ -136,15 +136,15 @@ sub render_start {
     my $self = shift;
 
     my $output = '';
-    $output .= $self->get_tag('before_form') if $self->tag_exists('before_form');
-    if( $self->get_tag('form_wrapper') ) {
-        my $form_wrapper_tag = $self->get_tag('form_wrapper_tag') || 'fieldset';
+    $output .= $self->get_tag('before');
+    if( $self->render_form_wrapper ) {
+        my $form_wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         my $attrs = process_attrs($self->form_wrapper_attributes);
         $output .= qq{<$form_wrapper_tag$attrs>};
     }
     my $attrs = process_attrs($self->attributes);
     $output .= qq{<form$attrs>};
-    $output .= $self->get_tag('after_form_start') if $self->tag_exists('after_form_start');
+    $output .= $self->get_tag('after_start');
 
     return $output
 }
@@ -164,7 +164,7 @@ sub render_end {
     my $self = shift;
 
     my $output = "</form>\n";
-    if( $self->get_tag('form_wrapper') ) {
+    if( $self->render_form_wrapper ) {
         my $wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         $output .= "</$wrapper_tag>";
     }
@@ -200,7 +200,7 @@ sub wrap_field {
     my ( $self, $field, $rendered_field ) = @_;
 
     return $rendered_field if $field->uwrapper eq 'none';
-    return $rendered_field if ( $field->has_flag('is_compound') && ! $field->get_tag('wrapper') );
+    return $rendered_field if ! $field->render_wrapper;
 
     my $output = "\n";
 

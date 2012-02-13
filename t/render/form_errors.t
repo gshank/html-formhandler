@@ -34,7 +34,7 @@ ok( $form->has_errors, 'errors in form' );
 
 my $rendered = $form->render;
 like( $rendered, qr/error_message/, 'form error rendered' );
-like( $rendered, qr/form_errors/, 'form error rendered' );
+like( $rendered, qr/form_messages/, 'form message dif rendered' );
 
 {
     package Test::Form2;
@@ -69,7 +69,6 @@ ok( $form->has_errors, 'errors in form' );
 
 $rendered = $form->render;
 like( $rendered, qr/error_message/, 'form error rendered' );
-like( $rendered, qr/form_errors/, 'form error rendered' );
 
 {
     package Test::Form3;
@@ -101,7 +100,6 @@ ok( $form->has_errors, 'errors in form' );
 
 $rendered = $form->render;
 like( $rendered, qr/error_message/, 'form error rendered' );
-like( $rendered, qr/form_errors/, 'form error rendered' );
 
 {
     package Test::Form4;
@@ -131,6 +129,5 @@ ok( $form->has_errors, 'errors in form' );
 
 $rendered = $form->render;
 like( $rendered, qr/error_message/, 'form error rendered' );
-like( $rendered, qr/form_errors/, 'form error rendered' );
 
 done_testing;
