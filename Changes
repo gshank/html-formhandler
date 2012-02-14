@@ -1,3 +1,7 @@
+0.36003 Tue Feb 14, 2012
+    Bug rendering fields with hidden widget where label is rendered.
+       Switch back to no wrapping of hidden fields.
+
 0.36002 Fri Feb 2, 2012
     Fixed bug introduced in last release where rendering roles are overwritten
        by HTML::FormHandler::Render::Simple being applied on top.
