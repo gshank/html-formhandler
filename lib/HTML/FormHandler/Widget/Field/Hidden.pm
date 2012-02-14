@@ -16,7 +16,6 @@ sub render {
     $output .= process_attrs($self->attributes);
     $output .= " />\n";
 
-    return $self->wrap_field( $result, $output );
 }
 
 use namespace::autoclean;

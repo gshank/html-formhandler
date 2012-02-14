@@ -18,6 +18,7 @@ That primary key is in the 'item_id' attribute.
 
 has 'is_primary_key' => ( isa => 'Bool', is => 'ro', default => '1' );
 has '+widget' => ( default => 'hidden' );
+has 'no_render_label' => ( is => 'ro', isa => 'Bool', default => 1 );
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
