@@ -16,7 +16,10 @@ sub render {
     $output .= process_attrs($self->element_attributes($result));
     $output .= " />\n";
 
-    return $self->wrap_field( $result, $output );
+    # wrap field unless render_label is set, which would cause unwanted
+    # labels to be displayed
+    return $self->wrap_field( $result, $output ) if !$self->render_label;
+    return $output;
 }
 
 use namespace::autoclean;

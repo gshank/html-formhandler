@@ -15,6 +15,7 @@ use HTML::TreeBuilder;
     has '+name' => ( default => 'test_form' );
     has_field 'foo' => ( type => 'Repeatable', num_when_empty => 2,
         wrapper_attr => { class => 'hfhrep' }, label => 'Foo Records' );
+    has_field 'foo.id' => ( type => 'PrimaryKey' );
     has_field 'foo.one';
     has_field 'foo.two';
     has_field 'foo.three';
@@ -38,6 +39,7 @@ my $expected =
   <div class="form_messages"></div>
   <fieldset class="hfhrep"><legend>Foo Records</legend>
     <div class="hfh repinst">
+      <div><input type="hidden" name="foo.0.id" id="foo.0.id" value="" /></div>
       <div>
         <label for="foo.0.one">One</label>
         <input type="text" name="foo.0.one" id="foo.0.one" value="" />
@@ -52,6 +54,7 @@ my $expected =
       </div>
     </div>
     <div class="hfh repinst">
+      <div><input type="hidden" name="foo.1.id" id="foo.1.id" value="" /></div>
       <div><label for="foo.1.one">One</label>
         <input type="text" name="foo.1.one" id="foo.1.one" value="" />
       </div>
