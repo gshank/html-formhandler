@@ -846,6 +846,8 @@ has 'html_prefix'   => ( isa => 'Bool', is  => 'ro' );
 has 'active_column' => ( isa => 'Str',  is  => 'ro' );
 has 'http_method'   => ( isa => 'Str',  is  => 'ro', default => 'post' );
 has 'enctype'       => ( is  => 'rw',   isa => 'Str' );
+has 'error_message' => ( is => 'rw', predicate => 'has_error_message', clearer => 'clear_error_message' );
+has 'success_message' => ( is => 'rw', predicate => 'has_success_message', clearer => 'clear_success_message' );
 # deprecated
 has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
@@ -1130,6 +1132,8 @@ sub clear {
     $self->clear_result;
     $self->clear_use_defaults_over_obj;
     $self->clear_use_init_obj_over_item;
+    $self->clear_error_message;
+    $self->clear_success_message;
 }
 
 sub values { shift->value }

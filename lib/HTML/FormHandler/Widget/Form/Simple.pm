@@ -108,16 +108,16 @@ sub render_form_messages {
         $output .= qq{\n<span class="$error_class">$_</span>}
             for $result->all_form_errors;
     }
-    if( $self->get_tag('error_message' ) && $self->has_errors ) {
-        my $error_message = $self->get_tag('error_message');
-        $error_message = $self->_localize($error_message);
-        $output .= qq{\n<span class="$error_class">$error_message</span>};
+    if( $self->has_error_message ) {
+        my $msg = $self->error_message;
+        $msg = $self->_localize($msg);
+        $output .= qq{\n<span class="$error_class">$msg</span>};
     }
-    if( $self->get_tag('success_message') ) {
-        my $success_message = $self->get_tag('success_message');
-        $success_message = $self->_localize($success_message);
+    if( $self->has_success_message ) {
+        my $msg = $self->success_message;
+        $msg = $self->_localize($msg);
         my $success_class = $self->get_tag('success_class') || 'success_message';
-        $output .= qq{\n<span class="$success_class">$success_message</span>};
+        $output .= qq{\n<span class="$success_class">$msg</span>};
     }
     $output .= "\n</div>";
     return $output;

@@ -6,7 +6,7 @@ use HTML::FormHandler::Test;
 {
     package MyApp::Form::CtrlStates::Theme;
     use Moose::Role;
-    with 'HTML::FormHandler::Widget::Theme::BootstrapHoriz';
+    with 'HTML::FormHandler::Widget::Theme::Bootstrap';
 
     sub build_form_tags {{
         after_start => '<fieldset><legend>Form control states</legend>',
@@ -170,6 +170,7 @@ $expected =
 '<form id="test_form" class="form-horizontal" method="post">
 <fieldset>
   <legend>Form control states</legend>
+  <div class="alert alert-error"><span class="error_message">There were errors in your form</span></div>
   <div class="control-group">
     <label class="control-label" for="focusedInput">Focused input</label>
     <div class="controls">
