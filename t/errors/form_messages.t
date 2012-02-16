@@ -9,6 +9,7 @@ use HTML::FormHandler::Test;
     extends 'HTML::FormHandler';
 
     has '+name' => ( default => 'testform' );
+    has '+success_message' => ( default => 'Successfully Submitted' );
     has_field 'foo';
     has_field 'bar';
 
@@ -22,12 +23,11 @@ my $params = {
 };
 $form->process( params => $params );
 ok( $form->validated, 'form validated' );
-$form->success_message( 'Your form was successfully submitted' );
 my $rendered = $form->render;
 my $expected =
 '<form id="testform" method="post">
   <div class="form_messages">
-    <span class="success_message">Your form was successfully submitted</span>
+    <span class="success_message">Successfully Submitted</span>
   </div>
   <div>
     <label for="foo">Foo</label>
@@ -40,8 +40,8 @@ my $expected =
 </form>';
 is_html( $rendered, $expected, 'success message rendered ok' );
 
-$form->process( params => $params );
-$rendered = $form->process;
-unlike( $rendered, qr/class="success_message"/, 'success message has been cleared' );
+$form->process( params => {} );
+$rendered = $form->render;
+unlike( $rendered, qr/class="success_message"/, 'no success message when not validated' );
 
 done_testing;

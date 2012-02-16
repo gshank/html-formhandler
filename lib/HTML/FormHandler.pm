@@ -1132,8 +1132,6 @@ sub clear {
     $self->clear_result;
     $self->clear_use_defaults_over_obj;
     $self->clear_use_init_obj_over_item;
-    $self->clear_error_message;
-    $self->clear_success_message;
 }
 
 sub values { shift->value }

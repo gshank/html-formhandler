@@ -99,21 +99,22 @@ sub render_start {
 sub render_form_errors { shift->render_form_messages(@_) }
 sub render_form_messages {
     my ( $self, $result ) = @_;
+    $result ||= $self->result;
 
     return '' if $self->get_tag('no_form_message_div');
     my $messages_wrapper_class = $self->get_tag('messages_wrapper_class') || 'form_messages';
     my $output = qq{\n<div class="$messages_wrapper_class">};
     my $error_class = $self->get_tag('error_class') || 'error_message';
-    if ( $result->has_form_errors ) {
-        $output .= qq{\n<span class="$error_class">$_</span>}
-            for $result->all_form_errors;
-    }
-    if( $self->has_error_message ) {
+    if( $self->has_error_message && ( $result->has_errors || $result->has_form_errors ) ) {
         my $msg = $self->error_message;
         $msg = $self->_localize($msg);
         $output .= qq{\n<span class="$error_class">$msg</span>};
     }
-    if( $self->has_success_message ) {
+    if ( $result->has_form_errors ) {
+        $output .= qq{\n<span class="$error_class">$_</span>}
+            for $result->all_form_errors;
+    }
+    if( $self->has_success_message && $result->validated ) {
         my $msg = $self->success_message;
         $msg = $self->_localize($msg);
         my $success_class = $self->get_tag('success_class') || 'success_message';
