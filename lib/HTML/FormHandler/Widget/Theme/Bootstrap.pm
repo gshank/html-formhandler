@@ -21,10 +21,11 @@ Form error messages:
 
 use Moose::Role;
 
-sub before_build {
+after 'before_build' => sub {
     my $self = shift;
-    $self->set_widget_wrapper('Bootstrap');
-}
+    $self->set_widget_wrapper('Bootstrap')
+       if $self->widget_wrapper eq 'Simple';
+};
 
 sub build_form_element_class { ['form-horizontal'] }
 

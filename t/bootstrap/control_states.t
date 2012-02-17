@@ -20,11 +20,11 @@ use HTML::FormHandler::Test;
         optionsCheckbox2 => { element_class => ['checkbox'],
             option_label => 'This is a disabled checkbox' },
         inputError3 => { wrapper_class => ['success'],
-            tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
+            tags => { after_element => qq{\n<span class="help-inline">Woohoo!</span>} } },
         selectError => { wrapper_class => ['success'],
-            tags => { after_element => '<span class="help-inline">Woohoo!</span>' } },
+            tags => { after_element => qq{\n<span class="help-inline">Woohoo!</span>} } },
         form_actions => { render_wrapper => 1, render_label => 0 },
-        'form_actions.save' => { widget_wrapper => 'None', element_class => ['btn', 'primary'] },
+        'form_actions.save' => { widget_wrapper => 'None', element_class => ['btn', 'btn-primary'] },
         'form_actions.cancel' => { widget_wrapper => 'None', element_class => ['btn'] },
     }}
 }
@@ -159,7 +159,7 @@ is_html( $rendered, $expected, 'selectError rendered ok' );
 
 $expected =
 '<div class="form-actions">
-  <button type="submit" class="btn primary" name="form_actions.save" id="form_actions.save">Save changes</button>
+  <button type="submit" class="btn btn-primary" name="form_actions.save" id="form_actions.save">Save changes</button>
   <button type="reset" class="btn" name="form_actions.cancel" id="form_actions.cancel">Cancel</button>
 </div>';
 
@@ -227,7 +227,7 @@ $expected =
     </div>
   </div>
   <div class="form-actions">
-    <button type="submit" class="btn primary" name="form_actions.save" id="form_actions.save">Save changes</button>
+    <button type="submit" class="btn btn-primary" name="form_actions.save" id="form_actions.save">Save changes</button>
     <button type="reset" class="btn" name="form_actions.cancel" id="form_actions.cancel">Cancel</button>
   </div>
 </fieldset>

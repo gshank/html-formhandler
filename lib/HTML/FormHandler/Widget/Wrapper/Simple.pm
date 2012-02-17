@@ -41,8 +41,9 @@ Supported 'tags':
 sub wrap_field {
     my ( $self, $result, $rendered_widget, $wrap_label ) = @_;
 
-    return $rendered_widget if ( ! $self->render_wrapper && ! $self->render_label );
+    return "\n$rendered_widget" if ( ! $self->render_wrapper && ! $self->render_label );
 
+    # each field starts with a newline
     my $output = "\n";
     # get wrapper tag if set
     my $label_tag;
@@ -54,7 +55,7 @@ sub wrap_field {
         # get attribute string
         my $attrs = process_attrs( $self->wrapper_attributes($result) );
         # write wrapper tag
-        $output .= qq{<$wrapper_tag$attrs>};
+        $output .= qq{\n<$wrapper_tag$attrs>};
         $label_tag = 'legend' if $wrapper_tag eq 'fieldset';
     }
     # write label; special processing (wrap_label) for checkboxes
@@ -62,12 +63,12 @@ sub wrap_field {
         $rendered_widget = $self->do_render_wrapped_label($result, $rendered_widget, $label_tag);
     }
     elsif( $self->render_label ) {
-        $output .= $self->do_render_label($result, $label_tag );
+        $output .= "\n" . $self->do_render_label($result, $label_tag );
     }
     # append 'before_element'
     $output .= $self->get_tag('before_element');
     # the input element itself
-    $output .= $rendered_widget;
+    $output .= "\n$rendered_widget";
     # the 'after_element'
     $output .= $self->get_tag('after_element');
     # the error messages

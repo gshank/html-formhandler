@@ -32,11 +32,7 @@ sub is_html {
     my $t1 = HTML::TreeBuilder->new;
     my $t2 = HTML::TreeBuilder->new;
 
-    # TreeBuilder collapses a newline or a newline followed by space into
-    # a single space, which won't match against no space, so remove.
-    $got =~ s/\n\s*//sg;
     $got = decode('utf8', $got);
-    $expected =~ s/\n\s*//sg;
     $expected = decode('utf8', $expected);
     $t1->parse($got);
     $t1->eof;

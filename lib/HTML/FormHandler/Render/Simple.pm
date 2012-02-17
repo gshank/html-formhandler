@@ -199,8 +199,8 @@ sub render_field {
 sub wrap_field {
     my ( $self, $field, $rendered_field ) = @_;
 
-    return $rendered_field if $field->uwrapper eq 'none';
-    return $rendered_field if ! $field->render_wrapper;
+    return "\n$rendered_field" if $field->uwrapper eq 'none';
+    return "\n$rendered_field" if ! $field->render_wrapper;
 
     my $output = "\n";
 
@@ -213,10 +213,10 @@ sub wrap_field {
         $output .= '<legend>' . $field->loc_label . '</legend>';
     }
     elsif ( ! $field->get_tag('label_none') && $field->render_label && length( $field->label ) > 0 ) {
-        $output .= $self->render_label($field);
+        $output .= "\n" . $self->render_label($field);
     }
 
-    $output .= $rendered_field;
+    $output .= "\n$rendered_field";
     $output .= qq{\n<span class="error_message">$_</span>}
         for $field->all_errors;
 

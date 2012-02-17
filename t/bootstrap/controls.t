@@ -16,7 +16,6 @@ use HTML::FormHandler::Test;
     sub build_form_element_class {['form-horizontal']}
     sub build_form_wrapper_class {['span8']}
     sub build_form_tags {{
-        wrapper => 1,
         wrapper_tag => 'div',
         after_start => '<fieldset><legend>Controls Bootstrap supports</legend>',
         before_end => '</fieldset>',
@@ -41,7 +40,7 @@ use HTML::FormHandler::Test;
         render_wrapper => 1,
         render_label => 0, wrapper_attr => { class => 'form-actions' }  );
     has_field 'actions.save' => ( type => 'Submit', widget => 'ButtonTag',
-        element_attr => { class => ['btn', 'primary'] },
+        element_attr => { class => ['btn', 'btn-primary'] },
         widget_wrapper => 'None', value => "Save changes" );
     has_field 'actions.cancel' => ( type => 'Reset', widget => 'ButtonTag',
         element_attr => { class => ['btn'] },
@@ -163,7 +162,7 @@ is_html($rendered, $expected, 'textarea renders ok' );
 # actions
 $expected =
 '<div class="form-actions">
-  <button id="actions.save" name="actions.save" type="submit" class="btn primary">Save changes</button>
+  <button id="actions.save" name="actions.save" type="submit" class="btn btn-primary">Save changes</button>
   <button id="actions.cancel" name="actions.cancel" type="reset" class="btn">Cancel</button>
 </div>';
 $rendered = $form->field('actions')->render;
@@ -228,7 +227,7 @@ $expected = '
             </div>
           </div>
           <div class="form-actions">
-            <button id="actions.save" name="actions.save" type="submit" class="btn primary">Save changes</button>
+            <button id="actions.save" name="actions.save" type="submit" class="btn btn-primary">Save changes</button>
             <button id="actions.cancel" name="actions.cancel" type="reset" class="btn">Cancel</button>
           </div>
         </fieldset>

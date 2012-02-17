@@ -37,7 +37,10 @@ use HTML::FormHandler::Test;
    $expected =
 '<div>
   <label>Option3</label>
-    <label class="checkbox" for="option3"><input id="option3" name="option3" type="checkbox" value="1" />Try this one</label>
+    <label class="checkbox" for="option3">
+      <input id="option3" name="option3" type="checkbox" value="1" />
+      Try this one
+    </label>
 </div>';
    $rendered = $form->field('option3')->render;
    is_html( $rendered, $expected, 'Checkbox with two labels' );

@@ -25,7 +25,7 @@ buttons, with wrapped labels.
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    return $rendered_widget if ( ! $self->render_wrapper && ! $self->render_label );
+    return "\n$rendered_widget" if ( ! $self->render_wrapper && ! $self->render_label );
 
     my $output = "\n";
     # is this a control group or a form action?
@@ -40,7 +40,7 @@ sub wrap_field {
     $output .= qq{<div$attr_str>};
     if ( ! $self->get_tag('label_none') && $self->render_label && length( $self->label ) > 0 ) {
         my $label = $self->html_filter($self->loc_label);
-        $output .= qq{<label class="control-label" for="} . $self->id . qq{">$label</label>};
+        $output .= qq{\n<label class="control-label" for="} . $self->id . qq{">$label</label>};
     }
     $output .=  $self->get_tag('before_element');
     # the controls div for ... controls
@@ -93,11 +93,11 @@ sub wrap_checkbox {
     # special extra wrapped label for checkbox, including checkbox class
     my $output .= '<label class="checkbox">' if $self->type_attr eq 'checkbox';
     # the actual rendered input element
-    $output .= $rendered_widget;
+    $output .= "\n$rendered_widget";
     # end special checkbox label
     my $label2 = $self->option_label || $self->label;
     $label2 = $self->html_filter($self->_localize($label2));
-    $output .= "$label2</label>";
+    $output .= "\n$label2\n</label>";
     return $output;
 }
 sub wrap_radio {

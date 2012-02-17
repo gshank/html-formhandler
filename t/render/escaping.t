@@ -87,7 +87,7 @@ my $params = {
 
 $form->process( $params );
 
-is( $form->render_field( $form->field('number') ),
+is_html( $form->render_field( $form->field('number') ),
     '
 <div><label for="number">Number: </label><input type="text" name="number" id="number" value="0" />
 </div>',
@@ -99,32 +99,32 @@ my $rendered = $form->render_field( $form->field('test_field') );
 my $expected =   '
 <div><label for="f99">&quot;TEST&quot;: </label><input type="text" name="test_field" id="f99" size="20" value="something&lt;br&gt;" />
 </div>';
-is( $rendered, $expected, 'output from text field');
-is( $form->field('test_field')->render, $rendered, 'text field with widgets' );
+is_html( $rendered, $expected, 'output from text field');
+is_html( $form->field('test_field')->render, $rendered, 'text field with widgets' );
 
 
 $rendered = $form->render_field( $form->field('fruit') );
 $expected =  '
 <div><label for="fruit">Fruit: </label><select name="fruit" id="fruit"><option value="1" id="fruit.0">&quot;apples&quot;</option><option value="2" id="fruit.1" selected="selected">&lt;oranges&gt;</option><option value="3" id="fruit.2">&amp;kiwi&amp;</option></select>
 </div>';
-is( $rendered, $expected, 'output from select field');
+is_html( $rendered, $expected, 'output from select field');
 
 $rendered = $form->render_field( $form->field('vegetables') );
-is( $rendered,
+is_html( $rendered,
    '
 <div><label for="vegetables">Vegetables: </label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0">&lt;lettuce&gt;</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2">carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select>
 </div>',
 'output from select multiple field');
 
 $rendered = $form->render_field( $form->field('active') );
-is( $rendered,
+is_html( $rendered,
    '
 <div><label for="active">Active: </label><input type="checkbox" name="active" id="active" value="1" />
 </div>',
    'output from checkbox field');
 
 $rendered = $form->render_field( $form->field('comments') );
-is( $rendered,
+is_html( $rendered,
    '
 <div><label for="comments">Comments: </label><textarea name="comments" id="comments" rows="5" cols="10">Four score and seven years ago...&lt;/textarea&gt;</textarea>
 </div>',
@@ -136,30 +136,30 @@ is_html( $rendered,
    'output from hidden field' );
 
 $rendered = $form->render_field( $form->field('selected') );
-is( $rendered,
+is_html( $rendered,
    '
 <div><label for="selected">Selected: </label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" />
 </div>',
    'output from boolean' );
 
 $rendered = $form->render_field( $form->field('submit') );
-is( $rendered, q{
+is_html( $rendered, q{
 <div><input type="submit" name="submit" id="submit" value="Update" />
 </div>}, 'output from Submit');
 
 $rendered = $form->render_field( $form->field('opt_in') );
-is( $rendered, q{
+is_html( $rendered, q{
 <div><label for="opt_in">Opt in: </label> <br /><label for="opt_in.0"><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />&lt;No&gt;</label><br /><label for="opt_in.1"><input type="radio" value="1" name="opt_in" id="opt_in.1" />&lt;Yes&gt;</label><br />
 </div>}, 'output from radio group' );
 
 $rendered = $form->render_start;
-is( $rendered,
+is_html( $rendered,
 '<fieldset class="form_wrapper"><form id="testform" method="post">',
 'Form start OK' );
 
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
 
-is( $form->render_field( $form->field('no_render')), '', 'no_render' );
+is_html( $form->render_field( $form->field('no_render')), '', 'no_render' );
 
 done_testing;

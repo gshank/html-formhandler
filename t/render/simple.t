@@ -125,7 +125,7 @@ is_deeply( $form->field('starch')->input_without_param, [], 'checkbox group sett
 is( $form->field('starch')->not_nullable, 1, 'checkbox group settings' );
 is_deeply( $form->value->{starch}, [], 'checkbox group value' );
 
-is( $form->render_field( $form->field('number') ),
+is_html( $form->render_field( $form->field('number') ),
     '
 <div><label class="label" for="number">Number</label><input type="text" name="number" id="number" value="0" />
 </div>',
@@ -133,49 +133,49 @@ is( $form->render_field( $form->field('number') ),
 );
 
 my $output1 = $form->render_field( $form->field('test_field') );
-is( $output1,
+is_html( $output1,
    '
 <div><label class="label" for="f99">TEST</label><input type="text" name="test_field" id="f99" size="20" value="something" class="test123" />
 </div>',
    'output from text field');
 
 my $output2 = $form->render_field( $form->field('fruit') );
-is( $output2,
+is_html( $output2,
    '
 <div><label class="label" for="fruit">Fruit</label><select name="fruit" id="fruit"><option value="1" id="fruit.0">apples</option><option value="2" id="fruit.1" selected="selected">oranges</option><option value="3" id="fruit.2">kiwi</option></select>
 </div>',
    'output from select field');
 
 my $output12 = $form->render_field( $form->field('cheese') );
-is( $output12,
+is_html( $output12,
    '
 <div><label class="label" for="cheese">Cheese</label><select name="cheese" id="cheese"><option value="1" id="cheese.0">canastra</option><option value="2" id="cheese.1" disabled="disabled">brie</option><option value="3" id="cheese.2">gorgonzola</option></select>
 </div>',
    'output from select field with disabled option');
 
 my $output3 = $form->render_field( $form->field('vegetables') );
-is( $output3,
+is_html( $output3,
    '
 <div><label class="label" for="vegetables">Vegetables</label><select name="vegetables" id="vegetables" multiple="multiple" size="5"><option value="1" id="vegetables.0">lettuce</option><option value="2" id="vegetables.1" selected="selected">broccoli</option><option value="3" id="vegetables.2">carrots</option><option value="4" id="vegetables.3" selected="selected">peas</option></select>
 </div>',
 'output from select multiple field');
 
 my $output13 = $form->render_field( $form->field('grains') );
-is( $output13,
+is_html( $output13,
    '
 <div><label class="label" for="grains">Grains</label><select name="grains" id="grains" multiple="multiple" size="5"><option value="1" id="grains.0">maize</option><option value="2" id="grains.1" disabled="disabled">rice</option><option value="3" id="grains.2">wheat</option></select>
 </div>',
 'output from select multiple field with disabled option');
 
 my $output4 = $form->render_field( $form->field('active') );
-is( $output4,
+is_html( $output4,
    '
 <div><label class="label" for="active">Active</label><input type="checkbox" name="active" id="active" value="1" />
 </div>',
    'output from checkbox field');
 
 my $output5 = $form->render_field( $form->field('comments') );
-is( $output5,
+is_html( $output5,
    '
 <div><label class="label" for="comments">Comments</label><textarea name="comments" id="comments" rows="3" cols="40">Four score and seven years ago...</textarea>
 </div>',
@@ -187,14 +187,14 @@ is_html( $output6,
    'output from hidden field' );
 
 my $output7 = $form->render_field( $form->field('selected') );
-is( $output7,
+is_html( $output7,
    '
 <div><label class="label" for="selected">Selected</label><input type="checkbox" name="selected" id="selected" value="1" checked="checked" />
 </div>',
    'output from boolean' );
 
 my $output8 = $form->render_field( $form->field('start_date') );
-is( $output8,
+is_html( $output8,
    '
 <fieldset class="start_date"><legend>Start date</legend>
 <div><label class="label" for="start_date.month">Month</label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" />
@@ -207,24 +207,24 @@ is( $output8,
    'output from DateTime' );
 
 my $output9 = $form->render_field( $form->field('submit') );
-is( $output9, '
+is_html( $output9, '
 <div><input type="submit" name="submit" id="submit" value="Update" />
 </div>', 'output from Submit');
 
 my $output10 = $form->render_field( $form->field('opt_in') );
-is( $output10, '
+is_html( $output10, '
 <div><label class="label" for="opt_in">Opt in</label> <br /><label for="opt_in.0"><input type="radio" value="0" name="opt_in" id="opt_in.0" checked="checked" />No</label><br /><label for="opt_in.1"><input type="radio" value="1" name="opt_in" id="opt_in.1" />Yes</label><br />
 </div>', 'output from radio group' );
 
 my $output11 = $form->render_start;
-is( $output11,
+is_html( $output11,
 '<fieldset class="form_wrapper"><form id="testform" method="post">',
 'Form start OK' );
 
 my $output = $form->render;
 ok( $output, 'get rendered output from form');
 
-is( $form->render_field( $form->field('no_render')), '', 'no_render' );
+is_html( $form->render_field( $form->field('no_render')), '', 'no_render' );
 
 {
     package Test::Field::Rendering;
@@ -249,12 +249,12 @@ is( $form->render_field( $form->field('no_render')), '', 'no_render' );
 }
 
 $form = Test::Field::Rendering->new;
-is( $form->field('my_html')->render, '<h2>You got here!</h2>', 'display field renders' );
-is( $form->field('explanation')->render, '<p>I have an explanation somewhere around here...</p>',
+is_html( $form->field('my_html')->render, '<h2>You got here!</h2>', 'display field renders' );
+is_html( $form->field('explanation')->render, '<p>I have an explanation somewhere around here...</p>',
     'display field renders with form method' );
-is( $form->field('between')->render, '<div>Somewhere, over the rainbow...</div>',
+is_html( $form->field('between')->render, '<div>Somewhere, over the rainbow...</div>',
     'set_html field renders' );
-is( $form->field('nolabel')->render, '
+is_html( $form->field('nolabel')->render, '
 <div><input type="text" name="nolabel" id="nolabel" value="" />
 </div>', 'render_label => 0 works');
 
