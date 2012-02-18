@@ -49,7 +49,7 @@ ok( ! exists $form->field('foo')->tags->{form_text}, 'no form widgets tags in fi
     sub build_update_subfields {{ all => { tags => { wrapper_tag => 'p' } } }}
     has_field 'bar' => ( tags =>
          {wrapper_tag => 'span'});
-    has_field 'baz' => ( render_wrapper => 0 );
+    has_field 'baz' => ( do_wrapper => 0 );
 
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;

@@ -21,8 +21,8 @@ sub BUILD {
 
 sub build_tags {{ wrapper => 1 }}
 
-has '+render_label' => ( default => 0 );
-has '+render_wrapper' => ( default => 1 );
+has '+do_label' => ( default => 0 );
+has '+do_wrapper' => ( default => 1 );
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

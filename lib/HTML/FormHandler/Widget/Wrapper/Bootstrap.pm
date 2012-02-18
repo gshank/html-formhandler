@@ -25,7 +25,7 @@ buttons, with wrapped labels.
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    return "\n$rendered_widget" if ( ! $self->render_wrapper && ! $self->render_label );
+    return "\n$rendered_widget" if ( ! $self->do_wrapper && ! $self->do_label );
 
     my $output = "";
     # is this a control group or a form action?
@@ -38,7 +38,7 @@ sub wrap_field {
     my $attr_str = process_attrs( $attr );
     # wrapper is always a div
     $output .= qq{\n<div$attr_str>};
-    if ( ! $self->get_tag('label_none') && $self->render_label && length( $self->label ) > 0 ) {
+    if ( ! $self->get_tag('label_none') && $self->do_label && length( $self->label ) > 0 ) {
         my $label = $self->html_filter($self->loc_label);
         $output .= qq{\n<label class="control-label" for="} . $self->id . qq{">$label</label>};
     }

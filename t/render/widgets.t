@@ -15,8 +15,8 @@ use HTML::FormHandler::Field::Text;
 
     sub build_render_form_wrapper {1}
     sub build_update_subfields {{
-        by_flag => { compound => { render_wrapper => 1, render_label => 1 },
-            repeatable => { render_wrapper => 1, render_label => 1 },
+        by_flag => { compound => { do_wrapper => 1, do_label => 1 },
+            repeatable => { do_wrapper => 1, do_label => 1 },
         },
     }}
     sub build_form_wrapper_class { 'form_wrapper' }

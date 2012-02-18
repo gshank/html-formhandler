@@ -14,7 +14,7 @@ use HTML::FormHandler::Test;
         if( $type eq 'wrapper' ) {
             # this is not exactly like what FF does, but it's close
             push @$class, lc $field->type;
-            push @$class, 'label' if $field->render_label;
+            push @$class, 'label' if $field->do_label;
             $attr->{class} = $class;
         }
         return $attr;

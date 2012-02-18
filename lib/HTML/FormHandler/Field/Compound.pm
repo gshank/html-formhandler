@@ -58,8 +58,8 @@ Widget type is 'compound'
 has '+widget' => ( default => 'Compound' );
 has 'is_compound' => ( is => 'ro', isa => 'Bool', default => 1 );
 has 'item' => ( is => 'rw', clearer => 'clear_item' );
-has '+render_wrapper' => ( default => 0 );
-has '+render_label'   => ( default => 0 );
+has '+do_wrapper' => ( default => 0 );
+has '+do_label'   => ( default => 0 );
 
 has '+field_name_space' => (
     default => sub {

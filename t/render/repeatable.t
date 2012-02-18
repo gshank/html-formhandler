@@ -9,8 +9,8 @@ use HTML::TreeBuilder;
     extends 'HTML::FormHandler';
 
     sub build_update_subfields {{
-        by_flag => { repeatable => { render_wrapper => 1, render_label => 1 },
-                     contains => { render_wrapper => 1 } },
+        by_flag => { repeatable => { do_wrapper => 1, do_label => 1 },
+                     contains => { do_wrapper => 1 } },
     }}
     has '+name' => ( default => 'test_form' );
     has_field 'foo' => ( type => 'Repeatable', num_when_empty => 2,

@@ -36,7 +36,7 @@ use HTML::FormHandler::Field::Text;
    has_field 'comments' => ( type => 'TextArea', cols => 40, rows => 3 );
    has_field 'hidden' => ( type => 'Hidden' );
    has_field 'selected' => ( type => 'Boolean' );
-   has_field 'start_date' => ( type => 'DateTime', render_wrapper => 1,
+   has_field 'start_date' => ( type => 'DateTime', do_wrapper => 1,
        tags => { wrapper_tag => 'fieldset' },
        wrapper_attr => { class => 'start_date' },
    );
@@ -234,7 +234,7 @@ is_html( $form->render_field( $form->field('no_render')), '', 'no_render' );
     has_field 'my_html' => ( type => 'Display', html => '<h2>You got here!</h2>' );
     has_field 'explanation' => ( type => 'Display' );
     has_field 'between' => ( type => 'Display', set_html => 'between_html' );
-    has_field 'nolabel' => ( type => 'Text', render_label => 0 );
+    has_field 'nolabel' => ( type => 'Text', do_label => 0 );
 
     sub html_explanation {
        my ( $self, $field ) = @_;
@@ -256,6 +256,6 @@ is_html( $form->field('between')->render, '<div>Somewhere, over the rainbow...</
     'set_html field renders' );
 is_html( $form->field('nolabel')->render, '
 <div><input type="text" name="nolabel" id="nolabel" value="" />
-</div>', 'render_label => 0 works');
+</div>', 'do_label => 0 works');
 
 done_testing;

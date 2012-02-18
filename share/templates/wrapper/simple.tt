@@ -1,4 +1,4 @@
 <div[% process_attrs(f.wrapper_attributes) -%]>
-[% IF f.render_label %][% PROCESS wrapper/label.tt %][% END -%]
+[% IF f.do_label %][% PROCESS wrapper/label.tt %][% END -%]
 [% content -%]
 </div>

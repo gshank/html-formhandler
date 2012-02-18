@@ -11,7 +11,7 @@ use HTML::FormHandler::Test;
     sub build_form_tags {{  wrapper_tag => 'div' }}
     sub build_update_subfields {{
         all => { tags => { label_tag => 'span' } },
-        by_flag => { 'compound' => { render_wrapper => 1, render_label => 1,
+        by_flag => { 'compound' => { do_wrapper => 1, do_label => 1,
            tags => {  wrapper_tag => 'span' }}},
     }}
     sub field_html_attributes {
@@ -56,7 +56,7 @@ is_html( $rendered, $expected, 'compound rendered ok' );
     extends 'HTML::FormHandler';
 
     sub build_update_subfields {{ all => { tags => { label_after => ': ' }}}}
-    has_field 'start_date' => ( type => 'DateTime', render_wrapper => 1, render_label => 1,
+    has_field 'start_date' => ( type => 'DateTime', do_wrapper => 1, do_label => 1,
         tags => { wrapper_tag => 'fieldset' }, wrapper_class => 'start_date' );
     has_field 'start_date.month' => ( type => 'Integer', range_start => 1,
         range_end => 12 );

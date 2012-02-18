@@ -10,14 +10,14 @@ use HTML::FormHandler::Test;
 
     has_field 'foo';
     has_field 'my_array' => ( type => 'Repeatable', num_when_empty => 2,
-        render_wrapper => 1, render_label => 1 );
-    has_field 'my_array.contains' => ( type => 'Text', render_wrapper => 0, render_label => 0 );
+        do_wrapper => 1, do_label => 1 );
+    has_field 'my_array.contains' => ( type => 'Text', do_wrapper => 0, do_label => 0 );
     has_field 'my_array2' => ( type => 'Repeatable', num_when_empty => 2,
-        render_wrapper => 1, render_label => 1 );
+        do_wrapper => 1, do_label => 1 );
     has_field 'my_array2.contains' => ( type => 'Text', widget_wrapper => 'None' );
     has_field 'my_rep' => ( type => 'Repeatable', 'num_when_empty' => 2 );
     #  we want a label but not a div wrapper
-    has_field 'my_rep.foo' => ( render_wrapper => 0 );
+    has_field 'my_rep.foo' => ( do_wrapper => 0 );
     has_field 'bar';
 
 }

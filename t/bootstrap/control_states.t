@@ -23,7 +23,7 @@ use HTML::FormHandler::Test;
             tags => { after_element => qq{\n<span class="help-inline">Woohoo!</span>} } },
         selectError => { wrapper_class => ['success'],
             tags => { after_element => qq{\n<span class="help-inline">Woohoo!</span>} } },
-        form_actions => { render_wrapper => 1, render_label => 0 },
+        form_actions => { do_wrapper => 1, do_label => 0 },
         'form_actions.save' => { widget_wrapper => 'None', element_class => ['btn', 'btn-primary'] },
         'form_actions.cancel' => { widget_wrapper => 'None', element_class => ['btn'] },
     }}

@@ -28,7 +28,7 @@ sub wrap_field {
         $output .= "<$tag" . process_attrs( $self->wrapper_attributes($result) ) . ">";
     }
 
-    if ( $self->render_label && length( $self->label ) > 0 ) {
+    if ( $self->do_label && length( $self->label ) > 0 ) {
         $output .= $self->do_render_label($result);
     }
 

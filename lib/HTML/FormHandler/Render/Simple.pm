@@ -200,7 +200,7 @@ sub wrap_field {
     my ( $self, $field, $rendered_field ) = @_;
 
     return "\n$rendered_field" if $field->uwrapper eq 'none';
-    return "\n$rendered_field" if ! $field->render_wrapper;
+    return "\n$rendered_field" if ! $field->do_wrapper;
 
     my $output = "\n";
 
@@ -212,7 +212,7 @@ sub wrap_field {
     if( $wrapper_tag eq 'fieldset' ) {
         $output .= '<legend>' . $field->loc_label . '</legend>';
     }
-    elsif ( ! $field->get_tag('label_none') && $field->render_label && length( $field->label ) > 0 ) {
+    elsif ( ! $field->get_tag('label_none') && $field->do_label && length( $field->label ) > 0 ) {
         $output .= "\n" . $self->render_label($field);
     }
 

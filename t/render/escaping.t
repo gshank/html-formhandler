@@ -13,8 +13,8 @@ use HTML::FormHandler::Field::Text;
    with 'HTML::FormHandler::Render::Simple';
 
    sub build_update_subfields {{
-       all => { render_wrapper => 1, tags => { label_after => ': ' }},
-       by_flag => { compound => { render_wrapper => 1 }},
+       all => { do_wrapper => 1, tags => { label_after => ': ' }},
+       by_flag => { compound => { do_wrapper => 1 }},
    }}
    sub build_render_form_wrapper {1}
    sub build_form_wrapper_class { 'form_wrapper' }

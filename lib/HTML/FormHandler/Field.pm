@@ -851,7 +851,7 @@ has 'label' => (
     lazy    => 1,
     builder => 'build_label',
 );
-has 'render_label' => ( isa => 'Bool', is => 'rw', default => 1 );
+has 'do_label' => ( isa => 'Bool', is => 'rw', default => 1 );
 sub build_label {
     my $self = shift;
     my $label = $self->name;
@@ -897,7 +897,7 @@ sub build_html_name {
 }
 has 'widget'            => ( isa => 'Str',  is => 'rw' );
 has 'widget_wrapper'    => ( isa => 'Str',  is => 'rw' );
-has 'render_wrapper'    => ( is => 'rw', clearer => 'clear_wrapper', default => 1 );
+has 'do_wrapper'    => ( is => 'rw', default => 1 );
 sub wrapper { shift->widget_wrapper || '' }
 sub uwrapper { ucc_widget( shift->widget_wrapper || '' ) || 'simple' }
 sub twrapper { shift->uwrapper . ".tt" }

@@ -12,7 +12,7 @@ $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
 
     sub build_form_wrapper_class { 'form_wrapper' }
     sub build_render_form_wrapper {1}
-    sub build_update_subfields {{ all => { render_wrapper => 1, tags => { label_after => ': '} } }}
+    sub build_update_subfields {{ all => { do_wrapper => 1, tags => { label_after => ': '} } }}
     has '+name' => ( default => 'test_errors' );
     has_field 'foo' => ( required => 1 );
     has_field 'bar' => ( type => 'Integer' );

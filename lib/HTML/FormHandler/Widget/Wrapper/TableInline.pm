@@ -11,7 +11,7 @@ sub wrap_field {
     return $rendered_widget if $self->has_flag('is_compound');
 
     my $output = "\n<tr" . process_attrs($self->wrapper_attributes($result)) . ">";
-    if ( $self->render_label && length( $self->label ) > 0 ) {
+    if ( $self->do_label && length( $self->label ) > 0 ) {
         $output .= '<td>' . $self->do_render_label($result) . '</td>';
     }
     $output .= '<td>';

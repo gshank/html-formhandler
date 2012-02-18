@@ -33,7 +33,7 @@ use HTML::FormHandler::Test;
     has_block 'inline_checkboxes' => ( type => 'Bootstrap', label => 'Checkboxes',
         render_list => ['inlineCheckbox1', 'inlineCheckbox2', 'inlineCheckbox3' ] );
     has_field ['inlineCheckbox1', 'inlineCheckbox2', 'inlineCheckbox3' ] =>
-        ( type => 'Checkbox', render_wrapper => 0, label_class => ['inline', 'checkbox'],
+        ( type => 'Checkbox', do_wrapper => 0, label_class => ['inline', 'checkbox'],
           tags => { checkbox_single_label => 1 } );
     has_block 'more_checkboxes' => ( type => 'Bootstrap',
         render_list => ['optionsCheckboxList1', 'optionsCheckboxList2', 'optionsCheckboxList3' ],

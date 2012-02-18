@@ -15,10 +15,10 @@ no other wrapper is specified and widget_wrapper is not set to
 
 Relevant field flags:
 
-   render_wrapper
-   render_label
+   do_wrapper
+   do_label
 
-If 'render_label' is set and not 'render_wrapper', only the label plus
+If 'do_label' is set and not 'do_wrapper', only the label plus
 the form element will be rendered.
 
 Supported 'tags':
@@ -41,14 +41,14 @@ Supported 'tags':
 sub wrap_field {
     my ( $self, $result, $rendered_widget, $wrap_label ) = @_;
 
-    return "\n$rendered_widget" if ( ! $self->render_wrapper && ! $self->render_label );
+    return "\n$rendered_widget" if ( ! $self->do_wrapper && ! $self->do_label );
 
     # each field starts with a newline
     my $output = '';
     # get wrapper tag if set
     my $label_tag;
     my $wrapper_tag;
-    if( $self->render_wrapper ) {
+    if( $self->do_wrapper ) {
         $wrapper_tag = $self->get_tag('wrapper_tag');
         # default wrapper tags
         $wrapper_tag ||= $self->has_flag('is_repeatable') ? 'fieldset' : 'div';
@@ -62,7 +62,7 @@ sub wrap_field {
     if( $wrap_label ) {
         $rendered_widget = $self->do_render_wrapped_label($result, $rendered_widget, $label_tag);
     }
-    elsif( $self->render_label ) {
+    elsif( $self->do_label ) {
         $output .= "\n" . $self->do_render_label($result, $label_tag );
     }
     # append 'before_element'
@@ -79,7 +79,7 @@ sub wrap_field {
     my $warning_class = $self->get_tag('warning_class') || 'warning_message';
     $output .= qq{\n<span class="warning_message">$_</span>}
         for $result->all_warnings;
-    if( $self->render_wrapper ) {
+    if( $self->do_wrapper ) {
         $output .= "\n</$wrapper_tag>";
     }
     return "$output";

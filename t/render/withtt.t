@@ -45,7 +45,7 @@ ok( $dir, 'found template dir' );
     has_field 'bar';
     has_field 'fubar' => ( type => 'Compound',
         widget_wrapper => 'Fieldset',
-        render_wrapper => 1,
+        do_wrapper => 1,
         wrapper_attr => { class => 'fubar' },
     );
     has_field 'fubar.name';
@@ -61,7 +61,7 @@ ok( $dir, 'found template dir' );
     has_field 'mememe' => ( type => 'Multiple', widget => 'RadioGroup', default => [2] );
     has_field 'notes' => ( type => 'TextArea', cols => 30, rows => 4 );
     has_field 'addresses' => ( type => 'Repeatable', widget_wrapper => 'Fieldset',
-        render_wrapper => 1, tags => {  wrapper_tag => 'fieldset' },
+        tags => {  wrapper_tag => 'fieldset' },
     );
     has_field 'addresses.street' => ( type => 'Text' );
     has_field 'addresses.city' => ( type => 'Text' );
