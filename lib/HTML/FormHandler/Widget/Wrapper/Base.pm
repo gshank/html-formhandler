@@ -32,6 +32,16 @@ sub do_render_wrapped_label {
     return qq{<$label_tag$attrs$for>$rendered_widget$label</$label_tag>};
 }
 
+# for compatibility with older code
+sub render_label {
+    my $self = shift;
+    my $attrs = process_attrs($self->label_attributes);
+    my $label = $self->html_filter($self->loc_label);
+    $label .= ": " unless $self->get_tag('label_no_colon');
+    return qq{<label$attrs for="} . $self->id . qq{">$label</label>};
+}
+
+
 # this is not actually used any more, but is left here for compatibility
 # with user created widgets
 sub render_class {
