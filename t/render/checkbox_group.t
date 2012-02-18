@@ -23,10 +23,19 @@ $form->process;
 
 my $expected = '
 <div>
-  <label for="comedians">Comedians</label> <br />
-  <input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br />
-  <input type="checkbox" value="chaplin" name="comedians" id="comedians.1" />Charly Chaplin<br />
-  <input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" />Stan Laurel &amp; Oliver Hardy<br />
+  <label for="comedians">Comedians</label>
+  <label for="comedians.0">
+    <input type="checkbox" value="keaton" name="comedians" id="comedians.0" />
+    Buster Keaton
+  </label>
+  <label for="comedians.1">
+    <input type="checkbox" value="chaplin" name="comedians" id="comedians.1" />
+    Charly Chaplin
+  </label>
+  <label for="comedians.2">
+    <input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" />
+    Stan Laurel &amp; Oliver Hardy
+  </label>
 </div>';
 is_html( $form->field('comedians')->render, $expected, 'output from checkbox group');
 my $params = {
@@ -36,10 +45,19 @@ $form->process($params);
 my $rendered = $form->field('comedians')->render;
 $expected =
 '<div>
-  <label for="comedians">Comedians</label> <br />
-  <input type="checkbox" value="keaton" name="comedians" id="comedians.0" />Buster Keaton<br />
-  <input type="checkbox" value="chaplin" name="comedians" id="comedians.1" checked="checked" />Charly Chaplin<br />
-  <input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" checked="checked" />Stan Laurel &amp; Oliver Hardy<br />
+  <label for="comedians">Comedians</label>
+  <label for="comedians.0">
+    <input type="checkbox" value="keaton" name="comedians" id="comedians.0" />
+    Buster Keaton
+  </label>
+  <label for="comedians.1">
+    <input type="checkbox" value="chaplin" name="comedians" id="comedians.1" checked="checked" />
+    Charly Chaplin
+  </label>
+  <label for="comedians.2">
+    <input type="checkbox" value="laurel &amp; hardy" name="comedians" id="comedians.2" checked="checked" />
+    Stan Laurel &amp; Oliver Hardy
+  </label>
 </div>';
 is_html( $rendered, $expected, 'output from checkbox group' );
 

@@ -8,7 +8,7 @@ use HTML::FormHandler::Render::Util ('process_attrs');
 sub render {
     my $self = shift;
     my $result = shift || $self->result;
-    my $output = " <br />";
+    my $output = '';
     my $index  = 0;
     my $multiple = $self->multiple;
     my $id = $self->id;
@@ -18,8 +18,9 @@ sub render {
     my %fif_lookup;
     @fif_lookup{@$fif} = () if $multiple;
     foreach my $option ( @{ $self->{options} } ) {
+        $output .= qq{\n<label for="$id.$index">};
         my $value = $option->{value};
-        $output .= '<input type="checkbox" value="'
+        $output .= qq{\n<input type="checkbox" value="}
             . $self->html_filter($value) . '" name="'
             . $self->html_name . qq{" id="$id.$index"};
         if( defined $option->{disabled} && $option->{disabled} ) {
@@ -36,7 +37,8 @@ sub render {
         $output .= $ele_attributes;
         my $label = $option->{label};
         $label = $self->_localize($label) if $self->localize_labels;
-        $output .= ' />' . ( $self->html_filter($label) || '' ) . '<br />';
+        $output .= " />\n" . ( $self->html_filter($label) || '' );
+        $output .= "\n</label>";
         $index++;
     }
     return $self->wrap_field( $result, $output );

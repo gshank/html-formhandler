@@ -44,7 +44,7 @@ sub wrap_field {
     return "\n$rendered_widget" if ( ! $self->render_wrapper && ! $self->render_label );
 
     # each field starts with a newline
-    my $output = "\n";
+    my $output = '';
     # get wrapper tag if set
     my $label_tag;
     my $wrapper_tag;

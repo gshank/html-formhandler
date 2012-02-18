@@ -22,7 +22,7 @@ sub render {
 
     if( defined $self->empty_select ) {
         $t = $self->_localize($self->empty_select);
-        $output .= qq{<option value="" id="$id.$index">$t</option>};
+        $output .= qq{\n<option value="" id="$id.$index">$t</option>};
         $index++;
     }
 
@@ -31,7 +31,7 @@ sub render {
     @fif_lookup{@$fif} = () if $multiple;
     foreach my $option ( @{ $self->{options} } ) {
         my $value = $option->{value};
-        $output .= '<option value="'
+        $output .= qq{\n<option value="}
             . $self->html_filter($value)
             . qq{" id="$id.$index"};
         if( defined $option->{disabled} && $option->{disabled} ) {

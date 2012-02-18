@@ -19,6 +19,7 @@ sub render {
     foreach my $subfield ( $self->sorted_fields ) {
         $output .= $self->render_subfield( $result, $subfield );
     }
+    $output =~ s/^\n//; # remove newlines so they're not duplicated
     return $self->wrap_field( $result, $output );
 }
 

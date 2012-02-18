@@ -128,12 +128,13 @@ sub render_end {
     my $self = shift;
 
     my $output = $self->get_tag('before_end');
-    $output .= "</form>\n";
+    $output .= "\n</form>";
     if( $self->render_form_wrapper) {
         my $form_wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
-        $output .= qq{</$form_wrapper_tag>};
+        $output .= qq{\n</$form_wrapper_tag>};
     }
     $output .= $self->get_tag('after');
+    $output .= "\n";
     return $output;
 }
 use namespace::autoclean;

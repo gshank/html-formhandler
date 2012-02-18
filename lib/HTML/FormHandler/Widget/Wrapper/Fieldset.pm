@@ -21,16 +21,16 @@ sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
     my $wattrs = process_attrs($self->wrapper_attributes);
-    my $output .= qq{<fieldset$wattrs>};
-    $output .= '<legend>' . $self->loc_label . '</legend>';
+    my $output .= qq{\n<fieldset$wattrs>};
+    $output .= qq{\n<legend>} . $self->loc_label . '</legend>';
 
-    $output .= $rendered_widget;
+    $output .= "\n$rendered_widget";
 
     $output .= qq{\n<span class="error_message">$_</span>}
         for $result->all_errors;
-    $output .= '</fieldset>';
+    $output .= "\n</fieldset>";
 
-    return "$output\n";
+    return $output;
 }
 
 1;

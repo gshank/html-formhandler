@@ -108,6 +108,12 @@ sub field {
     # if this is a full_name for a compound field
     # walk through the fields to get to it
     return undef unless ( defined $name );
+    if( $self->form && $self == $self->form &&
+        exists $self->index->{$name} ) {
+        return $self->index->{$name};
+    }
+    return $self->form->index->{$name}
+        if $self->form && exists $self->form->index->{$name};
     if ( $name =~ /\./ ) {
         my @names = split /\./, $name;
         $f ||= $self->form || $self;

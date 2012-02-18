@@ -38,7 +38,7 @@ sub wrap_with_label {
     my $label =  $self->option_label || $self->label;
     my $lattr = ' class="checkbox"';
     $label = $self->html_filter($self->_localize($label));
-    my $output = qq{\n<label$lattr for="$id">};
+    my $output = qq{<label$lattr for="$id">};
     my $label_left = $self->get_tag('label_left');
     $output .= "\n$label" if $label_left;
     $output .= "\n$rendered_widget";

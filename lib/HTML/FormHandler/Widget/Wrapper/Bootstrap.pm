@@ -27,7 +27,7 @@ sub wrap_field {
 
     return "\n$rendered_widget" if ( ! $self->render_wrapper && ! $self->render_label );
 
-    my $output = "\n";
+    my $output = "";
     # is this a control group or a form action?
     my $form_actions = 1 if ( $self->name eq 'form_actions' || $self->type_attr eq 'submit'
         || $self->type_attr eq 'reset' );
@@ -37,14 +37,14 @@ sub wrap_field {
     unshift @{$attr->{class}}, $div_class;
     my $attr_str = process_attrs( $attr );
     # wrapper is always a div
-    $output .= qq{<div$attr_str>};
+    $output .= qq{\n<div$attr_str>};
     if ( ! $self->get_tag('label_none') && $self->render_label && length( $self->label ) > 0 ) {
         my $label = $self->html_filter($self->loc_label);
         $output .= qq{\n<label class="control-label" for="} . $self->id . qq{">$label</label>};
     }
     $output .=  $self->get_tag('before_element');
     # the controls div for ... controls
-    $output .= '<div class="controls">' unless $form_actions;
+    $output .= qq{\n<div class="controls">} unless $form_actions;
     # handle input-prepend and input-append
     if( my $ip_tag = $self->get_tag('input_prepend' ) ) {
         $rendered_widget = $self->input_prepend($rendered_widget, $ip_tag);
@@ -53,7 +53,7 @@ sub wrap_field {
         $rendered_widget = $self->input_append($rendered_widget, $ia_tag);
     }
     # extra wrappers for checkbox will be handled by checkbox field
-     $output .= $rendered_widget;
+    $output .= "\n$rendered_widget";
     # various 'help-inline' bits: errors, warnings
     $output .= qq{\n<span class="help-inline">$_</span>}
         for $result->all_errors;
@@ -85,25 +85,6 @@ qq{<div class="input-append">
   <span class="add-on">$ia_tag</span>
 </div>};
     return $rendered;
-}
-
-sub wrap_checkbox {
-    my ( $self, $rendered_widget ) = @_;
-
-    # special extra wrapped label for checkbox, including checkbox class
-    my $output .= '<label class="checkbox">' if $self->type_attr eq 'checkbox';
-    # the actual rendered input element
-    $output .= "\n$rendered_widget";
-    # end special checkbox label
-    my $label2 = $self->option_label || $self->label;
-    $label2 = $self->html_filter($self->_localize($label2));
-    $output .= "\n$label2\n</label>";
-    return $output;
-}
-sub wrap_radio {
-    my ( $self, $rendered_widget ) = @_;
-    # stub
-    return $rendered_widget;
 }
 
 1;
