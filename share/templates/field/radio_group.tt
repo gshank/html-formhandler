@@ -1,4 +1,3 @@
-<br />
 [% FOR option IN f.options -%]
   <label for="[% f.id %].[% loop.index %]"><input type="radio" value="[% option.value %]" name="[% f.name %]" id="[% f.id %].[% loop.index %]" [% IF option.value == f.fif %] checked="checked"[% END %] />[% option.label %]</label>
 [% END -%]

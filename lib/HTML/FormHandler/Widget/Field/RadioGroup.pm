@@ -17,13 +17,16 @@ sub render {
     my $self = shift;
     my $result = shift || $self->result;
     my $id = $self->id;
-    my $output = "<br />";
+    my $output = '';
+    $output .= "<br />" if $self->get_tag('radio_br_after');
     my $index  = 0;
 
     my $fif = $result->fif;
+    my @label_class = ('radio');
+    my $lattrs = process_attrs( { class => \@label_class } );
     foreach my $option ( @{ $self->options } ) {
         my $value = $option->{value};
-        $output .= qq{<label for="$id.$index"><input type="radio" value="}
+        $output .= qq{\n<label$lattrs for="$id.$index">\n<input type="radio" value="}
             . $self->html_filter($value) . '" name="'
             . $self->html_name . qq{" id="$id.$index"};
         $output .= ' checked="checked"'
@@ -32,7 +35,8 @@ sub render {
         $output .= ' />';
         my $label = $option->{label};
         $label = $self->_localize($label) if $self->localize_labels;
-        $output .= $self->html_filter($label) . '</label>';
+        $output .= "\n" . $self->html_filter($label);
+        $output .= "\n</label>";
         $output .= '<br />' if $self->get_tag('radio_br_after');
         $index++;
     }

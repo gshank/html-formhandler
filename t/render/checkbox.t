@@ -9,10 +9,11 @@ use HTML::FormHandler::Test;
        use HTML::FormHandler::Moose;
        extends 'HTML::FormHandler';
 
-       has_field 'option1' => ( type => 'Checkbox', tags => { checkbox_single_label => 1 } );
-       has_field 'option2' => ( type => 'Checkbox', tags => { checkbox_single_label => 1, label_left => 1 } );
+       has_field 'option1' => ( type => 'Checkbox', tags => { single_label => 1 } );
+       has_field 'option2' => ( type => 'Checkbox', tags => { single_label => 1, label_left => 1 } );
        has_field 'option3' => ( type => 'Checkbox', option_label => 'Try this one' );
-       has_field 'option4' => ( type => 'Checkbox', tags => { checkbox_unwrapped => 1 } );
+       has_field 'option4' => ( type => 'Checkbox', tags => { unwrapped => 1 } );
+       has_field 'option5' => ( type => 'Checkbox', widget_wrapper => 'None', label => 'Simple Checkbox' );
    }
    my $form = Test::Form->new;
    $form->process;
@@ -36,7 +37,7 @@ use HTML::FormHandler::Test;
    # checkbox with additional label (like Bootstrap)
    $expected =
 '<div>
-  <label>Option3</label>
+  <label for="option3">Option3</label>
     <label class="checkbox" for="option3">
       <input id="option3" name="option3" type="checkbox" value="1" />
       Try this one
@@ -54,6 +55,14 @@ use HTML::FormHandler::Test;
    $rendered = $form->field('option4')->render;
    is_html( $rendered, $expected, 'Checkbox with unwrapped label');
 
+   # no wrapper, simple wrapped checkbox
+   $expected =
+    '<label for="option5" class="checkbox">
+      <input id="option5" name="option5" type="checkbox" value="1" />
+      Simple Checkbox
+    </label>';
+   $rendered = $form->field('option5')->render;
+   is_html( $rendered, $expected, 'Checkbox with no wrapper' );
 
 }
 

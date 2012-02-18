@@ -27,7 +27,7 @@
 
 [% BLOCK checkbox_group -%]
 [% FOR option IN f.options -%]
-<label for="[% f.name %].[% loop.index %]">
+<label class="checkbox" for="[% f.name %].[% loop.index %]">
 <input type="checkbox" value="[% option.value %]" name="[% f.name %]" id="[% f.name %].[% loop.index %]"[% FOREACH selval IN f.fif -%][% IF selval == option.value %] checked="checked"[% END -%][% END -%]>
 [% option.label | html %]
 </label>
@@ -51,7 +51,6 @@
 [% END -%]
 
 [% BLOCK radio_group -%]
-<br />
 [% FOR option IN f.options -%]
   <label for="[% f.id %].[% loop.index %]"><input type="radio" value="[% option.value %]" name="[% f.name %]" id="[% f.id %].[% loop.index %]" [% IF option.value == f.fif %] checked="checked"[% END %] />[% option.label %]</label>
 [% END -%]

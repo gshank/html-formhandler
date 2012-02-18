@@ -4,6 +4,7 @@ use Moose;
 extends 'HTML::FormHandler::Widget::Block';
 
 has 'after_controls' => ( is => 'rw' );
+
 sub BUILD {
     my $self = shift;
     $self->add_class('control-group');

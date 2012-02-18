@@ -1,5 +1,5 @@
 [% FOR option IN f.options -%]
-<label for="[% f.name %].[% loop.index %]">
+<label class="checkbox" for="[% f.name %].[% loop.index %]">
 <input type="checkbox" value="[% option.value %]" name="[% f.name %]" id="[% f.name %].[% loop.index %]"[% FOREACH selval IN f.fif -%][% IF selval == option.value %] checked="checked"[% END -%][% END -%]>
 [% option.label | html %]
 </label>

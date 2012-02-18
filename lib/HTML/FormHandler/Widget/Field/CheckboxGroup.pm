@@ -17,8 +17,11 @@ sub render {
     my $fif = $result->fif;
     my %fif_lookup;
     @fif_lookup{@$fif} = () if $multiple;
+    my @option_label_class = ('checkbox');
+    push @option_label_class, 'inline' if $self->get_tag('inline');
+    my $opt_lattrs = process_attrs( { class => \@option_label_class } );
     foreach my $option ( @{ $self->{options} } ) {
-        $output .= qq{\n<label for="$id.$index">};
+        $output .= qq{\n<label$opt_lattrs for="$id.$index">};
         my $value = $option->{value};
         $output .= qq{\n<input type="checkbox" value="}
             . $self->html_filter($value) . '" name="'

@@ -135,7 +135,7 @@ is_html( $rendered,
 
 $expected =
 '<div>
-  <label class="label">Active</label>
+  <label class="label" for="active">Active</label>
     <label class="checkbox" for="active">
       <input id="active" name="active" type="checkbox" value="1" />
       Active
@@ -163,7 +163,7 @@ is_html( $rendered,
 $rendered = $form->field('selected')->render;
 is_html( $rendered,
 '<div>
-  <label class="label">Selected</label>
+  <label class="label" for="selected">Selected</label>
     <label class="checkbox" for="selected">
       <input checked="checked" id="selected" name="selected" type="checkbox" value="1" />
       Selected

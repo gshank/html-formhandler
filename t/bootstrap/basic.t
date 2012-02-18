@@ -29,7 +29,7 @@ use HTML::FormHandler::Test;
        all => { do_wrapper => 0, do_label => 1 },
        foo => { element_class => ['span3'], element_attr => { placeholder => 'Type something…' },
            tags => { after_element => qq{\n<span class="help-inline">Associated help text!</span>} } },
-       bar => { label => 'Check me out', label_class => ['checkbox'], tags => { checkbox_single_label => 1 }},
+       bar => { label => 'Check me out', label_class => ['checkbox'], tags => { single_label => 1 }},
        submit_btn => { element_class => ['btn'] },
     }}
 }

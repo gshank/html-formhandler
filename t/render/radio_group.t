@@ -22,9 +22,15 @@ my $form = Test::Form->new;
 $form->process;
 my $expected =
 '<div>
-  <label for="opt_in">Opt in</label><br />
-  <label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" />No &amp; Never</label>
-  <label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label>
+  <label for="opt_in">Opt in</label>
+  <label class="radio" for="opt_in.0">
+    <input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" />
+    No &amp; Never
+   </label>
+  <label class="radio" for="opt_in.1">
+    <input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />
+    Yes
+  </label>
 </div>';
 
 my $rendered = $form->field('opt_in')->render;
@@ -38,8 +44,13 @@ $rendered = $form->field('opt_in')->render;
 $expected =
 '<div>
   <label for="opt_in">Opt in</label><br />
-  <label for="opt_in.0"><input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />No &amp; Never</label><br />
-  <label for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />Yes</label><br />
+  <label class="radio" for="opt_in.0">
+    <input type="radio" value="no &amp; never" name="opt_in" id="opt_in.0" checked="checked" />
+    No &amp; Never
+  </label><br />
+  <label class="radio" for="opt_in.1"><input type="radio" value="&quot;yes&quot;" name="opt_in" id="opt_in.1" />
+    Yes
+  </label><br />
 </div>';
 
 is_html( $rendered, $expected, 'output from radio group');

@@ -41,7 +41,7 @@ ok( $dir, 'found template dir' );
 
     has_field 'submit' => ( type => 'Submit', widget_wrapper => 'None' );
     has_field 'foo';
-
+=pod
     has_field 'bar';
     has_field 'fubar' => ( type => 'Compound',
         widget_wrapper => 'Fieldset',
@@ -50,9 +50,11 @@ ok( $dir, 'found template dir' );
     );
     has_field 'fubar.name';
     has_field 'fubar.country';
+=cut
     has_field 'opt_in' => ( type => 'Checkbox', label => 'XXXX', default => 1,
-        tags => { checkbox_unwrapped => 1 },
+        tags => { unwrapped => 1 },
     );
+=pod
     has_field 'choose' => ( type => 'Select', default => 2 );
     has_field 'picksome' => ( type => 'Multiple', default => [1,2] );
     has_field 'click' => ( type => 'Button' );
@@ -66,6 +68,7 @@ ok( $dir, 'found template dir' );
     has_field 'addresses.street' => ( type => 'Text' );
     has_field 'addresses.city' => ( type => 'Text' );
     has_field 'pw' => ( type => 'Password' );
+=cut
     has_field 'categories' => ( type => 'Multiple', widget => 'CheckboxGroup', default => [1] );
 
     sub options_choose {

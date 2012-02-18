@@ -7,13 +7,12 @@ use HTML::FormHandler::Render::Util ('process_attrs');
 sub do_render_label {
     my ( $self, $result, $label_tag ) = @_;
 
-    my $no_for = $self->type_attr eq 'checkbox' && !$self->get_tag('checkbox_unwrapped') && !$self->get_tag('checkbox_single_label');
     $label_tag ||= $self->get_tag('label_tag') || 'label';
     my $attrs = process_attrs($self->label_attributes($result));
     my $label = $self->html_filter($self->loc_label);
     $label .= $self->get_tag('label_after') if $label_tag ne 'legend';
     my $id = $self->id;
-    my $for = $label_tag eq 'label' && !$no_for ? qq{ for="$id"} : '';
+    my $for = $label_tag eq 'label' ? qq{ for="$id"} : '';
     return qq{<$label_tag$attrs$for>$label</$label_tag>};
 }
 
