@@ -138,7 +138,6 @@ $expected =
   <label class="label" for="active">Active</label>
     <label class="checkbox" for="active">
       <input id="active" name="active" type="checkbox" value="1" />
-      Active
     </label>
 </div>';
 is_html( $form->field('active')->render, $expected, 'output from checkbox field');
@@ -166,7 +165,6 @@ is_html( $rendered,
   <label class="label" for="selected">Selected</label>
     <label class="checkbox" for="selected">
       <input checked="checked" id="selected" name="selected" type="checkbox" value="1" />
-      Selected
     </label>
 </div>',
     'output from boolean'

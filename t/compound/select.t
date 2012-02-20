@@ -2,10 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 
-use lib ('t/lib');
-
-use_ok('Field::MyComp');
-
 {
     package Test::Field::MyComp;
     use HTML::FormHandler::Moose;

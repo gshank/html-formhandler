@@ -47,7 +47,11 @@ sub wrap_with_label {
     my ( $self, $result, $rendered_widget ) = @_;
 
     my $id = $self->id;
-    my $label =  $self->option_label || $self->label;
+    my $label =  $self->option_label || '';
+    if( $label eq '' && ( $self->widget_wrapper eq 'None' ||
+            ! $self->render_label ) ) {
+        $label = $self->label;
+    }
     my @label_class = ('checkbox');
     push @label_class, 'inline' if $self->get_tag('inline');
     my $lattr = process_attrs( { class => \@label_class } );
