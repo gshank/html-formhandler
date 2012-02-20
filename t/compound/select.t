@@ -2,6 +2,10 @@ use strict;
 use warnings;
 use Test::More;
 
+use lib ('t/lib');
+
+use_ok('Field::MyComp');
+
 {
     package Test::Field::MyComp;
     use HTML::FormHandler::Moose;
@@ -12,11 +16,13 @@ use Test::More;
     has_field 'flot';
 
     sub options_flim {
-        [ { value => 1, label => 'one' }, { value => 2, label => 'two' } ]
+        my $self = shift;
+        return [ { value => 1, label => 'one' }, { value => 2, label => 'two' } ];
     }
 
     sub options_flam {
-        [ { value => 1, label => 'red' }, { value => 2, label => 'blue' } ]
+        my $self = shift;
+        return [ { value => 1, label => 'red' }, { value => 2, label => 'blue' } ];
     }
 
 }
