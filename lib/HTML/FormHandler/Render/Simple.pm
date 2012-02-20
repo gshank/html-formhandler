@@ -137,7 +137,7 @@ sub render_start {
 
     my $output = '';
     $output .= $self->get_tag('before');
-    if( $self->render_form_wrapper ) {
+    if( $self->do_form_wrapper ) {
         my $form_wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         my $attrs = process_attrs($self->form_wrapper_attributes);
         $output .= qq{<$form_wrapper_tag$attrs>};
@@ -164,7 +164,7 @@ sub render_end {
     my $self = shift;
 
     my $output = "</form>\n";
-    if( $self->render_form_wrapper ) {
+    if( $self->do_form_wrapper ) {
         my $wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         $output .= "</$wrapper_tag>";
     }

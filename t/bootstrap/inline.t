@@ -12,7 +12,7 @@ use HTML::FormHandler::Test;
     # form wrapper class
     sub build_form_wrapper_class { ['span9'] }
     # turn on form wrapper, set the tag to 'div' (default is fieldset)
-    sub build_render_form_wrapper {1}
+    sub build_do_form_wrapper {1}
     sub build_form_tags {{
         wrapper_tag => 'div',
         before =>

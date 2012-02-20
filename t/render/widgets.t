@@ -13,7 +13,7 @@ use HTML::FormHandler::Field::Text;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_render_form_wrapper {1}
+    sub build_do_form_wrapper {1}
     sub build_update_subfields {{
         by_flag => { compound => { do_wrapper => 1, do_label => 1 },
             repeatable => { do_wrapper => 1, do_label => 1 },

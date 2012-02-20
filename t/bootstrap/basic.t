@@ -10,7 +10,7 @@ use HTML::FormHandler::Test;
     use Moose::Role;
 
     # set class for form tag (form_element_attr) and form wrapper (form_wrapper_attr)
-    sub build_render_form_wrapper {1}
+    sub build_do_form_wrapper {1}
     sub build_form_wrapper_class { ['span9'] }
     sub build_form_element_class { ['well'] }
     sub build_form_tags {

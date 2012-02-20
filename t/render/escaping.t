@@ -16,7 +16,7 @@ use HTML::FormHandler::Field::Text;
        all => { do_wrapper => 1, tags => { label_after => ': ' }},
        by_flag => { compound => { do_wrapper => 1 }},
    }}
-   sub build_render_form_wrapper {1}
+   sub build_do_form_wrapper {1}
    sub build_form_wrapper_class { 'form_wrapper' }
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (

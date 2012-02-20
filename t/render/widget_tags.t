@@ -45,7 +45,7 @@ ok( ! exists $form->field('foo')->tags->{form_text}, 'no form widgets tags in fi
     extends 'HTML::FormHandler';
 
     has_field 'foo';
-    sub build_render_form_wrapper {1}
+    sub build_do_form_wrapper {1}
     sub build_update_subfields {{ all => { tags => { wrapper_tag => 'p' } } }}
     has_field 'bar' => ( tags =>
          {wrapper_tag => 'span'});

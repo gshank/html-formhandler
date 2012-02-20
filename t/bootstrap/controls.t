@@ -12,7 +12,7 @@ use HTML::FormHandler::Test;
         my $self = shift;
         $self->set_widget_wrapper('Bootstrap');
     }
-    sub build_render_form_wrapper {1}
+    sub build_do_form_wrapper {1}
     sub build_form_element_class {['form-horizontal']}
     sub build_form_wrapper_class {['span8']}
     sub build_form_tags {{

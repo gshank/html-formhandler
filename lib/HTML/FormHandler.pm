@@ -691,7 +691,7 @@ to be used for defaults instead of the item.
    form_wrapper_attr - hashref for form wrapper element attributes
       set in form with: sub build_form_wrapper_attr {...}
    form_wrapper_class - arrayref for setting wrapper class
-   render_form_wrapper - flag to wrap the form
+   do_form_wrapper - flag to wrap the form
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    uuid - generates a string containing an HTML field with UUID
@@ -793,8 +793,8 @@ has 'widget_name_space' => (
 # it only really makes sense to set these before widget_form is applied in BUILD
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple', writer => 'set_widget_form' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple', writer => 'set_widget_wrapper' );
-has 'render_form_wrapper' => ( is => 'rw', builder => 'build_render_form_wrapper' );
-sub build_render_form_wrapper { 0 }
+has 'do_form_wrapper' => ( is => 'rw', builder => 'build_do_form_wrapper' );
+sub build_do_form_wrapper { 0 }
 has 'no_widgets'        => ( is => 'ro', isa => 'Bool' );
 has 'no_preload'        => ( is => 'ro', isa => 'Bool' );
 has 'active' => (

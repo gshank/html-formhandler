@@ -7,7 +7,7 @@ use HTML::FormHandler::Test;
     package MyApp::Form::Theme::Basic;
     use Moose::Role;
 
-    sub build_render_form_wrapper {1}
+    sub build_do_form_wrapper {1}
     sub build_form_tags {{  wrapper_tag => 'div' }}
     sub build_update_subfields {{
         all => { tags => { label_tag => 'span' } },

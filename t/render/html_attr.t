@@ -32,7 +32,7 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    sub build_render_form_wrapper {1}
+    sub build_do_form_wrapper {1}
     has '+name' => ( default => 'myapp_form' );
     sub form_element_attr { { name => 'myapp_form' } }
     sub build_form_wrapper_class { 'form_wrapper' }

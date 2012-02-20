@@ -15,7 +15,7 @@ rendering. (L<HTML::FormHandler::Blocks>, L<HTML::FormHandler::Widget::Block>)
 
 Relevant flags:
 
-    render_form_wrapper - put a wrapper around the form
+    do_form_wrapper - put a wrapper around the form
 
 Supported tags:
 
@@ -84,7 +84,7 @@ sub render_start {
 
     my $output = '';
     $output = $self->get_tag('before');
-    if( $self->render_form_wrapper ) {
+    if( $self->do_form_wrapper ) {
         my $form_wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         my $attrs = process_attrs($self->form_wrapper_attributes($result));
         $output .= qq{<$form_wrapper_tag$attrs>};
@@ -129,7 +129,7 @@ sub render_end {
 
     my $output = $self->get_tag('before_end');
     $output .= "\n</form>";
-    if( $self->render_form_wrapper) {
+    if( $self->do_form_wrapper) {
         my $form_wrapper_tag = $self->get_tag('wrapper_tag') || 'fieldset';
         $output .= qq{\n</$form_wrapper_tag>};
     }
