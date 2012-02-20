@@ -38,7 +38,7 @@ use Data::Clone;
 use HTML::FormHandler::Widget::Block;
 
 has 'blocks' => (
-    isa     => 'HashRef[HTML::FormHandler::Widget::Block]',
+    isa     => 'HashRef[Object]',
     is      => 'ro',
     lazy    => 1,
     traits  => ['Hash'],
@@ -98,16 +98,11 @@ sub make_block {
     }
 
     my $class;
-    if ( $type eq '' ) {
-        $class = 'HTML::FormHandler::Widget::Block';
+    if( $type ) {
+        $class = $self->get_widget_role($type, 'Block');
     }
     else {
-        foreach my $ns ( @{$self->widget_name_space}, 'HTML::FormHandler::Widget' ) {
-            my $try_class = $ns . "::Block::" . $type;
-            last if $class = load_optional_class($try_class) ? $try_class : undef;
-        }
-        die "Could not load block class '$type' for block '$name'"
-            unless $class;
+        $class = 'HTML::FormHandler::Widget::Block';
     }
 
     $block_attr->{form} = $self->form if $self->form;
@@ -123,7 +118,7 @@ sub make_block {
     else    # new block
     {
         $block = $class->new(%$block_attr);
-        $self->add_block( $block->name, $block );
+        $self->add_block( $name, $block );
     }
 }
 
