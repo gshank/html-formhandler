@@ -29,7 +29,7 @@ use HTML::FormHandler::Test;
        all => { do_wrapper => 0, do_label => 1 },
        foo => { element_class => ['span3'], element_attr => { placeholder => 'Type something…' },
            tags => { after_element => qq{\n<span class="help-inline">Associated help text!</span>} } },
-       bar => { label => 'Check me out', label_class => ['checkbox'], tags => { single_label => 1 }},
+       bar => { option_label => 'Check me out', label_class => ['checkbox'], do_label => 0 },
        submit_btn => { element_class => ['btn'] },
     }}
 }
@@ -62,7 +62,7 @@ my $expected = '<div class="row">
         <input type="text" class="span3" placeholder="Type something…" name="foo" id="foo" value="">
         <span class="help-inline">Associated help text!</span>
         <label class="checkbox" for="bar">
-          <input type="checkbox" name="bar" id="bar" value="1">Check me out</label>
+          <input type="checkbox" name="bar" id="bar" value="1"> Check me out </label>
         <button type="submit" class="btn" name="submit_btn" id="submit_btn">Submit</button>
       </form>
     </div>

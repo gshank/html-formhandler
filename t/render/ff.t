@@ -7,7 +7,7 @@ use HTML::FormHandler::Test;
     package HTML::FormHandler::Render::FFTheme;
     use Moose::Role;
 
-    sub build_update_subfields {{ all => { tags => { unwrapped => 1 } } }}
+    sub build_update_subfields {{ all => { tags => { no_wrapped_label => 1 } } }}
     sub field_html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         my $class = $attr->{class} || [];

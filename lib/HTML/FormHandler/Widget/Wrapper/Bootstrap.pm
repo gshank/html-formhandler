@@ -25,9 +25,7 @@ buttons, with wrapped labels.
 sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
-    return "\n$rendered_widget" if ( ! $self->do_wrapper && ! $self->do_label );
-
-    my $output = "";
+    my $output;
     # is this a control group or a form action?
     my $form_actions = 1 if ( $self->name eq 'form_actions' || $self->type_attr eq 'submit'
         || $self->type_attr eq 'reset' );
@@ -37,14 +35,15 @@ sub wrap_field {
     unshift @{$attr->{class}}, $div_class;
     my $attr_str = process_attrs( $attr );
     # wrapper is always a div
-    $output .= qq{\n<div$attr_str>};
-    if ( ! $self->get_tag('label_none') && $self->do_label && length( $self->label ) > 0 ) {
+    $output .= qq{\n<div$attr_str>}
+        if $self->do_wrapper;
+    if ( $self->do_label && length( $self->label ) > 0 ) {
         my $label = $self->html_filter($self->loc_label);
         $output .= qq{\n<label class="control-label" for="} . $self->id . qq{">$label</label>};
     }
     $output .=  $self->get_tag('before_element');
     # the controls div for ... controls
-    $output .= qq{\n<div class="controls">} unless $form_actions;
+    $output .= qq{\n<div class="controls">} unless $form_actions || !$self->do_label;
     # handle input-prepend and input-append
     if( my $ip_tag = $self->get_tag('input_prepend' ) ) {
         $rendered_widget = $self->input_prepend($rendered_widget, $ip_tag);
@@ -52,7 +51,10 @@ sub wrap_field {
     elsif ( my $ia_tag = $self->get_tag('input_append' ) ) {
         $rendered_widget = $self->input_append($rendered_widget, $ia_tag);
     }
-    # extra wrappers for checkbox will be handled by checkbox field
+    elsif( lc $self->widget eq 'checkbox' ) {
+        $rendered_widget = $self->wrap_checkbox($result, $rendered_widget, 'label')
+    }
+
     $output .= "\n$rendered_widget";
     # various 'help-inline' bits: errors, warnings
     $output .= qq{\n<span class="help-inline">$_</span>}
@@ -61,9 +63,9 @@ sub wrap_field {
     # extra after element stuff
     $output .= $self->get_tag('after_element');
     # close 'control' div
-    $output .= '</div>' unless $form_actions;
+    $output .= '</div>' unless $form_actions || !$self->do_label;
     # close wrapper
-    $output .= "\n</div>";
+    $output .= "\n</div>" if $self->do_wrapper;
     return "$output";
 }
 

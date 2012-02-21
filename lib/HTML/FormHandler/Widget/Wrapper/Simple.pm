@@ -39,14 +39,11 @@ Supported 'tags':
 
 
 sub wrap_field {
-    my ( $self, $result, $rendered_widget, $wrap_label ) = @_;
+    my ( $self, $result, $rendered_widget ) = @_;
 
-    return "\n$rendered_widget" if ( ! $self->do_wrapper && ! $self->do_label );
-
-    # each field starts with a newline
-    my $output = '';
+    my $output;
     # get wrapper tag if set
-    my $label_tag;
+    my $label_tag = $self->label_tag || '';
     my $wrapper_tag;
     if( $self->do_wrapper ) {
         $wrapper_tag = $self->get_tag('wrapper_tag');
@@ -58,13 +55,11 @@ sub wrap_field {
         $output .= qq{\n<$wrapper_tag$attrs>};
         $label_tag = 'legend' if $wrapper_tag eq 'fieldset';
     }
-    # write label; special processing (wrap_label) for checkboxes
-    if( $wrap_label ) {
-        $rendered_widget = $self->do_render_wrapped_label($result, $rendered_widget, $label_tag);
-    }
-    elsif( $self->do_label ) {
-        $output .= "\n" . $self->do_render_label($result, $label_tag );
-    }
+    # write label; special processing for checkboxes
+    $rendered_widget = $self->wrap_checkbox($result, $rendered_widget, $label_tag)
+        if ( lc $self->widget eq 'checkbox' );
+    $output .= "\n" . $self->do_render_label($result, $label_tag )
+        if $self->do_label;
     # append 'before_element'
     $output .= $self->get_tag('before_element');
     # the input element itself

@@ -52,7 +52,7 @@ ok( $dir, 'found template dir' );
     has_field 'fubar.country';
 =cut
     has_field 'opt_in' => ( type => 'Checkbox', label => 'XXXX', default => 1,
-        tags => { unwrapped => 1 },
+        tags => { no_wrapped_label => 1 },
     );
 =pod
     has_field 'choose' => ( type => 'Select', default => 2 );

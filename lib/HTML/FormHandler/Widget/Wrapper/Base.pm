@@ -16,19 +16,31 @@ sub do_render_label {
     return qq{<$label_tag$attrs$for>$label</$label_tag>};
 }
 
-sub do_render_wrapped_label {
-    my ( $self, $result, $rendered_widget, $label_tag ) = @_;
+sub wrap_checkbox {
+    my ( $self, $result, $rendered_widget ) = @_;
 
-    $label_tag ||= $self->get_tag('label_tag') || 'label';
-    my $attrs = process_attrs($self->label_attributes($result));
-    my $label = $self->html_filter($self->loc_label);
-    $label .= $self->get_tag('label_after') if $label_tag ne 'legend';
-    my $id = $self->id;
-    my $for = $label_tag eq 'label' ? qq{ for="$id"} : '';
-    if( $self->get_tag('label_left') ) {
-        return qq{<$label_tag$attrs$for>$label$rendered_widget</$label_tag>};
+    return $rendered_widget
+        if( $self->get_tag('no_wrapped_label' ) );
+
+    my $label =  $self->option_label || '';
+    if( $label eq '' && ! $self->do_label ) {
+        $label = $self->html_filter($self->loc_label);
     }
-    return qq{<$label_tag$attrs$for>$rendered_widget$label</$label_tag>};
+    elsif( $label ne '' ) {
+        $label = $self->html_filter($self->_localize($label));
+    }
+    my $id = $self->id;
+    my $for = qq{ for="$id"};
+
+    # use "simple" label attributes for inner label
+    my @label_class = ('checkbox');
+    push @label_class, 'inline' if $self->get_tag('inline');
+    my $lattrs = process_attrs( { class => \@label_class } );
+
+    # return wrapped checkbox, either on left or right
+    return qq{<label$lattrs$for>\n$label\n$rendered_widget</label>}
+        if( $self->get_tag('label_left') );
+    return qq{<label$lattrs$for>$rendered_widget\n$label\n</label>};
 }
 
 # for compatibility with older code

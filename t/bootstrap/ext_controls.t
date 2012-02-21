@@ -43,15 +43,15 @@ use HTML::FormHandler::Test;
         render_list => ['optionsCheckboxList1', 'optionsCheckboxList2', 'optionsCheckboxList3' ],
         after_controls => '<p class="help-text"><strong>Note:</strong> Labels surround all the options for much larger click areas and a more usable form.</p>'
     );
-    has_field 'optionsCheckboxList1' => ( type => 'Checkbox', widget_wrapper => 'None',
+    has_field 'optionsCheckboxList1' => ( type => 'Checkbox', do_wrapper => 0, do_label => 0,
         checkbox_value => 'option1',
         option_label => 'Option one is this and that—be sure to include why it’s great',
     );
-    has_field 'optionsCheckboxList2' => ( type => 'Checkbox', widget_wrapper => 'None',
+    has_field 'optionsCheckboxList2' => ( type => 'Checkbox', do_wrapper => 0, do_label => 0,
         checkbox_value => 'option2',
         option_label => 'Option two can also be checked and included in form results',
     );
-    has_field 'optionsCheckboxList3' => ( type => 'Checkbox', widget_wrapper => 'None',
+    has_field 'optionsCheckboxList3' => ( type => 'Checkbox', do_wrapper => 0, do_label => 0,
         checkbox_value => 'option3',
         option_label => 'Option three can—yes, you guessed it—also be checked and included in form results',
     );
