@@ -1,22 +1,33 @@
-0.40000 Wed Feb 15, 2012
+0.40000 Sun Feb 26, 2012
 
+    **** There are many changes to rendering, many of them incompatible.
+       These changes *will* break existing form rendering.
+       You must check that your rendering works before upgrading. Making a copy
+       of the old code (the widget and rendering roles) may be helpful (or use
+       the compatibility libraries -- see below).
+       I always prefer to maintain backward compatibility if possible, but
+       a number of the improvements were not possible without breaking
+       compatibility, so I did a lot of changes at once.
+    Compatibility libraries are provided to help support rendering that relied
+       on the earlier libriaries at:
+       git://github.com/gshank/html-formhandler_pre-0.40_compat.git
+       README at: https://github.com/gshank/html-formhandler_pre-0.40_compat/blob/master/README
+
+    Localize the value of the rest button.
+    Tests and fix for form 'validate_<field_name>' and 'default_<field_name>' method
+        for repeatables fields.
+    Change default radiogroup rendering to not use <br /> elements. Add back
+        with tag  radio_br_after => 1
     Switch to using coderef for deflate_method; custom fields with deflate sub
         will need to be modified.
     Add block rendering (HTML::FormHandler::Blocks)
     Re-do code for default & validate method construction; now provides
        'default_method' and 'validate_method' coderef setting
     Remove 'init_value_*' from Field (deprecated for years).
-    **** There are many changes to rendering, many of them incompatible.
-       These changes *will* break existing form rendering.
-       You must check that your rendering works before upgrading. Making a copy
-       of the old code (the widget and rendering roles) may be helpful.
-       Maintaining backward compatibility was making the code awkward and weird,
-       unfortunately.
-       (You do have tests for your forms, don't you?)
     Use Hash::Merge in merging update field info on creation
-    Fix bug in copying widget_tags to fields by cloning field definitions
+    Fix bug in copying tags to fields by cloning field definitions
     Switch to using name 'element_attr' in fields instead of 'html_attr'
-    Put wrapper class 'repinst' on Repeatable Instances unless they already have a wrapper class
+    Put wrapper class 'hfh-repinst' on Repeatable Instances unless they already have a wrapper class
     Remove 'javascript' field attribute. Put into *_attr hashref.
     Automatically put 'error' on element and wrapper.
     Switch to having the 'class' as a separate attribute from the _attr collection.
@@ -25,28 +36,25 @@
        methods for templates - uwidget, uwrapper, twidget, twrapper.
        ** this change will affect existing template systems, if they use the
           $field->widget method to get the widget name. See example templates.
+       and conversion methods 'ucc_widget' and 'cc_widget' in HTML::FormHandler::Render::Util
     Create t/share/templates/form/form_in_one.tt
-    Switch default rendering of checkbox to have label wrap input
-    Add 'render_before_form' and 'render_after_form' subs; kind of silly, but
-       might be useful in some cases.
-    Add 'build_update_fields' to 'update_fields' processing to allow moving
+    Switch default rendering of checkbox to have label wrap input. Checkboxes are
+        complicated. See t/render/checkbox.t for various options.
+    Add 'build_update_subfields' to 'update_fields' processing to allow moving
        more of rendering settings into a separate role
-    Change form 'html_attr' to use build_html_attr instead of default
-    Change interface of html_field_attributes to also return attr (instead of in-place)
+    Change form 'html_attr' to 'form_element_attr', and use builder
+    Change interface of html_field_attributes to also return attr (instead of just in-place)
     Remove 'label_no_colon', make labels without colon the default.
        Add widget tag 'label_after'. Use "label_after => ': '" for old behavior
     Add widget tag 'label_tag'. Default 'label'.
-    Widget_tags attribute now takes a builder, 'build_widget_tags'. Can no
-       longer set with '+widget_tags'.
+    Widget_tags replaced with 'form_tags' in form and 'tags' in Field.
+       takes builder 'build_form_tags' instead of default
     Repeatable elements get automatic 'div' wrapper
     Remove attribute 'auto_fieldset'; wrapping form is no longer a default;
-       Add back with 'form_wrapper' => 1 in widget_tags
+       Add back with sub build_do_form_wrapper {1}
     Remove automatic wrapping of compounds.
-       Add back with 'compound_wrapper' => 1 in widget_tags
-    Rename 'no_auto_fieldset'.  Set widget_tag 'form_wrapper' => 1.
-       Add 'form_wrapper_tag' to specify wrapping tag. Default 'fieldset'.
-    Stop using 'html_form_tag' and use process_attrs($self->attributes)
-    Put form wrapper (fieldset) around form tag instead of inside
+       Enable wrapping with do_wrapper => 1 (there's also do_label => 1)
+    Put form wrapper around form tag instead of inside
 
 0.36001 Tues Jan 24, 2012
     Add two more widget tags: 'no_auto_fieldset' and 'no_compound_wrapper'
