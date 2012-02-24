@@ -830,6 +830,7 @@ has 'update_field_list'   => ( is => 'rw',
     handles => {
         clear_update_field_list => 'clear',
         has_update_field_list => 'count',
+        set_update_field_list => 'set',
     },
 );
 has 'defaults' => ( is => 'rw', isa => 'HashRef', default => sub {{}}, traits => ['Hash'],
@@ -945,6 +946,18 @@ sub has_flag {
     return $self->$flag_name;
 }
 
+# deprecated. here only for compatibility
+# with previous versions. Use update_field_list
+# or update_subfields instead.
+has 'widget_tags' => (
+    isa => 'HashRef',
+    traits => ['Hash'],
+    is => 'rw',
+    default => sub {{}},
+    handles => {
+        has_widget_tags => 'count'
+    }
+);
 has 'form_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
@@ -1052,6 +1065,9 @@ sub BUILDARGS {
 sub BUILD {
     my $self = shift;
 
+    # temporary for compatibility: move widget_tags to update_field_list
+    $self->set_update_field_list( 'all', { tags => $self->widget_tags } )
+        if $self->has_widget_tags;
     $self->before_build; # hook to allow customizing forms
     # HTML::FormHandler::Widget::Form::Simple is applied in Base
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
@@ -1060,11 +1076,11 @@ sub BUILD {
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     $self->after_build; # hook for customizing
     return if defined $self->item_id && !$self->item;
-    # load values from object (if any)
-    # would rather not load results at all here, but I'm afraid it might
-    # break existing apps; added fudge flag no_preload to enable skipping.
-    # a well-behaved program that always does ->process shouldn't need
-    # this preloading.
+    # Load values from object (if any)
+    # Would rather not load results at all here, but skipping it breaks
+    # existing apps that perform certain actions between 'new' and 'process'.
+    # Added fudge flag no_preload to enable skipping.
+    # A well-behaved program that always does ->process shouldn't need this preloading.
     unless( $self->no_preload ) {
         if ( my $init_object = $self->use_init_obj_over_item ?
             ($self->init_object || $self->item) : ( $self->item || $self->init_object ) ) {

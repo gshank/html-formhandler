@@ -903,6 +903,16 @@ sub uwrapper { ucc_widget( shift->widget_wrapper || '' ) || 'simple' }
 sub twrapper { shift->uwrapper . ".tt" }
 sub uwidget { ucc_widget( shift->widget || '' ) || 'simple' }
 sub twidget { shift->uwidget . ".tt" }
+# deprecated. use 'tags' instead.
+has 'widget_tags' => (
+    isa => 'HashRef',
+    traits => ['Hash'],
+    is => 'rw',
+    default => sub {{}},
+    handles => {
+        has_widget_tags => 'count'
+    }
+);
 has 'tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
@@ -1342,13 +1352,17 @@ sub BUILDARGS {
 sub BUILD {
     my ( $self, $params ) = @_;
 
+    # temporary, for compatibility. move widget_tags to tags
+    $self->merge_tags($self->widget_tags) if $self->has_widget_tags;
     # run default method builder
     $self->build_default_method;
     # build validate_method & deflate_method; needs to happen before validation
     # in order to have the "real" repeatable field names, not the instances
     $self->validate_method;
     $self->deflate_method;
+    # merge form widget_name_space
     $self->add_widget_name_space( $self->form->widget_name_space ) if $self->form;
+    # handle apply actions
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;
     $self->add_action( @{ $params->{apply} } ) if $params->{apply};
