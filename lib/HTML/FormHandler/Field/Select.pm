@@ -267,6 +267,7 @@ has 'do_not_reload' => ( isa => 'Bool', is => 'ro' );
 sub BUILD {
     my $self = shift;
 
+    $self->options_method;
     if( $self->options && $self->has_options ) {
         $self->options_from('build');
         $self->default_from_options([$self->options]);

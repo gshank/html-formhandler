@@ -1341,11 +1341,12 @@ sub all_messages {
 sub BUILDARGS {
     my $class = shift;
 
-    # for backwards compatibility, change html_attr to
-    #  element_attr
+    # for backwards compatibility; these will be removed eventually
     my @new;
     push @new, ('element_attr', {@_}->{html_attr} )
         if( exists {@_}->{html_attr} );
+    push @new, ('do_label', !{@_}->{no_render_label} )
+        if( exists {@_}->{no_render_label} );
     return $class->SUPER::BUILDARGS(@_, @new);
 }
 
