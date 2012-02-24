@@ -60,6 +60,8 @@ has 'render_list' => (
     handles => {
         has_render_list    => 'count',
         add_to_render_list => 'push',
+        all_render_list    => 'elements',
+        get_render_list    => 'get',
     }
 );
 

@@ -63,7 +63,7 @@ sub render {
             else {
                 # always use form level result for blocks
                 my $block = $self->block($fb);
-                die "found no field or block named $fb\n" unless $block;
+                die "found no form field or block named '$fb'\n" unless $block;
                 $output .= $block->render($result);
             }
         }

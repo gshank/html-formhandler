@@ -14,8 +14,8 @@ our $VERSION = 0.01;
 This is a Moose role that is an example of a simple rendering
 routine for L<HTML::FormHandler>. It's here as an example of
 how to write a custom renderer in one package, if you prefer
-that to using the widgets. It now uses the field rendering
-by default, because it was becoming a lot of work to update
+that to using the widgets. It won't always be updated with
+improvements by default, because it was becoming a lot of work to update
 the rendering in multiple places.
 
 For a 'MyApp::Form::Renderer' which you've created and modified,

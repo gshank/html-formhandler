@@ -98,6 +98,8 @@ has 'render_list' => (
     handles => {
         has_render_list    => 'count',
         add_to_render_list => 'push',
+        all_render_list    => 'elements',
+        get_render_list    => 'get',
     }
 );
 sub build_render_list { [] }
@@ -172,7 +174,7 @@ sub render_process_list {
                 # block can't be called from a field, so this should
                 # always be the for result
                 my $block = $self->form->block($fb);
-                die "found no field or block named $fb\n" unless $block;
+                die "found no form field or block named '$fb'\n" unless $block;
                 $output .= $block->render($result);
             }
         }

@@ -12,6 +12,12 @@ use_ok('HTML::FormHandler::Field::Repeatable');
    has_field 'tags' => ( type => 'Repeatable' );
    has_field 'tags.contains';
 
+   sub validate_tags_contains {
+       my ( $self, $field ) = @_;
+       if ( $field->value eq 'busybee' ) {
+           $field->add_error('That tag is not allowed');
+       }
+   }
 }
 
 my $form = List::Form->new;
@@ -35,5 +41,9 @@ my $fif = {
 is_deeply( $form->fif, $fif, 'fif is correct' );
 
 is_deeply( $form->values, $params, 'values are correct' );
+
+$params = { tags => ['busybee', 'sillysally', 'missymim'] };
+$form->process($params);
+ok( $form->has_errors, 'form has errors' );
 
 done_testing;

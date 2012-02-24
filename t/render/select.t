@@ -10,7 +10,7 @@ use HTML::FormHandler::Test;
 
     has '+name' => ( default => 'test_form' );
     has_field 'fruit'      => ( type => 'Select' );
-    has_field 'vegetables' => ( type => 'Multiple' );
+    has_field 'vegetables' => ( type => 'Multiple', empty_select => '-- Pick One --' );
     has_field 'my_option' => ( type => 'BoolSelect' );
     sub options_fruit {
         return (
@@ -54,10 +54,11 @@ $expected =
 '<div>
   <label for="vegetables">Vegetables</label>
   <select name="vegetables" id="vegetables" multiple="multiple" size="5">
-    <option value="&lt;lettuce&gt;" id="vegetables.0">&lt;lettuce&gt;</option>
-    <option value="broccoli" id="vegetables.1" selected="selected">broccoli</option>
-    <option value="carrots" id="vegetables.2">carrots</option>
-    <option value="&amp; peas" id="vegetables.3" selected="selected">&amp; peas</option>
+    <option id="vegetables.0" value="">-- Pick One --</option>
+    <option value="&lt;lettuce&gt;" id="vegetables.1">&lt;lettuce&gt;</option>
+    <option value="broccoli" id="vegetables.2" selected="selected">broccoli</option>
+    <option value="carrots" id="vegetables.3">carrots</option>
+    <option value="&amp; peas" id="vegetables.4" selected="selected">&amp; peas</option>
   </select>
 </div>';
 is_html( $rendered, $expected, 'output from select multiple field');

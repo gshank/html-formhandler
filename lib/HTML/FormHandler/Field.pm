@@ -1342,7 +1342,12 @@ sub BUILDARGS {
 sub BUILD {
     my ( $self, $params ) = @_;
 
+    # run default method builder
     $self->build_default_method;
+    # build validate_method & deflate_method; needs to happen before validation
+    # in order to have the "real" repeatable field names, not the instances
+    $self->validate_method;
+    $self->deflate_method;
     $self->add_widget_name_space( $self->form->widget_name_space ) if $self->form;
     $self->add_action( $self->trim ) if $self->trim;
     $self->_build_apply_list;
