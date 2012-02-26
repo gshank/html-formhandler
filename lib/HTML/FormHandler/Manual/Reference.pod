@@ -18,11 +18,6 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    params           HTTP parameters; if present validation will be attempted
    name             Form name. Used in 'id' of form element
 
-   item             DB row object
-   item_class       Class of db item
-   item_id          Primary key of db item
-   schema           Schema of item
-
    field_name_space  Where to search for fields
    widget_name_space Where to search for widgets
 
@@ -37,15 +32,26 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    sorted_fields    The sorted array of fields
    field( $name )   Returns a field object
    has_field        Moose-y sugar for declaring fields
+   field_list       Non-moose-y way to define fields
 
    clear            Resets state. Used in persistent forms.
    value            Returns a hashref of values (with accessor keys)
    fif              Returns a hashref for filling in form
 
+=head2 Form database attributes
+
+   item             DB row object
+   item_class       Class of db item
+   item_id          Primary key of db item
+   schema           Schema of item
+
+   Also 'update_model' sub
+
 =head2 Form processing
 
-   process         Sets up form, validated, updates model
-   run             Returns a result object and clears form
+   process           Sets up form, validated, updates model
+   run               Returns a result object and clears form
+   update_field_list Updates to fields on process
 
 =head3 Validation
 
@@ -55,6 +61,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    is_valid        Synonym of 'validated'
    ran_validation  Flag that validation has already been run
    dependency      Set groups of fields that are set to required if one is present
+   validate_$fieldname  Validation routine for field (also 'validate_method')
 
 =head3 Errors
 
@@ -67,7 +74,9 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 =head3 Form Methods and process hooks
 
    update_model      To perform additional database actions update
-   update_fields     Sub providing convenient place to update fields
+   update_fields     Sub providing convenient place to update fields on 'process'
+   update_subfields  Sub providing place to update fields on Build (useful for
+                       roles and compound field classes)
    init_object       can be a method instead of an attribute
 
 =head3 Form Rendering
@@ -86,13 +95,13 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    uuid                generates a string containing an HTML field with UUID
    style               adds a 'style' attribute to the form tag
    id                  the form tag 'id' attribute is set to the form name
-   html_attributes     hook that allows customizing html attributes
+   html_attributes     hook that allows customizing html attributes (form & field)
 
 =head2 Field specific form methods
 
-   options_$fieldname       Sub returning options array (also 'options_method')
-   validate_$fieldname      Validation routine for field (also 'validate_method')
-   default_$fieldname       Set default for field (also 'default_method')
+   options_$fieldname   Sub returning options array (also 'options_method')
+   validate_$fieldname  Validation routine for field (also 'validate_method')
+   default_$fieldname   Set default for field (also 'default_method')
 
 =head1 Fields
 
@@ -100,41 +109,61 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
    name          Field name. Must be the same as database column name or rel
    type          Field type. From a Field class: 'Text', 'Select', etc
-   accessor      Database accessor name if different than field name
-   validate_method  Validation coderef, or 'validate_$fieldname' (by default)
-   default_method   Coderef to set default or 'default_$fieldname' (by default)
-   required      Field is required
-   order         Set the order for fields. Used by sorted_fields, templates.
-   widget        Determines which rendering widget to use for the field
-   widget_wrapper Which wrapper widget to apply to the field
-   password      Remove from params and do not display in forms.
-   noupdate      Don't update this field in the database
-   writeonly     Do not retrieve initial values
-   errors        Errors associated with this field
-                 (also num_errors, clear_errors, has_errors, add_error)
-   messages      Hashref of message identifiers and text
-   options       Select lists. Sorted array of hashes, keys: "value", "label"
-   label_column  Select lists: column to use for labels (default: name)
-   active_column Select lists: which values to list
-   sort_column   Select lists: column to use for sorting (default: label_column)
-   size          Text & select fields.
-   maxlength     Text fields. Validated.
-   minlength     Text fields. Used in validation
-   range_start   Range start for number fields
-   range_end     Range end for number fields
-   unique        Field should be unique in the database
-   apply         Array of constraint/coercion/transformation actions
+   order         Set the order for fields. Default order is set by FH.
+
    dump          For debugging
-   inactive, is_active, is_inactive
+   active        Arrayref of fields to set active
+   is_active
+   inactive      Arrayref of fields to set inactive
+   is_inactive
    input_without_param  The value of the field if there is no input from the submitted form
+
    default       Default value for the field
+   default_method   Coderef to set default or 'default_$fieldname' (by default)
    not_nullable  Don't convert an empty field ('', etc) to undef
+
    trim          Transform to trim the field
    deflation     Function to deflate the field (in 'apply') (opposite of transform)
    deflate_method Supply coderef to deflate the field
 
+   password      Remove from params and do not display in forms.
+
+=head2 Select fields
+
+   options       Sorted array of hashes, keys: "value", "label"
+   label_column  Column to use for labels (default: name)
+   active_column Which values to list in options
+   sort_column   Column to use for sorting (default: label_column)
+
+=head2 Field errors
+
+   errors        Errors associated with this field
+                 (also num_errors, clear_errors, has_errors, add_error)
+   messages      Hashref of message identifiers and text
+
+=head2 Field validation
+
+   apply         Array of constraint/coercion/transformation actions
+   validate_method  Validation coderef, or 'validate_$fieldname' in form (default)
+   required      Field is required
+   maxlength     Text fields. Validated.
+   minlength     Text fields. Used in validation
+   range_start   Range start for number fields
+   range_end     Range end for number fields
+
+=head2 Field attributes for DB
+
+   accessor      Database accessor name if different than field name
+   unique        Field should be unique in the database
+   noupdate      Don't update this field in the database
+   writeonly     Do not retrieve initial values
+
+   Also see the select field _columns attributes
+
 =head2 Field rendering
 
+   widget        Determines which rendering widget to use for the field
+   widget_wrapper Which wrapper widget to apply to the field
    element_attr - Hashref to store arbitrary html attributes.
    label_attr   - Hashref for html attributes for the label
    wrapper_attr - Hashref for html attributes for the wrapping element (div, etc)
@@ -146,12 +175,13 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
                   form name, use 'html_prefix' in your form)
    do_wrapper   - flag to render wrapper
    do_label     - flag to render label
+   size          Text & select fields.
 
 =head2 Field attributes managed by FormHandler
 
 These attributes are usually accessed in a subroutine or in a template, but are
-usually set only by FormHandler. ('value' may be changed as a transform in a
-validation routine.)
+usually set only by FormHandler. ('value' may be changed as a transform _in a
+validation routine_.)
 
    init_value    Initial value from the database
    value         The value of your field.
