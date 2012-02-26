@@ -10,7 +10,6 @@ sub render {
     my $result = shift || $self->result;
     my $t;
 
-    my $rendered = $self->html_filter($result->fif);
     my $output = '<button type="' . $self->input_type . '" name="'
         . $self->html_name . '" id="' . $self->id . '"';
     $output .= process_attrs($self->element_attributes($result));

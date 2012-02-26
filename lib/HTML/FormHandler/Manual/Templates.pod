@@ -83,101 +83,157 @@ example:
 
 =head1 Sample templates
 
-Note that the following templates assume that the field is in a TT variable "f",
-as though they were processed in the above loop. Otherwise the individual
-fields could be preceded by something like:
+The following is copied from the provided share/templates/form/form_in_one.tt file,
+as an example. Note that some fields, like form actions of 'submit' & 'reset' don't
+use the 'fif' value, but just the plain field value.
 
-  [% f = form.field('title') %]
+    [% PROCESS form_start -%]
+    <div class="form_messages">
+    [% FOREACH err IN form.form_errors -%]
+      <span class="error_message">[% err %]</span>
+    [% END -%]
+    </div>
+    [% FOREACH f IN form.sorted_fields -%]
+      [% WRAPPER "wrapper_${f.uwrapper}" -%][% PROCESS "${f.uwidget}" -%][% END -%]
+    [% END -%]
+    [% PROCESS form_end -%]
 
-=head2 Text input field with error class on div & error messages
+    [% BLOCK form_start -%]
+    <form[% process_attrs(form.attributes) %]>
+    [% END -%]
 
-   <div class="[% f.css_class %] [% IF f.has_errors %]error_fld[% END %]">
-   [% IF f.has_errors %]
-     [% FOR error IN f.errors %]
-       <p><span class="error" id="error">[% error %] </span></p>
-     [% END %]
-   [% END %]
-   <label class="label" for="[% f.id %]">[% f.label %]</label>
-   <input type="text" name="[% f.html_name %]" id="[% f.id %]" value="[% f.fif %]">
-   </div>
+    [% BLOCK form_end -%]
+    </form>
+    [% END -%]
 
-Simple text field;
+    [% BLOCK button -%]
+    <input type="button" name="[% f.html_name %]" id="[% f.id %]"
+        [% process_attrs(f.attributes) %] value="[% f.value %]" />
+    [% END -%]
 
-   [% f = form.field('text_field') %]
-   <div><label class="label" for="[% f.id %]">[% f.label %]: </label>
-   <input type="text" name="[% f.html_name %]" id="[% f.id %]" value="[% f.fif %]" /> </div>
+    [% BLOCK checkbox -%]
+    <input type="checkbox" name="[% f.html_name %]" id="[% f.id %]"
+       [% process_attrs(f.attributes) %] value="[% f.checkbox_value -%]"
+       [% IF f.fif == f.checkbox_value -%] checked="checked"[% END ~%] />[%~ ~%]
+    [% END -%]
 
+    [% BLOCK checkbox_group -%]
+    [% FOR option IN f.options -%]
+      <label class="checkbox" for="[% f.name %].[% loop.index %]">
+      <input type="checkbox" value="[% option.value %]" name="[% f.name %]"
+         id="[% f.name %].[% loop.index %]"
+         [% FOREACH selval IN f.fif -%]
+           [% IF selval == option.value %] checked="checked"[% END -%]
+         [% END -%]>
+      [% option.label | html %]
+      </label>
+    [% END -%]
+    [% END -%]
 
-=head2 Select field
+    [% BLOCK compound -%]
+    [% FOREACH sf IN f.sorted_fields -%]
+      [% outerf = f; f = sf; -%]
+      [% WRAPPER "wrapper_${f.uwrapper}" %][% PROCESS "${f.uwidget}" -%][% END -%]
+      [% f = outerf -%]
+    [% END -%]
+    [% END -%]
 
-Single select:
+    [% BLOCK hidden -%]
+    <input type="hidden" name="[% f.html_name %]" id="[% f.id %]"
+        [% process_attrs(f.attributes) %] value="[% f.fif %]" />
+    [% END -%]
 
-   <label class="label" for="[% f.id %]">[% f.label %]</label>
-   <select name="[% f.html_name %]" id="[% f.id %]>
-     [% FOR option IN f.options %]
-       <option value="[% option.value %]"
-       [% IF option.value == f.fif %]
-          selected="selected"
-       [% END %]>
-       [% option.label %]</option>
-     [% END %]
-   </select>
+    [% BLOCK password -%]
+    <input type="password" name="[% f.html_name %]" id="[% f.id %]"
+        [% process_attrs(f.attributes) %] value="[% f.fif %]" />
+    [% END -%]
 
-Multiple select:
+    [% BLOCK radio_group -%]
+    [% FOR option IN f.options -%]
+      <label for="[% f.id %].[% loop.index %]">
+      <input type="radio" value="[% option.value %]" name="[% f.name %]"
+        id="[% f.id %].[% loop.index %]"
+        [% IF option.value == f.fif %] checked="checked"[% END %] />
+      [% option.label %]
+      </label>
+    [% END -%]
+    [% END -%]
 
-   <label class="label" for="[% f.id %]">[% f.label %]</label>
-   <select name="[% f.html_name %]" id="[% f.id %]
-             multiple="multiple" size="[% f.size %]">
-     [% FOR option IN f.options %]
-       <option value="[% option.value %]"
-       [% FOREACH optval IN f.value %]
-          [% IF optval == option.value %]
-             selected="selected"
-          [% END %]
-       [% END %]>
-       [% option.label %]</option>
-     [% END %]
-   </select>
+    [% BLOCK repeatable -%]
+    [% FOREACH rf IN f.sorted_fields -%]
+      [% outerrf = f; f = rf; -%]
+      [% WRAPPER "wrapper_${f.uwrapper}" %][% PROCESS "${f.uwidget}" -%][% END -%]
+      [% f = outerrf -%]
+    [% END -%]
+    [% END -%]
 
-Warning: TT has problems with single element arrays. If you are likely
-to have a single element in a select list, you might want to use the
-rendering method instead or add an extra "choose" row. (If you come up
-with a good solution, please submit a doc patch.)
+    [% BLOCK reset -%]
+    <input type="reset" name="[% f.html_name %]" id="[% f.id %]"
+        [% process_attrs(f.attributes) %] value="[% f.value %]" />
+    [% END -%]
 
-=head2 Checkbox
+    [% BLOCK select -%]
+    <select name="[% f.html_name %]" id="[% f.id %]"[% process_attrs(f.attributes) %]
+      [% IF f.multiple %] multiple="multiple" size="[% f.size %]" [% END -%]>
+      [% FOR option IN f.options -%]
+      <option id="[% f.id %].[% loop.index %]" value="[% option.value -%]"
+          [% FOREACH selval IN f.fif -%]
+            [% IF selval == option.value %] selected="selected"[% END -%]
+          [% END -%]>
+          [% option.label | html %]
+      </option>
+      [% END -%]
+    </select>
+    [% END -%]
 
-   <div><label class="label" for="[% f.id %]">[% f.label %]: </label>
-   <input type="checkbox" name="[% f.html_name %]" id="[% f.id %]" value="1" />
-   </div>
+    [% BLOCK submit -%]
+    <input type="submit" name="[% f.html_name %]" id="[% f.id %]"
+        [% process_attrs(f.attributes) %] value="[% f.value %]" />
+    [% END -%]
 
-=head2 Textarea
+    [% BLOCK text -%]
+    <input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]"
+       [% process_attrs(f.attributes) %] value="[% f.fif %]" />
+    [% END -%]
 
-   <div><label class="label" for="[% f.id %]">[% f.label %]: </label>
-   <textarea name="[% f.html_name %]" id="[% f.id %]"
-        rows="[% f.rows %]" cols="[% f.cols %]">[% f.fif %]</textarea></div>
+    [% BLOCK textarea -%]
+    <textarea name="[% f.html_name %]" id="[% f.id %]" rows="[% f.rows %]"
+       cols="[% f.cols %]" [% process_attrs(f.attributes) %]>[% f.fif %]</textarea>
+    [% END -%]
 
-=head2 Hidden
+    [% BLOCK upload -%]
+    <input type="file" name="[% f.html_name %]" id="[% f.html_name %]"
+        [% process_attrs(f.attributes) %] />
+    [% END -%]
 
-   <div><input type="hidden" name="[% f.html_name %]" id="[% f.id %]"
-       value="[% f.fif %]" /></div>
+    [% BLOCK wrapper_simple -%]
+    <div[% process_attrs(f.wrapper_attributes) -%]>
+      [% IF f.do_label %][% PROCESS label %][% END -%]
+      [% content -%]
+    </div>
+    [% END -%]
 
-=head2 Submit
+    [% BLOCK label -%]
+    <label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">[% f.label %]</label>
+    [% END -%]
 
-   <div><input type="submit" name="[% f.html_name %]" id="[% f.id %]"
-       value="[% f.value %]" /></div>
+    [% BLOCK wrapper_wrap_label -%]
+    <div[% process_attrs(f.wrapper_attributes) %]>
+        <label[% process_attrs(f.label_attributes) %] for="[% f.html_name %]">
+           [%~ content ~%][%~ f.label %]
+        </label>
+    </div>
+    [% END -%]
 
-=head2 Radio group
+    [% BLOCK wrapper_none -%]
+    [% content %]
+    [% END -%]
 
-   <div>
-   <label class="label" for="[% f.id %]">[% f.label %]</label>
-   [% FOR option IN f.options %]
-     <input type="radio" value="[% option.value %]"
-        name="[% f.name %]"
-     [% IF option.value == f.fif %]
-        checked="checked"
-     [% END %]>
-     [% option.label %]<br />
-   [% END %]
-   </div>
+    [% BLOCK wrapper_fieldset -%]
+    <fieldset[% process_attrs(f.wrapper_attributes)%]><legend>[% f.label %]</legend>
+    [% content -%]
+    </fieldset>
+    [% END -%]
+
 
 =cut

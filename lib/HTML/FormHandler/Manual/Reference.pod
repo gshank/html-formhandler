@@ -17,17 +17,19 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    name          Field name. Must be the same as database column name or rel
    type          Field type. From a Field class: 'Text', 'Select', etc
    accessor      Database accessor name if different than field name
-   set_validate  Name of validation method in form. Default is validate_$fieldname
-   set_default   Name of the form method used to initialize a field
+   validate_method  Validation coderef, or 'validate_$fieldname' (by default)
+   default_method   Coderef to set default or 'default_$fieldname' (by default)
    required      Field is required
    order         Set the order for fields. Used by sorted_fields, templates.
    widget        Determines which rendering widget to use for the field
+   widget_wrapper Which wrapper widget to apply to the field
    password      Remove from params and do not display in forms.
    noupdate      Don't update this field in the database
    writeonly     Do not retrieve initial values
    errors        Errors associated with this field
                  (also num_errors, clear_errors, has_errors, add_error)
    messages      Hashref of message identifiers and text
+   options       Select lists. Sorted array of hashes, keys: "value", "label"
    label_column  Select lists: column to use for labels (default: name)
    active_column Select lists: which values to list
    sort_column   Select lists: column to use for sorting (default: label_column)
@@ -38,14 +40,14 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    range_end     Range end for number fields
    unique        Field should be unique in the database
    apply         Array of constraint/coercion/transformation actions
-   value_changed Has the field's value changed from the init_value?
    dump          For debugging
    inactive, is_active, is_inactive
    input_without_param  The value of the field if there is no input from the submitted form
    default       Default value for the field
    not_nullable  Don't convert an empty field ('', etc) to undef
    trim          Transform to trim the field
-   deflation     Function to transform the field
+   deflation     Function to deflate the field (in 'apply') (opposite of transform)
+   deflate_method Supply coderef to deflate the field
 
 =head2 Field Attributes for creating HTML
 
@@ -58,7 +60,8 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    label        - Text label for this field. Defaults to ucfirst field name.
    id           - Useful for javascript (default is html_name. to prefix with
                   form name, use 'html_prefix' in your form)
-   javascript   - for a Javascript string
+   do_wrapper   - flag to render wrapper
+   do_label     - flag to render label
 
 =head2 Field attributes not set in a user form
 
@@ -68,7 +71,6 @@ These attributes are usually accessed in a subroutine or in a template.
    value         The value of your field.
    input         Input value from parameter or initial value from database
    fif           Retrieve (do not set) values for filling in a form
-   options       Select lists. Sorted array of hashes, keys: "value", "label"
 
 =head1 Forms
 
@@ -120,7 +122,9 @@ These attributes are usually accessed in a subroutine or in a template.
 =head2 Form attributes useful in HTML
 
    form_element_attr - For arbitrary html attributes in the 'form' tag
+   form_element_class
    form_wrapper_attr - for arbitrary html attributes on the form wrapper
+   form_wrapper_class
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    enctype - Request enctype

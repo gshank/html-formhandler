@@ -431,6 +431,32 @@ field's 'value' directly here, since it will
 be overwritten by the validation process. Set the value in a field
 validation method.)
 
+=head3 update_subfields
+
+Yet another way to provide settings for the field, except this one is intended for
+use in roles and compound fields, and is only executed when the form is
+initially built. It takes the same field name keys as 'update_field_list', plus
+'all' and 'by_flag'.
+
+    sub build_update_subfields {{
+        all => { tags => { wrapper_tag => 'p' } },
+        foo => { element_class => 'blue' },
+    }}
+
+The 'all' hash key will apply updates to all fields (conflicting attributes
+in a field definition take precedence.)
+
+The 'by_flag' hash key will apply updates to fields with a particular flag.
+The currently supported subkeys are 'compound', 'repeatable', and 'contains'.
+This is useful in this context for turning on the rendering
+wrappers for compounds and repeatables, which are off by default. (The
+repeatable instances are wrapped by default.)
+
+    sub build_update_subfields {{
+        by_type => { compound => { do_wrapper => 1 } }
+    }}
+
+
 =head3 defaults
 
 This is a more specialized version of the 'update_field_list'. It can be

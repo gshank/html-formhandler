@@ -239,9 +239,8 @@ The 'label_attr' hashref is for label attributes, and the 'wrapper_attr'
 is for attributes on the wrapping element (a 'div' for the standard 'simple'
 wrapper).
 
-The javascript value of the javascript attribute is entered completely.
-
-   javascript  - for a Javascript string
+A 'javascript' key in one of the '_attr' hashes will be inserted into the
+element as-is.
 
 The following are used in rendering HTML, but are handled specially.
 
@@ -257,7 +256,7 @@ The order attribute may be used to set the order in which fields are rendered.
    order       - Used for sorting errors and fields. Built automatically,
                  but may also be explicitly set
 
-The following are deprecated. Use 'element_attr', 'label_attr', and 'wrapper_attr'
+The following are discouraged. Use 'element_attr', 'label_attr', and 'wrapper_attr'
 instead.
 
    css_class   - instead use wrapper_attr => { class => '...' }

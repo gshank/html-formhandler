@@ -105,11 +105,7 @@ schema.
 
 =head2 Render the form
 
-To use simple rendering, add a line to your form class:
-
-   with 'HTML::FormHandler::Render::Simple';
-
-Then save a copy of C<root/src/books/edit.tt2> and create a new file that
+Save a copy of C<root/src/books/edit.tt2> and create a new file that
 contains only:
 
    [% form.render %]
@@ -267,7 +263,7 @@ field type, which makes it easy to create a select list of numbers.)
 
 =head2 Add customized validation
 
-Usually you would create a Field class for validation that will
+You can create a Field class for validation that will
 be performed on more than one field, but it is easy to perform
 custom validation on a per-field basis.
 
@@ -294,15 +290,6 @@ above 5, leaving out a particular field.  Create a book with
 'Rainbows' in the title.
 
 You should get error messages for every error.
-
-=head2 Database accessors
-
-Although you can do database specific actions in a form class, you
-should limit this to actions that won't be required for anything
-except for your HTML forms. Other actions should be done in your
-L<DBIx::Class> classes. L<HTML::FormHandler::Model::DBIC> allows
-the use of custom accessors, making it easier to keep the code
-in the right place.
 
 =cut
 

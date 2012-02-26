@@ -107,7 +107,7 @@ Or set the traits on new:
              field_list => [ '+foo' => { traits => [...] } ]);
 
 To apply the role to a field base class, use 'apply_traits' on that class:
-   
+
     HTML::FormHandler::Field->apply_traits( 'Some::Test' );
     HTML::FormHandler::Field::Text->apply_traits( 'Another::Trait' );
 
@@ -146,6 +146,10 @@ Or customize the select list in an 'options_' method:
       return [ map { $_->digraph, $_->country_name } @rows ];
    }
 
+Or you can use the 'empty_select' attribute on your field:
+
+    has_field 'country' => ( type => 'Select', empty_select => '-- Choose --' );
+
 =head2 The database and FormHandler forms
 
 If you have to process the input data before saving to the database, and
@@ -181,10 +185,7 @@ feature to create accessors for those fields.
 
 You can add whatever attributes you want to your form classes. Maybe you
 want to save a title, or a particular navigation widget. You could even
-save bits of text, or retrieve them from the database. Sometimes doing it
-this way would be the wrong way. But it's your form, your choice. In the
-right circumstances, it might provide a way to keep code out of your
-templates and simplify your controllers.
+save bits of text, or retrieve them from the database.
 
    package MyApp::Form::Base;
    use Moose;
@@ -192,6 +193,8 @@ templates and simplify your controllers.
 
    has 'title' => ( isa => 'Str', is => 'rw' );
    has 'nav_bar' => ( isa => 'Str', is => 'rw' );
+   has_block 'reg_header' => ( tag => 'fieldset', label => 'Registration form',
+       content => 'We take your membership seriously...' );
 
    sub summary {
       my $self = shift;
@@ -216,8 +219,8 @@ And in the template:
 
    <h1>[% form.title %]</h1>
    [% form.nav_bar %]
+   [% form.block('reg_header')->render %]
    <p><b>Summary: </b>[% form.summary %]</p>
-
 
 Or you can make these customizations Moose roles.
 
@@ -232,32 +235,15 @@ Or you can make these customizations Moose roles.
 
 =head2 Split up your forms into reusable pieces
 
-A person form:
+An address field:
 
-   package Form::Person;
+   package Form::Field::Address;
    use HTML::FormHandler::Moose;
-   extends 'HTML::FormHandler';
-
-   has_field 'name';
-   has_field 'telephone';
-   has_field 'email' => ( type => 'Email' );
-
-   sub validate_name {
-    ....
-   }
-
-   no HTML::FormHandler::Moose;
-   1;
-
-An address form:
-
-   package Form::Address;
-   use HTML::FormHandler::Moose;
-   extends 'HTML::FormHandler';
+   extends 'HTML::FormHandler::Field::Compound';
 
    has_field 'street';
    has_field 'city';
-   has_field 'state' => ( type => 'Select' );
+   has_field 'state' => ( type => 'Select', options_method => \&options_state );
    has_field 'zip' => ( type => '+Zip' );
 
    sub options_state {
@@ -267,17 +253,26 @@ An address form:
    no HTML::FormHandler::Moose;
    1;
 
-A form that extends them both:
+A person form that includes an address field:
 
-   package Form::Member;
-   use Moose;
-   extends ('Form::Person', 'Form::Address');
+   package Form::Person;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
 
-   use namespace::autoclean;
+   has '+widget_name_space' => ( default => sub {['Form::Field']} );
+   has_field 'name';
+   has_field 'telephone';
+   has_field 'email' => ( type => 'Email' );
+   has_field 'address' => ( type => 'Address' );
+
+   sub validate_name {
+    ....
+   }
+
+   no HTML::FormHandler::Moose;
    1;
 
-Or if you don't need to use the pieces of your forms as forms themself, you can
-use roles;
+Or you can use roles;
 
    package Form::Role::Address;
    use HTML::FormHandler::Moose::Role;
@@ -309,10 +304,10 @@ You could make roles that are collections of validations:
    1;
 
 And if the validations apply to fields with different names, specify the
-'set_validate' on the fields:
+'validate_method' on the fields:
 
    with 'Form::Role::Member';
-   has_field 'zip' => ( type => 'Integer', set_validate => 'check_zip' );
+   has_field 'zip' => ( type => 'Integer', validate_method => \&check_zip );
 
 
 =head2 Access a user record in the form
@@ -344,15 +339,16 @@ Then just use an additional parameter when you create/process your form:
 
     $form->process( item => $item, params => $params, hostname => $c->req->host );
 
-=head2 Record the user update
+Some kinds of DB relationships need to have primary keys which might be more easily
+set in the update model method;
 
-Use the 'before' or 'after' method modifiers for 'update_model', to flag a record
-as updated by the user, for example:
-
-   before 'update_model' => sub {
-      my $self = shift;
-      $self->item->user_updated if $self->item;
-   };
+    sub update_model {
+        my $self = shift;
+        my $values = $self->values;
+        $values->{some_field}->{some_key} = 'some_value';
+        $self->_set_value($values);
+        $self->next::method;
+    }
 
 =head2 Additional changes to the database
 
@@ -643,7 +639,7 @@ general solution, patches welcome.
     extends 'HTML::FormHandler::Model::DBIC';
 
     has '+item_class' => ( default => 'Employer' );
-    has 'resultset' => ( isa => 'DBIx::Class::ResultSet', is => 'rw', 
+    has 'resultset' => ( isa => 'DBIx::Class::ResultSet', is => 'rw',
             trigger => sub { shift->set_resultset(@_) } );
     sub set_resultset {
         my ( $self, $resultset ) = @_;
@@ -734,7 +730,7 @@ But the field 'id' attribute has already been constructed and doesn't change.
 
 Solution: apply a role to the base field class to replace the 'id' getter for the 'id'
 attribute with a method which constructs the 'id' dynamically. Since the role is
-being applied to the base field class, you can't just use 'sub id', because the 
+being applied to the base field class, you can't just use 'sub id', because the
 'id' method defined by the 'id' attribute has precedence. So create an 'around'
 method modifier that replaces it in the role.
 
@@ -757,5 +753,5 @@ method modifier that replaces it in the role.
     has_field 'foo';
     has_field 'bar';
 
- 
+
 =cut

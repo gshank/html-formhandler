@@ -23,6 +23,10 @@ Rendering options, particularly rendering with widgets
 
 Builds on the Catalyst tutorial. Step-by-step guide.
 
+=head2 L<HMLT::FormHandler::Manual::Testing>
+
+Test your forms
+
 =head2 L<HTML::FormHandler::Manual::Cookbook>
 
 'Howto' recipes

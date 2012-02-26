@@ -3,33 +3,38 @@ use warnings;
 use Test::More;
 use HTML::FormHandler::Test;
 
-# this tests that instead of constructing a 14 line form easily in
-# a template, you can also construct it with 15 (additional) lines of Perl
 {
     package MyApp::Form::Basic::Theme;
     use Moose::Role;
 
-    # set class for form tag (form_element_attr) and form wrapper (form_wrapper_attr)
+    # make a wrapper around the form
     sub build_do_form_wrapper {1}
+    # set the class for the form wrapper
     sub build_form_wrapper_class { ['span9'] }
+    # set the class for the form element
     sub build_form_element_class { ['well'] }
+    # set various rendering tags
     sub build_form_tags {
         {   wrapper_tag => 'div',
-            before => qq{<div class="row"><div class="span3"><p>With v2.0, we have lighter and smarter defaults for form styles. No extra markup, just form controls.</p></div>\n},
+            before => qq{<div class="row"><div class="span3"><p>With v2.0, we have
+               lighter and smarter defaults for form styles. No extra markup, just
+               form controls.</p></div>\n},
             after => '</div>',
         }
     }
 
-    # individual field settings, including classes for form elements (form_element_attr),
-    # field wrappers (wrapper_attr), field labels (label_attr)
-    # widget_wrapper, labels strings,
-    # extra bits of rendering (after_element)
+    # the settings in 'build_update_subfields' are merged with the field
+    # definitions before they are constructed
     sub build_update_subfields {{
-       # wrap the fields with a label but no tag
+       # all fields have a label but no wrapper
        all => { do_wrapper => 0, do_label => 1 },
-       foo => { element_class => ['span3'], element_attr => { placeholder => 'Type something…' },
-           tags => { after_element => qq{\n<span class="help-inline">Associated help text!</span>} } },
-       bar => { option_label => 'Check me out', label_class => ['checkbox'], do_label => 0 },
+       # set the element class, a placeholder in element_attr
+       foo => { element_class => ['span3'],
+           element_attr => { placeholder => 'Type something…' },
+           tags => { after_element =>
+              qq{\n<span class="help-inline">Associated help text!</span>} } },
+       bar => { option_label => 'Check me out',
+          label_class => ['checkbox'], do_label => 0 },
        submit_btn => { element_class => ['btn'] },
     }}
 }

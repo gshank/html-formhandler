@@ -1,0 +1,87 @@
+package HTML::FormHandler::Manual::Testing
+# ABSTRACT: testing forms
+
+=head1 SYNOPSIS
+
+It's difficult to test forms that are instantiated in controllers with 'add_element'
+calls and from YAML, and that have no form class. It's one of the reasons that I
+don't think that 'dynamic' forms generated with a field_list are a good idea for
+anything except the simplest forms. But if you create a form class that contains everything
+that is needed for processing the form, it's really really easy to create tests for
+forms. Look in the FormHandler 't' directory. It's full of tests for forms.
+
+You can test that the validations work, that the database is getting updated
+correctly, even that the HTML that's being rendered is correct. If something
+isn't working correctly, it's ten times easier to debug in a test case than
+sitting in a controller somewhere. And when you finally start up your application
+and use the form, there should be very few surprises.
+
+FormHandler provides a simple function to test whether the HTML output is
+correct, 'is_html' in L<HTML::FormHandler::Test>, which uses L<HTML::TreeBuilder>.
+If you need to build forms that use the rendering code to produce particular
+output, it can be helpful.
+
+=head1 Example
+
+Here's an example of a test, originally copied from one the DBIC model tests.
+But you should download the tar.gz or checkout the distribution from github
+and browse through the tests.
+
+   use Test::More;
+   use lib 't/lib';
+
+   use_ok( 'BookDB::Form::Book');
+   use_ok( 'BookDB::Schema::DB');
+
+   my $schema = BookDB::Schema::DB->connect('dbi:SQLite:t/db/book.db');
+   ok($schema, 'get db schema');
+
+   my $form = BookDB::Form::Book->new(schema => $schema);
+
+   # This is munging up the equivalent of param data from a form
+   my $good = {
+       'title' => 'How to Test Perl Form Processors',
+       'author' => 'I.M. Author',
+       'genres' => [2, 4],
+       'format'       => 2,
+       'isbn'   => '123-02345-0502-2' ,
+       'publisher' => 'EreWhon Publishing',
+   };
+   ok( $form->process( params => $good ), 'Good data' );
+
+   my $book = $form->item;
+   END { $book->delete };
+   ok ($book, 'get book object from form');
+   my $num_genres = $book->genres->count;
+   is( $num_genres, 2, 'multiple select list updated ok');
+   is( $form->field('format')->value, 2, 'get value for format' );
+
+   my $bad_1 = {
+       notitle => 'not req',
+       silly_field   => 4,
+   };
+   ok( !$form->process( $bad_1 ), 'bad 1' );
+
+   my $bad_2 = {
+       'title' => "Another Silly Test Book",
+       'author' => "C. Foolish",
+       'year' => '1590',
+       'pages' => 'too few',
+       'format' => '22',
+   };
+   ok( !$form->process( $bad_2 ), 'bad 2');
+   ok( $form->field('year')->has_errors, 'year has error' );
+   ok( $form->field('pages')->has_errors, 'pages has error' );
+   ok( !$form->field('author')->has_errors, 'author has no error' );
+   ok( $form->field('format')->has_errors, 'format has error' );
+
+   my $good = {
+      title => "Another Silly Test Book",
+      author => "C. Foolish",
+      year => 1999,
+      pages => 101,
+      format => 2
+   };
+   ok( $form->process($good), 'now form validates' );
+
+   done_testing;

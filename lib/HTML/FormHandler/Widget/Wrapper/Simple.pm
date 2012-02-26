@@ -31,6 +31,7 @@ Supported 'tags':
     before_element -- string that goes right before the element
     after_element  -- string that goes right after the element
 
+    no_errors      -- don't issue error messages on the field
     error_class    -- class for error messages (default 'error_message')
     warning_class  -- class for warning messages (default 'warning_message' )
 
@@ -67,13 +68,15 @@ sub wrap_field {
     # the 'after_element'
     $output .= $self->get_tag('after_element');
     # the error messages
-    my $error_class = $self->get_tag('error_class') || 'error_message';
-    $output .= qq{\n<span class="$error_class">$_</span>}
-        for $result->all_errors;
-    # warnings (incompletely implemented - only on field itself)
-    my $warning_class = $self->get_tag('warning_class') || 'warning_message';
-    $output .= qq{\n<span class="warning_message">$_</span>}
-        for $result->all_warnings;
+    unless( $self->get_tag('no_errors') ) {
+        my $error_class = $self->get_tag('error_class') || 'error_message';
+        $output .= qq{\n<span class="$error_class">$_</span>}
+            for $result->all_errors;
+        # warnings (incompletely implemented - only on field itself)
+        my $warning_class = $self->get_tag('warning_class') || 'warning_message';
+        $output .= qq{\n<span class="warning_message">$_</span>}
+            for $result->all_warnings;
+    }
     if( $self->do_wrapper ) {
         $output .= "\n</$wrapper_tag>";
     }

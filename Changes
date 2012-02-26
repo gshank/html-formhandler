@@ -13,7 +13,9 @@
        git://github.com/gshank/html-formhandler_pre-0.40_compat.git
        README at: https://github.com/gshank/html-formhandler_pre-0.40_compat/blob/master/README
 
-    Localize the value of the rest button.
+    'auto_fieldset' and 'no_auto_fieldset' no longer used. No automatic fieldsets.
+       Can be added with wrapper => 0 and a tag of wrapper_tag => 'fieldset'
+    Localize the value of the reset button.
     Tests and fix for form 'validate_<field_name>' and 'default_<field_name>' method
         for repeatables fields.
     Change default radiogroup rendering to not use <br /> elements. Add back
@@ -51,10 +53,13 @@
        takes builder 'build_form_tags' instead of default
     Repeatable elements get automatic 'div' wrapper
     Remove attribute 'auto_fieldset'; wrapping form is no longer a default;
-       Add back with sub build_do_form_wrapper {1}
+       Add back with sub build_do_form_wrapper {1},
+       and form_tags => { wrapper_tag => 'fieldset' }
     Remove automatic wrapping of compounds.
        Enable wrapping with do_wrapper => 1 (there's also do_label => 1)
     Put form wrapper around form tag instead of inside
+    wrapper_start and wrapper_end tags not used to skip wrapper; use do_wrapper => 0
+    The 'get_tag' method now returns '' instead of undef if tag doesn't exist.
 
 0.36001 Tues Jan 24, 2012
     Add two more widget tags: 'no_auto_fieldset' and 'no_compound_wrapper'
