@@ -6,13 +6,97 @@ package HTML::FormHandler::Manual::Reference;
 This is a concise reference of HTML::FormHandler.
 
 HTML::FormHandler has a lot of options and many ways to customize your forms.
-More complete documentation can be found at L<HTML::FormHandler>,
+More complete documentation can be found in the rest of the manual
+as L<HTML::FormHandler::Manual> and in L<HTML::FormHandler>,
 L<HTML::FormHandler::Field>, L<HTML::FormHandler::Model::DBIC>,
 L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
+=head1 Form
+
+=head2 Form Attributes
+
+   params           HTTP parameters; if present validation will be attempted
+   name             Form name. Used in 'id' of form element
+
+   item             DB row object
+   item_class       Class of db item
+   item_id          Primary key of db item
+   schema           Schema of item
+
+   field_name_space  Where to search for fields
+   widget_name_space Where to search for widgets
+
+   language handle  For MakeText
+   ctx              Application context for your use
+
+   init_object      For default values instead of $item
+   dependency       Array of arrays of field names. If one name has a value, all
+                       fields in the list are set to 'required'
+
+   fields           Field array
+   sorted_fields    The sorted array of fields
+   field( $name )   Returns a field object
+   has_field        Moose-y sugar for declaring fields
+
+   clear            Resets state. Used in persistent forms.
+   value            Returns a hashref of values (with accessor keys)
+   fif              Returns a hashref for filling in form
+
+=head2 Form processing
+
+   process         Sets up form, validated, updates model
+   run             Returns a result object and clears form
+
+=head3 Validation
+
+   validate        Sub for validation after individual fields are validated
+   validate_model  Sub for additional database type validation
+   validated       Flag that form has validated
+   is_valid        Synonym of 'validated'
+   ran_validation  Flag that validation has already been run
+   dependency      Set groups of fields that are set to required if one is present
+
+=head3 Errors
+
+   has_errors      True if any field has errors
+   num_errors      The number of errors (field errors + form errors)
+   error_fields    An array of fields with errors
+   errors          Returns an array of all errors
+   error_field_names Returns an array of field names with errors
+
+=head3 Form Methods and process hooks
+
+   update_model      To perform additional database actions update
+   update_fields     Sub providing convenient place to update fields
+   init_object       can be a method instead of an attribute
+
+=head3 Form Rendering
+
+   html_prefix         Flag to prefix html field names with the form name.
+                           Useful for multiple instances of the same form
+   do_form_wrapper     flag to wrap form. (build_do_form_wrapper)
+   form_tags           Various strings and flags used by rendering
+   form_element_attr   For arbitrary html attributes in the 'form' tag
+   form_element_class  Arrayref of classes for 'class="..."' in form element
+   form_wrapper_attr   For arbitrary html attributes on the form wrapper
+   form_wrapper_class  Arrayref of classes for 'class="..."' in form wrapper
+   http_method         For storing 'post' or 'get'
+   action              Store the form 'action' on submission. No default value.
+   enctype             Request enctype
+   uuid                generates a string containing an HTML field with UUID
+   style               adds a 'style' attribute to the form tag
+   id                  the form tag 'id' attribute is set to the form name
+   html_attributes     hook that allows customizing html attributes
+
+=head2 Field specific form methods
+
+   options_$fieldname       Sub returning options array (also 'options_method')
+   validate_$fieldname      Validation routine for field (also 'validate_method')
+   default_$fieldname       Set default for field (also 'default_method')
+
 =head1 Fields
 
-=head2 Attributes for fields defined in your form:
+=head2 Field attributes
 
    name          Field name. Must be the same as database column name or rel
    type          Field type. From a Field class: 'Text', 'Select', etc
@@ -49,7 +133,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    deflation     Function to deflate the field (in 'apply') (opposite of transform)
    deflate_method Supply coderef to deflate the field
 
-=head2 Field Attributes for creating HTML
+=head2 Field rendering
 
    element_attr - Hashref to store arbitrary html attributes.
    label_attr   - Hashref for html attributes for the label
@@ -63,107 +147,16 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    do_wrapper   - flag to render wrapper
    do_label     - flag to render label
 
-=head2 Field attributes not set in a user form
+=head2 Field attributes managed by FormHandler
 
-These attributes are usually accessed in a subroutine or in a template.
+These attributes are usually accessed in a subroutine or in a template, but are
+usually set only by FormHandler. ('value' may be changed as a transform in a
+validation routine.)
 
    init_value    Initial value from the database
    value         The value of your field.
    input         Input value from parameter or initial value from database
    fif           Retrieve (do not set) values for filling in a form
-
-=head1 Forms
-
-=head2 Attributes to pass to new or set in form
-
-   item_class    Class of db item
-   item_id       Primary key of db item
-   schema        Schema of item
-   item          DB row object
-   init_object   For default values instead of $item
-   dependency    Array of arrays of field names. If one name has a value, all
-                       fields in the list are set to 'required'
-
-=head2 Other Form attributes
-
-   name           Form name
-   validated      Flag that form has validated
-   ran_validation Flag that validation has already been run
-   field_name_space  Where to look for your fields
-   num_errors     Number of errors
-   language handle  For MakeText
-   params         HTTP parameters
-   fields         Field array
-   html_prefix    Flag to prefix html field names with the form name
-   ctx            Application context for your use
-
-=head2 Form methods
-
-   has_field       Moose-y sugar for declaring fields
-   clear           Resets state. Used in persistent forms.
-
-   fields          The array of fields
-   sorted_fields   The sorted array of fields
-   field( $name )  Returns a field object
-   value           Returns a hashref of values (with accessor keys)
-   fif             Returns a hashref for filling in form
-
-   has_errors      True if any field has errors
-   num_errors      The number of fields with errors
-   error_fields    An array of fields with errors
-   errors          Returns an array of all errors
-   error_field_names Returns an array of field names with errors
-
-   uuid            Creates an HTML element 'form_uuid'
-
-   process         Sets up form, validated, updates model
-   run             Returns a result object and clears form
-
-=head2 Form attributes useful in HTML
-
-   form_element_attr - For arbitrary html attributes in the 'form' tag
-   form_element_class
-   form_wrapper_attr - for arbitrary html attributes on the form wrapper
-   form_wrapper_class
-   http_method - For storing 'post' or 'get'
-   action - Store the form 'action' on submission. No default value.
-   enctype - Request enctype
-   uuid - generates a string containing an HTML field with UUID
-   css_class - adds a 'class' attribute to the form tag
-   style - adds a 'style' attribute to the form tag
-   id/name - the form tag 'id' attribute is set to the form name
- 
-=head2  Subroutines for your form
-
-   options_$fieldname       Provides a list of key value pairs for select lists
-   validate_$fieldname      Validation routine for field
-   default_$fieldname       Default value for the field in an initial form
-   validate                 For validation after individual fields are validated
-
-=head2 Methods from HTML::FormHandler::Model::DBIC for method modifiers
-
-   validate_model    Add additional database type validation
-   update_model      To perform additional database actions update
-
-=head1 Useful in a template
-
-   $form->has_errors    [% IF form.has_errors %]
-   $field->has_errors   [% IF field.has_errors %]
-   $form->error_fields  [% FOREACH field IN form.error_fields %]
-   $form->error_field_names   [% FOREACH name IN form.error_field_names %]
-   $form->errors        Array of error messages for all fields
-
-   [% FOR field IN form.error_fields %]
-     [% FOR error IN field.errors %]
-       <p><span class='error' id=error>[% error %] </span></p>
-     [% END %]
-   [% END %]
-
-   sorted_fields     [% FOREACH field IN form.sorted_fields %]
-   uuid              subroutine that returns a uuid
-   $form->fif        value="[% form.fif.title %]"
-   $field->fif       value="[% field.fif %]
-
 
 =cut
 
