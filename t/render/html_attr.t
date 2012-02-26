@@ -35,12 +35,11 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
     sub build_do_form_wrapper {1}
     has '+name' => ( default => 'myapp_form' );
     sub form_element_attr { { name => 'myapp_form' } }
-    sub build_form_wrapper_class { 'form_wrapper' }
     has_field 'foo';
     has_field 'bar';
     has_field 'mox' => ( element_attr => { placeholder => 'my placeholder' } );;
 
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         # $type is one of input, label, wrapper
         my $class = $attr->{class} || '';
@@ -56,8 +55,8 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
 $form = MyApp::Form->new;
 $form->process( params => {} );
 my $expected =
-'<fieldset class="form_wrapper">
-<form id="myapp_form" method="post" name="myapp_form" >
+'<fieldset class="form_wrapper hfh">
+<form id="myapp_form" class="form_element hfh"method="post" name="myapp_form" >
   <div class="form_messages"></div>
   <div class="wrapper hfh"><label class="label hfh" for="foo">Foo</label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
   <div class="wrapper hfh"><label class="label hfh" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>

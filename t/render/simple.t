@@ -92,7 +92,7 @@ use HTML::FormHandler::Field::Text;
        ];
    }
 
-   sub field_html_attributes {
+   sub html_attributes {
        my ( $self, $field, $type, $attr ) = @_;
        $attr->{class} = 'label' if $type eq 'label';
        return $attr;

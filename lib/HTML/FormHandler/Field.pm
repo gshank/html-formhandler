@@ -280,10 +280,10 @@ attributes, etc.
 The slots for the class attributes are arrayrefs; they will coerce a
 string into an arrayref.
 In addition, these 'wrapping methods' call a hook method in the form class,
-'field_html_attributes' which you can use to customize and localize the various
+'html_attributes' which you can use to customize and localize the various
 attributes.
 
-   sub field_html_attributes {
+   sub html_attributes {
        my ( $self, $field, $type, $attr ) = @_;
        $attr->{class} = 'label' if $type eq 'label';
        return $attr;
@@ -1071,7 +1071,7 @@ sub element_attributes {
     push @$class, 'disabled' if $self->disabled;
     $attr->{class} = $class if @$class;
     # call form hook
-    my $mod_attr = $self->form->field_html_attributes($self, 'input', $attr, $result) if $self->form;
+    my $mod_attr = $self->form->html_attributes($self, 'input', $attr, $result) if $self->form;
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 
@@ -1083,7 +1083,7 @@ sub label_attributes {
     my $class = [@{$self->label_class}];
     $attr->{class} = $class if @$class;
     # call form hook
-    my $mod_attr = $self->form->field_html_attributes($self, 'label', $attr, $result) if $self->form;
+    my $mod_attr = $self->form->html_attributes($self, 'label', $attr, $result) if $self->form;
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 
@@ -1098,7 +1098,7 @@ sub wrapper_attributes {
     push @$class, 'warning' if $result->has_warnings;
     $attr->{class} = $class if @$class;
     # call form hook
-    my $mod_attr = $self->form->field_html_attributes($self, 'wrapper', $attr, $result) if $self->form;
+    my $mod_attr = $self->form->html_attributes($self, 'wrapper', $attr, $result) if $self->form;
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 

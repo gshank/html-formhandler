@@ -15,7 +15,7 @@ use HTML::FormHandler::Test;
     has_field 'my_alt.one' => ( widget_wrapper => 'TableInline' );
     has_field 'my_alt.two' => ( widget_wrapper => 'TableInline' );;
 
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = 'label' if $type eq 'label';
         return $attr;

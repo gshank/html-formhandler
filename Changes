@@ -14,7 +14,7 @@
        README at: https://github.com/gshank/html-formhandler_pre-0.40_compat/blob/master/README
 
     'auto_fieldset' and 'no_auto_fieldset' no longer used. No automatic fieldsets.
-       Can be added with wrapper => 0 and a tag of wrapper_tag => 'fieldset'
+       Can be added with do_wrapper => 1 and a tag of wrapper_tag => 'fieldset'
     Localize the value of the reset button.
     Tests and fix for form 'validate_<field_name>' and 'default_<field_name>' method
         for repeatables fields.

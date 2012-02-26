@@ -20,7 +20,7 @@ use HTML::FormHandler::Test;
     has_field 'multi' => ( type => 'Compound' );
     has_field 'multi.one';
     has_field 'multi.two';
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = ['label'] if $type eq 'label';
         return $attr;
@@ -51,7 +51,7 @@ ok( ! exists $form->field('foo')->tags->{form_text}, 'no form widgets tags in fi
          {wrapper_tag => 'span'});
     has_field 'baz' => ( do_wrapper => 0 );
 
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = 'label' if $type eq 'label';
         return $attr;

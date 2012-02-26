@@ -62,10 +62,6 @@ use HTML::FormHandler::Field::Text;
        );
    }
 
-   sub field_html_attributes {
-       my ( $self, $field, $type, $attr ) = @_;
-       return $attr;
-   }
 }
 
 

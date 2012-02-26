@@ -77,7 +77,7 @@ use HTML::FormHandler::Field::Text;
     has_field 'plain' => ( widget_wrapper => 'None' );
     has_field 'boxed' => ( widget_wrapper => 'Fieldset', wrapper_attr => { class => 'boxed' } );
 
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = 'label' if $type eq 'label';
         return $attr;

@@ -736,10 +736,11 @@ The rendering of the HTML attributes is done using the 'process_attrs'
 function and the 'attributes' method, which munges the 'form_element_attr' hash
 for backward compatibility, etc.
 
-For field HTML attributes, there is a form method hook, 'field_html_attributes',
-which can be used to customize/modify/localize field HTML attributes.
+For field HTML attributes, there is a form method hook, 'html_attributes',
+which can be used to customize/modify/localize form & field HTML attributes.
+Types: element, wrapper, label, form_element, form_wrapper, checkbox_label
 
-   sub field_html_attributes {
+   sub html_attributes {
        my ( $self, $field, $type, $attr ) = @_;
        $attr->{class} = 'label' if $type eq 'label';
        $attr->{placeholder} = $self->_localize($attr->{placeholder})
@@ -748,9 +749,6 @@ which can be used to customize/modify/localize field HTML attributes.
    }
 
 Also see the documentation in L<HTML::FormHandler::Field>.
-
-There is an equivalent hook, 'form_html_attributes' for the form element
-and form wrapper attributes.
 
 =cut
 
@@ -948,7 +946,7 @@ sub form_element_attributes {
     $attr = {%$attr, %{$self->form_element_attr}};
     my $class = [@{$self->form_element_class}];
     $attr->{class} = $class if @$class;
-    my $mod_attr = $self->form_html_attributes('form', $attr);
+    my $mod_attr = $self->html_attributes($self, 'form_element', $attr);
     return ref $mod_attr eq 'HASH' ? $mod_attr : $attr;
 }
 sub form_wrapper_attributes {
@@ -957,12 +955,16 @@ sub form_wrapper_attributes {
     my $attr = {%{$self->form_wrapper_attr}};
     my $class = [@{$self->form_wrapper_class}];
     $attr->{class} = $class if @$class;
-    my $mod_attr = $self->form_html_attributes('wrapper', $attr);
+    my $mod_attr = $self->html_attributes($self, 'form_wrapper', $attr);
     return ref $mod_attr eq 'HASH' ? $mod_attr : $attr;
 }
 
-sub field_html_attributes {
-    my ( $self, $field, $type, $attrs, $result ) = @_;
+sub html_attributes {
+    my ( $self, $obj, $type, $attrs, $result ) = @_;
+    # deprecated 'field_html_attributes'; name changed, remove eventually
+    if( $self->can('field_html_attributes') ) {
+        $attrs = $self->field_html_attributes( $obj, $type, $attrs, $result );
+    }
     return $attrs;
 }
 
@@ -1009,10 +1011,6 @@ sub get_tag {
     return '';
 }
 
-sub form_html_attributes {
-    my ( $self, $type, $attr ) = @_;
-    return $attr;
-}
 has 'action' => ( is => 'rw' );
 has 'posted' => ( is => 'rw', isa => 'Bool', clearer => 'clear_posted' );
 has 'params' => (

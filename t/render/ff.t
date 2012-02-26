@@ -8,7 +8,7 @@ use HTML::FormHandler::Test;
     use Moose::Role;
 
     sub build_update_subfields {{ all => { tags => { no_wrapped_label => 1 } } }}
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         my $class = $attr->{class} || [];
         if( $type eq 'wrapper' ) {

@@ -100,7 +100,7 @@ ok( $dir, 'found template dir' );
             3  => 'boring',
         );
     }
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{id} = 'wr_' . $field->name if $type eq 'wrapper';
         return $attr;

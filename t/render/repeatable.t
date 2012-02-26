@@ -21,7 +21,7 @@ use HTML::TreeBuilder;
     has_field 'foo.three';
     has_field 'bar';
 
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         if( $type eq 'wrapper' && $field->has_flag('is_contains') ) {
             $attr->{class} = ['hfh', 'repinst'];

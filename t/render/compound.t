@@ -14,7 +14,7 @@ use HTML::FormHandler::Test;
         by_flag => { 'compound' => { do_wrapper => 1, do_label => 1,
            tags => {  wrapper_tag => 'span' }}},
     }}
-    sub field_html_attributes {
+    sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = ['frm', 'ele'] if $type eq 'input';
         $attr->{class} = ['frm', 'lbl'] if $type eq 'label';
