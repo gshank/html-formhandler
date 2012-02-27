@@ -46,7 +46,7 @@ sub validate {
     my $self = shift;
 
     my $value    = $self->value;
-    my $password = $self->form->field( $self->password_field )->value;
+    my $password = $self->form->field( $self->password_field )->value || '';
     if ( $password ne $self->value ) {
         $self->add_error( $self->get_message('pass_conf_not_matched') );
         return;

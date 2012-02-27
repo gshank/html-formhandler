@@ -1097,7 +1097,7 @@ sub wrapper_attributes {
     my $attr = {%{$self->wrapper_attr}};
     my $class = [@{$self->wrapper_class}];
     # add 'error' to class
-    push @$class, 'error' if $result->has_errors;
+    push @$class, 'error' if ( $result->has_error_results || $result->has_errors );
     push @$class, 'warning' if $result->has_warnings;
     $attr->{class} = $class if @$class;
     # call form hook
