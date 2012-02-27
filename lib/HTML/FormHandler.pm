@@ -18,7 +18,7 @@ use HTML::FormHandler::Field;
 use Try::Tiny;
 use MooseX::Types::LoadableClass qw/ LoadableClass /;
 use namespace::autoclean;
-use Hash::Merge ('merge');
+use HTML::FormHandler::Merge ('merge');
 use Sub::Name;
 
 use 5.008;

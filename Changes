@@ -13,6 +13,7 @@
        git://github.com/gshank/html-formhandler_pre-0.40_compat.git
        README at: https://github.com/gshank/html-formhandler_pre-0.40_compat/blob/master/README
 
+    New 'id_method' to provide different builder method for field IDs.
     'auto_fieldset' and 'no_auto_fieldset' no longer used. No automatic fieldsets.
        Can be added with do_wrapper => 1 and a tag of wrapper_tag => 'fieldset'
     Localize the value of the reset button.

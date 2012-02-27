@@ -5,7 +5,7 @@ use Moose::Role;
 use Try::Tiny;
 use Class::Load qw/ load_optional_class /;
 use namespace::autoclean;
-use Hash::Merge ('merge');
+use HTML::FormHandler::Merge ('merge');
 use Data::Clone;
 
 =head1 SYNOPSIS
@@ -238,9 +238,6 @@ sub _find_parent {
 sub _merge_updates {
     my ( $self, $field_attr, $class ) = @_;
 
-    # remove form/parent if in field_attr; merge messes them up
-    my $form = delete $field_attr->{form};
-    my $parent = delete $field_attr->{parent};
     # If there are field_traits at the form level, prepend them
     unshift @{$field_attr->{traits}}, @{$self->form->field_traits} if $self->form;
     my $full_name = delete $field_attr->{full_name} || $field_attr->{name};
@@ -287,9 +284,6 @@ sub _merge_updates {
             push @{$field_attr->{traits}}, $widget_role, $wrapper_role;
         }
     }
-    # put back form/parent if in field_attr
-    $field_attr->{form} = $form if $form;
-    $field_attr->{parent} = $parent if $parent;
     return $field_attr;
 }
 

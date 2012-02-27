@@ -753,5 +753,27 @@ method modifier that replaces it in the role.
     has_field 'foo';
     has_field 'bar';
 
+=head2 Create different field IDs
+
+Use 'id_method' to give your fields a different format 'id':
+
+    package MyApp::CustomId;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has '+update_field_list' => ( default => sub { { all => { id_method => \&custom_id } } } );
+    has_field 'foo' => ( type => 'Compound' );
+    has_field 'foo.one';
+    has_field 'foo.two';
+    has_field 'foo.three';
+    sub custom_id {
+        my $self = shift;
+        my $full_name = $self->full_name;
+        $full_name =~ s/\./_/g;
+        return $full_name;
+    }
+
+The above method provides an IDs of "foo_two" and "foo_three" instead of
+"foo.two" and "foo.three".
 
 =cut

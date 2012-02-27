@@ -5,7 +5,7 @@ use HTML::FormHandler::Moose;
 use HTML::FormHandler::Field::Result;
 use Try::Tiny;
 use Moose::Util::TypeConstraints;
-use Hash::Merge ('merge');
+use HTML::FormHandler::Merge ('merge');
 use HTML::FormHandler::Render::Util('cc_widget', 'ucc_widget');
 use Sub::Name;
 
@@ -974,7 +974,10 @@ sub is_inactive {
     return (($self->inactive && !$self->_active) || (!$self->inactive && $self->has__active && $self->_active == 0 ) );
 }
 has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
-sub build_id { shift->html_name }
+has 'id_method' => ( is => 'rw', isa => 'CodeRef', traits => ['Code'],
+    default => sub { sub { shift->html_name } },
+    handles => { build_id => 'execute_method' },
+);
 
 # html attributes
 # deprecated ===========

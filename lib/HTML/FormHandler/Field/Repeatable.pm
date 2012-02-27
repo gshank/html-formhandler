@@ -6,7 +6,7 @@ extends 'HTML::FormHandler::Field::Compound';
 
 use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
 use HTML::FormHandler::Field::PrimaryKey;
-use Hash::Merge ('merge');
+use HTML::FormHandler::Merge ('merge');
 
 =head1 SYNOPSIS
 
