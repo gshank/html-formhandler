@@ -45,4 +45,34 @@ my $rendered = $form->render;
 
 is_html($rendered, $expected, 'html matches' );
 
+{
+    package Test::Compound;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'fringe' => ( type => 'Compound' );
+    has_field 'fringe.olivia';
+    has_field 'fringe.fauxlivia';
+
+    sub validate_fringe_fauxlivia {
+        my ( $self, $field ) = @_;
+        $field->add_error('Wrong Olivia');
+    }
+}
+
+$form = Test::Compound->new;
+my $params = {
+    'fringe.olivia' => "I'm the true Olivia",
+    'fringe.fauxlivia' => "I'm the true Olivia",
+};
+$form->process( params => $params );
+my $rendered = $form->field('fringe.fauxlivia')->render;
+my $expected =
+'<div class="error">
+  <label for="fringe.fauxlivia">Fauxlivia</label>
+  <input type="text" name="fringe.fauxlivia" id="fringe.fauxlivia" value="I\'m the true Olivia" class="error" />
+  <span class="error_message">Wrong Olivia</span>
+</div>';
+is_html( $rendered, $expected, 'error on compound subfield has error class' );
+
 done_testing;

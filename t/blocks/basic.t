@@ -22,6 +22,10 @@ use lib ('t/lib');
     has_block 'my_fieldset' => ( tag => 'fieldset',
         render_list => ['bar'], label => 'My Special Bar' );
     has_block 'header' => ( type => 'Test' );
+    sub validate_bar {
+        my ( $self, $field ) = @_;
+        $field->add_error('Wrong foo');
+    }
 
 }
 my $form = Test::Form->new;
@@ -48,5 +52,17 @@ my $expected =
  </fieldset>
 </form>';
 is_html( $rendered, $expected, 'block rendered ok' );
+
+$form->process( params => { foo => 'abc', bar => 'def' } );
+ok( $form->has_errors, 'form has errors' );
+$rendered = $form->field('bar')->render;
+$DB::single=1;
+$expected =
+'<div class="error">
+  <label for="bar">Bar</label>
+  <input type="text" name="bar" id="bar" value="def" class="error" />
+  <span class="error_message">Wrong foo</span>
+</div>';
+is_html( $rendered, $expected, 'error formatted ok' );
 
 done_testing;

@@ -57,9 +57,11 @@ sub wrap_field {
 
     $output .= "\n$rendered_widget";
     # various 'help-inline' bits: errors, warnings
-    $output .= qq{\n<span class="help-inline">$_</span>}
-        for $result->all_errors;
-    $output .= qq{\n<span class="help-inline">$_</span>} for $result->all_warnings;
+    unless( $self->get_tag('no_errors') ) {
+        $output .= qq{\n<span class="help-inline">$_</span>}
+            for $result->all_errors;
+        $output .= qq{\n<span class="help-inline">$_</span>} for $result->all_warnings;
+    }
     # extra after element stuff
     $output .= $self->get_tag('after_element');
     # close 'control' div
