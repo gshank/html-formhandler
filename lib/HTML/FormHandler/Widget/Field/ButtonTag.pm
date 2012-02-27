@@ -14,7 +14,7 @@ sub render {
         . $self->html_name . '" id="' . $self->id . '"';
     $output .= process_attrs($self->element_attributes($result));
     $output .= '/>';
-    $output .= $self->value;
+    $output .= $self->_localize($self->value);
     $output .= "</button>";
 
     return $self->wrap_field( $result, $output );
