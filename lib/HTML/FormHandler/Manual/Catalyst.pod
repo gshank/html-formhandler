@@ -3,6 +3,8 @@ package HTML::FormHandler::Manual::Catalyst;
 
 =head1 SYNOPSIS
 
+L<Manual Index|HTML::FormHandler::Manual>
+
 This part of the FormHandler Manual is devoted to using the L<HTML::FormHandler>
 package in Catalyst controllers.
 

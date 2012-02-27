@@ -3,6 +3,8 @@ package HTML::FormHandler::Manual::Cookbook;
 
 =head1 SYNOPSIS
 
+L<Manual Index|HTML::FormHandler::Manual>
+
 Collection of use recipes for L<HTML::FormHandler>
 
 =head2 No form file, no template file...
@@ -755,13 +757,14 @@ method modifier that replaces it in the role.
 
 =head2 Create different field IDs
 
-Use 'id_method' to give your fields a different format 'id':
+Use 'build_id_method' to give your fields a different format 'id':
 
     package MyApp::CustomId;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has '+update_field_list' => ( default => sub { { all => { id_method => \&custom_id } } } );
+    has '+update_field_list' => ( default =>
+        sub { { all => { build_id_method => \&custom_id } } } );
     has_field 'foo' => ( type => 'Compound' );
     has_field 'foo.one';
     has_field 'foo.two';

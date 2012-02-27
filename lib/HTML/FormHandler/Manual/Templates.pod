@@ -3,6 +3,8 @@ package HTML::FormHandler::Manual::Templates;
 
 =head1 SYNOPSIS
 
+L<Manual Index|HTML::FormHandler::Manual>
+
 Documentation on templates to use with L<HTML::FormHandler>
 
 =head1 Using templates

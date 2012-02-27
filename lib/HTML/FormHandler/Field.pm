@@ -84,8 +84,8 @@ Inheritance hierarchy of the distribution's field classes:
          Year
       MonthName
       Weekday
-   Boolean
-      Checkbox
+   Checkbox
+      Boolean
    DateMDY
    DateTime
    Email
@@ -974,7 +974,7 @@ sub is_inactive {
     return (($self->inactive && !$self->_active) || (!$self->inactive && $self->has__active && $self->_active == 0 ) );
 }
 has 'id'                => ( isa => 'Str',  is => 'rw', lazy => 1, builder => 'build_id' );
-has 'id_method' => ( is => 'rw', isa => 'CodeRef', traits => ['Code'],
+has 'build_id_method' => ( is => 'rw', isa => 'CodeRef', traits => ['Code'],
     default => sub { sub { shift->html_name } },
     handles => { build_id => 'execute_method' },
 );

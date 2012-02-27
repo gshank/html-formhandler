@@ -3,21 +3,13 @@ package HTML::FormHandler::Manual::Intro;
 
 =head1 SUMMARY
 
+L<Manual Index|HTML::FormHandler::Manual>
+
 HTML::FormHandler is a form handling class that validates HTML form data
 and, for database forms, saves it to the database on validation.
 It has field classes that can be used for creating a set of widgets
 and highly automatic templates. FormHandler is designed to
 make it easy to produce custom rendering modules.
-
-The DBIC model will save form fields automatically to the database, will
-retrieve selection lists from the database (with type => 'Select' and a
-fieldname containing a single relationship, or type => 'Multiple' and a
-many_to_many relationship), and will save the selected values (one value for
-'Select', multiple values in a mapping table for a 'Multiple' field).
-
-It can automatically handle fields for a number of relationships, using
-the compound field, L<HTML::FormHandler::Field::Compound>, and the
-repeatable field, L<HTML::FormHandler::Field::Repeatable>.
 
 The 'form' is a Perl subclass of L<HTML::FormHandler> for non-database forms,
 or a subclass of L<HTML::FormHandler::Model::DBIC> for database forms, and in
@@ -45,34 +37,20 @@ and usage patterns which do not fit well with the dynamic method - it's harder
 to create form methods or attributes, for example. But most forms could be
 created in either way.
 
-An example of a form class, subclassed from HTML::FormHandler::Model::DBIC. The fields
-are declared here using the 'has_field' sugar, but they could also be
-defined using the 'field_list', as in the following dynamic example.
+An example of a form class;
 
     package MyApp:Form::User;
     use HTML::FormHandler::Moose;
-    extends 'HTML::FormHandler::Model::DBIC';
-
-    # Associate this form with a DBIx::Class result class
-    # Or 'item_class' can be passed in on 'new', or you
-    # you can always pass in a row object
-    has '+item_class' => ( default => 'User' );
-
-    # Define the fields that this form will operate on
-    # Field names are usually column, accessor, or relationship names in your
-    # DBIx::Class result class. You can also have fields that don't exist
-    # in your result class.
+    extends 'HTML::FormHandler';
 
     has_field 'name'    => ( type => 'Text', label => 'Username', required => 1,
        unique => 1, messages => { required => 'You must enter a username',
        unique => 'That username is already taken' } );
-    # the css_class, title, and widget attributes are for use in templates
     has_field 'age'     => ( type => 'PosInteger', required => 1, wrapper_class => 'box',
        title => 'User age in years', widget => 'age_text', range_start => 18 );
     has_field 'sex'     => ( type => 'Select', label => 'Gender', required => 1,
         options => [ { m => 'Male', f => 'Female' } ],
     );
-    # a customized field class
     has_field 'birthdate' => ( type => '+MyApp::Field::Date' );
     has_field 'hobbies' => ( type => 'Multiple', size => 5,
         options_method => \&hobby_options );
@@ -86,8 +64,6 @@ defined using the 'field_list', as in the following dynamic example.
         }
     );
     sub hobby_options { ( 1 => 'Stamps', 2 => 'Cars' ) }
-    no HTML::FormHandler::Moose;
-    1;
 
 An example of a dynamically created form instance:
 
@@ -121,33 +97,10 @@ An example of a dynamically created form instance:
         ]
     };
     my $form = HTML::FormHandler->new( %$args );
-    my $renderedform = $form->render;
+    my $rendered_form = $form->render;
 
 You can create custom rendering roles or classes and easily change the
 rendering methods. See L<HTML::FormHandler::Manual::Rendering> for details.
-
-By default the L<HTML::FormHandler::Widget> roles will be applied, making it
-possible to render a simple form for scaffolding:
-
-    [% form.render %]
-
-Individual fields can also be rendered:
-
-    [% form.field('title').render %]
-
-Note: If you don't want to use the field widgets, you can set the 'no_widgets' flag
-in the form to skip having the widget roles applied to the fields.
-
-You can render a field using a template. For an example of an input field:
-
-   <p>
-   [% f = form.field('address') %]
-   <label class="label" for="[% f.name %]">[% f.label %]:</label>
-   <input type="text" name="[% f.name %]" id="[% f.name %]" value="[% f.fif %]">
-   </p>
-
-(See L<HTML::FormHandler::Manual::Rendering> and L<HTML::FormHandler::Manual::Templates>
-for more information.
 
 In a Catalyst controller:
 
@@ -162,27 +115,19 @@ In a Catalyst controller:
     # Create or edit
     sub edit : Local {
         my ( $self, $c, $user_id ) = @_;
-
         $c->stash(
           form => $self->form,
           template => 'user/edit.tt' );
-
-
         return unless $self->form->process( item_id => $user_id,
            schema => $c->model('DB')->schema );
-
         # Form validated.
         $c->stash( user => $self->form->item );
         $c->res->redirect($c->uri_for('profile'));
     }
 
-    1;
-
 With the DBIC model the schema is set from the 'item' (row object)
 passed in, or from the primary key ('item_id') and schema.
-You might also want to pass in the 'action' to which the form will
-be submitted if you're using FormHandler's renderer and if it's important
-to pass XHTML validation:
+You might also want to pass in the 'action':
 
    $form->process( action => <valid url>, item => $row,
         params => $c->req->params );
@@ -224,7 +169,7 @@ the form to be displayed again.
 
 If the validation succeeds, and the form is not a database form,
 you can get a struct of validated values from C<< $form->value >> for
-you to process.
+you to handle.
 
 The values to be used to fill in your form are automatically created
 by FormHandler, and are available in the field's 'fif' attribute, with
@@ -253,6 +198,19 @@ can either add a hidden field, or use the 'posted' flag:
 The corollary is that you will confuse FormHandler if you add extra params.
 It's often a better idea to add Moose attributes to the form rather than
 'dummy' fields if the data is not coming from a form control.
+
+=head2 Database forms
+
+If you are using the DBIC model, you extend L<HTML::FormHandler::Model::DBIC>
+instead of 'HTML::FormHandler'. You need to provide either an item - a DBIC
+row - or the item_id, item_class (result source name) and schema.
+
+When the 'process' method is executed, the database will be updated if the
+validation succeeds.
+
+Select options can be automatically retrieved from the database for single and
+multiple selects. See L<HTML::FormHandler::Model::DBIC> and the select field
+L<HTML::FormHandler::Field::Select>.
 
 =head1 Form generator
 

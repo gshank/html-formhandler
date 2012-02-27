@@ -15,6 +15,11 @@ data from the database.
 Creating FormHandler forms and interfacing them
 with your controllers.
 
+=head2 L<HTML::FormHandler::Manual::Fields>
+
+Organized list of FormHandler fields, with links to specific
+documentation.
+
 =head2 L<HTML::FormHandler::Manual::Rendering>
 
 Rendering options, particularly rendering with widgets

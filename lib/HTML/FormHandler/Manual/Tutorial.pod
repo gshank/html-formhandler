@@ -1,7 +1,9 @@
 package HTML::FormHandler::Manual::Tutorial;
 # ABSTRACT: how to use FormHandler with Catalyst
 
-=head1 DESCRIPTION
+=head1 SYNOPSIS
+
+L<Manual Index|HTML::FormHandler::Manual>
 
 A tutorial for beginners to L<HTML::FormHandler>
 

@@ -3,6 +3,8 @@ package HTML::FormHandler::Manual::Rendering;
 
 =head1 SYNOPSIS
 
+L<Manual Index|HTML::FormHandler::Manual>
+
 Rendering can be done in many different ways, from forms rendered entirely in
 templates with no information from FormHandler (except possibly the fill-in-the-form
 values) to forms that are completely rendered by FormHandler.

@@ -3,6 +3,8 @@ package HTML::FormHandler::Manual::Reference;
 
 =head1 DESCRIPTION
 
+L<Manual Index|HTML::FormHandler::Manual>
+
 This is a concise reference of HTML::FormHandler.
 
 HTML::FormHandler has a lot of options and many ways to customize your forms.

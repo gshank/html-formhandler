@@ -1,0 +1,287 @@
+package HTML::FormHandler::Manual::Fields;
+# ABSTRACT: brief documentation of available fields
+
+=head1 SYNOPSIS
+
+L<Manual Index|HTML::FormHandler::Manual>
+
+The inheritance hierarchy of HTML::FormHandler Fields
+
+   Text
+      Money
+      Password
+      Hidden
+      Integer
+         PosInteger
+      Float
+      Date
+         DateMDY
+      Email
+   TextArea
+      HtmlArea
+   Select
+      Multiple
+      BoolSelect
+      IntRange
+         Hour
+         Minute
+         MonthDay
+         Month
+         Second
+         Year
+      MonthName
+      Weekday
+   Checkbox
+      Boolean
+   Compound
+      Repeatable
+      Duration
+      DateTime
+   NoValue
+      Submit
+      Reset
+      Button
+      Display
+   PrimaryKey
+   Upload
+   File
+
+=head2 Basic Fields
+
+Although there are a lot of fields provided (probably too many) a lot of them
+are "convenience" fields or "name" fields, where the main benefit is
+that the field type is a name that gives the main purpose of the field.
+Most of these fields could be replaced by a basic field with a bit of validation
+or some select options. A few of the fields are special purpose fields
+that won't be used very often.
+
+The fields in this section are the basic fields, the commonly used fields
+that will be most often used in a form.
+
+=head3 Text
+
+L<HTML::FormHandler::Field::Text>
+
+=head3 Select
+
+L<HTML::FormHandler::Field::Select>
+
+=head3 Checkbox
+
+L<HTML::FormHandler::Field::Checkbox>
+
+=head3 Hidden
+
+L<HTML::FormHandler::Field::Hidden>
+
+=head3 Submit
+
+L<HTML::FormHandler::Field::Submit>
+
+=head3 Reset
+
+L<HTML::FormHandler::Field::Reset>
+
+=head3 Password
+
+L<HTML::FormHandler::Field::Password>
+
+=head3 Textarea
+
+L<HTML::FormHandler::Field::Textarea>
+
+=head3 Upload
+
+L<HTML::FormHandler::Field::Upload>
+
+=head2 Complex Fields
+
+These fields are complex fields which contain a fair amount of
+special code. They do not map to a single HTML element; they contain
+multiple subfields.
+
+=head3 Repeatable
+
+L<HTML::FormHandler::Field::Repeatable>
+
+=head3 Compound
+
+L<HTML::FormHandler::Field::Compound>
+
+
+=head2 Text Fields ===========
+
+=head3 Text
+
+L<HTML::FormHandler::Field::Text>
+
+=head3 Money
+
+L<HTML::FormHandler::Field::Money>
+
+=head3 Date
+
+L<HTML::FormHandler::Field::Date>
+
+=head3 DateMDY
+
+L<HTML::FormHandler::Field::DateMDY>
+
+=head3 Email
+
+L<HTML::FormHandler::Field::Email>
+
+=head3 Integer
+
+L<HTML::FormHandler::Field::Integer>
+
+=head3 PosInteger
+
+L<HTML::FormHandler::Field::PosInteger>
+
+=head3 Float
+
+L<HTML::FormHandler::Field::Float>
+
+
+=head2 Compound Fields ==========
+
+=head3 Compound
+
+L<HTML::FormHandler::Field::Compound>
+
+=head3 Repeatable
+
+L<HTML::FormHandler::Field::Repeatable>
+
+=head3 Duration
+
+L<HTML::FormHandler::Field::Duration>
+
+=head3 DateTime
+
+L<HTML::FormHandler::Field::DateTime>
+
+
+=head2 Checkbox Fields ===========
+
+=head3 Checkbox
+
+L<HTML::FormHandler::Field::Checkbox>
+
+=head3 Boolean
+
+L<HTML::FormHandler::Field::Boolean>
+
+
+=head2 Select Fields ==========
+
+=head3 Select
+
+L<HTML::FormHandler::Field::Select>
+
+=head3 Multiple
+
+L<HTML::FormHandler::Field::Multiple>
+
+=head3 BoolSelect
+
+L<HTML::FormHandler::Field::BoolSelect>
+
+=head3 Hour
+
+L<HTML::FormHandler::Field::Hour>
+
+=head3 Second
+
+L<HTML::FormHandler::Field::Second>
+
+=head3 IntRange
+
+L<HTML::FormHandler::Field::IntRange>
+
+=head3 Month
+
+L<HTML::FormHandler::Field::Month>
+
+=head3 MonthDay
+
+L<HTML::FormHandler::Field::MonthDay>
+
+=head3 MonthName
+
+L<HTML::FormHandler::Field::MonthName>
+
+=head3 Minute
+
+L<HTML::FormHandler::Field::Minute>
+
+=head3 Weekday
+
+L<HTML::FormHandler::Field::Weekday>
+
+=head3 Year
+
+L<HTML::FormHandler::Field::Year>
+
+
+=head2 NoValue fields =============
+
+=head3 NoValue
+
+L<HTML::FormHandler::Field::NoValue>
+
+=head3 Submit
+
+L<HTML::FormHandler::Field::Submit>
+
+=head3 Reset
+
+L<HTML::FormHandler::Field::Reset>
+
+=head3 Button
+
+L<HTML::FormHandler::Field::Button>
+
+=head3 Display
+
+L<HTML::FormHandler::Field::Display>
+
+
+=head3 File
+
+L<HTML::FormHandler::Field::File>
+
+=head2 Textarea fields
+
+=head3 Textarea fields ===========
+
+L<HTML::FormHandler::Field::Textarea>
+
+=head3 HtmlArea
+
+L<HTML::FormHandler::Field::HtmlArea>
+
+=head3 Password fields ===========
+
+=head3 Password
+
+L<HTML::FormHandler::Field::Password>
+
+=head3 PasswordConf
+
+L<HTML::FormHandler::Field::PasswordConf>
+
+=head2 Inherit from Field ===========
+
+
+=head3 PrimaryKey
+
+L<HTML::FormHandler::Field::PrimaryKey>
+
+=head3 Captcha
+
+L<HTML::FormHandler::Field::Captcha>
+
+
+=cut

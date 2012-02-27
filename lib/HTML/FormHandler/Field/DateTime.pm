@@ -10,11 +10,11 @@ our $VERSION = '0.04';
 
 =head1 DESCRIPTION
 
-This is a compound field that uses modified field names for the
-sub fields instead of using a separate sub-form. Widget type is 'compound'.
+This is a compound field that requires you to define the subfields
+for month/day/year/hour/minute. Widget type is 'compound'.
 
 If you want to use drop-down select boxes for your DateTime, you
-can use fields like:
+can select fields like:
 
     has_field 'my_date' => ( type => 'DateTime' );
     has_field 'my_date.month' => ( type => 'Month' );
@@ -32,6 +32,8 @@ If you want simple input fields:
          range_end => 31 );
 
 Customizable error: 'datetime_invalid' (default = "Not a valid DateTime")
+
+See the 'Date' field for a single input date field.
 
 =cut
 
