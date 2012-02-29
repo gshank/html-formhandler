@@ -13,7 +13,7 @@ sub render {
     my $output = '<button type="' . $self->input_type . '" name="'
         . $self->html_name . '" id="' . $self->id . '"';
     $output .= process_attrs($self->element_attributes($result));
-    $output .= '/>';
+    $output .= '>';
     $output .= $self->_localize($self->value);
     $output .= "</button>";
 
