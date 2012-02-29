@@ -9,11 +9,13 @@ Rendering can be done in many different ways, from forms rendered entirely in
 templates with no information from FormHandler (except possibly the fill-in-the-form
 values) to forms that are completely rendered by FormHandler.
 
-For most situations, something in between the two extremes will probably be the
-best solution. For admin forms that don't need a lot of styling or special
-HTML, FormHandler's automatic rendering may be appropriate. FormHandler rendering may also
-be a good solution if you have enough forms that putting time into creating
-rendering widgets and themes is worthwhile.
+=head2 DESCRIPTION
+
+For most situations, something in between hand-built and completely generated
+will probably be the best solution. For admin forms that don't need a lot of
+styling or special HTML, FormHandler's automatic rendering may be appropriate.
+FormHandler rendering may also be a good solution if you have enough forms that
+putting time into creating rendering widgets and themes is worthwhile.
 
 The automatic rendering is also useful when developing a new form. You can
 get an idea of what it looks like, and then customize it.

@@ -1,0 +1,49 @@
+package HTML::FormHandler::Manual::Database;
+# ABSTRACT: FormHandler use recipes
+
+=head1 SYNOPSIS
+
+L<Manual Index|HTML::FormHandler::Manual>
+
+Information on interfacing FormHandler forms and fields with a database.
+
+=head1 Form Models
+
+For a database form, use a model base class that interfaces with the
+database, such as L<HTML::FormHandler::Model::DBIC>, which needs to
+be installed as a separate package. There's also a sample 'object' model
+in L<HTML::FormHandler::Model::Object>, which will update a simple object.
+
+When using a database model, form field values for the row are retrieved from
+the database using the field 'accessor' attributes (defaults to field name)
+as database class accessors.
+
+FormHandler will use relationships to populate single and multiple
+selection lists, and validate input. A 'single' relationship is processed
+by L<HTML::FormHandler::Field::Compound>. A 'has_many' relationship is
+processed by L<HTML::FormHandler::Field::Repeatable>.
+
+You can pass in either the primary key and or a row object to the form. If a
+primary key (item_id) is passed in, you must also provide the schema.
+The model will use the item_class (DBIC source name) to fetch the row from the
+database. If you pass in a row object (item), the schema, source_class, and
+item_id will be set from the row.
+
+The C<< $form->process >> will validate
+the parameters and then update or create the database row object.
+
+=head1 Form generator
+
+A DBIC form generator is installed with the L<HTML::FormHandler::Model::DBIC>
+package. See L<HTML::FormHandler::Generator::DBIC>.
+
+There's also a role, L<HTML::FormHandler::TraitFor::DBICFields>, that allows
+simple form fields to be auto-generated from a DBIC result class.
+
+    my $form = HTML::FormHandler::Model::DBIC->new_with_traits(
+        traits => ['HTML::FormHandler::TraitFor::DBICFields'],
+        include => ['title', 'author' ],
+        field_list => [ 'submit' => { type => 'Submit', value => 'Save', order => 99 } ],
+        item => $book );
+
+=cut

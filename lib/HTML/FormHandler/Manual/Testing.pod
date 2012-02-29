@@ -5,6 +5,12 @@ package HTML::FormHandler::Manual::Testing
 
 L<Manual Index|HTML::FormHandler::Manual>
 
+One of the big advantages of FormHandler compared to many other form
+packages is that you can test the same form that you use in your
+controller.
+
+=head1 DESCRIPTION
+
 It's difficult to test forms that are instantiated in controllers with 'add_element'
 calls and from YAML, and that have no form class. It's one of the reasons that I
 don't think that 'dynamic' forms generated with a field_list are a good idea for
@@ -87,3 +93,5 @@ and browse through the tests.
    ok( $form->process($good), 'now form validates' );
 
    done_testing;
+
+=cut

@@ -20,9 +20,17 @@ with your controllers.
 Organized list of FormHandler fields, with links to specific
 documentation.
 
+=head2 L<HTML::FormHandler::Manual::Defaults>
+
+Description of the various ways of setting defaults.
+
 =head2 L<HTML::FormHandler::Manual::Rendering>
 
 Rendering options, particularly rendering with widgets
+
+=head2 L<HTML::FormHandler::Manual::Database>
+
+Issues and setup for database forms.
 
 =head2 L<HTML::FormHandler::Manual::Tutorial>
 

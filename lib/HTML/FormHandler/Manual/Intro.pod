@@ -1,9 +1,14 @@
 package HTML::FormHandler::Manual::Intro;
 # ABSTRACT: introduction to using FormHandler
 
-=head1 SUMMARY
+=head1 SYNOPSIS
 
 L<Manual Index|HTML::FormHandler::Manual>
+
+There are many different ways to set defaults for the fields in
+your FormHandler form.
+
+=head2 DESCRIPTION
 
 HTML::FormHandler is a form handling class that validates HTML form data
 and, for database forms, saves it to the database on validation.

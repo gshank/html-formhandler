@@ -23,6 +23,7 @@ use HTML::FormHandler::Test;
     );
     has_field 'password' => (
          type       => 'Compound',
+         required   => 1,
          do_wrapper => 1,
          do_label   => 1,
          label      => 'Register.Password',

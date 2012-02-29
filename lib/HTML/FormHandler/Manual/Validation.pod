@@ -1,0 +1,131 @@
+package HTML::FormHandler::Manual::Validation;
+# ABSTRACT: validating fields 
+
+=head1 SYNOPSIS
+
+L<Manual Index|HTML::FormHandler::Manual>
+
+There are many options for validating fields in FormHandler.
+
+=head1 Field attributes for validation
+
+=head2 required
+
+Setting the 'required' flag on a field initiates a check for the existence
+of some value. If the field does not have a value, the 'required' error
+message is issues, which can be set on a form or field basis:
+
+   has_field 'section' => ( required => 1,
+       messages => { required => 'Please provide a section' } );
+
+Note that a required flag on a subfield -- a field inside a compound field
+or repeatable field -- does not cause the containing field to be required.
+You need to set 'required' all the way up, if that's the behavior that you
+want.
+
+=head2 Validation methods
+
+=head2 Filters, transformations, and constraints
+
+L<HTML::FormHandler> has a flexible system of of filters and constraints. You can
+use Moose types to constrain the allowable values in a field and use coercions to
+inflate the HTML field input, such as for a DateTime. You can also create
+non-Moose transformations and constraints. See the 'apply' attribute
+in L<HTML::FormHandler::Field>.
+
+   has_field 'some_field' => ( apply => [ 'MooseType',
+       { transform => sub {...}, message => 'xxxx' },
+       { check => sub { ... }, message => 'xxxx' } ] );
+
+The actions in the 'apply' array will be performed in the order they are
+specified, allowing fine-grained control over inflation and validation.
+
+You can also create a simple subroutine in your form class to perform validation.
+The default name of this subroutine is 'validate_<fieldname>', but the name can
+also be set in the field with the 'set_validate' attribute. (This method is
+not called when the field is empty. Use 'required'/'required_message' for
+that case.)
+
+If you need to access form attributes such as the schema, the 'set_validate'
+subroutine may be preferable, but most validations can be performed using
+either method.
+
+Note that the tests in the distribution are always a good source of
+examples.
+
+=head3 Dependency
+
+The 'dependency' field_list key is an array of arrays of field names.
+During validation, if any field in a given group
+contains the pattern /\S/ (non-blank), the 'required' flag
+is set for all of the fields in the group.
+
+   has '+dependency' => ( default => sub {
+            [
+               ['address', 'city', 'state', 'zip'],
+               ['cc_no', 'cc_expires'],
+            ],
+        },
+    );
+
+=head3 validate_$fieldname, validate_method
+
+Instead of using field constraints, you can choose to
+do per-field validation customization in a form method:
+
+    sub validate_age {
+        my ( $self, $field ) = @_;
+        $field->add_error('Sorry, you must be 18')
+            if $field->value < 18;
+    }
+
+A different form method name for this can be specified with the field's
+'set_validate' attribute:
+
+    has_field 'age' => ( type => 'Text', set_validate => 'check_age' );
+
+    sub check_age {
+       ...
+    }
+
+And like the previous methods, you can specify a field method with
+'validate_method':
+
+   has_field 'my_date' => ( type => 'Date', validate_method => \&validate_date );
+   sub validate_date {
+       my $self = shift; # $self is the 'my_date' field
+       <perform validateion>
+   }
+
+This method is not called when the field is empty.
+
+=head3 validate
+
+Handle cross-field validation, or any validation that needs to be done after
+the entire form is validated.  This form method is executed whether or not the form
+has validated so far.
+
+   sub validate {
+      my $self = shift;
+      if ( $self->field('count')->value && $self->field('duration')->value )
+      {
+          $self->field('duration')->add_error(
+                    'Do not enter both a count and a duration' );
+      }
+   }
+
+=item update_model
+
+Override the model's 'update_model' method to do additional updates.
+
+   sub update_model {
+      my $self = shift;
+      $self->next::method;
+      my $event = $self->item;
+      $event->update( ... );
+   }
+
+You may want to use DBIC's 'txn_do' to keep updates in the same transaction.
+See L<HTML::FormHandler::Manual::Cookbook> for an example.
+
+=cut
