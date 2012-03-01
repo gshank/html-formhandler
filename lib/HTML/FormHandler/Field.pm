@@ -1367,10 +1367,9 @@ sub BUILD {
     $self->merge_tags($self->widget_tags) if $self->has_widget_tags;
     # run default method builder
     $self->build_default_method;
-    # build validate_method & deflate_method; needs to happen before validation
+    # build validate_method; needs to happen before validation
     # in order to have the "real" repeatable field names, not the instances
     $self->validate_method;
-    $self->deflate_method;
     # merge form widget_name_space
     $self->add_widget_name_space( $self->form->widget_name_space ) if $self->form;
     # handle apply actions

@@ -10,7 +10,8 @@ has '+size'                 => ( default => 8 );
 has 'precision'             => ( isa => 'Int|Undef', is => 'rw', default => 2 );
 has 'decimal_symbol'        => ( isa => 'Str', is => 'rw', default => '.');
 has 'decimal_symbol_for_db' => ( isa => 'Str', is => 'rw', default => '.');
-has '+deflate_method'       => ( default => sub { \&float_deflate } );
+has '+inflate_method'       => ( default => sub { \&inflate_float } );
+has '+deflate_method'       => ( default => sub { \&deflate_float } );
 
 our $class_messages = {
     'float_needed'      => 'Must be a number. May contain numbers, +, - and decimal separator \'[_1]\'',
@@ -26,18 +27,19 @@ sub get_class_messages {
     }
 }
 
+sub inflate_float {
+    my ( $self, $value ) = @_;
+    $value =~ s/^\+//;
+    return $value;
+}
 
-apply(
-    [
-        {
-            transform => sub {
-                my $value = shift;
-                $value =~ s/^\+//;
-                return $value;
-                }
-        },
-    ]
-);
+sub deflate_float {
+    my ( $self, $value ) = @_;
+    my $symbol      = $self->decimal_symbol;
+    my $symbol_db   = $self->decimal_symbol_for_db;
+    $value =~ s/\Q$symbol_db\E/$symbol/x;
+    return $value;
+}
 
 sub validate {
     my $field = shift;
@@ -74,16 +76,6 @@ sub validate {
     $field->_set_value($value);
 
     return 1;
-}
-
-sub float_deflate {
-    my ( $self, $value ) = @_;
-
-    my $symbol      = $self->decimal_symbol;
-    my $symbol_db   = $self->decimal_symbol_for_db;
-    $value =~ s/\Q$symbol_db\E/$symbol/x;
-
-    return $value;
 }
 
 __PACKAGE__->meta->make_immutable;

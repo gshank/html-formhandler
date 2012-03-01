@@ -3,6 +3,9 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
+# although this method works still, using an 'inflate_method'
+# and 'deflate_method' seems like a better solution
+# see t/field_setup/infl_defl.t
 {
     package Test::Field;
     use HTML::FormHandler::Moose;
