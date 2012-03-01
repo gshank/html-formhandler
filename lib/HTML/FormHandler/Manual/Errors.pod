@@ -1,3 +1,23 @@
+package HTML::FormHandler::Manual::Errors;
+# ABSTRACT: FormHandler use recipes
+
+=head1 SYNOPSIS
+
+L<Manual Index|HTML::FormHandler::Manual>
+
+Errors and error messages for L<HTML::FormHandler>.
+
+=head1 DESCRIPTION
+
+Errors, along with 'input' and 'value' attributes, are collected in the
+FormHandler 'result' objects.
+
+A number of error retrieving methods are delegated to the field and form
+classes.
+
+=head1 Form accessors
+
+=head2 Field accessors
 
 =head1 Messages
 
@@ -22,3 +42,4 @@ then in user-supplied form messages, finally in messages provided by the field c
    has_field 'my_field' => ( messages => { required => 'Please provide a my_field' },
        required => 1 );
 
+=cut

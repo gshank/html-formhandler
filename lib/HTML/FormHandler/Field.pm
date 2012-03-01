@@ -1181,6 +1181,14 @@ sub get_default_value {
     }
     return;
 }
+has 'inflate_method' => (
+     traits => ['Code'],
+     is     => 'ro',
+     isa    => 'CodeRef',
+     writer => '_set_inflate_method',
+     predicate => 'has_inflate_method',
+     handles => { 'inflate' => 'execute_method' },
+);
 has 'deflate_method' => (
      traits => ['Code'],
      is     => 'ro',

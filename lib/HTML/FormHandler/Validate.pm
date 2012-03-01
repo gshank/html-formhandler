@@ -80,7 +80,9 @@ sub validate_field {
         $field->_fields_validate;
     }
     else {
-        $field->_set_value( $field->input );
+        my $input = $field->input;
+        $input = $field->inflate( $input ) if $field->has_inflate_method;
+        $field->_set_value( $input );
     }
 
     $field->_inner_validate_field();
