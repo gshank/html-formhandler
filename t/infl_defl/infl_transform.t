@@ -1,19 +1,22 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Exception;
+
+# check that transform acts correctly as inflation, and
+# sub deflation works ok.
 
 {
-    package Test::Deflate;
+    package Test::Deflate2;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
     has_field 'bullets' => ( type => 'Text',
-        inflate_method => \&string_to_array,
-        deflate_method => \&array_to_string,
-        deflate_to => 'fif',
+        apply => [ { transform => \&string_to_array } ],
+        deflation => \&array_to_string,
     );
     sub array_to_string {
-       my ( $self, $value ) = @_;
+       my ( $value ) = @_;
        my $string = '';
        my $sep = '';
        for ( @$value ) {
@@ -23,14 +26,14 @@ use Test::More;
        return $string;
     }
     sub string_to_array {
-        my ( $self, $value ) = @_;
+        my $value = shift;
         return [ map { { text => $_ } } split(/\s*;\s*/, $value) ];
     }
 }
 
 my $init_object = { bullets => [{ text => 'one'}, { text => 'two' }, { text => 'three'}] };
 my $fif = { bullets => 'one;two;three' };
-my $form = Test::Deflate->new;
+my $form = Test::Deflate2->new;
 ok( $form, 'form built');
 $form->process( init_object => $init_object, params => {} );
 is_deeply( $form->fif, $fif, 'right fif' );

@@ -321,7 +321,6 @@ sub _form_options {
 has 'multiple'         => ( isa => 'Bool', is => 'rw', default => '0' );
 # following is for unusual case where a multiple select is a has_many type relation
 has 'has_many'         => ( isa => 'Str', is => 'rw' );
-has '+deflate_to'      => ( default => 'fif' );
 has 'size'             => ( isa => 'Int|Undef', is => 'rw' );
 has 'label_column'     => ( isa => 'Str',       is => 'rw', default => 'name' );
 has 'localize_labels'  => ( isa => 'Bool', is => 'rw' );

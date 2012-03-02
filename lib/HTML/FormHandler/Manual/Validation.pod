@@ -1,5 +1,5 @@
 package HTML::FormHandler::Manual::Validation;
-# ABSTRACT: validating fields 
+# ABSTRACT: validating fields
 
 =head1 SYNOPSIS
 
@@ -8,6 +8,14 @@ L<Manual Index|HTML::FormHandler::Manual>
 There are many options for validating fields in FormHandler.
 
 =head1 Field attributes for validation
+
+Each individual field may have additional attributes that relate to validation,
+which are not documented here. See the individual field documentation, linked
+from L<HTML::FormHandler::Manual::Fields>.
+
+=head2 range_start, range_end
+
+Starting and ending range for number fields.
 
 =head2 required
 
@@ -23,37 +31,61 @@ or repeatable field -- does not cause the containing field to be required.
 You need to set 'required' all the way up, if that's the behavior that you
 want.
 
-=head2 Validation methods
+If a field is empty and *not* required, no other validation will be
+performed.
 
-=head2 Filters, transformations, and constraints
+=head1 Validation methods
 
-L<HTML::FormHandler> has a flexible system of of filters and constraints. You can
-use Moose types to constrain the allowable values in a field and use coercions to
-inflate the HTML field input, such as for a DateTime. You can also create
-non-Moose transformations and constraints. See the 'apply' attribute
-in L<HTML::FormHandler::Field>.
+=head2 validate_method
 
-   has_field 'some_field' => ( apply => [ 'MooseType',
-       { transform => sub {...}, message => 'xxxx' },
-       { check => sub { ... }, message => 'xxxx' } ] );
+You can provide a validation method for a field by setting a coderef with
+'validate_method'.
+
+    has_field 'fox' => ( validate_method => \&check_fox );
+    sub check_fox {
+        my $self = shift; # self is the fox field
+        .....
+    }
+
+=head2 validate_<field_name>
+
+If you provide a 'validate_<field_name>' method it will be automatically used.
+
+    has_field 'cat';
+    sub validate_cat {
+        my ( $self, $field ) = @_; # self is the form
+        ....
+    }
+
+=head1 form validate method
+
+A form validation method can be used to do cross-validation or validation
+checks that need information from more than one field.
+
+    sub validate {
+        my $self = shift;
+        $self->field('foo')->add_error('....')
+            if( $self->field('foo')->value eq '..' &&
+                    $self->field('bar')->value eq '..' );
+    }
+
+
+=head1 Filters, transformations, and constraints
 
 The actions in the 'apply' array will be performed in the order they are
 specified, allowing fine-grained control over inflation and validation.
 
-You can also create a simple subroutine in your form class to perform validation.
-The default name of this subroutine is 'validate_<fieldname>', but the name can
-also be set in the field with the 'set_validate' attribute. (This method is
-not called when the field is empty. Use 'required'/'required_message' for
-that case.)
+=head2 Moose types
 
-If you need to access form attributes such as the schema, the 'set_validate'
-subroutine may be preferable, but most validations can be performed using
-either method.
+FormHandler supplies a library of Moose types in L<HTML::FormHandler::Types>.
 
-Note that the tests in the distribution are always a good source of
-examples.
+=head2 Apply actions
 
-=head3 Dependency
+There are number of different flavors of 'apply' actions.
+
+See also L<HTML::FormHandler::Validate>.
+
+=head1 Dependency
 
 The 'dependency' field_list key is an array of arrays of field names.
 During validation, if any field in a given group
@@ -68,64 +100,5 @@ is set for all of the fields in the group.
         },
     );
 
-=head3 validate_$fieldname, validate_method
-
-Instead of using field constraints, you can choose to
-do per-field validation customization in a form method:
-
-    sub validate_age {
-        my ( $self, $field ) = @_;
-        $field->add_error('Sorry, you must be 18')
-            if $field->value < 18;
-    }
-
-A different form method name for this can be specified with the field's
-'set_validate' attribute:
-
-    has_field 'age' => ( type => 'Text', set_validate => 'check_age' );
-
-    sub check_age {
-       ...
-    }
-
-And like the previous methods, you can specify a field method with
-'validate_method':
-
-   has_field 'my_date' => ( type => 'Date', validate_method => \&validate_date );
-   sub validate_date {
-       my $self = shift; # $self is the 'my_date' field
-       <perform validateion>
-   }
-
-This method is not called when the field is empty.
-
-=head3 validate
-
-Handle cross-field validation, or any validation that needs to be done after
-the entire form is validated.  This form method is executed whether or not the form
-has validated so far.
-
-   sub validate {
-      my $self = shift;
-      if ( $self->field('count')->value && $self->field('duration')->value )
-      {
-          $self->field('duration')->add_error(
-                    'Do not enter both a count and a duration' );
-      }
-   }
-
-=item update_model
-
-Override the model's 'update_model' method to do additional updates.
-
-   sub update_model {
-      my $self = shift;
-      $self->next::method;
-      my $event = $self->item;
-      $event->update( ... );
-   }
-
-You may want to use DBIC's 'txn_do' to keep updates in the same transaction.
-See L<HTML::FormHandler::Manual::Cookbook> for an example.
 
 =cut

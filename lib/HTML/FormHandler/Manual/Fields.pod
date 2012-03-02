@@ -48,8 +48,7 @@ The inheritance hierarchy of HTML::FormHandler Fields
 
 =head2 DESCRIPTION
 
-A form's fields are created from the 'has_field' and 'field_list'
-definitions.
+A form's fields are created from the 'has_field' and 'field_list' definitions.
 FormHandler processes the field lists and creates an array of
 L<HTML::FormHandler::Field> objects. The "type" of a field
 determines which field class to use. The field class determines which
@@ -61,14 +60,14 @@ might be more easily handled in a custom field class.
 In the templates the fields are accessed with C< form.field('name') >.
 Field errors are in C<< $field->errors >>.
 
-The fields are assumed to be in the HTML::FormHandler::Field name
-space.  If you want to explicitly list the field's package, prefix it
-with a plus sign. The field_name_space plus the default name spaces
-'HTML::FormHandler::Field' and 'HTML::FormHandlerX::Field' will be
-searched for fields.
+If the 'field_name_space' is not set, field will be loaded from the
+HTML::FormHandler::Field name space. If you provide a 'field_name_space'
+it will be searched before FormHandler. If you want to explicitly list the
+field's package, prefix it with a plus sign. The field_name_space plus the
+default name spaces 'HTML::FormHandler::Field' and 'HTML::FormHandlerX::Field'
+will be searched for fields.
 
     has '+field_name_space' => ( default => 'MyApp::Form::Field' );
-
     has_field 'name' => ( type => 'Text' ); # HTML::FormHandler::Field::Text
     has_field 'name' => ( type => '+My::FieldType' ); # My::Fieldtype
     has_field 'foo'  => ( type => +Foo' );  # MyApp::Form::Field::Foo
@@ -76,27 +75,11 @@ searched for fields.
     has_field 'foo'  => ( type => 'Foo' );  # MyApp::Form::Field::Foo
 
 
-The most basic type is "Text", which takes a single scalar value. (If the
-type of a field is not specified, it will be set to 'Text'.)  A "Select"
-class is similar, but its value must be a valid choice from a list of options.
-A "Multiple" type is like "Select" but it allows selecting more than one value
-at a time.
-
-Each field has a "value" method, which is the field's internal value.  This is
-the value your database object would have (e.g. scalar, boolean 0 or 1,
-DateTime object).
-
-Note: do not set the 'value' attribute yourself in an attempt
-to provide a field default. It won't work, since it will be cleared out
-when 'process' is run. Use one of the other many methods to set defaults.
-It is acceptable to set the value in a validation method, however, as
-a 'transform'.
-
-When data is passed in to validate the form, the input is copied into the
-'value' attribute of the field, and the actions specified by 'apply'
-will be performed on the value. This includes the 'trim' transform which
-will strip leading and trailing spaces. After the actions are applied,
-the field's 'validate' method is called.
+The most basic type is "Text", which is usually a 'text' HTML element and
+a string data type. (If the type of a field is not specified, it will be set to
+'Text'.)  A "Select" field type is an HTML form element, and validates against
+the list of values provided in the 'options'. A "Multiple" type is like "Select"
+but it allows selecting more than one value at a time.
 
 =head1 Field names
 
@@ -165,39 +148,57 @@ that will be most often used in a form.
 
 =head3 Text
 
+A string data type that will be formatted as an HTML text field.
+
 L<HTML::FormHandler::Field::Text>
 
 =head3 Select
+
+A field formatted as a select elememnt.
 
 L<HTML::FormHandler::Field::Select>
 
 =head3 Checkbox
 
+A field formatted as a checkbox.
+
 L<HTML::FormHandler::Field::Checkbox>
 
 =head3 Hidden
 
+A hidden field.
+
 L<HTML::FormHandler::Field::Hidden>
 
-=head3 Submit
-
-L<HTML::FormHandler::Field::Submit>
-
-=head3 Reset
-
-L<HTML::FormHandler::Field::Reset>
-
 =head3 Password
+
+A password field. The value is not re-displayed.
 
 L<HTML::FormHandler::Field::Password>
 
 =head3 Textarea
 
+A textarea field.
+
 L<HTML::FormHandler::Field::Textarea>
 
 =head3 Upload
 
+A file upload field that takes a filehandle or a Catalyst upload object.
+
 L<HTML::FormHandler::Field::Upload>
+
+=head3 Submit
+
+A submit submit field.
+
+L<HTML::FormHandler::Field::Submit>
+
+=head3 Reset
+
+A reset field.
+
+L<HTML::FormHandler::Field::Reset>
 
 =head2 Complex Fields (Compound and Repeatable)
 
@@ -243,9 +244,7 @@ with the name of the containing compound field plus a dot:
 
 In an HTML form the name of the field must be the complete name
 with dots. The 'html_name' field attribute can be used to get
-this name:
-
-   [% field.html_name %]
+this name, C<< $field->html_name >>.
 
 A compound field can be used for a database relation that will have only
 one row (belongs_to or has_one). If the relation has a compound primary
@@ -277,7 +276,9 @@ It is also used for arrays of single fields using the 'contains' keyword:
 See L<HTML::FormHandler::Field::Repeatable> for more information.
 
 
-=head2 Text Fields ===========
+=head2 Text Fields
+
+Fields subclassed from the Text field.
 
 =head3 Text
 
@@ -311,8 +312,9 @@ L<HTML::FormHandler::Field::PosInteger>
 
 L<HTML::FormHandler::Field::Float>
 
+=head2 Compound Fields
 
-=head2 Compound Fields ==========
+Fields subclassed from 'Compound'.
 
 =head3 Compound
 
@@ -331,7 +333,9 @@ L<HTML::FormHandler::Field::Duration>
 L<HTML::FormHandler::Field::DateTime>
 
 
-=head2 Checkbox Fields ===========
+=head2 Checkbox Fields
+
+Fields that inherit from 'Checkbox'.
 
 =head3 Checkbox
 
@@ -341,8 +345,9 @@ L<HTML::FormHandler::Field::Checkbox>
 
 L<HTML::FormHandler::Field::Boolean>
 
+=head2 Select Fields
 
-=head2 Select Fields ==========
+Field that inherit from 'Select'.
 
 =head3 Select
 
@@ -353,6 +358,8 @@ L<HTML::FormHandler::Field::Select>
 L<HTML::FormHandler::Field::Multiple>
 
 =head3 BoolSelect
+
+A field with three possible values: empty/0/1.
 
 L<HTML::FormHandler::Field::BoolSelect>
 
@@ -392,8 +399,10 @@ L<HTML::FormHandler::Field::Weekday>
 
 L<HTML::FormHandler::Field::Year>
 
+=head2 NoValue fields
 
-=head2 NoValue fields =============
+Fields that inherit from 'NoValue'. None of these fields will
+provide a 'value' in the C<< $form->value >> hashref.
 
 =head3 NoValue
 
@@ -415,14 +424,11 @@ L<HTML::FormHandler::Field::Button>
 
 L<HTML::FormHandler::Field::Display>
 
-
-=head3 File
-
-L<HTML::FormHandler::Field::File>
-
 =head2 Textarea fields
 
-=head3 Textarea fields ===========
+Fields that inherit from textarea.
+
+=head3 Textarea
 
 L<HTML::FormHandler::Field::Textarea>
 
@@ -430,7 +436,7 @@ L<HTML::FormHandler::Field::Textarea>
 
 L<HTML::FormHandler::Field::HtmlArea>
 
-=head3 Password fields ===========
+=head2 Password fields
 
 =head3 Password
 
@@ -438,9 +444,17 @@ L<HTML::FormHandler::Field::Password>
 
 =head3 PasswordConf
 
+Password confirmation field.
+
 L<HTML::FormHandler::Field::PasswordConf>
 
-=head2 Inherit from Field ===========
+=head2 Other fields
+
+These fields inherit just from 'Field'.
+
+=head3 File
+
+L<HTML::FormHandler::Field::File>
 
 
 =head3 PrimaryKey

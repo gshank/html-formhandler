@@ -78,6 +78,10 @@ sub validate_field {
     # do building of node
     if ( $field->DOES('HTML::FormHandler::Fields') ) {
         $field->_fields_validate;
+#       if( $field->has_inflate_method ) {
+#           my $value = $field->inflate( $field->value );
+#           $field->_set_value( $value );
+#       }
     }
     else {
         my $input = $field->input;
@@ -91,6 +95,11 @@ sub validate_field {
     $field->test_ranges;
     $field->_validate($field)    # form field validation method
         if ( $field->has_value && defined $field->value );
+    # validation done, if everything validated, do deflate_value for
+    # final $form->value
+    if( $field->has_deflate_value_method && !$field->has_errors ) {
+        $field->_set_value( $field->deflate_value($field->value) );
+    }
 
     return !$field->has_errors;
 }

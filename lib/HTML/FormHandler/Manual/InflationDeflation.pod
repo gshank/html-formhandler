@@ -1,0 +1,147 @@
+package HTML::FormHandler::Manual::InflationDeflation;
+# ABSTRACT: inflation and deflation of field values
+
+=head1 SYNOPSIS
+
+L<Manual Index|HTML::FormHandler::Manual>
+
+How to inflate and deflate field values.
+
+=head2 DESCRIPTION
+
+When working with the various ways that data can be transformed, in and out,
+the meaning of the terms 'inflate' and 'deflate' start to feel kind of slippery.
+The one constant is that values presented in an HTML form must be in a string
+format, or presented with select elements or checkboxes.
+
+There are two general types of inflation/deflation provided by FormHandler.
+The first, 'standard' type inflates values in order to validate them, and deflates them
+in order to present them in string format via HTML. The other ('DB') type takes
+values provided by defaults (usually a DB row, or item, but could also be
+a field default or an init_object) and munges the values coming in and
+changes them back going out.
+
+=head2 Standard inflation/deflation
+
+The standard type of inflation/deflation is implemented by using some of the following
+options for inflation:
+
+    inflate_method
+    transform (using 'apply')
+
+..and the following options for deflation:
+
+    deflate_method
+    deflation (field attribute)
+
+When validation starts, the param input will be inflated by the inflate method,
+allowing validation to be performed on the inflated object.
+
+When the 'fif' fill-in-form value is returned for HTML generation, the deflation
+is used to flatten the object, usually into a string format.
+
+=head2 DB inflation/deflation
+
+The 'DB' type of inflation/deflation uses 'inflate_default_method' for inflation,
+and 'deflate_value_method' for deflation. Deflation could also be handled by changing
+the value in one of the various validation methods.
+
+This type of inflation/deflation is, logically, just a different way of providing
+data munging around the defaults (item/init_object/default) and 'value' output.
+The same effect could be achieved by performing a transformation outside of
+FormHandler - if you were handling the database updates yourself. Since the DBIC
+model enables automatic database updates, this kind of inflation/deflation
+makes that easier.
+
+One circumstance in which this type of inflation/deflation is useful is when
+there's a single field in the database row object which you want to expand into
+a compound field in the form.
+
+=head2 Attributes used in deflation/inflation
+
+=head3 Inflation methods
+
+The field 'input' comes from the params that are passed in from the submission
+of the form, so the input will always be in string format if it comes from an
+HTTP request. It's also possible to pass in params in other formats, of course.
+Or the params could be pre-processed before passing in to FormHandler.
+
+You should not normally be changing the 'input' attribute of a field. If you
+want the changed field value to be used when re-presenting the form, such as
+when you're adopting a standard format for the field, you should set
+C<< fif_from_value => 1 >>.
+
+There are three options for standard inflation, or transforming the field's
+'input' to the field's 'value':
+
+=over 4
+
+=item inflate_method
+
+Provide a method on the field which inflates the field 'input' (from params):
+
+   has 'futility' => ( inflate_method => sub { \&inflate_field } );
+   sub inflate_field {
+       my ( $self, $value ) = @_;
+       ....
+       return $value;
+   }
+
+=item transform
+
+In a sequence of 'apply' actions, changes the format of the 'value' that is
+being validated. This might be useful if there are some validations that work
+on one format of the value, and some that work on another.
+
+=item set the value in validation methods
+
+In a validate method, you can change the format of the value, with $field->value(...);
+
+=back 4
+
+=head3 Deflation methods
+
+=over 4
+
+=item deflate_method
+
+Most general purpose deflation method. Provide a coderef which is a method
+on the field:
+
+   has_field => 'foo' => ( deflate_method => sub { \&deflate_foo } );
+   sub deflate_foo {
+       my ( $self, $value ) = @_;  # $self is the 'foo' field
+       <perform conversion>
+       return $value;
+   }
+
+
+=item deflation
+
+This is a coderef that performs deflation.
+
+   has_field => 'bar' => ( deflation => sub { shift $value; ... return $value } );
+
+=item set the value in validation methods
+
+Just like for inflation, you can change the value in a validation method; however,
+it won't be used for fill-in-form unless you set the 'fif_from_value' flag to true.
+
+=back 4
+
+=head3 fif_from_value
+
+Normally the fill-in-form value will be the param value that was submitted.
+If you want to change the format of the input when re-presenting the
+form, you can set 'fif_from_value'.
+
+
+=head3 deflate_to
+
+Earlier versions of FormHandler provided a 'deflate_to' attribute which
+allowed the deflation methods to be used for multiple, confusing purposes. This
+flag has been removed, since it made the process hard to understand and was
+mixing apples and oranges. The new inflation/deflation methods can handle
+all of the previous situations.
+
+=cut

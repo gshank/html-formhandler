@@ -24,6 +24,18 @@ documentation.
 
 Description of the various ways of setting defaults.
 
+=head2 L<HTML::FormHandler::Manual::InflationDeflation>
+
+Inflation and deflation of fields
+
+=head2 L<HTML::FormHandler::Manual::Validation>
+
+Validation of fields
+
+=head2 L<HTML::FormHandler::Manual::Errors>
+
+Errors: setting them, getting them.
+
 =head2 L<HTML::FormHandler::Manual::Rendering>
 
 Rendering options, particularly rendering with widgets

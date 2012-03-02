@@ -169,9 +169,7 @@ hash. Validation and constraints act on 'value'.
 =item fif
 
 Values used to fill in the form. Read only. Use a deflation to get
-from 'value' to 'fif' if an inflator was used. (Deflations can be
-done in two different places. Set 'deflate_to' => 'fif' to deflate
-in fillinform'.)
+from 'value' to 'fif' if an inflator was used.
 
    [% form.field('title').fif %]
 
@@ -626,37 +624,45 @@ transform.
 
 Trimming is performed before any other defined actions.
 
-=head2 deflation, deflate
+=head2 Inflation/deflation
 
-A 'deflation' is a coderef that will convert from an inflated value back to a
-flat data representation suitable for displaying in an HTML field.
-If deflation is defined for a field it is automatically used for data that is
-taken from the database.
+There are a number of methods to provide finely tuned inflation and deflation:
 
-   has_field 'my_date_time' => (
-      type => 'Compound',
-      apply => [ { transform => sub{ DateTime->new( $_[0] ) } } ],
-      deflation => sub { { year => $_[0]->year, month => $_[0]->month, day => $_[0]->day } },
-      fif_from_value => 1,
-   );
-   has_field 'my_date_time.year';
-   has_field 'my_date_time.month';
-   has_field 'my_date_time.day';
+=over 4
 
-You can also use a 'deflate' method in a custom field class. See the Date field
-for an example. If the deflation requires data that may vary (such as a format)
-string and thus needs access to 'self', you would need to use the deflate method
-since the deflation coderef is only passed the current value of the field
+=item inflate_method
 
-Normally if you have a deflation, you will need a matching inflation, which can be
-supplied via a 'transform' action. When using a 'transform', the 'value' hash only
-contains reliably inflated values after validation has been performed, since
-inflation is performed at validation time.
+Inflate to a data format desired for validation.
 
-Deflation can be done at two different places: transforming the value that's saved
-from the initial_object/item, or when retrieving the 'fif' (fill-in-form) value that's
-displayed in the HTML form. The default is C<< deflate_to => 'value' >>. To deflate
-when getting the 'fif' value set 'deflate_to' to 'fif'. (See t/deflate.t for examples.)
+=item deflate_method
+
+Deflate to a string format for presenting in HTML.
+
+=item inflate_default_method
+
+Modify the 'default' provided by an 'item' or 'init_object'
+
+=item deflate_value_method
+
+Modify the value return by C<< $form->value >>.
+
+=item deflation
+
+Another way of providing a deflation method.
+
+=item transform
+
+Another way of providing an inflation method.
+
+=back 4
+
+Normally if you have a deflation, you will need a matching inflation.
+There are two different flavors of inflation/deflation: one for inflating values
+to a format needed for validation and deflating for output, the other for
+inflating the initial provided values (usually from a database row) and deflating
+them for the 'values' returned.
+
+See L<HTML::FormHandler::Manual::InflationDeflation>.
 
 =head1 Processing and validating the field
 
@@ -809,7 +815,7 @@ sub fif {
         return defined $lresult->input ? $lresult->input : '';
     }
     if ( defined $lresult->value ) {
-        if( $self->deflate_to eq 'fif' && $self->_can_deflate ) {
+        if( $self->_can_deflate ) {
             return $self->_apply_deflation($lresult->value);
         }
         else {
@@ -1181,28 +1187,24 @@ sub get_default_value {
     }
     return;
 }
-has 'inflate_method' => (
-     traits => ['Code'],
-     is     => 'ro',
-     isa    => 'CodeRef',
-     writer => '_set_inflate_method',
-     predicate => 'has_inflate_method',
-     handles => { 'inflate' => 'execute_method' },
-);
-has 'deflate_method' => (
-     traits => ['Code'],
-     is     => 'ro',
-     isa    => 'CodeRef',
-     writer => '_set_deflate_method',
-     predicate => 'has_deflate_method',
-     handles => { 'deflate' => 'execute_method' },
-);
+{
+    # create inflation/deflation methods
+    foreach my $type ( 'inflate_default', 'deflate_value', 'inflate', 'deflate' ) {
+        has "${type}_method" => ( is => 'ro', traits => ['Code'],
+            isa => 'CodeRef',
+            writer => "_set_${type}_method",
+            predicate => "has_${type}_method",
+            handles => {
+                $type => 'execute_method',
+            },
+        );
+    }
+}
+
 has 'deflation' => (
     is        => 'rw',
     predicate => 'has_deflation',
 );
-# deflate_to either 'value' or 'fif'
-has 'deflate_to' => ( is => 'rw', default => 'value' );
 has 'trim' => (
     is      => 'rw',
     default => sub { { transform => \&default_trim } }
@@ -1384,8 +1386,8 @@ sub _result_from_fields {
     my ( $self, $result ) = @_;
 
     if ( my @values = $self->get_default_value ) {
-        if ( $self->_can_deflate && $self->deflate_to eq 'value' ) {
-            @values = $self->_apply_deflation(@values);
+        if ( $self->has_inflate_default_method ) {
+            @values = $self->inflate_default(@values);
         }
         my $value = @values > 1 ? \@values : shift @values;
         $self->init_value($value)   if defined $value;

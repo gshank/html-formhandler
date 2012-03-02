@@ -15,9 +15,112 @@ FormHandler 'result' objects.
 A number of error retrieving methods are delegated to the field and form
 classes.
 
-=head1 Form accessors
+=head1 Form methods
 
-=head2 Field accessors
+=over 4
+
+=item errors
+
+Returns an array of localized error strings (both field and
+form errors):
+
+    my @errors = $form->errors;
+
+=item has_errors
+
+Both 'form' errors and errors from the tree of subfields
+
+    if( $form->has_errors ) {
+        <do something>
+    }
+
+=item form_errors, all_form_errors
+
+Returns an arrayref / array of error strings on the form (not fields).
+
+    foreach my $err ( $self->all_form_errors ) {
+        $output .= "<span class="error">$err</span>";
+    }
+
+=item has_form_errors
+
+Does the form have form_errors?
+
+=item add_form_error
+
+Add an error to the form which is not associated with a specific field.
+
+    sub validate {
+        my $self = shift;
+        unless( <some condition> ) {
+            $self->add_form_error('....');
+        }
+    }
+
+=item push_form_errors
+
+Add a non-localized error to the form.
+
+=back 4
+
+=head2 Field methods
+
+The most common error method is probably 'add_error', which you
+use in the validation process.
+
+    sub validate_foo {
+        my ( $self, $field ) = @_;
+        unless ( <some_condition> ) {
+            $field->add_error('Error condition');
+        }
+    }
+
+=over 4
+
+=item errors
+
+Returns an array of errors strings;
+
+=item has_errors
+
+Does the field have errors?
+
+=item num_errors
+
+=item add_error
+
+Add an error to the field. Localization is performed.
+
+=item push_errors
+
+Add an error without localization.
+
+=item error_fields
+
+In a compound field (and it's subclasses, like 'Repeatable'), the list
+of fields with errors.
+
+=back 4
+
+=head2 Result methods
+
+The input, value, and error attributes are actually stored in the
+result objects. Although most of the methods are delegated to the
+form and field classes, there are times, such as when rendering (because you might
+be rendering a result that's been peeled off of the form object), that
+you may need to use result methods.
+
+These are the main methods that you might need to use.
+
+=over 4
+
+=item has_errors
+
+=item errors
+
+=item error_results
+
+=back 4
 
 =head1 Messages
 

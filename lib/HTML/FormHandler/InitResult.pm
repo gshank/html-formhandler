@@ -120,8 +120,8 @@ sub _get_value {
     else {
         return;
     }
-    if( $field->_can_deflate && $field->deflate_to eq 'value' ) {
-        @values = $field->_apply_deflation(@values);
+    if( $field->has_inflate_default_method ) {
+        @values = $field->inflate_default(@values);
     }
     my $value;
     if( $field->has_flag('multiple')) {

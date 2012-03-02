@@ -6,6 +6,7 @@ package HTML::FormHandler::Manual::Database;
 L<Manual Index|HTML::FormHandler::Manual>
 
 Information on interfacing FormHandler forms and fields with a database.
+Also see L<HTML::FormHandler::TraitFor::Model::DBIC>.
 
 =head1 Form Models
 
@@ -31,6 +32,62 @@ item_id will be set from the row.
 
 The C<< $form->process >> will validate
 the parameters and then update or create the database row object.
+
+=head1 Fields that map to database relationships
+
+=head2 Select
+
+A select field will automatically retrieve a select list from the database,
+if the proper column names are provided. Single Selects handle 'belongs_to'
+relationships, where the related table is used to construct a selection list
+from the database.
+
+See also L<HTML::FormHandler::Field::Select> and 'lookup_options' in
+L<HTML::FormHandler::TraitFor::Model::DBIC>.
+
+=head2 Multiple Select
+
+A multiple select is either a 'Select' with multiple => 1 set, or a field
+of the 'Multiple' type. The name of a Multiple select which pulls options
+from the database automatically should be the name of the 'many_to_many'
+relationship. The 'value' of the field is derived from the 'has_many'
+part of the relationship.
+
+The primary key is used for the 'id' of the select. The 'label' column of
+the select is assumed to be 'name'. If the label columns has a different
+name, it must be specified with 'label_column'.
+
+Pertinent attributes:
+
+   label_column
+   active_column
+   sort_column
+
+See also L<HTML::FormHandler::Field::Select> and
+L<HTML::FormHandler::Model::DBIC>.
+
+=head2 Compound fields
+
+A compound field represents a single relationship to another table.
+Although most compound relations can be handled without providing a
+primary key, in some circumstances you may need to provide a
+PrimaryKey field, or add extra values in update_model.
+
+See also L<HTML::FormHandler::Field::Compound>.
+
+=head2 Repeatable fields
+
+The 'Repeatable' field type allows you to update arrays of related tables
+easily. You will need to provide a 'PrimaryKey' hidden field in the
+compound field contained in the Repeatable.
+
+  has_field 'addresses' => ( type => 'Repeatable' );
+  has_field 'addresses.address_id' => ( type => 'PrimaryKey' );
+  has_field 'addresses.street';
+  has_field 'addresses.city';
+  has_field 'addresses.state';
+
+See also L<HTML::FormHandler::Field::Repeatable>.
 
 =head1 Form generator
 
