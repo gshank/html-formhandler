@@ -78,10 +78,6 @@ sub validate_field {
     # do building of node
     if ( $field->DOES('HTML::FormHandler::Fields') ) {
         $field->_fields_validate;
-#       if( $field->has_inflate_method ) {
-#           my $value = $field->inflate( $field->value );
-#           $field->_set_value( $value );
-#       }
     }
     else {
         my $input = $field->input;

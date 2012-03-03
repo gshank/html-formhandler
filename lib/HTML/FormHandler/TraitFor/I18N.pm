@@ -8,14 +8,17 @@ use Moose::Util::TypeConstraints;
 =head3 language_handle, _build_language_handle
 
 Holds a Locale::Maketext (or other duck_type class with a 'maketext'
-method) language handle
+method) language handle. The language handle is used to localize the
+error messages in the field's 'add_error' method. It's also used
+in various places in rendering to localize labels and button values,
+etc.
 
 The builder for this attribute gets the Locale::Maketext language
-handle from the environment variable $ENV{LANGUAGE_HANDLE}, or creates
-a default language handler using L<HTML::FormHandler::I18N>. The
-language handle is used in the field's add_error method to allow
-localizing.
+handle from the environment variable $ENV{LANGUAGE_HANDLE}:
 
+    $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
+
+...or creates a default language handler using L<HTML::FormHandler::I18N>.
 You can pass in an existing L<Locale::MakeText> subclass instance
 or create one in a builder.
 

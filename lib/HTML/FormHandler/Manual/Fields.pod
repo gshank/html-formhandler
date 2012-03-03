@@ -5,6 +5,9 @@ package HTML::FormHandler::Manual::Fields;
 
 L<Manual Index|HTML::FormHandler::Manual>
 
+See also L<HTML::FormHandler::Field> for description of base
+field attributes.
+
 The inheritance hierarchy of HTML::FormHandler Fields
 
    Text
@@ -80,6 +83,14 @@ a string data type. (If the type of a field is not specified, it will be set to
 'Text'.)  A "Select" field type is an HTML form element, and validates against
 the list of values provided in the 'options'. A "Multiple" type is like "Select"
 but it allows selecting more than one value at a time.
+
+Many field classes contain only a list of constraints and transformations
+to apply. Some use the 'validate' method, which is called after the actions
+are applied. Some build a custom select list using 'build_options'.
+
+There are two rough categories of Field classes: those that do extra processing
+and those that are simple validators. The 'Compound', 'Repeatable', and
+'Select' fields are fields that are functional.
 
 =head1 Field names
 

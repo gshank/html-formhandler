@@ -44,58 +44,8 @@ This is the base class for form fields. The 'type' of a field class
 is used in the FormHandler field_list or has_field to identify which field class to
 load. If the type is not specified, it defaults to Text.
 
-There are two rough categories of Field classes: those that do extra processing
-and those that are simple validators. The 'Compound', 'Repeatable', and
-'Select' fields are fields that are functional.
-
-A number of field classes are provided by the distribution. The basic
-for-validation (as opposed to 'functional') field types are:
-
-   Text
-   Integer
-   Boolean
-
-These field types alone would be enough for most applications, since
-the equivalent of the others could be defined using field attributes,
-custom validation methods, and applied actions.  There is some benefit
-to having descriptive names, of course, and if you have multiple fields
-requiring the same validation, defining a custom field class may be a
-good idea.
-
-Inheritance hierarchy of the distribution's field classes:
-
-   Compound
-      Repeatable
-   Text
-      Money
-      Password
-      Integer
-         PosInteger
-   TextArea
-      HtmlArea
-   Select
-      Multiple
-      IntRange
-         Hour
-         Minute
-         MonthDay
-         Month
-         Second
-         Year
-      MonthName
-      Weekday
-   Checkbox
-      Boolean
-   DateMDY
-   DateTime
-   Email
-   PrimaryKey
-
-See the documentation or source for the individual fields.
-
-Many field classes contain only a list of constraints and transformations
-to apply. Some use the 'validate' method, which is called after the actions
-are applied. Some build a custom select list using 'build_options'.
+See L<HTML::FormHandler::Manual::Fields> for a list of the fields and brief
+descriptions of their structure.
 
 =head1 ATTRIBUTES
 

@@ -57,7 +57,7 @@ If you provide a 'validate_<field_name>' method it will be automatically used.
         ....
     }
 
-=head1 form validate method
+=head2 form validate method
 
 A form validation method can be used to do cross-validation or validation
 checks that need information from more than one field.
@@ -69,21 +69,131 @@ checks that need information from more than one field.
                     $self->field('bar')->value eq '..' );
     }
 
+=head2 field validate method
 
-=head1 Filters, transformations, and constraints
+You can create a custom field to contain a commonly used validation. The
+validation in a custom field can be done with 'apply' or by using a
+'validate' method.
+
+    package MyApp::Form::Field::Custom;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler::Field'; # or a subclass of Field
+
+    sub validate {
+        ....
+    }
+
+=head1 Apply Actions: Filters, transformations, and constraints
 
 The actions in the 'apply' array will be performed in the order they are
 specified, allowing fine-grained control over inflation and validation.
+
+See also L<HTML::FormHandler::Field> and L<HTML::FormHandler::Validate>.
+See L<HTML::FormHandler::Manual::Inflation::Deflation> for information
+on inflation and deflation.
 
 =head2 Moose types
 
 FormHandler supplies a library of Moose types in L<HTML::FormHandler::Types>.
 
-=head2 Apply actions
+    use HTML::FormHandler::Types ('NotAllDigits');
+    has_field 'foo' => ( apply => [ NotAllDigits ] );
 
-There are number of different flavors of 'apply' actions.
+You can create your own library of types, too. Or you can create a type
+constraint in the form:
 
-See also L<HTML::FormHandler::Validate>.
+  use Moose::Util::TypeConstraints;
+  subtype 'GreaterThan10'
+     => as 'Int'
+     => where { $_ > 10 }
+     => message { "This number ($_) is not greater than 10" };
+
+  has_field 'text_gt' => ( apply=> [ 'GreaterThan10' ] );
+
+Moose types can also be used for their coercions to do transformations.
+
+You can also use the 'type' keyword with a Moose type if you want to
+change the message:
+
+    has_field 'text_gt' => ( apply => [
+        { type => 'GreaterThan10',
+          message => 'Number is too small' } ] );
+
+=head2 transform
+
+A 'transform' changes the format of a field's value, and does not
+need a message.
+
+   has_field 'another_field' => (
+      apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
+   );
+
+=head2 regex
+
+Checks that field value matches the regex.
+
+   has_field 'some_field' => (
+      apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
+   );
+
+You can use regex libraries like L<Regexp::Common> too:
+
+    use Regexp::Common ('URI');
+    ...
+    has_field 'my_url' => ( apply => [
+        { check => qr/$RE{URI}{HTTP}/,
+           message => 'Invalid URL' } ] );
+
+=head2 matches
+
+Provide an arrayref of strings to match against.
+
+   has_field 'set_error' => (
+      apply => [
+         { check   => [ 'abc', 'bbb' ],
+            message => 'Must be "aaa" or "bbb"' }
+      ]
+   );
+
+=head2 coderef
+
+Provide a validation function to check. Note that the field
+is passed in as the second argument, to allow simple functions
+to work properly.
+
+   has_field 'callback_pass' => (
+      apply => [
+         { check => \&check_callback_pass,
+             message => 'Must contain number greater than 10', }
+       ]
+   );
+   sub check_callback_pass {
+       my ( $value, $field ) = @_;
+       if( $value =~ /(\d+)/ ) {
+           return $1 > 10;
+       }
+   }
+
+=head2 message
+
+The message for the above checks can also be a an arrayref or coderef.
+The arrayref is useful for localized messages. You can also provide error
+messages for Moose types.
+
+   has_field 'message_sub' => (
+      apply => [
+         { check   => [ 'abc' ],
+            message => \&err_message }
+      ]
+   );
+   sub err_message {
+       my ($value, $field ) = @_;
+       return $field->name . ': Must be "abc"';
+   }
+   has_field 'message_arrayref' => (
+      apply => [ { check => qr/aaa/,
+          message => ['Must contain [_1]', 'aaa'] } ],
+   );
 
 =head1 Dependency
 

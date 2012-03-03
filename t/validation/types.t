@@ -24,6 +24,8 @@ $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
   has_field 'test' => ( apply => [ PositiveInt ] );
   has_field 'text_gt' => ( apply=> [ 'GreaterThan10' ] );
   has_field 'text_both' => ( apply => [ PositiveInt, 'GreaterThan10' ] );
+  has_field 'field_wtype' => ( apply => [
+      { type => PositiveInt, message => 'Not a positive number' } ] );
   has_field 'state' => ( apply => [ State ] );
 
 }
@@ -38,6 +40,7 @@ my $params = {
    text_gt => 5,
    text_both => 6,
    state => 'GG',
+   field_wtype => '-10',
 };
 
 $form->process($params);
@@ -45,6 +48,7 @@ ok( !$form->validated, 'form did not validate' );
 ok( $form->field('test')->has_errors, 'errors on MooseX type');
 ok( $form->field('text_gt')->has_errors, 'errors on subtype');
 ok( $form->field('text_both')->has_errors, 'errors on both');
+ok( $form->field('field_wtype')->has_errors, 'errors on type with message');
 ok( $form->field('state')->has_errors, 'errors on state' );
 
 $params = {

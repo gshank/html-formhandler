@@ -38,8 +38,8 @@ use lib 't/lib';
 
    no Moose::Util::TypeConstraints;
 
-   has_field 'empty_field' => (
-      apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
+   has_field 'message_arrayref' => (
+      apply => [ { check => qr/aaa/, message => ['Must contain [_1]', 'aaa'] } ],
    );
    has_field 'regex_error' => (
       apply => [ { check => qr/xyz/ } ],
@@ -114,7 +114,7 @@ my $form = My::Form->new();
 ok( $form, 'get form' );
 
 my $params = {
-      empty_field              => '',
+      message_arrayref         => 'xxx',
       regex_error              => 'bbb',
       regex_correct            => 'bbb aaa',
       set_error                => 'ccc',
@@ -127,7 +127,7 @@ my $params = {
       my_something             => 'nothing',
 };
 $form->process($params);
-# ok( $form->field('empty_field')->has_errors, 'empty does not pass required constraint' );
+ok( $form->field('message_arrayref')->has_errors, 'message arrayref works' );
 ok( $form->field('regex_error')->has_errors,    'regexp constraint - error' );
 ok( !$form->field('regex_correct')->has_errors, 'regexp constraint - pass' );
 ok( $form->field('regex_correct')->has_value,   'constraints passed - has_value is true' );
