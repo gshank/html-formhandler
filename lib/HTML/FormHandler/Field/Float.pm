@@ -1,5 +1,5 @@
 package HTML::FormHandler::Field::Float;
-# ABSTRACT: validate an integer value
+# ABSTRACT: validate a float value
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';

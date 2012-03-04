@@ -9,11 +9,18 @@ Errors and error messages for L<HTML::FormHandler>.
 
 =head1 DESCRIPTION
 
-Errors, along with 'input' and 'value' attributes, are collected in the
-FormHandler 'result' objects.
+Errors are added to field or form objects by the field 'add_error' method
+or the form 'add_form_error' method. FormHandler will perform the 'add_error'
+for you for built-in validation or 'apply' actions. When performing your
+own validation in a validation method, you must do the 'add_error'
+yourself.
 
-A number of error retrieving methods are delegated to the field and form
-classes.
+Errors, along with 'input' and 'value' attributes, are collected in the
+FormHandler 'result' objects. A number of error retrieving methods are
+delegated to the field and form classes.
+
+The existence (or not) of errors determines whether or not the form has
+been 'validated'.
 
 =head1 Form methods
 
@@ -36,7 +43,8 @@ Both 'form' errors and errors from the tree of subfields
 
 =item form_errors, all_form_errors
 
-Returns an arrayref / array of error strings on the form (not fields).
+Returns an arrayref / array of error strings on the form (not including
+field errors).
 
     foreach my $err ( $self->all_form_errors ) {
         $output .= "<span class="error">$err</span>";

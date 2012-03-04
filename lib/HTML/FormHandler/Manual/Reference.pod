@@ -126,13 +126,18 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
    trim          Transform to trim the field
    deflation     Function to deflate the field (in 'apply') (opposite of transform)
-   deflate_method Supply coderef to deflate the field
+   deflate_method          Coderef to deflate the field (for filling in the form)
+   inflate_method          Coderef to inflate the field (before validation)
+   inflate_default_method  Coderef to inflate value in item/init_object
+   deflate_value_method    Coderef to deflate value after validation
+   fif_from_value  Flag to use 'value' of field for 'fif'.
 
    password      Remove from params and do not display in forms.
 
 =head2 Select fields
 
    options       Sorted array of hashes, keys: "value", "label"
+   options_method
    label_column  Column to use for labels (default: name)
    active_column Which values to list in options
    sort_column   Column to use for sorting (default: label_column)

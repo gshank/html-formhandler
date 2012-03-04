@@ -5,24 +5,25 @@ package HTML::FormHandler::Manual::Intro;
 
 L<Manual Index|HTML::FormHandler::Manual>
 
-HTML::FormHandler is a form handling class that validates HTML form data
+HTML::FormHandler is a form handling package that validates HTML form data
 and, for database forms, saves it to the database on validation.
-It has field classes that can be used for creating a set of widgets
-and highly automatic templates. FormHandler is designed to
-make it easy to produce custom rendering modules.
+It has field classes that match various data types and HTML form elements,
+and rendering roles that can be used to render forms in many
+different ways, from hand-built forms to totally automated rendering.
+It can, of course, be used to validate data even if you are not interested
+in the rendering capabilities.
 
-The 'form' is a Perl subclass of L<HTML::FormHandler> for non-database forms,
+A FormHandler 'form' is a Perl subclass of L<HTML::FormHandler> for non-database forms,
 or a subclass of L<HTML::FormHandler::Model::DBIC> for database forms, and in
 it you define your fields and validation routines. Because it's a Perl class
-you have a lot of flexibility.
+written in Moose, you have a lot of flexibility and control.
 
-You can use transformations, Moose type constraints, and coercions, listed
-in the field's 'apply' attribute, to validate or inflate the fields
-(see L<HTML::FormHandler::Field/apply>).  You can define your own
-L<HTML::FormHandler::Field> classes to create your own field types, and
-perform specialized validation. You can create L<MooseX::Types> libraries
-and use them to perform field validation. You can use validation routines
-from an L<Exporter> based class.
+You can validate with Perl methods or Moose type constraints; you can use
+your own validation libraries. You can define your own field classes that
+perform specialized validation.
+
+When the form is validated, you can get the validated values back with
+C<< $form->value >>.
 
 A working example of a Catalyst app using FormHandler forms is available
 on github at L<https://github.com/gshank/formhandler-example>.
@@ -44,20 +45,25 @@ name of the field package. (Fields with no type have type 'Text'.)
     has_field 'foo';
     has_field 'bar' => ( type => 'Select' );
 
-Basic field types are Text, Select, Checkbox, Submit, Hidden, Submit, Reset,
+Basic field types are Text, Select, Checkbox, Submit, Hidden, Reset,
 Textarea, Password, Upload. See L<HTML::FormHandler::Manual::Fields> for
 more information.
 
 =head2 Or create a form class dynamically
 
 You can also create a form class 'dynamically', by creating a 'new'
-HTML::FormHandler object. Use a 'field_list' parameter to create the fields.
+HTML::FormHandler object. Use a 'field_list' parameter to create the fields
+instead of 'has_field'.
 
     my $form = HTML::FormHandler->new( field_list => [
             'username' => { type => 'Text' },
             'selections' => { type => 'Select' },
         ]
     );
+
+Some features will not be available using this method (like the automatic
+use of 'validate_<field_name>' methods) and it's not as easy to test,
+of course.
 
 =head2 Process the form
 
@@ -78,6 +84,13 @@ the form:
 
     my $result = $form->run( params => $c->request->body_parameters );
 
+You can also set most other FormHandler attributes on the 'process' call.,
+One useful feature is that you can activate or inactivate fields:
+
+    $form->process( params => $params, active => ['field1', 'field2'] );
+
+See also L<HTML::FormHandler>.
+
 =head2 Or process a database form
 
 A database form inherits from L<HTML::FormHandler::Model::DBIC> instead of
@@ -90,6 +103,9 @@ FormHandler information to retrieve the row object.
         item_class => 'MyRow', params => $params );
 
 'item_class' is often set in the form class.
+
+See also L<HTML::FormHandler::Manual::Database> and
+L<HTML::FormHandler::TraitFor::Model::DBIC>.
 
 =head2 After processing the form
 
@@ -114,11 +130,17 @@ template.
     [% form.render %]
 
 The automatic rendering is powerful and flexible -- you can do almost
-anything with the right settings. Or you can render the form in a
+anything with the right settings. Or you can render the form with a
 template.
 
 The form object will give you a hashref of values suitable for
 for filling in the form with C<< $form->fif >>.
+
+By default FormHandler structures fields (and renders thems) in a way
+that matches the database. If you want to organize the rendering output
+in different ways, you can use blocks to organize your fields.
+
+   has_block 'fieldset1' => ( render_list => ['foo', 'bar'] );
 
 For more rendering info, see L<HTML::FormHandler::Manual::Rendering>.
 
@@ -139,6 +161,26 @@ There are a number of other flags and methods for providing defaults.
 See L<HTML::FormHandler::Manual::Defaults>.
 
 =head2 Validation
+
+You can validate a field with a method in the form 'validate_<field_name>':
+
+    has_field 'foo';
+    sub validate_foo {
+        my ( $self, $field ) = @_; # self is the form
+        unless( $field->value == .... ) {
+            $field->add_error( .... );
+        }
+    }
+
+You can provide a validation coderef that will be a field method:
+
+    has_field 'foo' => ( validate_method => \&check_foo );
+    sub check_foo {
+        my $self = shift; # self is field
+        unless( $self->value == ... ) {
+            $self->add_error( ... );
+        }
+    }
 
 You can use 'apply' to use Moose types for validation, from L<HTML::FormHandler::Types>
 or another Moose type collection:
@@ -169,6 +211,19 @@ See L<HTML::FormHandler::Manual::Validation> for more information on
 validation or L<HTML::FormHandler::Manual::Fields> for more information
 on fields.
 
+=head2 Organizing your form code
+
+You can use 'has_field' and 'has_block' in Moose roles:
+
+    package MyApp::Form::Role::Address;
+    use HTML::FormHandler::Moose;
+
+    has_field 'foo';
+    has_block 'bar';
+
+Your forms can inherit from base classes that set common application
+defaults. You can override field definitions with '+'.
+
 =head2 Testing
 
 It's much easier to write unit tests for FormHandler forms than for
@@ -178,8 +233,8 @@ information.
 
 =head1 Localization
 
-FormHandler's built-in errors are added to the form fields with C<< $field->add_error >>,
-and to the form with C<< $form->add_form_error >>.
+FormHandler's built-in errors are added to the form fields with
+C<< $field->add_error >>, and to the form with C<< $form->add_form_error >>.
 These methods call a C<< $self->_localize method >> which is a coderef set from
 the field's default_localize sub, the field's 'localize_meth' attribute with
 C<< localize_meth => sub {} >>, or a form's sub localize_meth. The default localize
@@ -189,15 +244,17 @@ See the documentation in L< HTML::FormHandler::TraitFor::I18N > and the tests in
 If you wish to skip localization for a particular message (such as for system errors)
 you can use C<< $field->push_errors >> or C<< $form->push_form_errors >>.
 
+See also L<HTML::FormHandler::TraitFor::I18N>.
+
 =head1 Performance
 
 FormHandler makes heavy use of Moose, so almost all of FormHandler's profiled time
-will actually be in Moose methods. Some people prefer to use a persistent form class
-(in a Moose attribute) in order to skip the form building step on each call. Other
-people don't like that solution because state will remain in the form until the
-next process call. The 'clear' method is called at the beginning of each 'process',
-but additional Moose attributes in the form, etc, will have to cleared by the
-programmer (with a method modifier on 'clear').
+will actually be in Moose methods, mostly constructing form and field attributes.
+Some people prefer to use a persistent form class (in a Moose attribute) in order
+to skip the form building step on each call. Other people don't like that solution
+because state will remain in the form until the next process call. The 'clear'
+method is called at the beginning of each 'process', but additional Moose attributes
+in the form, etc, will have to cleared by the programmer.
 
 If you are loading options from the database and you don't need to have them refreshed
 each time, you can set the 'do_not_reload' flag in the Select/Multiple field.

@@ -78,7 +78,7 @@ be active, you can do that using a Moose method modifier on 'set_active':
       $self->active(['foo', bar']) if ( <some_condition> );
    };
 
-Fields set to active/inactive on the 'process' call be automatically set back
+Fields set to active/inactive on the 'process' call are automatically set back
 to inactive when the form is cleared, so there's no need to reset.
 
 If you want the fields activated for the life of an object, set active on new:
@@ -115,8 +115,12 @@ To apply the role to a field base class, use 'apply_traits' on that class:
 
 =head2 Select lists
 
-If you want to set the default value of a select field to 0 (or some other
-default):
+If you want to set the default value of a select field to 0, you can just
+use 'default' on the field:
+
+   has_field 'license' => ( default => 0 );
+
+If there is logic involved, you can use a 'default_<field_name>' method:
 
    sub default_license {
       my ( $self, $field, $item ) = @_;
@@ -125,7 +129,13 @@ default):
    }
 
 If the table defining the choices for a select list doesn't include
-a 'no choice' choice, in your template:
+a 'no choice' choice, you can set 'empty_select' in your field if you
+are using FormHandler rendering:
+
+   has_field 'subject_class' => ( type => 'Select',
+      empty_select => '--- Choose Subject Class ---' );
+
+Or you can do in a template:
 
    [% f = form.field('subject_class') %]
    <select id="select_sc" name="[% f.name %]">
@@ -137,7 +147,7 @@ a 'no choice' choice, in your template:
      [% END %]
    </select>
 
-Or customize the select list in an 'options_' method:
+You can create a customi the select list in an 'options_' method:
 
    sub options_country {
       my $self = shift;
@@ -147,10 +157,6 @@ Or customize the select list in an 'options_' method:
             search( {}, { order_by => ['rank', 'country_name'] } )->all;
       return [ map { $_->digraph, $_->country_name } @rows ];
    }
-
-Or you can use the 'empty_select' attribute on your field:
-
-    has_field 'country' => ( type => 'Select', empty_select => '-- Choose --' );
 
 =head2 The database and FormHandler forms
 

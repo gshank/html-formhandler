@@ -164,12 +164,6 @@ See the documentation in L<HTML::FormHandler::Field#Attributes_for_creating_HTML
 
 =over 4
 
-=item widget
-
-The short name of the rendering widget to be applied to the fields. When
-the fields are constructed this is merged into fields that do not already
-set a widget.
-
 =item widget_wrapper
 
 The short name of the rendering wrapper widget to be applied to the fields. When
@@ -230,11 +224,11 @@ Short name of the wrapping widget for this field.
 
 =item do_wrapper
 
-Flag that indicates whether or not there should be a wrapper.
+Flag that indicates whether or not the 'wrapper' should be rendered.
 
 =item do_label
 
-Flag that indicates whether or not there should be a label.
+Flag that indicates whether or not a label should be rendered.
 
 =item element_attr
 

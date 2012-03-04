@@ -5,7 +5,9 @@ package HTML::FormHandler::Manual::Validation;
 
 L<Manual Index|HTML::FormHandler::Manual>
 
-There are many options for validating fields in FormHandler.
+There are many options for validating fields in FormHandler. Some validation
+is from field attributes, some from form or field methods, some from
+'apply' actions on the fields.
 
 =head1 Field attributes for validation
 
@@ -13,15 +15,11 @@ Each individual field may have additional attributes that relate to validation,
 which are not documented here. See the individual field documentation, linked
 from L<HTML::FormHandler::Manual::Fields>.
 
-=head2 range_start, range_end
-
-Starting and ending range for number fields.
-
 =head2 required
 
 Setting the 'required' flag on a field initiates a check for the existence
 of some value. If the field does not have a value, the 'required' error
-message is issues, which can be set on a form or field basis:
+message is issued.
 
    has_field 'section' => ( required => 1,
        messages => { required => 'Please provide a section' } );
@@ -31,8 +29,16 @@ or repeatable field -- does not cause the containing field to be required.
 You need to set 'required' all the way up, if that's the behavior that you
 want.
 
-If a field is empty and *not* required, no other validation will be
-performed.
+If a field is empty and *not* required, no other field validation will be
+performed. The form's 'validate' method, however, will always be called.
+
+=head2 range_start, range_end
+
+Starting and ending range for number fields.
+
+=head1 unique
+
+Attribute used by the DBIC model to check for uniqueness.
 
 =head1 Validation methods
 
@@ -56,6 +62,8 @@ If you provide a 'validate_<field_name>' method it will be automatically used.
         my ( $self, $field ) = @_; # self is the form
         ....
     }
+
+If the field name has periods in it, they should be replaced with underscores.
 
 =head2 form validate method
 
@@ -87,6 +95,13 @@ validation in a custom field can be done with 'apply' or by using a
 
 The actions in the 'apply' array will be performed in the order they are
 specified, allowing fine-grained control over inflation and validation.
+
+The two valid 'apply' array elements are 1) Moose types and 2) hashrefs with one of three
+keys: 'check', 'transform', and 'type'. The hashrefs will usually also have an additional
+key, 'message', with a string, array or coderef providing an error message.
+
+The 'check' key can point to a regex, arrayref of strings, or coderef. The value of
+the 'transform' key should be a coderef. The value of the 'type' key is a Moose type.
 
 See also L<HTML::FormHandler::Field> and L<HTML::FormHandler::Validate>.
 See L<HTML::FormHandler::Manual::Inflation::Deflation> for information
@@ -122,13 +137,17 @@ change the message:
 =head2 transform
 
 A 'transform' changes the format of a field's value, and does not
-need a message.
+need a message. It takes a coderef.
 
    has_field 'another_field' => (
       apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
    );
 
-=head2 regex
+Note that transformed values are not displayed in the HTML form unless
+the 'fif_from_value' flag is set. The transformed values are saved
+to the database or returned in C<< $form->value >>.
+
+=head2 'check' regex
 
 Checks that field value matches the regex.
 
@@ -144,7 +163,7 @@ You can use regex libraries like L<Regexp::Common> too:
         { check => qr/$RE{URI}{HTTP}/,
            message => 'Invalid URL' } ] );
 
-=head2 matches
+=head2 'check' arrayref (matches)
 
 Provide an arrayref of strings to match against.
 
@@ -155,7 +174,7 @@ Provide an arrayref of strings to match against.
       ]
    );
 
-=head2 coderef
+=head2 'check' coderef
 
 Provide a validation function to check. Note that the field
 is passed in as the second argument, to allow simple functions
@@ -194,10 +213,13 @@ messages for Moose types.
       apply => [ { check => qr/aaa/,
           message => ['Must contain [_1]', 'aaa'] } ],
    );
+   has_field 'my_moose_type_field' => (
+      apply => [ { type => SomeType,
+         message => 'Invalid ...' } ] );
 
 =head1 Dependency
 
-The 'dependency' field_list key is an array of arrays of field names.
+The 'dependency' attribute is an array of arrays of field names.
 During validation, if any field in a given group
 contains the pattern /\S/ (non-blank), the 'required' flag
 is set for all of the fields in the group.

@@ -12,9 +12,9 @@ controller.
 =head1 DESCRIPTION
 
 It's difficult to test forms that are instantiated in controllers with 'add_element'
-calls and from YAML, and that have no form class. It's one of the reasons that I
-don't think that 'dynamic' forms generated with a field_list are a good idea for
-anything except the simplest forms. But if you create a form class that contains everything
+calls and from YAML, and that have no form class. It's one of the reasons that
+'dynamic' forms generated with a field_list aren't a good idea for
+anything except the simplest forms. If you have a form class that contains everything
 that is needed for processing the form, it's really really easy to create tests for
 forms. Look in the FormHandler 't' directory. It's full of tests for forms.
 
@@ -31,7 +31,7 @@ output, it can be helpful.
 
 =head1 Example
 
-Here's an example of a test, originally copied from one the DBIC model tests.
+Here's an example of a test, originally copied from one of the DBIC model tests.
 But you should download the tar.gz or checkout the distribution from github
 and browse through the tests.
 

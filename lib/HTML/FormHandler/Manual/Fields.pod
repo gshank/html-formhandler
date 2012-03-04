@@ -5,7 +5,7 @@ package HTML::FormHandler::Manual::Fields;
 
 L<Manual Index|HTML::FormHandler::Manual>
 
-See also L<HTML::FormHandler::Field> for description of base
+See also L<HTML::FormHandler::Field> for a description of the base
 field attributes.
 
 The inheritance hierarchy of HTML::FormHandler Fields
@@ -60,10 +60,10 @@ provided by FormHandler. You can customize the validation in your form on a
 per field basis, but validation that will be used for more than one field
 might be more easily handled in a custom field class.
 
-In the templates the fields are accessed with C< form.field('name') >.
+Fields are accessed with C<< form->field('name') >>.
 Field errors are in C<< $field->errors >>.
 
-If the 'field_name_space' is not set, field will be loaded from the
+If the 'field_name_space' is not set, fields will be loaded from the
 HTML::FormHandler::Field name space. If you provide a 'field_name_space'
 it will be searched before FormHandler. If you want to explicitly list the
 field's package, prefix it with a plus sign. The field_name_space plus the
@@ -107,7 +107,7 @@ name). You could then use any name that you want for your field.
 
 There are a number of name related field attributes. The 'name' is
 the name used to identify this particular field in this fields array.
-The 'full_name' is includes the names of all parents of this field,
+The 'full_name' includes the names of all parents of this field,
 like 'address.street.streetname'. The 'html_name' is the same as the
 'full_name' unless you have set the 'html_prefix' flag, in which case
 it includes the form name: 'myform.address.street.streetname'.
@@ -159,7 +159,8 @@ that will be most often used in a form.
 
 =head3 Text
 
-A string data type that will be formatted as an HTML text field.
+A string data type that will be formatted as an HTML text field. Has 'minlength'
+and 'maxlength' attributes.
 
 L<HTML::FormHandler::Field::Text>
 
@@ -171,7 +172,8 @@ L<HTML::FormHandler::Field::Select>
 
 =head3 Checkbox
 
-A field formatted as a checkbox.
+A field formatted as a checkbox. If not in params, will be forced to
+'false' value by 'input_without_param' attribute (0 by default).
 
 L<HTML::FormHandler::Field::Checkbox>
 
@@ -189,19 +191,20 @@ L<HTML::FormHandler::Field::Password>
 
 =head3 Textarea
 
-A textarea field.
+A textarea field.  Has 'cols' and 'rows' attributes.
 
 L<HTML::FormHandler::Field::Textarea>
 
 =head3 Upload
 
-A file upload field that takes a filehandle or a Catalyst upload object.
+A file upload field that takes a filehandle or a Catalyst upload object (an
+object with a 'size' method).
 
 L<HTML::FormHandler::Field::Upload>
 
 =head3 Submit
 
-A submit submit field.
+A submit field.
 
 L<HTML::FormHandler::Field::Submit>
 
@@ -293,33 +296,50 @@ Fields subclassed from the Text field.
 
 =head3 Text
 
+Text field. 
+
 L<HTML::FormHandler::Field::Text>
 
 =head3 Money
+
+Positive or negative real value, formatted to two decimal places.
 
 L<HTML::FormHandler::Field::Money>
 
 =head3 Date
 
+Date field that can be used by jQuery datepicker plugin.
+
 L<HTML::FormHandler::Field::Date>
 
 =head3 DateMDY
+
+A subclass of 'Date' with the "%m/%d/%Y" format.
 
 L<HTML::FormHandler::Field::DateMDY>
 
 =head3 Email
 
+Uses Email::Valid for validation.
+
 L<HTML::FormHandler::Field::Email>
 
 =head3 Integer
+
+Positive and negative integers. Can use range_start and range_end.
 
 L<HTML::FormHandler::Field::Integer>
 
 =head3 PosInteger
 
+A positive integer field.
+
 L<HTML::FormHandler::Field::PosInteger>
 
 =head3 Float
+
+Float field that allows you to set size, precision, decimal_symbol, and
+decimal_symbol_for_db.
 
 L<HTML::FormHandler::Field::Float>
 
@@ -337,9 +357,15 @@ L<HTML::FormHandler::Field::Repeatable>
 
 =head3 Duration
 
+Compound field with possible subfields: years, months, weeks, days, hours,
+minutes, seconds, nanoseconds.
+
 L<HTML::FormHandler::Field::Duration>
 
 =head3 DateTime
+
+A compound field that requires you to provide the subfields that
+you want. (month/day/year/hour/minutes)
 
 L<HTML::FormHandler::Field::DateTime>
 
@@ -354,6 +380,8 @@ L<HTML::FormHandler::Field::Checkbox>
 
 =head3 Boolean
 
+Checkbox that return 1 or 0;
+
 L<HTML::FormHandler::Field::Boolean>
 
 =head2 Select Fields
@@ -366,6 +394,9 @@ L<HTML::FormHandler::Field::Select>
 
 =head3 Multiple
 
+Multiple select. Also sorts the selected options to the top of
+the select list.
+
 L<HTML::FormHandler::Field::Multiple>
 
 =head3 BoolSelect
@@ -376,37 +407,56 @@ L<HTML::FormHandler::Field::BoolSelect>
 
 =head3 Hour
 
+Integer select range field from 0-23.
+
 L<HTML::FormHandler::Field::Hour>
 
 =head3 Second
+
+Select field with range from 0-59.
 
 L<HTML::FormHandler::Field::Second>
 
 =head3 IntRange
 
+An integer select field. Can set label format with 'label_format'.
+
 L<HTML::FormHandler::Field::IntRange>
 
 =head3 Month
+
+Select field with range from 1 - 12.
 
 L<HTML::FormHandler::Field::Month>
 
 =head3 MonthDay
 
+Select field with range from 1 - 31.
+
 L<HTML::FormHandler::Field::MonthDay>
 
 =head3 MonthName
+
+Select field with month name labels, value 1-12.
 
 L<HTML::FormHandler::Field::MonthName>
 
 =head3 Minute
 
+Select field with range from 0-59.
+
 L<HTML::FormHandler::Field::Minute>
 
 =head3 Weekday
 
+A select field where the labels are the names of the week, and the
+values are 0-6.
+
 L<HTML::FormHandler::Field::Weekday>
 
 =head3 Year
+
+Select field providing year list 5 years back and 10 years forward.
 
 L<HTML::FormHandler::Field::Year>
 
@@ -416,6 +466,8 @@ Fields that inherit from 'NoValue'. None of these fields will
 provide a 'value' in the C<< $form->value >> hashref.
 
 =head3 NoValue
+
+Base class for fields that don't produce a 'value'.
 
 L<HTML::FormHandler::Field::NoValue>
 
@@ -429,9 +481,14 @@ L<HTML::FormHandler::Field::Reset>
 
 =head3 Button
 
+Button field that rendered by the Button widget.
+
 L<HTML::FormHandler::Field::Button>
 
 =head3 Display
+
+Non-data field used for inserting HTML into the form. Probably
+now better handled by a Block or a rendering tag.
 
 L<HTML::FormHandler::Field::Display>
 
@@ -445,11 +502,15 @@ L<HTML::FormHandler::Field::Textarea>
 
 =head3 HtmlArea
 
+A textarea that attempt to validate the textarea with html tidy.
+
 L<HTML::FormHandler::Field::HtmlArea>
 
 =head2 Password fields
 
 =head3 Password
+
+Password field. Sets 'noupdate' flage if empty and not required.
 
 L<HTML::FormHandler::Field::Password>
 
@@ -465,14 +526,21 @@ These fields inherit just from 'Field'.
 
 =head3 File
 
+A file field that does no processing. Most people probably want to
+use 'Upload' instead.
+
 L<HTML::FormHandler::Field::File>
 
-
 =head3 PrimaryKey
+
+Hidden field that provides the primary key for Repeatable fields.
 
 L<HTML::FormHandler::Field::PrimaryKey>
 
 =head3 Captcha
+
+A Captcha field using GD::SecurityImage. Requires the use of the
+L<HTML::FormHandler::Form::Captcha> role, or similar code.
 
 L<HTML::FormHandler::Field::Captcha>
 

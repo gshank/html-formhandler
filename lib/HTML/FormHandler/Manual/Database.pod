@@ -30,7 +30,7 @@ The model will use the item_class (DBIC source name) to fetch the row from the
 database. If you pass in a row object (item), the schema, source_class, and
 item_id will be set from the row.
 
-The C<< $form->process >> will validate
+Executing C<< $form->process( item => $row, params => $params ); >> will validate
 the parameters and then update or create the database row object.
 
 =head1 Fields that map to database relationships
@@ -38,7 +38,7 @@ the parameters and then update or create the database row object.
 =head2 Select
 
 A select field will automatically retrieve a select list from the database,
-if the proper column names are provided. Single Selects handle 'belongs_to'
+if the proper column names are provided. Single selects handle 'belongs_to'
 relationships, where the related table is used to construct a selection list
 from the database.
 
@@ -77,7 +77,7 @@ See also L<HTML::FormHandler::Field::Compound>.
 
 =head2 Repeatable fields
 
-The 'Repeatable' field type allows you to update arrays of related tables
+The 'Repeatable' field type allows you to update arrays of columns from related tables
 easily. You will need to provide a 'PrimaryKey' hidden field in the
 compound field contained in the Repeatable.
 
@@ -88,6 +88,17 @@ compound field contained in the Repeatable.
   has_field 'addresses.state';
 
 See also L<HTML::FormHandler::Field::Repeatable>.
+
+=head1 Flags
+
+=head2 writeonly
+
+Do not read the value from the 'item' when populating the form.
+
+=head2 noupdate
+
+Do not update the database with this field, i.e. do not include it in
+C<< $form->value >>.
 
 =head1 Form generator
 

@@ -49,8 +49,7 @@ Widget type is 'text'.
 If form has 'is_html5' flag active it will render <input type="number" ... />
 instead of type="text"
 
-The 'range_start' and 'range_end' attributes may be used to limit valid number.
-
+The 'range_start' and 'range_end' attributes may be used to limit valid numbers.
 
 =cut
 

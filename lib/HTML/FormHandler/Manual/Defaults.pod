@@ -24,10 +24,11 @@ with underscores.
 
 Like other field attributes, the 'default' attribute can be modified on
 new with the 'field_list' attribute, or on 'process' with the 'update_field_list'
-parameter:
+parameter (or the shorthand form 'defaults').
 
    my $form => MyApp::Form->new( field_list => { '+foo' => { default => 'my_foo' } } );
    $form->process( update_field_list => { foo => { default => 'my_foo' } } );
+   $form->process( defaults => { foo => 'my_foo' }, params => $params );
 
 For forms where you pass in an 'item' (usually a database row object), the
 values in that object will be used preferentially; if an accessor exists

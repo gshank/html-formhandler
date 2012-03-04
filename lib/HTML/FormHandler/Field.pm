@@ -936,13 +936,11 @@ has 'build_id_method' => ( is => 'rw', isa => 'CodeRef', traits => ['Code'],
 );
 
 # html attributes
-# deprecated ===========
 has 'password'   => ( isa => 'Bool', is => 'rw' );
-has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
 has 'disabled'   => ( isa => 'Bool', is => 'rw' );
 has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'tabindex' => ( is => 'rw', isa => 'Int' );
-# =======================
+
 has 'type_attr' => ( is => 'rw', isa => 'Str', default => 'text' );
 has 'html5_type_attr' => ( isa => 'Str', is => 'ro', default => 'text' );
 sub input_type {
@@ -1079,6 +1077,7 @@ sub label_tag {
 }
 #===================
 
+has 'writeonly'  => ( isa => 'Bool', is => 'rw' );
 has 'noupdate'   => ( isa => 'Bool', is => 'rw' );
 
 #==============

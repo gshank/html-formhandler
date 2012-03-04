@@ -5,7 +5,7 @@ package HTML::FormHandler::Manual::Catalyst;
 
 L<Manual Index|HTML::FormHandler::Manual>
 
-This part of the FormHandler Manual is devoted to using the L<HTML::FormHandler>
+This part of the FormHandler Manual describes the use of the L<HTML::FormHandler>
 package in Catalyst controllers.
 
 See the other FormHandler documentation at L<HTML::FormHandler::Manual>, or
@@ -95,6 +95,21 @@ or set them in a base Chained method.
 Then you could just pass in the item_id when the form is processed.
 
    return unless $c->stash->{form}->process($id);
+
+=head2 Putting a form in a Moose attribute
+
+You can also put your form in a Moose attribute in the controller.
+
+    package MyApp::Controller::Book;
+    use Moose;
+    BEGIN { extends 'Catalyst::Controller'; }
+    use MyApp::Form::Book;
+    has 'edit_form' => ( isa => 'MyApp::Form::Book', is => 'rw',
+       lazy => 1, default => sub { MyApp::Form::Book->new } );
+
+Then you can process the form in your actions with
+C<< $self->edit_form->process( params => $c->req->body_parameters ); >> or
+C<< my $result = $self->edit_form->run( params => $c->req->body_parameters ); >>.
 
 =head2 Using  HTML::FillInForm
 

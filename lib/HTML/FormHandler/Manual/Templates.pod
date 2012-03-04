@@ -46,9 +46,10 @@ additional widget and widget_wrapper block, and then setting those in your
 field definitions.
 
 Note that widget names usually are camelcased, like the Moose roles that
-implement them in the Widget directory. You probably want to use the
-non-camelcased widget/wrapper names in your TT templates, though (using
-the C<< $field->uwidget >> and C<< $field->twidget >> convenience methods).
+implement them in the Widget directory. You may want to use the
+non-camelcased widget/wrapper names in your TT templates, using
+the C<< $field->uwidget >> (un-camelcased widget name) and
+C<< $field->twidget >> (un-camelcased widget name + '.tt') convenience methods.
 ('MySpecialWidget' is the equivalent of 'my_special_widget')
 
    has_field 'my_field' => ( widget => 'MySpecialWidget' );
@@ -63,10 +64,6 @@ And include them in a generic template:
    [% END %]
 
    [% PROCESS widget/form_end.tt %]
-
-Note that 'twidget' will provide a de-camelcased widget name plus '.tt'.
-If you want just a de-camelcased widget name, use f.uwidget. See the
-templates supplied in share/templates.
 
 =head1 Field attributes
 
