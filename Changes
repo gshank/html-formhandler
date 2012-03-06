@@ -1,4 +1,4 @@
-0.40000 Sun Feb 26, 2012
+0.40000 Tue Mar 6, 2012
 
     **** There are many changes to rendering, many of them incompatible.
        These changes *will* break existing form rendering.
@@ -13,7 +13,7 @@
        git://github.com/gshank/html-formhandler_pre-0.40_compat.git
        README at: https://github.com/gshank/html-formhandler_pre-0.40_compat/blob/master/README
 
-    Add 'no_update' flag.
+    Add 'no_update' flag to allow skipping model_update.
     Remove 'deflate_to' flag; provide new inflation/deflation methods.
         see HTML::FormHandler::Manual::InflationDeflation
     New 'build_id_method' to provide different builder method for field IDs.
