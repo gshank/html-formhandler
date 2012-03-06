@@ -6,13 +6,6 @@ with 'HTML::FormHandler::Render::WithTT';
 
 use Config::Any;
 
-use 5.010;
-
-#use overload (
-#    '""' => sub { return shift->render },
-#    '==' => sub { return blessed($b) ? ( refaddr($a) eq refaddr($b) ) : undef }
-#);
-
 has 'form_error_message' => ( isa => 'Str', is => 'rw' );
 has 'javascript_src' => ( isa => 'Str', is => 'rw' );
 has 'javascript' => ( isa => 'Str', is => 'rw' );
