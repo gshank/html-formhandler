@@ -56,7 +56,6 @@ is_html( $rendered, $expected, 'block rendered ok' );
 $form->process( params => { foo => 'abc', bar => 'def' } );
 ok( $form->has_errors, 'form has errors' );
 $rendered = $form->field('bar')->render;
-$DB::single=1;
 $expected =
 '<div class="error">
   <label for="bar">Bar</label>

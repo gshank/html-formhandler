@@ -93,21 +93,32 @@ validation in a custom field can be done with 'apply' or by using a
 
 =head1 Apply Actions: Filters, transformations, and constraints
 
-The actions in the 'apply' array will be performed in the order they are
-specified, allowing fine-grained control over inflation and validation.
+The actions in the 'apply' array (stored in the 'actions' attribute) will be
+performed in the order they are specified, allowing fine-grained control over
+inflation and validation. You can check constraints after transformations and
+vice versa. You can weave all three types of actions in any order you need.
 
 The two valid 'apply' array elements are 1) Moose types and 2) hashrefs with one of three
 keys: 'check', 'transform', and 'type'. The hashrefs will usually also have an additional
-key, 'message', with a string, array or coderef providing an error message.
+key, 'message', with a string, array or coderef providing an error message,
+which is localized.
 
 The 'check' key can point to a regex, arrayref of strings, or coderef. The value of
 the 'transform' key should be a coderef. The value of the 'type' key is a Moose type.
+
+Transformations and coercions are called in an eval
+to catch the errors. Warnings are trapped in a sigwarn handler.
 
 See also L<HTML::FormHandler::Field> and L<HTML::FormHandler::Validate>.
 See L<HTML::FormHandler::Manual::Inflation::Deflation> for information
 on inflation and deflation.
 
 =head2 Moose types
+
+Moose types can be used to do both constraints and transformations. If a coercion
+exists it will be applied, resulting in a transformation. After coercing, the
+result is checked.  You can use type constraints form L<MooseX::Types>>
+libraries or defined using L<Moose::Util::TypeConstraints>.
 
 FormHandler supplies a library of Moose types in L<HTML::FormHandler::Types>.
 
@@ -126,6 +137,12 @@ constraint in the form:
   has_field 'text_gt' => ( apply=> [ 'GreaterThan10' ] );
 
 Moose types can also be used for their coercions to do transformations.
+
+  subtype 'MyInt'
+      => as 'Int';
+  coerce 'MyInt'
+      => from 'MyStr'
+      => via { return $1 if /(\d+)/ };
 
 You can also use the 'type' keyword with a Moose type if you want to
 change the message:
@@ -176,9 +193,9 @@ Provide an arrayref of strings to match against.
 
 =head2 'check' coderef
 
-Provide a validation function to check. Note that the field
-is passed in as the second argument, to allow simple functions
-to work properly.
+Provide a validation function to check. A 'check' coderef will be passed the
+current value of the field and should return true or false. Note that the field
+is passed in as the second argument, to allow simple functions to work properly.
 
    has_field 'callback_pass' => (
       apply => [
@@ -217,6 +234,26 @@ messages for Moose types.
       apply => [ { type => SomeType,
          message => 'Invalid ...' } ] );
 
+=head2 actions in a field class
+
+To declare actions inside a field class use L<HTML::FormHandler::Moose> and
+'apply' sugar:
+
+   package MyApp::Field::Test;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler::Field;
+
+   apply [ 'SomeConstraint', { check => ..., message => .... } ];
+
+   1;
+
+Actions specified with apply are cumulative. Actions may be specified in
+field classes and additional actions added in the 'has_field' declaration.
+
+You can see examples of field classes with 'apply' actions in the source for
+L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>, and
+in t/constraints.t.
+
 =head1 Dependency
 
 The 'dependency' attribute is an array of arrays of field names.
@@ -233,4 +270,4 @@ is set for all of the fields in the group.
     );
 
 
-=cut
+=pod

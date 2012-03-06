@@ -56,9 +56,7 @@ values and error messages) instead:
     }
 
 
-An example of a custom form class (you could also use a 'field_list'
-like the dynamic form example if you don't want to use the 'has_field'
-field declaration sugar):
+An example of a custom form class:
 
     package MyApp::Form::User;
 
@@ -71,8 +69,8 @@ field declaration sugar):
     has_field 'name' => ( type => 'Text' );
     has_field 'age' => ( type => 'PosInteger', apply => [ 'MinimumAge' ] );
     has_field 'birthdate' => ( type => 'DateTime' );
-    has_field 'birthdate.month' => ( type => 'Month' ); # Explicitly split
-    has_field 'birthdate.day' => ( type => 'MonthDay' ); # fields for renderer
+    has_field 'birthdate.month' => ( type => 'Month' );
+    has_field 'birthdate.day' => ( type => 'MonthDay' );
     has_field 'birthdate.year' => ( type => 'Year' );
     has_field 'hobbies' => ( type => 'Multiple' );
     has_field 'address' => ( type => 'Text' );
@@ -125,7 +123,7 @@ details, or L<Catalyst::Manual::Tutorial::09_AdvancedCRUD::09_FormHandler>.
 
 *** Although documentation in this file provides some overview, it is mainly
 intended for API documentation. See L<HTML::FormHandler::Manual::Intro>
-for a more detailed introduction.
+for an introduction, with links to other documentation.
 
 HTML::FormHandler maintains a clean separation between form construction
 and form rendering. It allows you to define your forms and fields in a
@@ -161,8 +159,7 @@ a renderer as an external object either).  There are currently two flavors:
 all-in-one solutions like L<HTML::FormHandler::Render::Simple> and
 L<HTML::FormHandler::Render::Table> that contain methods for rendering
 field widget classes, and the L<HTML::FormHandler::Widget> roles, which are
-more atomic roles which are automatically applied to fields and form if a
-'render' method does not already exist. See
+more atomic roles which are automatically applied to fields and form. See
 L<HTML::FormHandler::Manual::Rendering> for more details.
 (And you can easily use hand-build forms - FormHandler doesn't care.)
 
@@ -193,7 +190,7 @@ are either item_id and schema or item:
    item     - database row object
    schema   - (for DBIC) the DBIx::Class schema
 
-The following are sometimes passed in, but are more often set
+The following are sometimes passed in, but are also often set
 in the form class:
 
    item_class  - source name of row
@@ -492,8 +489,8 @@ that state will be effective for the life of the form object. Fields specified a
 active/inactive on 'process' will have the field's '_active' flag set for the life
 of the request (the _active flag will be cleared when the form is cleared).
 
-The 'sorted_fields' method returns only active fields. The 'fields' method returns
-all fields.
+The 'sorted_fields' method returns only active fields, sorted according to the
+'order' attribute. The 'fields' method returns all fields.
 
    foreach my $field ( $self->sorted_fields ) { ... }
 
@@ -502,11 +499,9 @@ methods.
 
 =head3 field_name_space
 
-Use to set the name space used to locate fields that
-start with a "+", as: "+MetaText". Fields without a "+" are loaded
-from the "HTML::FormHandler::Field" name space. If 'field_name_space'
-is not set, then field types with a "+" must be the complete package
-name.
+Use to look for field during form construction. If a field is not found
+with the field_name_space (or HTML::FormHandler/HTML::FormHandlerX),
+the 'type' must start with a '+' and be the complete package name.
 
 =head3 fields
 
@@ -534,6 +529,8 @@ Pass a second true value to die on errors.
 
 Most validation is performed on a per-field basis, and there are a number
 of different places in which validation can be performed.
+
+See also L<HTML::FormHandler::Manual::Validation>.
 
 =head3 Form class validation for individual fields
 
@@ -566,6 +563,8 @@ This is the best place to do validation checks that depend on the values of
 more than one field.
 
 =head2 Accessing errors
+
+Also see L<HTML::FormHandler::Manual::Errors>.
 
 Set an error in a field with C<< $field->add_error('some error string'); >>.
 Set a form error not tied to a specific field with
@@ -604,10 +603,12 @@ keep the form object clean.
 
 =head3 name
 
-The form's name.  Useful for multiple forms.
-It is used to construct the default 'id' for fields, and is used
-for the HTML field name when 'html_prefix' is set.
-The default is "form" + a one to three digit random number.
+The form's name.  Useful for multiple forms. Used for the form element 'id'.
+When 'html_prefix' is set it is used to construct the field 'id'
+and 'name'.  The default is "form" + a one to three digit random number.
+Because the HTML standards have flip-flopped on whether the HTML
+form element can contain a 'name' attribute, please set a name attribute
+using 'form_element_attr'.
 
 =head3 init_object
 
@@ -722,7 +723,7 @@ to be used for defaults instead of the item.
    action - Store the form 'action' on submission. No default value.
    uuid - generates a string containing an HTML field with UUID
 
-Deprecated (use form_element_attr instead):
+Discouraged (use form_element_attr instead):
 
    css_class - adds a 'class' attribute to the form tag
    style - adds a 'style' attribute to the form tag
@@ -733,10 +734,11 @@ form name. The standards have been flip-flopping over whether a 'name'
 attribute is valid. It can be set with 'form_element_attr'.
 
 The rendering of the HTML attributes is done using the 'process_attrs'
-function and the 'attributes' method, which munges the 'form_element_attr' hash
-for backward compatibility, etc.
+function and the 'element_attributes' or 'wrapper_attributes' method,
+which adds other attributes in for backward compatibility, and calls
+the 'html_attributes' hook.
 
-For field HTML attributes, there is a form method hook, 'html_attributes',
+For HTML attributes, there is a form method hook, 'html_attributes',
 which can be used to customize/modify/localize form & field HTML attributes.
 Types: element, wrapper, label, form_element, form_wrapper, checkbox_label
 

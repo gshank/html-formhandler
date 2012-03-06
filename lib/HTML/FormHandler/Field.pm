@@ -20,7 +20,8 @@ our $VERSION = '0.02';
 
 Instances of Field subclasses are generally built by L<HTML::FormHandler>
 from 'has_field' declarations or the field_list, but they can also be constructed
-using new (usually for test purposes).
+using new for test purposes (since there's no standard way to add a field to a form
+after construction).
 
     use HTML::FormHandler::Field::Text;
     my $field = HTML::FormHandler::Field::Text->new( name => $name, ... );
@@ -42,7 +43,8 @@ In your custom field class:
 
 This is the base class for form fields. The 'type' of a field class
 is used in the FormHandler field_list or has_field to identify which field class to
-load. If the type is not specified, it defaults to Text.
+load from the 'field_name_space' (or directly, when prefixed with '+').
+If the type is not specified, it defaults to Text.
 
 See L<HTML::FormHandler::Manual::Fields> for a list of the fields and brief
 descriptions of their structure.
@@ -113,13 +115,16 @@ The input string from the parameters passed in.
 =item value
 
 The value as it would come from or go into the database, after being
-acted on by transforms. Used to construct the C<< $form->values >>
-hash. Validation and constraints act on 'value'.
+acted on by inflations/deflations and transforms. Used to construct the
+C<< $form->values >> hash. Validation and constraints act on 'value'.
+
+See also L<HTML::FormHandler::Manual::InflationDeflation>.
 
 =item fif
 
 Values used to fill in the form. Read only. Use a deflation to get
-from 'value' to 'fif' if an inflator was used.
+from 'value' to 'fif' if an inflator was used. Use 'fif_from_value'
+attribute if you want to use the field 'value' to fill in the form.
 
    [% form.field('title').fif %]
 
@@ -164,9 +169,9 @@ want to use a MakeText language handle. Default is an empty list.
 
 =item add_error
 
-Add an error to the list of errors.  If $field->form
-is defined then process error message as Maketext input.
-See $form->language_handle for details. Returns undef.
+Add an error to the list of errors. Field will be localized
+using '_localize' method.
+See also L<HTML::FormHandler::TraitFor::I18N>.
 
     return $field->add_error( 'bad data' ) if $bad;
 
@@ -174,11 +179,15 @@ See $form->language_handle for details. Returns undef.
 
 Compound fields will have an array of errors from the subfields.
 
+=item localize_meth
+
+Set the method used to localize.
+
 =back
 
 =head2 Attributes for creating HTML
 
-The 'element_attr' hashref attribute that can be used to set
+The 'element_attr' hashref attribute can be used to set
 arbitrary HTML attributes on a field's input tag.
 
    has_field 'foo' => ( element_attr => { readonly => 1, my_attr => 'abc' } );
@@ -229,7 +238,7 @@ The slots for the class attributes are arrayrefs; they will coerce a
 string into an arrayref.
 In addition, these 'wrapping methods' call a hook method in the form class,
 'html_attributes' which you can use to customize and localize the various
-attributes.
+attributes. (Field types: 'element', 'wrapper', 'label')
 
    sub html_attributes {
        my ( $self, $field, $type, $attr ) = @_;
@@ -239,6 +248,17 @@ attributes.
 
 The 'process_attrs' function will also handle an array of strings, such as for the
 'class' attribute.
+
+=head2 tags
+
+A hashref containing flags and string for use in the rendering code.
+The value of a tag can be a string, a coderef (accessed as a method on the
+field) or a block specified with a percent followed by the blockname
+('%blockname').
+
+Retrieve a tag with 'get_tag'. It returns a '' if the tag doesn't exist.
+
+This attribute used to be named 'widget_tags', which is deprecated.
 
 =head2 html5_type_attr [string]
 
@@ -265,7 +285,7 @@ If you are using a template based rendering system you will want
 to create a widget template.
 (see L<HTML::FormHandler::Manual::Templates>)
 
-Widget types for the provided field classes:
+Widget types for some of the provided field classes:
 
     Widget         : Field classes
     ---------------:-----------------------------------
@@ -356,6 +376,8 @@ see tests in the distribution.
 
 =head1 Constraints and Validations
 
+See also L<HTML::FormHandler::Manual::Validation>.
+
 =head2 Constraints set in attributes
 
 =over
@@ -427,135 +449,7 @@ be executed on the field at validate_field time.
                ],
    );
 
-In general the action can be of three types: a Moose type (which is
-represented by its name), a transformation (which is a callback called on
-the value of the field), or a constraint ('check') which performs a 'smart match'
-on the value of the field.  Currently we implement the smart match
-in our code - but in the future when Perl 5.10 is more widely used we'll switch
-to the core
-L<http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail>
-smart match operator.
-
-The Moose type action first tries to coerce the value -
-then it checks the result, so you can use it instead of both constraints and
-tranformations.  For most constraints and transformations it is
-your choice as to whether you use a Moose type or use a 'check' or 'transform'.
-
-All three types define a message to be presented to the user in the case of
-failure. Messages are passed to L<Locale::MakeText>, and can be simple
-strings, an array suitable for MakeText, or a coderef.
-Coderefs will be passed a reference to the field and the original value.
-
-   apply [ { check => ['abc'], message => \&err_message } ];
-   sub err_message {
-      my ( $value, $field ) = @_;
-      return $field->name . ": must .... ";
-   }
-   ....
-   message => ['Email should be of the format [_1]',
-                 'someuser@example.com' ]
-
-Transformations and coercions are called in an eval
-to catch the errors. Warnings are trapped in a sigwarn handler.
-
-All the actions are called in the order that they are defined, so that you can
-check constraints after transformations and vice versa. You can weave all three
-types of actions in any order you need. The actions specified with 'apply' will
-be stored in an 'actions' array.
-
-To declare actions inside a field class use L<HTML::FormHandler::Moose> and
-'apply' sugar:
-
-   package MyApp::Field::Test;
-   use HTML::FormHandler::Moose;
-   extends 'HTML::FormHandler::Field;
-
-   apply [ 'SomeConstraint', { check => ..., message => .... } ];
-
-   1;
-
-Actions specified with apply are cumulative. Actions may be specified in
-field classes and additional actions added in the 'has_field' declaration.
-
-You can see examples of field classes with 'apply' actions in the source for
-L<HTML::FormHandler::Field::Money> and L<HTML::FormHandler::Field::Email>, and
-in t/constraints.t.
-
-=head2 Moose types for constraints and transformations
-
-Moose types can be used to do both constraints and transformations. If a coercion
-exists it will be applied, resulting in a transformation. You can use type
-constraints form L<MooseX::Types>> libraries or defined using
-L<Moose::Util::TypeConstraints>.
-
-A Moose type defined with L<Moose::Util::TypeConstraints>:
-  subtype 'MyStr'
-      => as 'Str'
-      => where { /^a/ };
-
-This is a simple constraint checking if the value string starts with the letter 'a'.
-
-Another Moose type:
-  subtype 'MyInt'
-      => as 'Int';
-  coerce 'MyInt'
-      => from 'MyStr'
-      => via { return $1 if /(\d+)/ };
-
-This type contains a coercion.
-
-You can use them in a field like this (types defined with L<MooseX::Types>
-would not be quoted):
-
-   has_field 'some_text_to_int' => (
-       apply => [ 'MyStr', 'MyInt' ]
-   );
-
-This will check if the field contains a string starting with 'a' - and then
-coerce it to an integer by extracting the first continuous string of digits.
-
-If the error message returned by the Moose type is not suitable for displaying
-in a form, you can define a different error message by using the 'type' and
-'message' keys in a hashref:
-
-   apply => [ { type => 'MyStr', message => 'Not a valid value' } ];
-
-=head2 Non-Moose checks and transforms
-
-A simple 'check' constraint uses the 'check' keyword pointing to a coderef,
-a regular expression, or an array of valid values, plus a message.
-
-A 'check' coderef will be passed the current value of the field. It should
-return true or false:
-
-  has_field 'this_num' => (
-      apply => [
-         {
-             check => sub { if ( $_[0] =~ /(\d+)/ ) { return $1 > 10 } },
-             message => 'Must contain number greater than 10',
-         }
-      ]
-  );
-
-A 'check' regular expression:
-
-  has_field 'some_text' => (
-      apply => [ { check => qr/aaa/, message => 'Must contain aaa' } ],
-  );
-
-A 'check' array of valid values:
-
-  has_field 'more_text' => (
-      apply => [ { check => ['aaa', 'bbb'], message => 'Must be aaa or bbb' } ]
-  );
-
-A simple transformation uses the 'transform' keyword and a coderef.
-The coderef will be passed the current value of the field and should return
-a transformed value.
-
-  has_field 'sprintf_filter' => (
-      apply => [ { transform => sub{ sprintf '<%.1g>', $_[0] } } ]
-  );
+See more documentation in L<HTML::FormHandler::Manual::Validation>.
 
 =head2 trim
 

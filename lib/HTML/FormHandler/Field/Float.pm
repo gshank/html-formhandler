@@ -29,12 +29,14 @@ sub get_class_messages {
 
 sub inflate_float {
     my ( $self, $value ) = @_;
+    return $value unless defined $value;
     $value =~ s/^\+//;
     return $value;
 }
 
 sub deflate_float {
     my ( $self, $value ) = @_;
+    return $value unless defined $value;
     my $symbol      = $self->decimal_symbol;
     my $symbol_db   = $self->decimal_symbol_for_db;
     $value =~ s/\Q$symbol_db\E/$symbol/x;
