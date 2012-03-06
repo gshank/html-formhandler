@@ -262,6 +262,11 @@ for using to fill in the form from C<< $form->fif >>.
 A hash of inflated values (that would be used to update the database for
 a database form) can be retrieved with C<< $form->value >>.
 
+If you don't want to update the database on this process call, you can
+set the 'no_update' flag:
+
+   $form->process( item => $book, params => $params, no_update => 1 );
+
 =head3 params
 
 Parameters are passed in when you call 'process'.
@@ -823,6 +828,7 @@ has 'do_form_wrapper' => ( is => 'rw', builder => 'build_do_form_wrapper' );
 sub build_do_form_wrapper { 0 }
 has 'no_widgets'        => ( is => 'ro', isa => 'Bool' );
 has 'no_preload'        => ( is => 'ro', isa => 'Bool' );
+has 'no_update'         => ( is => 'rw', isa => 'Bool', clearer => 'clear_no_update' );
 has 'active' => (
     is => 'rw',
     traits => ['Array'],
@@ -1139,7 +1145,7 @@ sub process {
     $self->clear if $self->processed;
     $self->setup_form(@_);
     $self->validate_form      if $self->has_params;
-    $self->update_model       if $self->validated;
+    $self->update_model       if ( $self->validated && !$self->no_update );
     $self->after_update_model if $self->validated;
     $self->dump_fields        if $self->verbose;
     $self->processed(1);
@@ -1150,7 +1156,7 @@ sub run {
     my $self = shift;
     $self->setup_form(@_);
     $self->validate_form      if $self->has_params;
-    $self->update_model       if $self->validated;
+    $self->update_model       if ( $self->validated && !$self->no_update );;
     $self->after_update_model if $self->validated;
     my $result = $self->result;
     $self->clear;
@@ -1174,6 +1180,7 @@ sub clear {
     $self->clear_result;
     $self->clear_use_defaults_over_obj;
     $self->clear_use_init_obj_over_item;
+    $self->clear_no_update;
 }
 
 sub values { shift->value }

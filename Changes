@@ -13,6 +13,7 @@
        git://github.com/gshank/html-formhandler_pre-0.40_compat.git
        README at: https://github.com/gshank/html-formhandler_pre-0.40_compat/blob/master/README
 
+    Add 'no_update' flag.
     Remove 'deflate_to' flag; provide new inflation/deflation methods.
         see HTML::FormHandler::Manual::InflationDeflation
     New 'build_id_method' to provide different builder method for field IDs.
