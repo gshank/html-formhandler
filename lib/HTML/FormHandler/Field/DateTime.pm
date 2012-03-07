@@ -38,7 +38,7 @@ See the 'Date' field for a single input date field.
 =cut
 
 has '+widget' => ( default => 'Compound' );
-has '+deflate_method' => ( default => sub { \&datetime_deflate } );
+has '+inflate_default_method' => ( default => sub { \&datetime_inflate } );
 
 our $class_messages = {
     'datetime_invalid' => 'Not a valid DateTime',
@@ -51,7 +51,7 @@ sub get_class_messages {
     }
 }
 
-sub datetime_deflate {
+sub datetime_inflate {
     my ( $self, $value ) = @_;
     return $value unless ref $value eq 'DateTime';
     my %hash;
