@@ -64,7 +64,9 @@ sub ucc_widget {
     my $widget = shift;
     if($widget ne lc $widget) {
         $widget =~ s/::/_/g;
-        $widget =~ s/[a-z]\K([A-Z][a-z])/_\L$1/g;
+        $widget = ucfirst($widget);
+        my @parts = $widget =~ /([A-Z][a-z]*)/g;
+        $widget = join('_', @parts);
         $widget = lc($widget);
     }
     return $widget;
