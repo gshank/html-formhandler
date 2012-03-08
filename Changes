@@ -1,3 +1,7 @@
+0.40001 Wed Mar 7, 2012
+    Remove \K in regex for ucc_widget; doesn't work pre 5.10
+    Switch DateTime field to use inflate_default_method
+
 0.40000 Tue Mar 6, 2012
 
     **** There are many changes to rendering, many of them incompatible.
