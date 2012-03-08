@@ -54,7 +54,7 @@ relationship. The 'value' of the field is derived from the 'has_many'
 part of the relationship.
 
 The primary key is used for the 'id' of the select. The 'label' column of
-the select is assumed to be 'name'. If the label columns has a different
+the select is assumed to be 'name'. If the label column has a different
 name, it must be specified with 'label_column'.
 
 Pertinent attributes:

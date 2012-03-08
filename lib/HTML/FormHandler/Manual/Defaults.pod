@@ -71,8 +71,8 @@ while the 'init_object' uses "structured" data:
 
    my $defaults = {
        model => 'standard',
-       opts.color => 'Red',
-       opts.size  => 'Big',
+       'opts.color' => 'Red',
+       'opts.size'  => 'Big',
    };
    my $init_object => {
        model => 'standard',

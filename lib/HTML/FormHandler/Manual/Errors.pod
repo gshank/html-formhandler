@@ -1,5 +1,5 @@
 package HTML::FormHandler::Manual::Errors;
-# ABSTRACT: FormHandler use recipes
+# ABSTRACT: FormHandler error methods
 
 =head1 SYNOPSIS
 
@@ -71,7 +71,7 @@ Add a non-localized error to the form.
 
 =back 4
 
-=head2 Field methods
+=head1 Field methods
 
 The most common error method is probably 'add_error', which you
 use in the validation process.
@@ -87,7 +87,7 @@ use in the validation process.
 
 =item errors
 
-Returns an array of errors strings;
+Returns an array of error strings;
 
 =item has_errors
 
@@ -110,7 +110,7 @@ of fields with errors.
 
 =back 4
 
-=head2 Result methods
+=head1 Result methods
 
 The input, value, and error attributes are actually stored in the
 result objects. Although most of the methods are delegated to the

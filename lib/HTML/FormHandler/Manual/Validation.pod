@@ -36,7 +36,7 @@ performed. The form's 'validate' method, however, will always be called.
 
 Starting and ending range for number fields.
 
-=head1 unique
+=head2 unique
 
 Attribute used by the DBIC model to check for uniqueness.
 
@@ -50,7 +50,9 @@ You can provide a validation method for a field by setting a coderef with
     has_field 'fox' => ( validate_method => \&check_fox );
     sub check_fox {
         my $self = shift; # self is the fox field
-        .....
+        unless( $self->value eq .... ) {
+            $self->add_error('....');
+        }
     }
 
 =head2 validate_<field_name>
@@ -60,7 +62,9 @@ If you provide a 'validate_<field_name>' method it will be automatically used.
     has_field 'cat';
     sub validate_cat {
         my ( $self, $field ) = @_; # self is the form
-        ....
+        unless ( $field->value eq  ... ) {
+            $field->add_error( '...' );
+        }
     }
 
 If the field name has periods in it, they should be replaced with underscores.
@@ -117,7 +121,7 @@ on inflation and deflation.
 
 Moose types can be used to do both constraints and transformations. If a coercion
 exists it will be applied, resulting in a transformation. After coercing, the
-result is checked.  You can use type constraints form L<MooseX::Types>>
+result is checked.  You can use type constraints from L<MooseX::Types>>
 libraries or defined using L<Moose::Util::TypeConstraints>.
 
 FormHandler supplies a library of Moose types in L<HTML::FormHandler::Types>.

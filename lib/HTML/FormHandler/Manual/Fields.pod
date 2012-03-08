@@ -73,14 +73,14 @@ will be searched for fields.
     has '+field_name_space' => ( default => 'MyApp::Form::Field' );
     has_field 'name' => ( type => 'Text' ); # HTML::FormHandler::Field::Text
     has_field 'name' => ( type => '+My::FieldType' ); # My::Fieldtype
-    has_field 'foo'  => ( type => +Foo' );  # MyApp::Form::Field::Foo
+    has_field 'foo'  => ( type => '+Foo' );  # MyApp::Form::Field::Foo
       or
     has_field 'foo'  => ( type => 'Foo' );  # MyApp::Form::Field::Foo
 
 
 The most basic type is "Text", which is usually a 'text' HTML element and
 a string data type. (If the type of a field is not specified, it will be set to
-'Text'.)  A "Select" field type is an HTML form element, and validates against
+'Text'.)  A "Select" field type is a HTML select element, and validates against
 the list of values provided in the 'options'. A "Multiple" type is like "Select"
 but it allows selecting more than one value at a time.
 
@@ -131,6 +131,7 @@ If the field's value will be an object instead of a simple scalar, such
 as a DateTime and you want to use the transformed value to fill in the
 form, then you will also need a deflation or field class 'deflate' method
 to reformat the object into a form suitable for an HTML form field.
+See L<HTML::FormHandler::Manual::InflationDeflation> for more info.
 
 Some custom fields might only require setting certain attributes to
 defaults, such as the L<HTML::FormHandler::Field::Hour> field, which

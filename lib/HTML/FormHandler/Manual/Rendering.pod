@@ -9,7 +9,7 @@ Rendering can be done in many different ways, from forms rendered entirely in
 templates with no information from FormHandler (except possibly the fill-in-the-form
 values) to forms that are completely rendered by FormHandler.
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 For most situations, something in between hand-built and completely generated
 will probably be the best solution. For admin forms that don't need a lot of
@@ -473,7 +473,7 @@ Setting it for a field will just be for that field.
     -- or --
     has_field 'foo' => ( render_filter => sub { ... } );
 
-The filter is called in Render::Simple in the widgets with
+The filter is called in Render::Simple and in the widgets with
 C<< $self->html_filter( $fif ) or $field->html_filter( $fif ) >>.
 
 If you want to turn off the filter for a particular field, you can set it

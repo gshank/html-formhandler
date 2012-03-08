@@ -28,7 +28,7 @@ our $VERSION = '0.40001';
 
 =head1 SYNOPSIS
 
-See the manual at L< HTML::FormHandler::Manual >.
+See the manual at L<HTML::FormHandler::Manual>.
 
     use HTML::FormHandler; # or a custom form: use MyApp::Form::User;
     my $form = HTML::FormHandler->new( .... );
@@ -213,6 +213,7 @@ Examples of creating a form object with new:
         field_list         => [
                 name    => 'Text',
                 active  => 'Boolean',
+                submit_btn => 'Submit',
         ],
     );
 
@@ -228,9 +229,10 @@ fields are built at construction time.
 
 If you want to update field attributes on the 'process' call, you can
 use an 'update_field_list' or 'defaults' hashref attribute , or subclass
-update_fields in your form. The 'defaults' attribute will update only
-the 'default' attribute in the field. The 'update_field_list' hashref
-can be used to set any field attribute:
+update_fields in your form. The 'update_field_list' hashref can be used
+to set any field attribute. The 'defaults' hashref will update only
+the 'default' attribute in the field. (There are a lot of ways to
+set defaults. See L<HTML::FormHandler::Manual::Defaults>.)
 
    $form->process( defaults => { foo => 'foo_def', bar => 'bar_def' } );
    $form->process( update_field_list => { foo => { label => 'New Label' } });
@@ -368,7 +370,8 @@ Fields are declared with a number of attributes which are defined in
 L<HTML::FormHandler::Field>. If you want additional attributes you can
 define your own field classes (or apply a role to a field class - see
 L<HTML::FormHandler::Manual::Cookbook>). The field 'type' (used in field
-definitions) is the short class name of the field class.
+definitions) is the short class name of the field class, used when
+searching the 'field_name_space' for the field class.
 
 =head3 has_field
 
@@ -393,6 +396,10 @@ alternative to 'has_field' in small, dynamic forms to create fields.
        field_two => 'Text,
     ]
 
+The field_list array takes elements which are either a field_name key
+pointing to a 'type' string or a field_name key pointing to a
+hashref of field attributes. You can also provide an array of
+hashref elements with the name as an additional attribute.
 The field list can be set inside a form class, when you want to
 add fields to the form depending on some other state, although
 you can also create all the fields and set some of them inactive.
@@ -555,6 +562,10 @@ default is 'validate_' plus the field name:
    sub validate_testfield { my ( $self, $field ) = @_; ... }
 
 If the field name has dots they should be replaced with underscores.
+
+Note that you also provide a coderef which will be a method on the field:
+
+   has_field 'foo' => ( validate_method => \&validate_foo );
 
 =head3 validate
 

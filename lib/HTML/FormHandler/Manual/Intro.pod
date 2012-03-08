@@ -216,13 +216,31 @@ on fields.
 You can use 'has_field' and 'has_block' in Moose roles:
 
     package MyApp::Form::Role::Address;
-    use HTML::FormHandler::Moose;
+    use HTML::FormHandler::Moose::Role;
 
     has_field 'foo';
     has_block 'bar';
 
 Your forms can inherit from base classes that set common application
 defaults. You can override field definitions with '+'.
+
+You can create 'compound' fields and include them in a form:
+
+    package MyApp::Form::Field::Complex;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler::Field::Compound';
+    has_field 'field1' => ( validate_method => \&validate_field1 );
+    has_field 'field2' => ( type => 'Select',
+        options_method => \&options_field2 );
+    sub validate_field1 { ... }
+    sub options_field2 { ... }
+    ...
+    package MyApp::Form::Complex;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+    has '+field_name_space' => ( sub => {['MyApp::Form::Field']} );
+    has_field 'compound1' => ( type => 'Complex' );
+    has_field 'compound2' => ( type => 'Complex' );
 
 =head2 Testing
 

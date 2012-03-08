@@ -48,7 +48,7 @@ Issues and setup for database forms.
 
 Builds on the Catalyst tutorial. Step-by-step guide.
 
-=head2 L<HMLT::FormHandler::Manual::Testing>
+=head2 L<HTML::FormHandler::Manual::Testing>
 
 Test your forms
 

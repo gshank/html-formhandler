@@ -42,7 +42,7 @@ There is also a template which combines the template rendering code into
 one file, 'share/templates/form/form_in_one.tt'. You can copy this template
 into your own TT directories, perhaps as form.tt, and then specify it in
 as the template for your Catalyst actions. You can customize it by adding
-additional widget and widget_wrapper block, and then setting those in your
+additional widget and widget_wrapper blocks, and then setting those in your
 field definitions.
 
 Note that widget names usually are camelcased, like the Moose roles that
