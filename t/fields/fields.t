@@ -76,6 +76,11 @@ $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 2' );
 is( $field->value, lc($Address), 'is value input string' );
 
+$field->_set_input( 'test @ example . com' );
+$field->validate_field;
+ok( !$field->has_errors, 'Test for errors 3' );
+is( $field->value, 'test@example.com', 'is email-valid corrected input string' );
+
 # hidden
 
 $class = 'HTML::FormHandler::Field::Hidden';

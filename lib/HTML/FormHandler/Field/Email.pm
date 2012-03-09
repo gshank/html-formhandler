@@ -25,7 +25,12 @@ apply(
             transform => sub { lc( $_[0] ) }
         },
         {
-            check => sub { Email::Valid->address( $_[0] ) },
+            check => sub {
+                my ( $value, $field ) = @_;
+                my $checked = Email::Valid->address( $value );
+                $field->value($checked)
+                    if $checked;
+            },
             message => sub {
                 my ( $value, $field ) = @_;
                 return [$field->get_message('email_format'), 'someuser@example.com'];
