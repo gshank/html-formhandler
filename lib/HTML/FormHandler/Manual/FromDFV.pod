@@ -1,0 +1,15 @@
+package HTML::FormHandler::Manual::FromDFV;
+# ABSTRACT: converting from Data::FormValidator
+
+=head1 SYNOPSIS
+
+L<Manual Index|HTML::FormHandler::Manual>
+
+Cheatsheet for converting from L<Data::FormValidator>.
+
+=head1 DESCRIPTION
+
+How to implement constraints and validations in Data::FormValidator in
+HTML::FormHandler.
+
+=cut
