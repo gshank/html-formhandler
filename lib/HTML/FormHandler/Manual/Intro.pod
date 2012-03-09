@@ -36,7 +36,7 @@ The most common way of using FormHandler is to create a form package. You
 must 'use' "HTML::FormHandler::Moose" and 'extend' FormHandler:
 
     package MyApp::Form::Sample;
-    use HTML::FormHandler::Moose:
+    use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
 Then you add some fields with 'has_field', and a field 'type' (the short
