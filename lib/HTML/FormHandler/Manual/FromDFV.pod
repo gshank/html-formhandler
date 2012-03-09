@@ -12,4 +12,73 @@ Cheatsheet for converting from L<Data::FormValidator>.
 How to implement constraints and validations in Data::FormValidator in
 HTML::FormHandler.
 
+In a general way, FormHandler doesn't have nearly so many "special"
+checks as Data::FormValidator. It would be possible to implement many
+of them, but there hasn't been any demand for them. So far FormHandler
+users seem to be satisfed with the "do your own checks in a Perl method"
+solution. Because of the greater complexity of FormHandler's data model -
+with Repeatable arrays and nested compounds, etc, it's somewhat harder
+to do some of them automatically.
+
+=head1 Differences/conversions
+
+=over 4
+
+=item dependencies
+
+In FormHandler, 'dependency' is the equivalent of 'dependency_group',
+without the key names.
+
+The other variations of dependencies in DFV are not implemented in
+FormHandler, and would normally be done in a form's 'validate' sub.
+
+=item trim, filters
+
+A 'trim' filter is installed by default in FormHandler; it's a
+special version of an apply action, and can be set to a transform
+or Moose type. See the documentation in L<HTML::FormHandler::Field#trim>.
+
+Transforms and inflations/deflations do not change what is presented in
+the form unless you set the 'fif_from_value' flag on the field.
+
+
+=item FV_length_between, FV_max_length, FV_min_length
+
+Use text fields with 'minlength' and 'maxlength' attributes.
+
+=item FV_eq_with
+
+Perform your own checks in the form 'validate' sub.
+
+    sub validate {
+        my $self = shift;
+        if( $self->field('one')->value eq $self->field('two')->value ) {
+        }
+    }
+
+=back 4
+
+=head1 Constraints
+
+The simple constraints from L<Data::FormValidator::Constraints> can be used
+directly in a FormHandler form:
+
+    use Data::FormValidator::Constraints ('match_state');
+    has_field 'my_state' => (
+        apply => [ { check => \&match_state, message => 'Invalid State' } ] );
+
+=over 4
+
+=item email
+
+Use the 'Email' field type, or use the the FH Moose Type, 'email'.
+
+     has_field 'email' => ( type => 'Email' );
+     -- or --
+     use HTML::FormHandler::Types ('Email');
+     has_field 'email' => ( apply => [ Email ] );
+
+=back 4
+
+
 =cut
