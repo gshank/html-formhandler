@@ -97,7 +97,7 @@ on one format of the value, and some that work on another.
 
 In a validate method, you can change the format of the value, with $field->value(...);
 
-=back 4
+=back
 
 =head3 Deflation methods
 
@@ -127,7 +127,7 @@ This is a coderef that performs deflation.
 Just like for inflation, you can change the value in a validation method; however,
 it won't be used for fill-in-form unless you set the 'fif_from_value' flag to true.
 
-=back 4
+=back
 
 =head3 fif_from_value
 

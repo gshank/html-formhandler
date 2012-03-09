@@ -69,7 +69,7 @@ Add an error to the form which is not associated with a specific field.
 
 Add a non-localized error to the form.
 
-=back 4
+=back
 
 =head1 Field methods
 
@@ -108,7 +108,7 @@ Add an error without localization.
 In a compound field (and it's subclasses, like 'Repeatable'), the list
 of fields with errors.
 
-=back 4
+=back
 
 =head1 Result methods
 
@@ -128,7 +128,7 @@ These are the main methods that you might need to use.
 
 =item error_results
 
-=back 4
+=back
 
 =head1 Messages
 

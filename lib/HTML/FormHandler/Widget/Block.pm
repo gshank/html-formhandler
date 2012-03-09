@@ -40,7 +40,7 @@ Classes for the label.
 
 Label string. Will be localized.
 
-=back 4
+=back
 
 =cut
 

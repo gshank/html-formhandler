@@ -56,7 +56,7 @@ Perform your own checks in the form 'validate' sub.
         }
     }
 
-=back 4
+=back
 
 =head1 Constraints
 
@@ -78,7 +78,7 @@ Use the 'Email' field type, or use the the FH Moose Type, 'email'.
      use HTML::FormHandler::Types ('Email');
      has_field 'email' => ( apply => [ Email ] );
 
-=back 4
+=back
 
 
 =cut
