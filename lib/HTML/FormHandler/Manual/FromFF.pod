@@ -1,0 +1,208 @@
+package HTML::FormHandler::Manual::FromFF;
+# ABSTRACT: converting from HTML::FormFu
+
+=head1 SYNOPSIS
+
+L<Manual Index|HTML::FormHandler::Manual>
+
+Cheatsheet for converting from L<HTML::FormFu>.
+
+=head1 DESCRIPTION
+
+Information that may be useful when converting to FormHandler from
+FormFu.
+
+=head2 Inside/Outside
+
+FormFu forms look to me like "inside-out" object. The attributes and
+code are all set outside of the object. FormHandler forms are the
+opposite. Almost all attributes and settings are set *inside* the
+form class, although settings can be passed in on 'new' and 'process',
+of course. FormHandler fields are built as part of the object
+construction process, so you do not create or add new fields after
+the form instance has been constructed. There are many facilities
+for setting fields active/inactive or changing the various field
+attributes, so this is not limiting in what you can do.
+
+One of the big advantages of having form fields and validations, etc,
+inside the object is that it makes it a lot easier to test exactly
+what you're using in your controllers.
+
+=head2 Config files
+
+There are so many drawbacks to using config files to specify your
+forms that I don't see why anybody would voluntarily do it. However
+it takes all kinds, so if you really want to use config files, you
+can...mostly. There are a lot of things you can't do in config files,
+but FormHandler provides so many ways of doing things, that you
+can probably get it to work. And sometimes it's easier to update forms
+piecemeal, or there may be policies in place, so if you really want/need
+config files for building forms, see L<HTML::FormHandler::Foo> and the
+test in t/form_setup/config.t.
+
+=head2 Rendering
+
+You should be able to make your FormHandler forms automatically render
+very close to FormFu's rendering. There's an example of simple FormFu-like
+rendering in t/render/ff.t. Set up a base class with the necessary code,
+and your forms could be practically drop-in replacements from a
+rendering perspective.
+
+=head1 Filters, Constraints, Inflators, Validators, Transformers
+
+FormHandler doesn't distinguish between these three in the same way
+that FormFu does. FormHandler has inflation/deflation, validation
+methods, and apply actions. The distinguishing factor is mostly
+where it happens in the process.
+
+=head2 Filters
+
+A 'trim' filter is installed by default in FormHandler; it's a
+special version of an apply action, and can be set to a transform
+or Moose type. See the documentation in L<HTML::FormHandler::Field#trim>.
+
+An HTML filter is applied by default in certain places in the rendering.
+You can change it with the 'render_filter' attribute. See
+L<HTML::FormHandler::Manual::Rendering#Rendering-filter>.
+
+You can change the form of the field's value using a number of
+inflation/deflation methods, or a transform, or a Moose type.
+See L<HTML::FormHandler::Manual::InflationDeflation> and
+L<HTML::FormHandler::Manual::Validation>.
+
+Transforms and inflations/deflations do not change what is presented in
+the form unless you set the 'fif_from_value' flag on the field.
+
+=head2 Constraints
+
+A lot of these are simple regexes or functions. If they're things
+you're going to use often, you probably want to put them in a type
+library or validator class.
+
+=over 4
+
+=item AllOrNone
+
+Not implemented. Do this in a form 'validate' sub.
+
+=item ASCII
+
+A simple regex:
+
+   has foo => ( apply => [  { check => qr/^\p{IsASCII}*\z/,
+       message => 'Not a valid string' } ] );
+
+=item AutoSet
+
+Not necessary. This is done automatically by FormHandler. You'd have
+to go to some work to avoid it.
+
+=item Bool
+
+A simple regex:
+
+    qr/^[01]?\z/
+
+Or you can use the Boolean field.
+
+=item Callback, CallbackOnce
+
+This is just validation done in code. Use one of the many places
+you can put validation in methods in FormHandler. See
+L<HTML::FormHandler::Manual::Validation>.
+
+=item DateTime
+
+Use Date or DateTime field or make your own.
+
+=item DependOn
+
+Use 'dependency' attribute in the form. Or do more complicated
+things in the form's 'validate' sub.
+
+=item Email
+
+Use the 'Email' field type, or use the the FH Moose Type, 'email'.
+
+     has_field 'email' => ( type => 'Email' );
+     -- or --
+     use HTML::FormHandler::Types ('Email');
+     has_field 'email' => ( apply => [ Email ] );
+
+=item Equal
+
+No equivalent. Perform this check in the form's 'validate' sub.
+
+=item File
+
+Use 'Upload' field.
+
+=item Integer
+
+Use 'Integer' field.
+
+=item Length, MaxLength, MinLength
+
+Use 'minlength' and 'maxlength' on the Text field and its subclasses.
+
+=item Range, MaxRange, MinRange
+
+Use 'range_start' and 'range_end'.
+
+=item MinMaxFields
+
+No equivalent.
+
+=item Number
+
+Use Moose type 'Num'.
+
+=item Printable
+
+Use FormHandler Moose type 'Printable'.
+
+=item reCAPTCHA
+
+Use Captcha field or L<HTML::FormHandlerX::Field::reCAPTCHA>.
+
+=item Regex
+
+Use 'check' action with regex.
+
+=item Required
+
+Set 'required' flag on the field.
+
+=item Set
+
+Use 'check' action with arrayref of strings.
+
+=item SingleValue
+
+Not necessary.
+
+=item Word
+
+This is a simple regex:
+
+    qr/^\w*\z/
+
+Substitute FormHandler Moose type 'SingleWord'.
+
+=back
+
+=head2 Inflators
+
+Use one of the inflation/deflation methods. See
+L<HTML::FormHandler::Manual::InflationDeflation>.
+
+=head2 Validators
+
+See L<HTML::FormHandler::Manual::Validation>.
+
+=head2 Transformers
+
+See L<HTML::FormHandler::Manual::InflationDeflation> and
+L<HTML::FormHandler::Manual::Validation>.
+
+=cut

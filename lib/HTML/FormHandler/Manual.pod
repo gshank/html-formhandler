@@ -64,9 +64,17 @@ Cut-and-paste examples of templates to use with FormHandler
 
 Catalyst specific documentation
 
-=head1 L<HTML::FormHandler::Manual::Reference>
+=head2 L<HTML::FormHandler::Manual::Reference>
 
 Quick reference of FormHandler interface
+
+=head2 L<HTML::FormHandler::Manual::FromDFV>
+
+Info on converting from Data::FormValidator
+
+=head2 L<HTML::FormHandler::Manual::FromFF>
+
+Info on converting from HTML::FormFu
 
 =head1 SUPPORT
 
