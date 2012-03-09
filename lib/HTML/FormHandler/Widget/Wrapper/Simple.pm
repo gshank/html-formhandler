@@ -35,6 +35,8 @@ Supported 'tags':
     error_class    -- class for error messages (default 'error_message')
     warning_class  -- class for warning messages (default 'warning_message' )
 
+    no_wrapped_label -- for checkboxes. Don't provide an inner wrapped label
+                        (from Base wrapper)
 
 =cut
 
