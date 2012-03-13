@@ -17,6 +17,13 @@ Relevant flags:
 
     do_form_wrapper - put a wrapper around the form
 
+If the wrapper_tag is a 'fieldset' (default if not specified) the
+wrapper goes inside the form tags (because it's not valid to put it
+outside of them). If the wrapper_tag is something else, it will go
+around the form tags. If you're doing one kind of wrapper and want
+another one, you can achieve that result by using the 'before'/'after'
+tags or the 'after_start'/'before_end' tags.
+
 Supported tags:
 
     wrapper_tag -- tag for form wrapper; default 'fieldset'

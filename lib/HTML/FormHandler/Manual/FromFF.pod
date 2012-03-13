@@ -50,7 +50,7 @@ rendering perspective.
 
 =head1 Filters, Constraints, Inflators, Validators, Transformers
 
-FormHandler doesn't distinguish between these three in the same way
+FormHandler doesn't distinguish between these categories in the same way
 that FormFu does. FormHandler has inflation/deflation, validation
 methods, and apply actions. The distinguishing factor is mostly
 where it happens in the process.

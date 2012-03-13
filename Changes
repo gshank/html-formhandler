@@ -1,6 +1,8 @@
-0.40002
-    Put form wrappers that are fieldsets inside form tag; outside not legal
+0.40002 Tue Mar 13, 2012
+    Put form wrappers that are fieldsets inside form tag; outside not legal HTML
     Doc updates
+    Add 'NonEditable' field and 'Span' field widget
+    Patch HTMLAttributes (compatibility for older style custom widgets)
 
 0.40001 Wed Mar 7, 2012
     Remove \K in regex for ucc_widget; doesn't work pre 5.10

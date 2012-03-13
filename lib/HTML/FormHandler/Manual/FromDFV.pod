@@ -9,12 +9,13 @@ Cheatsheet for converting from L<Data::FormValidator>.
 
 =head1 DESCRIPTION
 
-How to implement constraints and validations in Data::FormValidator in
-HTML::FormHandler.
+Information that's useful when switching from Data::FormValidator to
+HTML::FormHandler. There's not a lot here yet, so if you have something
+to add, patches are welcome.
 
 In a general way, FormHandler doesn't have nearly so many "special"
 checks as Data::FormValidator. It would be possible to implement many
-of them, but there hasn't been any demand for them. So far FormHandler
+of them, but there hasn't been much demand for them. So far FormHandler
 users seem to be satisfed with the "do your own checks in a Perl method"
 solution. Because of the greater complexity of FormHandler's data model -
 with Repeatable arrays and nested compounds, etc, it's somewhat harder
