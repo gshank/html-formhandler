@@ -218,7 +218,7 @@ is_html( $output10, '
 
 my $output11 = $form->render_start;
 is_html( $output11,
-'<fieldset class="form_wrapper"><form id="testform" method="post">',
+'<form id="testform" method="post"><fieldset class="form_wrapper">',
 'Form start OK' );
 
 my $output = $form->render;

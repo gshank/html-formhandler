@@ -70,7 +70,9 @@ of course.
 The form's 'process' method should be run on each request, passing in the
 request parameters:
 
-    $form->process( params => $c->request->body_parameters );
+    $form->process( params => $c->request->body_parameters,
+        action => $action,
+    );
 
 If the parameters are not empty, then validation will be performed. The
 corollary is that you should not pass in extra parameters when the form

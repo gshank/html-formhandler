@@ -190,11 +190,11 @@ A password field. The value is not re-displayed.
 
 L<HTML::FormHandler::Field::Password>
 
-=head3 Textarea
+=head3 TextArea
 
 A textarea field.  Has 'cols' and 'rows' attributes.
 
-L<HTML::FormHandler::Field::Textarea>
+L<HTML::FormHandler::Field::TextArea>
 
 =head3 Upload
 
@@ -493,13 +493,13 @@ now better handled by a Block or a rendering tag.
 
 L<HTML::FormHandler::Field::Display>
 
-=head2 Textarea fields
+=head2 TextArea fields
 
 Fields that inherit from textarea.
 
-=head3 Textarea
+=head3 TextArea
 
-L<HTML::FormHandler::Field::Textarea>
+L<HTML::FormHandler::Field::TextArea>
 
 =head3 HtmlArea
 

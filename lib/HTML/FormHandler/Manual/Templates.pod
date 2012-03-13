@@ -13,15 +13,29 @@ There is a FormHandler Template Toolkit rendering role at
 L<HTML::FormHandler::Render::WithTT>, with a testcase in t/render_withtt.t.
 Normally, however, it probably won't make much sense to use both a
 TT parser in FormHandler, and a separate one for the "complete" templates,
-so it seems like the TT renderer would mainly be useful for tests,
-or as an example of how to do TT rendering with HFH.
+so the TT renderer is mainly useful for tests,
+or as an example of how to do TT rendering with HFH. You should
+create a template to render your form and then pass the template name
+and a template variable containing your form object to your templating
+or view engine, in whatever way you normally do that. If you want
+to use the 'process_attrs' function, you need to set that in your
+template variables too.
 
 A common way of using FormHandler with templates is to use the template
 for layout, specifying the divs and spans and wrappers, and then
 use the form object to render just the input fields.
 
-    in your form:
+In your form:
+
     has '+widget_wrapper' => ( default => 'None' );
+
+In your Catalyst controller:
+
+    $c->stash( form => $form, template => 'form.tt' );
+
+..or do the equivalent for your web framework/view.
+
+In a form template (form.tt in the previous controller example):
 
     <form id="myform" action="/myaction" method="post">
         <div class="span9">

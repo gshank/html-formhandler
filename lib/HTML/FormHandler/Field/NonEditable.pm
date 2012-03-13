@@ -10,9 +10,9 @@ Another flavor of a display field, but unlike L<HTML::FormHandler::Field::Displa
 it's intended to be rendered somewhat more like a "real" field, like the
 'non-editable' "fields" in Bootstrap.
 
-   has_field 'source' => ( type => 'NonEditable', value => 'Restore' );
+   has_field 'source' => ( type => 'NonEditable', value => 'Outsourced' );
 
-Uses the 'reset' widget.
+By default uses the 'Span' widget.
 
 =cut
 

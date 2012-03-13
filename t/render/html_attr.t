@@ -55,13 +55,13 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
 $form = MyApp::Form->new;
 $form->process( params => {} );
 my $expected =
-'<fieldset class="form_wrapper hfh">
-<form id="myapp_form" class="form_element hfh"method="post" name="myapp_form" >
+'<form id="myapp_form" class="form_element hfh"method="post" name="myapp_form" >
+  <fieldset class="form_wrapper hfh">
   <div class="form_messages"></div>
   <div class="wrapper hfh"><label class="label hfh" for="foo">Foo</label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
   <div class="wrapper hfh"><label class="label hfh" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>
   <div class="wrapper hfh"><label class="label hfh" for="mox">Mox</label><input type="text" name="mox" id="mox" value="" class="input hfh" placeholder="my placeholder" /></div>
-</form></fieldset>';
+</fieldset></form>';
 $rendered = $form->render;
 
 is_html($rendered, $expected, 'renders correctly');

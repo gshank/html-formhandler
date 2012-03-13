@@ -24,6 +24,14 @@ Template::Toolkit
    my $form = MyApp::Form->new(
    $form->tt_render;
 
+If you want to render with TT, you don't need this role. Just use
+one of the TT form templates provided, form.tt or form_in_one.tt.
+If you use this role to render, you are using two different TT
+engines, with different sets of variables, etc, which doesn't
+make much sense.
+
+This is mainly useful as a testing aid and an example of using the
+sample templates.
 
 =head1 DESCRIPTION
 

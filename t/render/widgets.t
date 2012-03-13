@@ -204,7 +204,7 @@ is_html( $rendered,
 
 $rendered = $form->render_start;
 is_html( $rendered,
-'<fieldset class="form_wrapper"><form id="testform" method="post">',
+'<form id="testform" method="post"><fieldset class="form_wrapper">',
 'Form start OK'
 );
 

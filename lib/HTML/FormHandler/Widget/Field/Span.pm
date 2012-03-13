@@ -1,6 +1,14 @@
 package HTML::FormHandler::Widget::Field::Span;
 # ABSTRACT: button field rendering widget
 
+=head1 SYNOPSIS
+
+Renders the NonEditable pseudo-field as a span.
+
+   <span id="my_field" class="test">The Field Value</span>
+
+=cut
+
 use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
 use namespace::autoclean;

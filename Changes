@@ -1,3 +1,7 @@
+0.40002
+    Put form wrappers that are fieldsets inside form tag; outside not legal
+    Doc updates
+
 0.40001 Wed Mar 7, 2012
     Remove \K in regex for ucc_widget; doesn't work pre 5.10
     Switch DateTime field to use inflate_default_method

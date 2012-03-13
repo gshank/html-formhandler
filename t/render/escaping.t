@@ -150,7 +150,7 @@ is_html( $rendered, q{
 
 $rendered = $form->render_start;
 is_html( $rendered,
-'<fieldset class="form_wrapper"><form id="testform" method="post">',
+'<form id="testform" method="post"><fieldset class="form_wrapper">',
 'Form start OK' );
 
 my $output = $form->render;

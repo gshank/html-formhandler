@@ -26,8 +26,8 @@ $form->process( params => { bar => 'abc' } );
 is( $form->num_errors, 2, 'got two errors' );
 
 my $expected =
-'<fieldset class="form_wrapper">
-  <form id="test_errors" method="post">
+'<form id="test_errors" method="post">
+  <fieldset class="form_wrapper">
   <div class="form_messages"></div>
   <div class="error">
     <label for="foo">Foo: </label>
@@ -39,7 +39,7 @@ my $expected =
     <input class="error" type="text" name="bar" id="bar" size="8" value="abc" />
     <span class="error_message">Value must be an integer</span>
   </div>
-</form></fieldset>';
+</fieldset></form>';
 
 my $rendered = $form->render;
 
