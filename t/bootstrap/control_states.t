@@ -15,6 +15,7 @@ use HTML::FormHandler::Test;
 
     sub build_update_subfields {{
         focusedInput => { element_class => ['input-xlarge', 'focused'] },
+        uneditableInput => { element_class => ['input-xlarge', 'uneditable-input'] },
         disabledInput => { element_class => ['input-xlarge'],
             element_attr => { placeholder => 'Disabled input here…' } },
         optionsCheckbox2 => { element_class => ['checkbox'],
@@ -37,6 +38,9 @@ use HTML::FormHandler::Test;
 
     has '+name' => ( default => 'test_form' );
     has_field 'focusedInput' => ( default => 'This is focused…', label => 'Focused input' );
+    has_field 'uneditableInput' => ( type => 'NonEditable', label => 'Uneditable input',
+        value => 'Some value here',
+    );
     has_field 'disabledInput' => ( disabled => 1, label => 'Disabled input' );
     has_field 'optionsCheckbox2' => ( type => 'Checkbox', checkbox_value => "option1",
         disabled => 1, label => 'Disabled checkbox' );
@@ -82,6 +86,16 @@ my $expected =
 </div>';
 my $rendered = $form->field('focusedInput')->render;
 is_html( $rendered, $expected, 'focusedInput field renders ok' );
+
+$expected =
+'<div class="control-group">
+  <label class="control-label" for="uneditableInput">Uneditable input</label>
+  <div class="controls">
+    <span id="uneditableInput" class="input-xlarge uneditable-input">Some value here</span>
+  </div>
+</div>';
+$rendered = $form->field('uneditableInput')->render;
+is_html( $rendered, $expected, 'uneditableInput field renders ok' );
 
 $expected =
 '<div class="control-group">
@@ -175,6 +189,12 @@ $expected =
     <label class="control-label" for="focusedInput">Focused input</label>
     <div class="controls">
       <input class="input-xlarge focused" id="focusedInput" name="focusedInput" type="text" value="This is focused…" />
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="uneditableInput">Uneditable input</label>
+    <div class="controls">
+      <span id="uneditableInput" class="input-xlarge uneditable-input">Some value here</span>
     </div>
   </div>
   <div class="control-group">
