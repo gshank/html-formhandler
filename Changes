@@ -1,3 +1,6 @@
+0.40003 Wed Mar 14, 2012
+    Move dfv test that fails prereqs
+
 0.40002 Tue Mar 13, 2012
     Put form wrappers that are fieldsets inside form tag; outside not legal HTML
     Doc updates
