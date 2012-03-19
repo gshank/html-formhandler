@@ -52,7 +52,7 @@ sub has_field {
             $meta->found_hfh(1);
         }
         else {
-            die "Package uses HTML::FormHandler::Moose without extending HTML::FormHandler[::Field]";
+            die "Package '" . $linearized_isa[0] . "' uses HTML::FormHandler::Moose without extending HTML::FormHandler[::Field]";
         }
     }
 
