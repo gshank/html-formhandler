@@ -14,6 +14,15 @@ Internal role for initializing the result objects.
 # formerly _init
 sub _result_from_fields {
     my ( $self, $self_result ) = @_;
+
+    if ( my @values = $self->get_default_value ) {
+        my $value = @values > 1 ? \@values : shift @values;
+        if( ref $value eq 'HASH' || blessed $value ) {
+            return $self->_result_from_object( $self_result, $value );
+        }
+        $self->init_value($value)   if defined $value;
+        $self_result->_set_value($value) if defined $value;
+    }
     for my $field ( $self->sorted_fields ) {
         next if ($field->inactive && !$field->_active);
         my $result = HTML::FormHandler::Field::Result->new(
@@ -22,13 +31,6 @@ sub _result_from_fields {
         );
         $result = $field->_result_from_fields($result);
         $self_result->add_result($result) if $result;
-    }
-    # this is for compound fields. form-level would use init_object instead
-    # which is a little strange.
-    if ( my @values = $self->get_default_value ) {
-        my $value = @values > 1 ? \@values : shift @values;
-        $self->init_value($value)   if defined $value;
-        $self_result->_set_value($value) if defined $value;
     }
     $self->_set_result($self_result);
     $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');
