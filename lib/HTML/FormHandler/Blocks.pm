@@ -59,6 +59,7 @@ has 'render_list' => (
     is      => 'rw',
     isa     => 'ArrayRef[Str]',
     traits  => ['Array'],
+    lazy    => 1,
     builder => 'build_render_list',
     handles => {
         has_render_list    => 'count',
