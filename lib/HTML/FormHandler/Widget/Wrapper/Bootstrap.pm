@@ -19,6 +19,18 @@ It wraps form elements with 'control-group' divs, and form 'actions' with
 'form-actions' divs. It adds special additional wrappers for checkboxes and radio
 buttons, with wrapped labels.
 
+=head1 DESCRIPTION
+
+Tags supported:
+
+   label_no_filter -- don't html filter the label
+   label_after -- useful for putting a colon, or other trailing formatting
+   before_element -- insert tag before input element
+   input_prepend -- for Bootstrap 'input-prepend' class
+   input_append -- for Bootstrap 'input-append' class
+   no_errors -- don't append error to field rendering
+   after_element -- insert tag after input element
+
 =cut
 
 
@@ -37,8 +49,15 @@ sub wrap_field {
     # wrapper is always a div
     $output .= qq{\n<div$attr_str>}
         if $self->do_wrapper;
+    # render the label
     if ( $self->do_label ) {
-        my $label = $self->html_filter($self->loc_label);
+        my $label;
+        if ( $self->does_wrap_label ) {
+            $label = $self->wrap_label;
+        }
+        else {
+            $label = $self->get_tag('label_no_filter') ? $self->loc_label : $self->html_filter($self->loc_label);
+        }
         $label .= $self->get_tag('label_after');
         $output .= qq{\n<label class="control-label" for="} . $self->id . qq{">$label</label>};
     }

@@ -712,6 +712,13 @@ sub loc_label {
     my $self = shift;
     return $self->_localize($self->label);
 }
+has 'wrap_label_method' => (
+   traits => ['Code'],
+   is     => 'ro',
+   isa    => 'CodeRef',
+   predicate => 'does_wrap_label',
+   handles => { 'wrap_label' => 'execute_method' },
+);
 has 'title'     => ( isa => 'Str', is => 'rw' );
 has 'style'     => ( isa => 'Str', is => 'rw' );
 # deprecated; remove in six months.
