@@ -45,7 +45,6 @@ sub render {
                 $output .= ' selected="selected"';
             }
         }
-        $output .= $ele_attributes;
         my $label = $option->{label};
         $label = $self->_localize($label) if $self->localize_labels;
         $output .= '>' . ( $self->html_filter($label) || '' ) . '</option>';
