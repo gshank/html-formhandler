@@ -1,3 +1,11 @@
+0.40004 Fri Mar 23, 2012
+    Don't put element attributes on select options
+    Make render_list lazy
+    Better defaults for compound fields
+    Provide package name for die when not extending
+    Add block_list to provide blocks
+    Defaults for repeatable fields
+
 0.40003 Wed Mar 14, 2012
     Move dfv test that fails prereqs
 

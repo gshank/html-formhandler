@@ -24,7 +24,7 @@ use Sub::Name;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.40003';
+our $VERSION = '0.40004';
 
 =head1 SYNOPSIS
 
