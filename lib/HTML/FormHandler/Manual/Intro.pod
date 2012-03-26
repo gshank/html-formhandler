@@ -76,9 +76,13 @@ request parameters:
 
 If the parameters are not empty, then validation will be performed. The
 corollary is that you should not pass in extra parameters when the form
-has not been posted. (A special 'posted' flag or hidden field is necessary if
+has not been posted. A special 'posted' flag can be used if
 the form consists entirely of fields like checkboxes that do not include
-names in params if unchecked.)
+names in params if unchecked, and also works to prevent validation from
+being performed if there are extra params:
+
+    $form->process( posted => ( $c->req->method eq 'POST' ),
+        params => $c->request->parameters, action => $action );
 
 There is an alternative method for processing the form, which is sometimes
 preferred for persistent forms. It returns a 'result' object, and clears
