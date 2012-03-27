@@ -1,3 +1,8 @@
+0.40005 Mon Mar 26, 2012
+    prevent undef from being passed to maketext
+    expand use of 'posted' flag to check false values
+    add wrap_label method
+
 0.40004 Fri Mar 23, 2012
     Don't put element attributes on select options
     Make render_list lazy
