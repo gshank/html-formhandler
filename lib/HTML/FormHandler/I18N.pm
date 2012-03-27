@@ -8,7 +8,8 @@ use Try::Tiny;
 
 sub maketext {
     my ( $lh, @message ) = @_;
-    return unless scalar @message;
+    return '' unless scalar @message;
+    return '' unless defined $message[0];
     my $out;
     try {
         $out = $lh->SUPER::maketext(@message);
