@@ -64,9 +64,11 @@ use HTML::FormHandler::Field::Text;
    }
 }
 
-my $form = Test::Form->new;
-ok( $form, 'create form');
+my $form = new_ok "Test::Form";
 
-ok( $form->render, 'get table rendered output from form');
+my $html ;
+ok( $html = $form->render, 'get table rendered output from form');
+like $html, qr/<form (.+)><table>/, "form start is rendered";
+like $html, qr/<\/table>\n<\/form>/, "form end is rendered";
 
 done_testing;

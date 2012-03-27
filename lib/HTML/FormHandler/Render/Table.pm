@@ -37,7 +37,7 @@ sub render_start {
     my $self   = shift;
 
     my $attrs = process_attrs($self->attributes);
-    return qq{</form$attrs></table>};
+    return qq{<form$attrs><table>};
 }
 
 sub render_form_errors {
