@@ -125,7 +125,7 @@ has 'contains' => (
     is        => 'rw',
     predicate => 'has_contains',
 );
-has 'init_contains' => ( is => 'ro', isa => 'HashRef', traits => ['Hash'],
+has 'init_contains' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
     default => sub {{}},
     handles => { has_init_contains => 'count' },
 );

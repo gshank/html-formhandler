@@ -456,7 +456,9 @@ The 'all' hash key will apply updates to all fields (conflicting attributes
 in a field definition take precedence.)
 
 The 'by_flag' hash key will apply updates to fields with a particular flag.
-The currently supported subkeys are 'compound', 'repeatable', and 'contains'.
+The currently supported subkeys are 'compound', and 'repeatable'. (For
+repeatable instances, use the 'repeatable' key and the 'init_contains'
+attribute.)
 This is useful in this context for turning on the rendering
 wrappers for compounds and repeatables, which are off by default. (The
 repeatable instances are wrapped by default.)

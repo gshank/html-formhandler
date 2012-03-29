@@ -280,6 +280,22 @@ Most of the tags are implemented by the 'wrapper' widget, so see that
 documentation for more details: L<HTML::FormHandler::Widget::Wrapper::Simple>,
 L<HTML::FormHandler::Widget::Wrapper::Bootstrap>.
 
+=head3 Repeatable field instances
+
+The repeatable field instances are constructed internally, so it's trickier to set
+things like wrapper tags. There are two ways to do it, using the 'init_contains'
+attribute on the repeatable field, and using the 'update_subfields' builder:
+
+    has_field 'records' => ( type => 'Repeatable', num_when_empty => 2,
+        init_contains => { tags => { wrapper_tag => 'fieldset' } } );
+    -- or --
+    sub build_update_subfields { { by_flag => {
+        repeatable => { init_contains => { tags => { wrapper_tag => 'fieldset' }}}}}}
+
+The 'build_update_subfields' option is mainly useful if you have multiple
+repeatable fields that you want to set, or if you want defaults in a base
+class.
+
 =head2 Blocks
 
 When rendering, FormHandler loops through the sorted fields in the form and
@@ -359,6 +375,8 @@ The following package provides a functional block:
 When a form is rendered, it will either loop through all of the sorted_fields OR
 loop through the fields and blocks listed in the 'render_list'. A render_list can
 contain a mix of fields and blocks.
+
+Note that you must be rendering with widgets to use block rendering.
 
 =head2 Twitter Bootstrap 2.0 rendering
 

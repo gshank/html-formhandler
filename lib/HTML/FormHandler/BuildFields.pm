@@ -358,9 +358,6 @@ sub _after_create {
     if( exists $by_flag->{repeatable} && $field->has_flag('is_repeatable') ) {
         $self->_set_attributes($field, $by_flag->{repeatable});
     }
-    elsif ( exists $by_flag->{contains} && $field->has_flag('is_contains') ) {
-        $self->_set_attributes($field, $by_flag->{contains});
-    }
     elsif ( exists $by_flag->{compound} && $field->has_flag('is_compound') ) {
         $self->_set_attributes($field, $by_flag->{compound});
     }

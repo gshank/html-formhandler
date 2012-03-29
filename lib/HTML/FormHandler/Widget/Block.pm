@@ -12,7 +12,7 @@ Base block renderer to be used with L<HTML::FormHandler::Blocks>.
 
 =over 4
 
-=item process_list
+=item render_list
 
 List of names of objects to render (fields and blocks)
 
@@ -122,7 +122,7 @@ sub render {
     }
 
     # get rendering of contained fields, if any
-    my $rendered_fb = $self->render_process_list($result);
+    my $rendered_fb = $self->render_from_list($result);
 
     my $content = $self->content || '';
     my $after_plist = $self->after_plist || '';
@@ -155,7 +155,7 @@ sub render_label {
     return $label;
 }
 
-sub render_process_list {
+sub render_from_list {
     my ( $self, $result ) = @_;
 
     my $output = '';
@@ -179,7 +179,7 @@ sub render_process_list {
             }
         }
     }
-    # else nothing to render from process_list
+    # else nothing to render from render_list
     return $output;
 }
 

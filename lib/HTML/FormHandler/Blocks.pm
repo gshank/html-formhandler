@@ -1,15 +1,15 @@
 package HTML::FormHandler::Blocks;
-# ABSTRACT: used in Wizard
+# ABSTRACT: arrange form layout using blocks
 
 =head1 SYNOPSIS
 
 This is a role which provides the ability to render your form in
-arbitrary 'blocks', instead of by fields.
+arbitrary 'blocks', instead of by fields. This role is included
+by default in HTML::FormHandler.
 
     package MyApp::Form;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    with 'HTML::FormHandler::Blocks';
 
     sub build_render_list {[ 'foo', 'fset' ]}
     has_field 'foo';
@@ -25,8 +25,11 @@ custom blocks:
 
     has_block 'my_block' => ( type => 'CustomBlock', render_list => [...] );
 
-If you don't include this role, you can declare blocks with 'has_block', but
-nothing will be done with them and they won't be used in rendering.
+You can also build blocks with a 'block_list' attribute, or the builder for it,
+'build_block_list'.
+
+Rendering with blocks is supported by the rendering widgets. Render::Simple doesn't
+do it, though it would be possible to make your own custom renderer.
 
 =cut
 

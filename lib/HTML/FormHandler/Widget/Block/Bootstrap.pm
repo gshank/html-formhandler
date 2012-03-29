@@ -12,7 +12,7 @@ sub BUILD {
     $self->label_tag('label');
 }
 
-sub render_process_list {
+sub render_from_list {
     my ( $self, $result ) = @_;
     $result ||= $self->form->result;
     my $output = $self->next::method($result);
