@@ -254,6 +254,21 @@ Hashref of arbitrary HTML attributes to include in the label.
 
 Arrayref of classes to include in the label.
 
+=item build_id_method
+
+Coderef to construct the 'id'. Useful if your javascript needs a different
+format for the 'id'.
+
+=item build_label_method
+
+Coderef to construct the label.
+
+=item wrap_label_method
+
+Coderef to wrap the label. Used by the Simple and Bootstrap wrappers.
+Useful if your label contains HTML or a link. You must do your own
+localization and filtering if you use a 'wrap_label' method.
+
 =back
 
 =head2 Field tags

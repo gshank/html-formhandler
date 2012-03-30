@@ -202,8 +202,11 @@ element as-is.
 The following are used in rendering HTML, but are handled specially.
 
    label       - Text label for this field. Defaults to ucfirst field name.
+   build_label_method - coderef for constructing the label
+   wrap_label_method - coderef for constructing a wrapped label
    id          - Useful for javascript (default is html_name. to prefix with
                  form name, use 'html_prefix' in your form)
+   build_id_method - coderef for constructing the id
    render_filter - Coderef for filtering fields before rendering. By default
                  changes >, <, &, " to the html entities
    disabled    - Boolean to set field disabled
@@ -701,7 +704,11 @@ has 'label' => (
     builder => 'build_label',
 );
 has 'do_label' => ( isa => 'Bool', is => 'rw', default => 1 );
-sub build_label {
+has 'build_label_method' => ( is => 'rw', isa => 'CodeRef',
+    traits => ['Code'], handles => { 'build_label' => 'execute_method' },
+    default => sub { \&default_build_label },
+);
+sub default_build_label {
     my $self = shift;
     my $label = $self->name;
     $label =~ s/_/ /g;

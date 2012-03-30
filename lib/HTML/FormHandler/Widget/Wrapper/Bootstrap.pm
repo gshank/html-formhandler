@@ -53,7 +53,7 @@ sub wrap_field {
     if ( $self->do_label ) {
         my $label;
         if ( $self->does_wrap_label ) {
-            $label = $self->wrap_label;
+            $label = $self->wrap_label( $self->label );
         }
         else {
             $label = $self->get_tag('label_no_filter') ? $self->loc_label : $self->html_filter($self->loc_label);

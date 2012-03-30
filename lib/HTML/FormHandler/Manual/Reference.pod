@@ -178,8 +178,11 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    wrapper_class - Arrayref for classes for the form element wrapper
    label_class   - Arrayref for classes for the form element label
    label        - Text label for this field. Defaults to ucfirst field name.
+   build_label_method - provide a builder for 'label' attribute
+   wrap_label_method  - provide a coderef to wrap the label
    id           - Useful for javascript (default is html_name. to prefix with
                   form name, use 'html_prefix' in your form)
+   build_id_method - provide a builder for 'id' attribute
    do_wrapper   - flag to render wrapper
    do_label     - flag to render label
    size          Text & select fields.
