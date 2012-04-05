@@ -740,6 +740,8 @@ to be used for defaults instead of the item.
    http_method - For storing 'post' or 'get'
    action - Store the form 'action' on submission. No default value.
    uuid - generates a string containing an HTML field with UUID
+   form_tags - hashref of tags for use in rendering code
+   widget_tags - rendering tags to be transferred to fields
 
 Discouraged (use form_element_attr instead):
 
@@ -768,7 +770,8 @@ Types: element, wrapper, label, form_element, form_wrapper, checkbox_label
        return $attr;
    }
 
-Also see the documentation in L<HTML::FormHandler::Field>.
+Also see the documentation in L<HTML::FormHandler::Field> and in
+L<HTML::FormHandler::Manual::Rendering>.
 
 =cut
 
@@ -995,9 +998,7 @@ sub has_flag {
     return $self->$flag_name;
 }
 
-# deprecated. here only for compatibility
-# with previous versions. Use update_field_list
-# or update_subfields instead.
+# used to transfer tags to fields from form
 has 'widget_tags' => (
     isa => 'HashRef',
     traits => ['Hash'],
@@ -1110,9 +1111,6 @@ sub BUILDARGS {
 sub BUILD {
     my $self = shift;
 
-    # temporary for compatibility: move widget_tags to update_field_list
-    $self->set_update_field_list( 'all', { tags => $self->widget_tags } )
-        if $self->has_widget_tags;
     $self->before_build; # hook to allow customizing forms
     # HTML::FormHandler::Widget::Form::Simple is applied in Base
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )

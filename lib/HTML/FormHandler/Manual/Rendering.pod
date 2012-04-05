@@ -295,6 +295,14 @@ Most of the tags are implemented by the 'wrapper' widget, so see that
 documentation for more details: L<HTML::FormHandler::Widget::Wrapper::Simple>,
 L<HTML::FormHandler::Widget::Wrapper::Bootstrap>.
 
+Tags can be set for all fields in the form by using a 'build_update_subfields'
+sub, or 'widget_tags'. For example, if you don't want errors to be displayed
+next to the fields, you need to set the 'no_errors' tag:
+
+   sub build_update_subfields { { all => { tags => { no_errors => 1 } } } }
+   -- or --
+   '+widget_tags' => ( default => sub { { no_errors => 1 } } );
+
 =head3 Repeatable field instances
 
 The repeatable field instances are constructed internally, so it's trickier to set

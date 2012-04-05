@@ -244,17 +244,27 @@ sub _merge_updates {
     my $updates = {};
     my $single_updates = {};
     my $all_updates = {};
-    if( $self->form && exists $self->form->{field_updates} ) {
-        # deleting this here means that change from fields with '+' in
-        # the field_list will not be re-changed
-        $single_updates = delete $self->form->{field_updates}->{$full_name} || {};
-        $all_updates = $self->form->{field_updates}->{all} || {};
+    if( $self->form ) {
+        if( exists $self->form->{field_updates} ) {
+            # deleting this here means that change from fields with '+' in
+            # the field_list will not be re-changed
+            $single_updates = delete $self->form->{field_updates}->{$full_name} || {};
+            $all_updates = $self->form->{field_updates}->{all} || {};
+        }
+        if( $self->form->has_widget_tags ) {
+            $all_updates = merge( $all_updates, { tags => $self->form->widget_tags } );
+        }
     }
-    if( $self->has_flag('is_compound') && exists $self->{field_updates} ) {
-        my $comp_single_updates = delete $self->{field_updates}->{$field_attr->{name}} || {};
+    if( $self->has_flag('is_compound') ) {
+        my $comp_all_updates = {};
+        if( $self->has_widget_tags ) {
+            $comp_all_updates = { tags => $self->widget_tags };
+        }
+        my $comp_single_updates = exists $self->{field_updates} ? delete $self->{field_updates}->{$field_attr->{name}} : {};
         $single_updates = merge( $comp_single_updates, $single_updates )
             if keys %$comp_single_updates;
-        my $comp_all_updates = $self->{field_updates}->{all} || {};
+        $comp_all_updates = keys %$comp_all_updates ? merge( $self->{field_updates}->{all}, $comp_all_updates ) :
+            ( $self->{field_updates}->{all} || {} );
         $all_updates = merge( $comp_all_updates, $all_updates )
             if keys %$comp_all_updates;
     }
