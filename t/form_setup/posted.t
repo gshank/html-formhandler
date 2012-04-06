@@ -27,6 +27,7 @@ my $req_method = 'GET';
 $form->process( posted => ( $req_method eq 'POST' ),
     params => { duz => 'xxx' } );
 ok( ! $form->ran_validation, 'validation was not performed with extra params and false posted flag' );
+ok( ! $form->validated, 'not validated' );
 
 $req_method = 'POST';
 $form->process( posted => ( $req_method eq 'POST' ), params => {} );
