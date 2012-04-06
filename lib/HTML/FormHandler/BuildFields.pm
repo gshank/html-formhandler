@@ -21,6 +21,12 @@ has 'fields_from_model' => ( isa => 'Bool', is => 'rw' );
 
 has 'field_list' => ( isa => 'HashRef|ArrayRef', is => 'rw', default => sub { {} } );
 
+has 'build_include_method' => ( is => 'ro', isa => 'CodeRef', traits => ['Code'],
+    default => sub { \&default_build_include  }, handles => { build_include => 'execute_method' } );
+has 'include' => ( is => 'rw', isa => 'ArrayRef', traits => ['Array'], builder => 'build_include',
+    lazy => 1, handles => { has_include => 'count' } );
+sub default_build_include { [] }
+
 sub has_field_list {
     my ( $self, $field_list ) = @_;
     $field_list ||= $self->field_list;
@@ -50,7 +56,6 @@ sub _build_fields {
     $self->_process_field_array( $meta_flist, 0 ) if $meta_flist;
     my $flist = $self->has_field_list;
     if( $flist ) {
-        $flist = clone($flist);
         if( ref($flist) eq 'ARRAY' && ref( $flist->[0] ) eq 'HASH' ) {
             $self->_process_field_array( $flist );
         }
@@ -91,9 +96,7 @@ sub _build_meta_field_list {
             }
         }
     }
-
-    # must clone field_list to avoid shared copies of field definitions
-    return clone($field_list) if scalar @$field_list;
+    return $field_list if scalar @$field_list;
 }
 
 sub _process_field_list {
@@ -124,6 +127,8 @@ sub _array_fields {
 sub _process_field_array {
     my ( $self, $fields ) = @_;
 
+    # clone and, optionally, filter fields
+    $fields = $self->clean_fields( $fields );
     # the point here is to process fields in the order parents
     # before children, so we process all fields with no dots
     # first, then one dot, then two dots...
@@ -139,6 +144,19 @@ sub _process_field_array {
         }
         $num_dots++;
     }
+}
+
+sub clean_fields {
+    my ( $self, $fields ) = @_;
+    if( $self->has_include ) {
+        my @fields;
+        my %include = map { $_ => 1 } @{ $self->include };
+        foreach my $fld ( @$fields ) {
+            push @fields, clone($fld) if exists $include{$fld->{name}};
+        }
+        return \@fields;
+    }
+    return clone( $fields );
 }
 
 # Maps the field type to a field class, finds the parent,
