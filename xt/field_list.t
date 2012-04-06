@@ -12,7 +12,6 @@ my $field_list = [
    },
    submit => 'Submit',
 ];
-my $field_list2 = clone($field_list);
 
 my $form = HTML::FormHandler->new( field_list => $field_list );
 

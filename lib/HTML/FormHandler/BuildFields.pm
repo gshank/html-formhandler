@@ -111,6 +111,7 @@ sub _process_field_list {
 sub _array_fields {
     my ( $self, $fields ) = @_;
 
+    $fields = clone( $fields );
     my @new_fields;
     while (@$fields) {
         my $name = shift @$fields;
