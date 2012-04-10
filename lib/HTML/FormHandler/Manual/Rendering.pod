@@ -295,13 +295,21 @@ Most of the tags are implemented by the 'wrapper' widget, so see that
 documentation for more details: L<HTML::FormHandler::Widget::Wrapper::Simple>,
 L<HTML::FormHandler::Widget::Wrapper::Bootstrap>.
 
+=head3 Tags and other settings for all fields
+
 Tags can be set for all fields in the form by using a 'build_update_subfields'
 sub, or 'widget_tags'. For example, if you don't want errors to be displayed
 next to the fields, you need to set the 'no_errors' tag:
 
-   sub build_update_subfields { { all => { tags => { no_errors => 1 } } } }
+   sub build_update_subfields {
+       { all => { tags => { no_errors => 1 }, wrapper_class => ['myapp'] } }
+   }
    -- or --
    '+widget_tags' => ( default => sub { { no_errors => 1 } } );
+
+The 'widget_tags' attribute only handles the 'tags' hashref, so if you also
+want to set classes or attributes, then build_update_subfields is more useful.
+You can also use 'build_update_subfields' in a custom compound field class.
 
 =head3 Repeatable field instances
 
@@ -313,7 +321,7 @@ attribute on the repeatable field, and using the 'update_subfields' builder:
         init_contains => { tags => { wrapper_tag => 'fieldset' } } );
     -- or --
     sub build_update_subfields { { by_flag => {
-        repeatable => { init_contains => { tags => { wrapper_tag => 'fieldset' }}}}}}
+        contains => { tags => { wrapper_tag => 'fieldset' }}}}}
 
 The 'build_update_subfields' option is mainly useful if you have multiple
 repeatable fields that you want to set, or if you want defaults in a base

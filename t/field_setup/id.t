@@ -35,7 +35,9 @@ is( $form->field('foo')->id, 'F123.foo', 'got correct id' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has '+update_field_list' => ( default => sub { { all => { build_id_method => \&custom_id } } } );
+    sub build_update_subfields {
+        { all => { build_id_method => \&custom_id } }
+    }
     has_field 'foo' => ( type => 'Compound' );
     has_field 'foo.one';
     has_field 'foo.two';

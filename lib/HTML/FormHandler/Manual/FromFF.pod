@@ -71,7 +71,8 @@ See L<HTML::FormHandler::Manual::InflationDeflation> and
 L<HTML::FormHandler::Manual::Validation>.
 
 Transforms and inflations/deflations do not change what is presented in
-the form unless you set the 'fif_from_value' flag on the field.
+the form unless you set the 'fif_from_value' flag on the field (the rough
+equivalent of FormFu's 'render_processed_value').
 
 =head2 Constraints
 

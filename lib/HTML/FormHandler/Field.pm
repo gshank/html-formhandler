@@ -333,6 +333,8 @@ For more about widgets, see L<HTML::FormHandler::Manual::Rendering>.
 
 See also the section in L<HTML::FormHandler::Manual::Intro#Defaults>.
 
+=over
+
 =item default_method, set_default
 
 Supply a coderef (which will be a method on the field) with 'default_method'

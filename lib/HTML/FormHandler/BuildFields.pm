@@ -179,7 +179,7 @@ sub _make_field {
 
     my $parent = $self->_find_parent( $field_attr );
 
-    $field_attr = $self->_merge_updates( $field_attr, $class );
+    $field_attr = $self->_merge_updates( $field_attr, $class ) unless $do_update;
 
     my $field = $self->_update_or_create( $parent, $field_attr, $class, $do_update );
 
@@ -258,32 +258,34 @@ sub _merge_updates {
     my ( $self, $field_attr, $class ) = @_;
 
     # If there are field_traits at the form level, prepend them
+    my $field_updates;
     unshift @{$field_attr->{traits}}, @{$self->form->field_traits} if $self->form;
     my $full_name = delete $field_attr->{full_name} || $field_attr->{name};
     my $updates = {};
     my $single_updates = {};
     my $all_updates = {};
+    my $name = $field_attr->{name};
     if( $self->form ) {
-        if( exists $self->form->{field_updates} ) {
-            # deleting this here means that change from fields with '+' in
-            # the field_list will not be re-changed
-            $single_updates = delete $self->form->{field_updates}->{$full_name} || {};
-            $all_updates = $self->form->{field_updates}->{all} || {};
+        $field_updates = $self->form->update_subfields;
+        if( keys %$field_updates ) {
+            $all_updates = $field_updates->{all} || {};
+            $single_updates = $field_updates->{$full_name};
         }
         if( $self->form->has_widget_tags ) {
             $all_updates = merge( $all_updates, { tags => $self->form->widget_tags } );
         }
     }
     if( $self->has_flag('is_compound') ) {
-        my $comp_all_updates = {};
+        my $comp_field_updates = $self->update_subfields;
+        my $comp_all_updates = keys %$comp_field_updates && exists $comp_field_updates->{all} ?
+            $comp_field_updates->{all} : {};
         if( $self->has_widget_tags ) {
-            $comp_all_updates = { tags => $self->widget_tags };
+            $comp_all_updates = merge( $comp_all_updates, { tags => $self->widget_tags } );
         }
-        my $comp_single_updates = exists $self->{field_updates} ? delete $self->{field_updates}->{$field_attr->{name}} : {};
+        # don't use full_name. varies depending on parent field name
+        my $comp_single_updates = $comp_field_updates->{$name} if keys %$comp_field_updates;
         $single_updates = merge( $comp_single_updates, $single_updates )
             if keys %$comp_single_updates;
-        $comp_all_updates = keys %$comp_all_updates ? merge( $self->{field_updates}->{all}, $comp_all_updates ) :
-            ( $self->{field_updates}->{all} || {} );
         $all_updates = merge( $comp_all_updates, $all_updates )
             if keys %$comp_all_updates;
     }
@@ -378,14 +380,17 @@ sub new_field_with_traits {
 sub _after_create {
     my ( $self, $field ) = @_;
 
-    my $by_flag = $self->form->{field_updates}->{by_flag} || {} if $self->form;
-    my $comp_by_flag = $self->{field_updates}->{by_flag} || {}
+    my $by_flag = $self->form->update_subfields->{by_flag} || {} if $self->form;
+    my $comp_by_flag = $self->update_subfields->{by_flag} || {}
         if $self->has_flag('is_compound');;
     return unless keys %$by_flag || keys %$comp_by_flag;
     $by_flag = merge( $comp_by_flag, $by_flag ) if keys %$comp_by_flag ;
 
     if( exists $by_flag->{repeatable} && $field->has_flag('is_repeatable') ) {
         $self->_set_attributes($field, $by_flag->{repeatable});
+    }
+    elsif( exists $by_flag->{contains} && $field->has_flag('is_contains') ) {
+        $self->_set_attributes($field, $by_flag->{contains});
     }
     elsif ( exists $by_flag->{compound} && $field->has_flag('is_compound') ) {
         $self->_set_attributes($field, $by_flag->{compound});

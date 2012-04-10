@@ -456,10 +456,10 @@ The 'all' hash key will apply updates to all fields (conflicting attributes
 in a field definition take precedence.)
 
 The 'by_flag' hash key will apply updates to fields with a particular flag.
-The currently supported subkeys are 'compound', and 'repeatable'. (For
-repeatable instances, use the 'repeatable' key and the 'init_contains'
-attribute.)
-This is useful in this context for turning on the rendering
+The currently supported subkeys are 'compound', 'contains', and 'repeatable'.
+(For repeatable instances, in addition to 'contains' you can also use the
+'repeatable' key and the 'init_contains' attribute.)
+This is useful for turning on the rendering
 wrappers for compounds and repeatables, which are off by default. (The
 repeatable instances are wrapped by default.)
 
@@ -1115,7 +1115,7 @@ sub BUILD {
     # HTML::FormHandler::Widget::Form::Simple is applied in Base
     $self->apply_widget_role( $self, $self->widget_form, 'Form' )
         unless (  $self->no_widgets || $self->widget_form eq 'Simple' );
-    $self->build_fields;    # create the form fields (BuildFields.pm)
+    $self->_build_fields;    # create the form fields (BuildFields.pm)
     $self->build_active if $self->has_active || $self->has_inactive || $self->has_flag('is_wizard');
     $self->after_build; # hook for customizing
     return if defined $self->item_id && !$self->item;
@@ -1135,16 +1135,6 @@ sub BUILD {
     }
     $self->dump_fields if $self->verbose;
     return;
-}
-sub build_fields {
-    my $self = shift;
-    my $field_updates = merge($self->update_field_list, $self->update_subfields);
-    $self->{field_updates} = $field_updates if keys %$field_updates;
-    $self->_build_fields;
-    delete $self->{field_updates};
-    $self->clear_update_field_list;
-    # set update_subfields instead of clear, so that builder methods won't run again
-    $self->update_subfields({});
 }
 sub before_build {}
 sub after_build {}
@@ -1449,15 +1439,12 @@ sub _can_deflate { }
 
 sub update_fields {
     my $self = shift;
-    if( $self->has_update_field_list || $self->has_update_subfields ) {
-        my $do_updates = $self->build_update_subfields;
+    if( $self->has_update_field_list ) {
         my $updates = $self->update_field_list;
-        $updates = merge($do_updates, $updates);
         foreach my $field_name ( keys %{$updates} ) {
             $self->update_field($field_name, $updates->{$field_name} );
         }
         $self->clear_update_field_list;
-        $self->clear_update_subfields;
     }
     if( $self->has_defaults ) {
         my $defaults = $self->defaults;

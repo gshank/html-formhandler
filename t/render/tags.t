@@ -20,6 +20,9 @@ use HTML::FormHandler::Test;
     has_field 'multi' => ( type => 'Compound' );
     has_field 'multi.one';
     has_field 'multi.two';
+    has_field 'records' => ( type => 'Repeatable' );
+    has_field 'records.one';
+    has_field 'records.two';
     sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
         $attr->{class} = ['label'] if $type eq 'label';
@@ -35,7 +38,11 @@ unlike( $rendered, qr/Foo: /, 'no colon in label' );
 like( $rendered, qr/<p/, 'wrapper tag correct' );
 unlike( $rendered, qr/<fieldset class="multi"><legend>Multi<\/legend>/, 'no fieldset around compound' );
 like( $rendered, qr/<span class="label">Bar<\/span>/, 'label formatted with span and class' );
+
 ok( ! exists $form->field('foo')->tags->{form_text}, 'no form widgets tags in fields' );
+my $exp_tags = { wrapper_tag => 'p', label_tag => 'span' };
+my $got_tags = $form->field('records.0')->tags;
+is_deeply( $got_tags, $exp_tags, 'correct tags' );
 
 
 {
