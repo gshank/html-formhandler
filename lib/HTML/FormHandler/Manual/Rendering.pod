@@ -298,12 +298,18 @@ L<HTML::FormHandler::Widget::Wrapper::Bootstrap>.
 =head3 Tags and other settings for all fields
 
 Tags can be set for all fields in the form by using a 'build_update_subfields'
-sub, or 'widget_tags'. For example, if you don't want errors to be displayed
+sub, or 'widget_tags'. The 'update_subfields' hashref takes general-purpose
+keys 'all', 'by_flag' (compound, repeatable, contains), and 'by_type'.
+You can also set specific field attributes by using the field name as a key.
+For example, if you don't want errors to be displayed
 next to the fields, you need to set the 'no_errors' tag:
 
-   sub build_update_subfields {
-       { all => { tags => { no_errors => 1 }, wrapper_class => ['myapp'] } }
-   }
+   sub build_update_subfields {{
+       all => { tags => { no_errors => 1 }, wrapper_class => ['myapp'] },
+       by_type => { Text => { element_class => ['text'] } },
+       by_flag => { compound => { do_wrapper => 1 } },
+       foo => { label => 'My Foo' },
+   }}
    -- or --
    '+widget_tags' => ( default => sub { { no_errors => 1 } } );
 

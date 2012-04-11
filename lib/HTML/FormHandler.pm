@@ -464,8 +464,12 @@ wrappers for compounds and repeatables, which are off by default. (The
 repeatable instances are wrapped by default.)
 
     sub build_update_subfields {{
-        by_type => { compound => { do_wrapper => 1 } }
+        by_flag => { compound => { do_wrapper => 1 } },
+        by_type => { Select => { element_class => ['sel_elem'] } },
     }}
+
+The 'by_type' hash key will provide values to all fields of a particular
+type.
 
 
 =head3 defaults

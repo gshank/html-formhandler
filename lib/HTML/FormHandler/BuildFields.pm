@@ -260,47 +260,69 @@ sub _merge_updates {
     # If there are field_traits at the form level, prepend them
     my $field_updates;
     unshift @{$field_attr->{traits}}, @{$self->form->field_traits} if $self->form;
+    # use full_name for updates from form, name for updates from compound field
     my $full_name = delete $field_attr->{full_name} || $field_attr->{name};
-    my $updates = {};
-    my $single_updates = {};
-    my $all_updates = {};
     my $name = $field_attr->{name};
-    if( $self->form ) {
+
+    my $single_updates = {}; # updates that apply to a single field
+    my $all_updates = {};    # updates that apply to all fields
+    # get updates from form update_subfields and widget_tags
+    if ( $self->form ) {
         $field_updates = $self->form->update_subfields;
-        if( keys %$field_updates ) {
+        if ( keys %$field_updates ) {
             $all_updates = $field_updates->{all} || {};
             $single_updates = $field_updates->{$full_name};
+            if ( exists $field_updates->{by_type} &&
+                 exists $field_updates->{by_type}->{$field_attr->{type}} ) {
+                $all_updates = merge( $field_updates->{by_type}->{$field_attr->{type}}, $all_updates );
+            }
         }
+        # merge widget tags into 'all' updates
         if( $self->form->has_widget_tags ) {
             $all_updates = merge( $all_updates, { tags => $self->form->widget_tags } );
         }
     }
-    if( $self->has_flag('is_compound') ) {
+    # get updates from compund field update_subfields and widget_tags
+    if ( $self->has_flag('is_compound') ) {
         my $comp_field_updates = $self->update_subfields;
-        my $comp_all_updates = keys %$comp_field_updates && exists $comp_field_updates->{all} ?
-            $comp_field_updates->{all} : {};
+        my $comp_all_updates = {};
+        my $comp_single_updates = {};
+        # -- compound 'all' updates --
+        if ( keys %$comp_field_updates ) {
+            $comp_all_updates = $comp_field_updates->{all} || {};
+            # don't use full_name. varies depending on parent field name
+            $comp_single_updates = $comp_field_updates->{$name} || {};
+            if ( exists $comp_field_updates->{by_type} &&
+                 exists $comp_field_updates->{by_type}->{$field_attr->{type}} ) {
+                $comp_all_updates = merge( $comp_field_updates->{by_type}->{$field_attr->{type}}, $comp_all_updates );
+            }
+        }
         if( $self->has_widget_tags ) {
             $comp_all_updates = merge( $comp_all_updates, { tags => $self->widget_tags } );
         }
-        # don't use full_name. varies depending on parent field name
-        my $comp_single_updates = $comp_field_updates->{$name} if keys %$comp_field_updates;
-        $single_updates = merge( $comp_single_updates, $single_updates )
-            if keys %$comp_single_updates;
+
+        # merge form 'all' updates, compound field higher precedence
         $all_updates = merge( $comp_all_updates, $all_updates )
             if keys %$comp_all_updates;
+        # merge single field updates, compound field higher precedence
+        $single_updates = merge( $comp_single_updates, $single_updates )
+            if keys %$comp_single_updates;
     }
 
-    # attributes set on the field through update_subfields override has_fields
+    # attributes set on a specific field through update_subfields override has_fields
     # attributes set by 'all' only happen if no field attributes
     $field_attr = merge( $field_attr, $all_updates ) if keys %$all_updates;
     $field_attr = merge( $single_updates, $field_attr ) if keys %$single_updates;
 
+    # get the widget and widget_wrapper from form
     unless( $self->form && $self->form->no_widgets ) {
+        # widget
         my $widget = $field_attr->{widget};
         unless( $widget ) {
             my $attr = $class->meta->find_attribute_by_name( 'widget' );
             $widget = $attr->default if $attr;
         }
+        # widget wrapper
         my $widget_wrapper = $field_attr->{widget_wrapper};
         unless( $widget_wrapper ) {
             my $attr = $class->meta->get_attribute('widget_wrapper');
@@ -309,6 +331,7 @@ sub _merge_updates {
             $widget_wrapper ||= 'Simple';
             $field_attr->{widget_wrapper} = $widget_wrapper;
         }
+        # add widget and wrapper roles to field traits
         if( $widget ) {
             my $widget_role = $self->get_widget_role( $widget, 'Field' );
             my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
