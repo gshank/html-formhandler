@@ -317,6 +317,19 @@ The 'widget_tags' attribute only handles the 'tags' hashref, so if you also
 want to set classes or attributes, then build_update_subfields is more useful.
 You can also use 'build_update_subfields' in a custom compound field class.
 
+If you have defaults that are set in 'build_update_subfields' in a base class,
+in order to use hashrefs from both base and current classes, you will need to
+merge the hashes:
+
+    use HTML::FormHandler::Merge ('merge');
+    sub build_update_subfields {
+        my $self = shift;
+        my $new = { all => { tags => { wrapper_tag => 'p' } } };
+        return merge( $new, $self->next::method(@_) );
+    }
+
+In a role you would have to do the equivalent with an 'around' method modifier.
+
 =head3 Repeatable field instances
 
 The repeatable field instances are constructed internally, so it's trickier to set
@@ -371,7 +384,7 @@ In order to actually get this block to be used when you render with
 C<< $form->render >>, you need to supply a 'render_list' on the the form
 level:
 
-   sub build_render_list { ['first_fset'] }
+   sub build_render_list { ['first_fset', 'submit_btn'] }
 
 You could also render it with C<< $form->block('first_fset')->render >>.
 
@@ -508,6 +521,34 @@ Some fields by default do not render a label: Button, Submit, Reset, ButtonTag.
 If you do want a label with these fields, you must set the 'do_label' flag to 1:
 
    has_field 'foo' ( type => 'Button', do_label => 1 );
+
+=head2 Rendering labels
+
+A 'standard' label is built in the field if you don't supply one. The label
+can be provided in the field definition:
+
+    has_field 'foo' => ( label => 'My Foo' );
+
+You can also provide a method to 'build' the label:
+
+    has_field 'foo' => ( build_label_method => \&build_label );
+    sub build_label {
+        my $self = shift; # field method
+        return '...';
+    }
+
+And a method to 'wrap' the label (used by the Simple and Bootstrap wrappers):
+
+    has_field 'foo' => ( label => 'My Foo', wrap_label_method => \&wrap_label );
+    sub wrap_label {
+        my ( $self, $label ) = @_;
+        # or: my $label = $self->label;
+        return qq{<a href="...">$label</a>};
+    }
+
+This is particularly useful for creating labels that have links or other HTML.
+The 'wrap_label_method' does no filtering or localization, so you must do that
+yourself in the method if you need it.
 
 =head2 Rendering filter
 
