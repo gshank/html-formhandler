@@ -1,3 +1,12 @@
+0.40006 Tues Apr 10, 2012
+    Render::Table incorrect table start
+    Minor doc cleanup
+    Add 'build_label_method'
+    Re-do merging of widget_tags
+    Implement experimental 'include' list for Form/Compound fields
+    Refactor merge_updates and update_subfields to handle contains
+    Add 'by_type' to update_subfields
+
 0.40005 Mon Mar 26, 2012
     prevent undef from being passed to maketext
     expand use of 'posted' flag to check false values
@@ -39,6 +48,7 @@
        git://github.com/gshank/html-formhandler_pre-0.40_compat.git
        README at: https://github.com/gshank/html-formhandler_pre-0.40_compat/blob/master/README
 
+    Add Twitter Bootstrap 2.0 widget wrapper
     Add 'no_update' flag to allow skipping model_update.
     Remove 'deflate_to' flag; provide new inflation/deflation methods.
         see HTML::FormHandler::Manual::InflationDeflation
