@@ -191,7 +191,6 @@ sub _make_adhoc_field {
 
     $field_attr = $self->_merge_updates( $field_attr, $class );
     my $field = $self->new_field_with_traits( $class, $field_attr );
-    $self->_after_create($field);
     return $field;
 }
 
@@ -272,6 +271,9 @@ sub _merge_updates {
         if ( keys %$field_updates ) {
             $all_updates = $field_updates->{all} || {};
             $single_updates = $field_updates->{$full_name};
+            if ( exists $field_updates->{by_flag} ) {
+                $all_updates = $self->by_flag_updates(  $field_attr, $class, $field_updates, $all_updates );
+            }
             if ( exists $field_updates->{by_type} &&
                  exists $field_updates->{by_type}->{$field_attr->{type}} ) {
                 $all_updates = merge( $field_updates->{by_type}->{$field_attr->{type}}, $all_updates );
@@ -292,6 +294,9 @@ sub _merge_updates {
             $comp_all_updates = $comp_field_updates->{all} || {};
             # don't use full_name. varies depending on parent field name
             $comp_single_updates = $comp_field_updates->{$name} || {};
+            if ( exists $field_updates->{by_flag} ) {
+                $comp_all_updates = $self->by_flag_updates(  $field_attr, $class, $comp_field_updates, $comp_all_updates );
+            }
             if ( exists $comp_field_updates->{by_type} &&
                  exists $comp_field_updates->{by_type}->{$field_attr->{type}} ) {
                 $comp_all_updates = merge( $comp_field_updates->{by_type}->{$field_attr->{type}}, $comp_all_updates );
@@ -339,6 +344,22 @@ sub _merge_updates {
         }
     }
     return $field_attr;
+}
+
+sub by_flag_updates {
+    my ( $self, $field_attr, $class, $field_updates, $all_updates ) = @_;
+
+    my $by_flag = $field_updates->{by_flag};
+    if ( exists $by_flag->{contains} && $field_attr->{is_contains} ) {
+        $all_updates = merge( $field_updates->{by_flag}->{contains}, $all_updates );
+    }
+    elsif ( exists $by_flag->{repeatable} && $class->meta->find_attribute_by_name('is_repeatable') ) {
+        $all_updates = merge( $field_updates->{by_flag}->{repeatable}, $all_updates );
+    }
+    elsif ( exists $by_flag->{compound} && $class->meta->find_attribute_by_name('is_compound') ) {
+        $all_updates = merge( $field_updates->{by_flag}->{compound}, $all_updates );
+    }
+    return $all_updates;
 }
 
 # update, replace, or create field
@@ -392,47 +413,7 @@ sub new_field_with_traits {
     }
     my $field = $class->new( %{$field_attr} );
 
-    $self->_after_create($field);
-
     return $field;
-}
-
-# these updates can't be done by merging attributes, since these particular
-# attributes aren't set in field definitions. Could look for the attribute in the class, but
-# it's probably faster to just set them.
-sub _after_create {
-    my ( $self, $field ) = @_;
-
-    my $by_flag = $self->form->update_subfields->{by_flag} || {} if $self->form;
-    my $comp_by_flag = $self->update_subfields->{by_flag} || {}
-        if $self->has_flag('is_compound');;
-    return unless keys %$by_flag || keys %$comp_by_flag;
-    $by_flag = merge( $comp_by_flag, $by_flag ) if keys %$comp_by_flag ;
-
-    if( exists $by_flag->{repeatable} && $field->has_flag('is_repeatable') ) {
-        $self->_set_attributes($field, $by_flag->{repeatable});
-    }
-    elsif( exists $by_flag->{contains} && $field->has_flag('is_contains') ) {
-        $self->_set_attributes($field, $by_flag->{contains});
-    }
-    elsif ( exists $by_flag->{compound} && $field->has_flag('is_compound') ) {
-        $self->_set_attributes($field, $by_flag->{compound});
-    }
-}
-sub _set_attributes {
-    my ( $self, $field, $attr ) = @_;
-
-    foreach my $key ( keys %$attr ) {
-        if( ref $attr->{$key} eq 'HASH' ) {
-            (my $meth = $key ) =~ s/s$//;
-            $meth = 'set_' . $meth;
-            if( $field->can($meth) ) {
-                $field->$meth(%{$attr->{$key}});
-                next;
-            }
-        }
-        $field->$key($attr->{$key});
-    }
 }
 
 sub _order_fields {
