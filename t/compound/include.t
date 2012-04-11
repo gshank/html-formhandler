@@ -32,7 +32,7 @@ ok( $field );
     has_field 'fiddly';
     has_field 'muddly' => ( type => '+Test::FooField', include => ['foo', 'mix', 'nix'] );
     # no subfields. kinda weird...
-    has_field 'middly' => ( type => '+Test::FooField', include => [ undef ] );
+    has_field 'middly' => ( type => '+Test::FooField', include => [ 'empty' ] );
 }
 
 my $form = Test::Form->new;
