@@ -110,7 +110,7 @@ simple form fields to be auto-generated from a DBIC result class.
 
     my $form = HTML::FormHandler::Model::DBIC->new_with_traits(
         traits => ['HTML::FormHandler::TraitFor::DBICFields'],
-        include => ['title', 'author' ],
+        includes => ['title', 'author' ],
         field_list => [ 'submit' => { type => 'Submit', value => 'Save', order => 99 } ],
         item => $book );
 

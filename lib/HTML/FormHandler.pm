@@ -445,7 +445,7 @@ validation method.)
 Yet another way to provide settings for the field, except this one is intended for
 use in roles and compound fields, and is only executed when the form is
 initially built. It takes the same field name keys as 'update_field_list', plus
-'all' and 'by_flag'.
+'all', 'by_flag', and 'by_type'.
 
     sub build_update_subfields {{
         all => { tags => { wrapper_tag => 'p' } },

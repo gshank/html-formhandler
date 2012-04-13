@@ -74,6 +74,16 @@ Transforms and inflations/deflations do not change what is presented in
 the form unless you set the 'fif_from_value' flag on the field (the rough
 equivalent of FormFu's 'render_processed_value').
 
+=head3 FormatNumber
+
+Use an inflation:
+
+    has_field 'foo' => ( type => 'PosInteger', inflate_method => \&format_number );
+    sub format_number {
+        my ( $self, $value ) = @_;
+        return unformat_number( $value );
+    }
+
 =head2 Constraints
 
 A lot of these are simple regexes or functions. If they're things

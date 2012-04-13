@@ -54,6 +54,8 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    process           Sets up form, validated, updates model
    run               Returns a result object and clears form
    update_field_list Updates to fields on process
+   posted            Flag to say whether or not to validate, instead of
+                        depending on presence of params
 
 =head3 Validation
 
@@ -128,7 +130,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    deflation     Function to deflate the field (in 'apply') (opposite of transform)
    deflate_method          Coderef to deflate the field (for filling in the form)
    inflate_method          Coderef to inflate the field (before validation)
-   inflate_default_method  Coderef to inflate value in item/init_object
+   inflate_default_method  Coderef to inflate value from item/init_object
    deflate_value_method    Coderef to deflate value after validation
    fif_from_value  Flag to use 'value' of field for 'fif'.
 

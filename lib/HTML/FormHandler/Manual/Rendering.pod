@@ -58,6 +58,7 @@ the 'fill-in-form' values provided with the form's 'fif' function.
     <input id="foo" name="foo" value="[% fif.foo %]">
     <label>Bar</label>
     <input id="bar" name="bar" value="[% fif.bar %]">
+    <input type="submit" name="submit" value="Save">
     </form>
 
 Going a little bit farther in using FormHandler rendering, you can render
@@ -68,6 +69,7 @@ each of the fields individually:
      [% form.field('foo').render %]
      </fieldset>
      [% form.field('bar').render %]
+     [% form.field('save').render %]
      </form>
 
 If you don't want the wrappers, use a widget_wrapper of 'None'.
@@ -210,7 +212,7 @@ Hashref of arbitrary HTML attributes to be included in the form wrapper
     has_field 'foo' => ( widget => 'MyWidget', widget_wrapper => 'SpecialWrapper',
         element_attr => { placeholder => 'enter a foo' }, element_class => 'important',
         wrapper_class => ['label'], label_class => ['major'],
-        tags => { widget_tag => 'fieldset' } );
+        tags => { wrapper_tag => 'fieldset' } );
 
 =over 4
 
@@ -576,5 +578,7 @@ If you want to turn off the filter for a particular field, you can set it
 to a sub that just returns the value:
 
     has_field 'bar' => ( render_filter => sub { shift } );
+
+If you want a label that is unfiltered, see 'wrap_label_method'.
 
 =cut

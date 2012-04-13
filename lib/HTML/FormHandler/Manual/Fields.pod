@@ -49,7 +49,7 @@ The inheritance hierarchy of HTML::FormHandler Fields
    Upload
    File
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 A form's fields are created from the 'has_field' and 'field_list' definitions.
 FormHandler processes the field lists and creates an array of
@@ -143,6 +143,17 @@ or set the 'required' message.
 
 An alternative to new field classes for many field validations might
 be roles with collections of validations.
+
+=head1 Other field packages
+
+Some custom fields are supplied as CPAN packages, in the HTML::FormHandlerX
+name space.
+
+L<reCAPTCHA|HTML::FormHandlerX::Field::reCAPTCHA>
+
+L<DateTimeNatural|HTML::FormHandlerX::Field::DateTimeNatural>
+
+L<URI::HTTP|HTML::FormHandlerX::Field::URI::HTTP>
 
 =head1 Fields supplied by FormHandler
 
@@ -297,7 +308,7 @@ Fields subclassed from the Text field.
 
 =head3 Text
 
-Text field. 
+Text field.
 
 L<HTML::FormHandler::Field::Text>
 

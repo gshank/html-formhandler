@@ -114,10 +114,9 @@ contains only:
 
 =head2 Alternative hand-built Template for the form (optional)
 
-Although L<HTML::FormHandler::Render::Simple> works well for scaffolding and may
-be adequate for simple forms, sometimes it's necessary to hand build
-HTML. This section contains an example of a Template Toolkit template
-that may be used to display a FormHandler form.
+Although the automatic rendering works well, sometimes it's necessary
+to hand build HTML. This section contains an example of a Template Toolkit
+template that may be used to display a FormHandler form.
 
 In some cases, you might want to use the rendering for just the field
 and build custom divs or tables or whatever around it:
@@ -217,7 +216,7 @@ character to the rating field. You should get an error message.
 
 =head2 Add additional attributes to your form's fields
 
-We'll add a couple of 'label' attribute to the fields:
+We'll add a couple of 'label' attributes to the fields:
 
    has_field 'title' => ( type => 'Text', label => 'Title of a Book' );
    has_field 'rating' => ( type => 'Integer', label => 'Rating (1-5)' );

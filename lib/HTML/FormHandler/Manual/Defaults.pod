@@ -95,6 +95,12 @@ an item/init_object and accessor exists.
 You can use either the 'defaults' hashref or the 'init_object' to provide query
 parameter 'defaults'. They should not be provided in the 'params' hash, because
 then FormHandler will assume that the form has been posted and attempt to validate,
-which you don't want to do until the form has been submitted.
+which you don't want to do until the form has been submitted. Or you can use
+the 'posted' flag, to indicate whether or not to perform validation:
+
+    $form->process( posted => ( $c->req->method eq 'POST' ), params => $c->req->params );
+
+Note that in Catalyst, there are 'query_parameters' and 'body_parameters'. The
+'parameters' contains both 'query_parameters' and 'body_parameters'.
 
 =cut
