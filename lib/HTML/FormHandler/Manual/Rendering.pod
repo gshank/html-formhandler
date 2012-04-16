@@ -150,6 +150,13 @@ There are a lot of different settings that control the rendering. Some of them a
 attributes in the form or field, and some of them are set using the 'tags' hashref
 in the field or the 'form_tags' hashref in the form.
 
+You can make your own copy of an existing wrapper and add features to it.
+However, there are so many different ways to render the HTML around a field, that it's
+very difficult to handle more than a short list of standard presentations in
+one 'wrapper'. It may be better to make a number of more atomic widget wrappers and
+use those rather than complicate that already fairly complicated "Simple" and
+"Bootstrap" wrappers more.
+
 =head2 HTML attributes
 
 Arbitrary HTML attributes on form elements (such as 'input' elements) can be specified
@@ -347,6 +354,18 @@ attribute on the repeatable field, and using the 'update_subfields' builder:
 The 'build_update_subfields' option is mainly useful if you have multiple
 repeatable fields that you want to set, or if you want defaults in a base
 class.
+
+=head3 Error messages
+
+The default is currently to display error messages next to the rendered fields,
+if you're doing C<< $form->render >>. If you don't want messages next to fields,
+you can set the 'no_errors' tag, as discussed in the section on 'Tags and other
+settings...'.
+
+Note that the 'None' widget wrapper, since it doesn't render anything except the
+form element (input, select, etc), will not render errors next to the field.
+Setting the 'do_wrapper' and 'do_label' flags to 0 will still render errors.
+
 
 =head2 Blocks
 
