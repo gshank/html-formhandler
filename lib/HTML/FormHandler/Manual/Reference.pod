@@ -171,23 +171,28 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
 =head2 Field rendering
 
-   widget        Determines which rendering widget to use for the field
-   widget_wrapper Which wrapper widget to apply to the field
-   element_attr - Hashref to store arbitrary html attributes.
-   label_attr   - Hashref for html attributes for the label
-   wrapper_attr - Hashref for html attributes for the wrapping element (div, etc)
-   element_class - Arrayref for classes for the form element
-   wrapper_class - Arrayref for classes for the form element wrapper
-   label_class   - Arrayref for classes for the form element label
-   label        - Text label for this field. Defaults to ucfirst field name.
-   build_label_method - provide a builder for 'label' attribute
-   wrap_label_method  - provide a coderef to wrap the label
-   id           - Useful for javascript (default is html_name. to prefix with
-                  form name, use 'html_prefix' in your form)
-   build_id_method - provide a builder for 'id' attribute
-   do_wrapper   - flag to render wrapper
-   do_label     - flag to render label
-   size          Text & select fields.
+   widget          Determines which rendering widget to use for the field
+   widget_wrapper  Which wrapper widget to apply to the field
+   element_attr    Hashref to store arbitrary html attributes.
+   label_attr      Hashref for html attributes for the label
+   wrapper_attr    Hashref for html attributes for the wrapping element (div, etc)
+   element_class   Arrayref for classes for the form element
+   wrapper_class   Arrayref for classes for the form element wrapper
+   label_class     Arrayref for classes for the form element label
+   label           Text label for this field. Defaults to ucfirst field name.
+   build_label_method   provide a builder for 'label' attribute
+   wrap_label_method    provide a coderef to wrap the label
+   id              Useful for javascript (default is html_name. to prefix with
+                       form name, use 'html_prefix' in your form)
+   build_id_method Provide a builder for 'id' attribute
+   do_wrapper      Flag to render wrapper
+   do_label        Flag to render label
+   size            Text & select fields.
+
+   render          Widget method to render the field ($field->render)
+   render_element  Widget method to render unwrapped field ($field->render_element)
+
+   render_field    Method used by Render::Simple to render field
 
 =head2 Field attributes managed by FormHandler
 

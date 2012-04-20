@@ -133,6 +133,12 @@ is_html( $rendered,
     'output from text field'
 );
 
+$rendered = $form->field('test_field')->render_element;
+is_html( $rendered,
+    '<input type="text" name="test_field" id="f99" size="20" value="something" class="test123" />',
+    'output from render_element is correct'
+);
+
 $expected =
 '<div>
   <label class="label" for="active">Active</label>

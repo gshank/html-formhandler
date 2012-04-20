@@ -1,7 +1,12 @@
 package HTML::FormHandler::Widget::Field::Compound;
 # ABSTRACT: compound field widget
-
 use Moose::Role;
+
+=head1 SYNOPSIS
+
+Widget for rendering a compound field.
+
+=cut
 
 sub render_subfield {
     my ( $self, $result, $subfield ) = @_;
@@ -11,15 +16,22 @@ sub render_subfield {
     return $subfield->render( $subresult );
 }
 
-sub render {
+sub render_element {
     my ( $self, $result ) = @_;
-
     $result ||= $self->result;
+
     my $output = '';
     foreach my $subfield ( $self->sorted_fields ) {
         $output .= $self->render_subfield( $result, $subfield );
     }
     $output =~ s/^\n//; # remove newlines so they're not duplicated
+    return $output;
+}
+
+sub render {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $output = $self->render_element( $result );
     return $self->wrap_field( $result, $output );
 }
 

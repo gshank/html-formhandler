@@ -1,11 +1,16 @@
 package HTML::FormHandler::Widget::Field::Button;
 # ABSTRACT: button field rendering widget
-
 use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
 use namespace::autoclean;
 
-sub render {
+=head1 SYNOPSIS
+
+Render a button
+
+=cut
+
+sub render_element {
     my ( $self, $result ) = @_;
 
     $result ||= $self->result;
@@ -15,6 +20,13 @@ sub render {
     $output .= ' value="' . $self->html_filter($self->_localize($self->value)) . '"';
     $output .= process_attrs($self->element_attributes($result));
     $output .= ' />';
+    return $output;
+}
+
+sub render {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $output = $self->render_element( $result );
     return $self->wrap_field( $result, $output );
 }
 

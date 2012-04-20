@@ -31,6 +31,10 @@ and load them into the fields by designating the directory in the
 that's a separate object or class that takes a form object,
 or a role that is applied to your form.
 
+Note that Unless you set 'no_widgets' in the form, the rendering roles are
+automatically applied. You don't need to include anything else, unless you
+want to use a different renderer.
+
 =head2 Mostly templates
 
 The names of your fields must match the names of your FormHandler fields.
@@ -84,6 +88,13 @@ embedded:
     </div>
     <div class="another_class">
     [% form.field('bar').render %]
+    </div>
+
+You can also use the 'render_element' method, if you want to leave the
+wrapper in place, but sometimes render 'bare' html elements:
+
+    <div class="my_class">
+    [% form.field('foo').render_element %]
     </div>
 
 If you wish to loop through the fields yourself, use the 'sorted_fields'
@@ -303,6 +314,47 @@ label formatting:
 Most of the tags are implemented by the 'wrapper' widget, so see that
 documentation for more details: L<HTML::FormHandler::Widget::Wrapper::Simple>,
 L<HTML::FormHandler::Widget::Wrapper::Bootstrap>.
+
+=head3 Tag types
+
+The 'get_tag' method will check for these three types of tags and perform
+the appropriate action.
+
+=over 4
+
+=item String
+
+Standard, most common type of value for a tag.
+
+    has_field 'bar' => ( tags => { before_element => '<span>...</span>' } );
+
+Some tags are true/false also:
+
+    has_field 'foo' => ( type => 'CheckBox',
+        tags => { no_wrapped_label => 1 } );
+
+=item CodeRef
+
+You can supply a coderef to a tag, and it will be executed as a method on
+the field. This is useful for localization or other sorts of runtime
+changes.
+
+    has_field 'bar' => ( tags => { before_element => \&bar_element } );
+    sub bar_element {
+        my $self = shift; # $self is the 'bar' field
+        return '<div>In a Sub</div>';
+    }
+
+=item Block
+
+You can supply a block by giving a string that consists of a '%' followed
+by the block name:
+
+    has_block 'comment' => ( tag => 'a', content => 'This is a comment from a block',
+        class => ['comment' ] );
+    has_field 'foo' => ( tags => { before_element => '%comment' } );
+
+=back
 
 =head3 Tags and other settings for all fields
 
@@ -600,4 +652,31 @@ to a sub that just returns the value:
 
 If you want a label that is unfiltered, see 'wrap_label_method'.
 
+=head1 Special rendering pseudo-fields
+
+Also see L<HTML::FormHandler::Widget::Block>. Blocks may be a better
+solution than pseudo-fields (i.e. fields that aren't actual form
+elements).
+
+Various 'tags' used for rendering can also be used for similar
+purposes.
+
+=head2 NonEditable
+
+Like a Bootstrap 'non_editable' field. Displays the field's value
+as a span.
+
+    has_field 'non_edit' => ( type => 'NonEditable', value => 'This is a Test' );
+
+=head2 Display
+
+L<HTML::FormHandler::Field::Display>
+
+You can supply an HTML string to this field, to be displayed directly. There is no
+'value' associated with this field; it's a field for rendering only. The HTML
+string can be build with a form or field method.
+
+Blocks or tags will often be a better solution.
+
 =cut
+

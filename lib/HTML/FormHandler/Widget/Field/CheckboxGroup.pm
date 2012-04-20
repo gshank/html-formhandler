@@ -5,9 +5,16 @@ use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
 
-sub render {
-    my $self = shift;
-    my $result = shift || $self->result;
+=head1 SYNOPSIS
+
+Checkbox group widget for rendering multiple selects.
+
+=cut
+
+sub render_element {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+
     my $output = '';
     my $index  = 0;
     my $multiple = $self->multiple;
@@ -44,6 +51,13 @@ sub render {
         $output .= "\n</label>";
         $index++;
     }
+    return $output;
+}
+
+sub render {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $output = $self->render_element( $result );
     return $self->wrap_field( $result, $output );
 }
 

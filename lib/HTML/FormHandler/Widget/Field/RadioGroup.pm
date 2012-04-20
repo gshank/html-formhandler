@@ -1,5 +1,8 @@
 package HTML::FormHandler::Widget::Field::RadioGroup;
 # ABSTRACT: radio group rendering widget
+use Moose::Role;
+use namespace::autoclean;
+use HTML::FormHandler::Render::Util ('process_attrs');
 
 =head1 SYNOPSIS
 
@@ -9,13 +12,10 @@ Tags: radio_br_after
 
 =cut
 
-use Moose::Role;
-use namespace::autoclean;
-use HTML::FormHandler::Render::Util ('process_attrs');
+sub render_element {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
 
-sub render {
-    my $self = shift;
-    my $result = shift || $self->result;
     my $id = $self->id;
     my $output = '';
     $output .= "<br />" if $self->get_tag('radio_br_after');
@@ -40,6 +40,13 @@ sub render {
         $output .= '<br />' if $self->get_tag('radio_br_after');
         $index++;
     }
+    return $output;
+}
+
+sub render {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $output = $self->render_element( $result );
     return $self->wrap_field( $result, $output );
 }
 

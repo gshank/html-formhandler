@@ -5,10 +5,9 @@ use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
 
-sub render {
-    my $self = shift;
-    my $result = shift || $self->result;
-    my $t;
+sub render_element {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
 
     my $output = '<button type="' . $self->input_type . '" name="'
         . $self->html_name . '" id="' . $self->id . '"';
@@ -16,8 +15,15 @@ sub render {
     $output .= '>';
     $output .= $self->_localize($self->value);
     $output .= "</button>";
+    return $output;
+}
 
+sub render {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    my $output = $self->render_element( $result );
     return $self->wrap_field( $result, $output );
 }
+
 
 1;
