@@ -767,7 +767,9 @@ which can be used to customize/modify/localize form & field HTML attributes.
 Types: element, wrapper, label, form_element, form_wrapper, checkbox_label
 
    sub html_attributes {
-       my ( $self, $field, $type, $attr ) = @_;
+       my ( $self, $obj, $type, $attrs, $result ) = @_;
+
+       # obj is either form or field
        $attr->{class} = 'label' if $type eq 'label';
        $attr->{placeholder} = $self->_localize($attr->{placeholder})
            if exists $attr->{placeholder};

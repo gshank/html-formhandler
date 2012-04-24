@@ -291,6 +291,25 @@ localization and filtering if you use a 'wrap_label' method.
 
 =back
 
+=head2 html_attributes callback
+
+The form has an 'html_attributes' callback which can be used to customize,
+localize, or modify the various attributes when used.
+Types: element, wrapper, label, form_element, form_wrapper, checkbox_label
+
+   sub html_attributes {
+       my ( $self, $obj, $type, $attrs, $result ) = @_;
+       # obj is either form or field
+       $attr->{class} = 'label' if $type eq 'label';
+       $attr->{placeholder} = $self->_localize($attr->{placeholder})
+           if exists $attr->{placeholder};
+       return $attr;
+   }
+
+This callback is called in the methods that wrap the various '_attr' attributes,
+i.e. element_attributes, label_attributes, wrapper_attributes,
+form_element_attributes, form_wrapper_attributes.
+
 =head2 Field tags
 
 The 'tags' are settings and strings which may vary by the particular widget

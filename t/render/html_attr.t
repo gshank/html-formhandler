@@ -41,7 +41,7 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
 
     sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
-        # $type is one of input, label, wrapper
+        # $type is one of element, label, wrapper
         my $class = $attr->{class} || '';
         $attr->{class} = [$type, 'hfh'];
         push @{$attr->{class}}, 'error' if $class =~ /error/;
@@ -58,9 +58,9 @@ my $expected =
 '<form id="myapp_form" class="form_element hfh"method="post" name="myapp_form" >
   <fieldset class="form_wrapper hfh">
   <div class="form_messages"></div>
-  <div class="wrapper hfh"><label class="label hfh" for="foo">Foo</label><input type="text" name="foo" id="foo" value="" class="input hfh" /></div>
-  <div class="wrapper hfh"><label class="label hfh" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" class="input hfh" /></div>
-  <div class="wrapper hfh"><label class="label hfh" for="mox">Mox</label><input type="text" name="mox" id="mox" value="" class="input hfh" placeholder="my placeholder" /></div>
+  <div class="wrapper hfh"><label class="label hfh" for="foo">Foo</label><input type="text" name="foo" id="foo" value="" class="element hfh" /></div>
+  <div class="wrapper hfh"><label class="label hfh" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" class="element hfh" /></div>
+  <div class="wrapper hfh"><label class="label hfh" for="mox">Mox</label><input type="text" name="mox" id="mox" value="" class="element hfh" placeholder="my placeholder" /></div>
 </fieldset></form>';
 $rendered = $form->render;
 

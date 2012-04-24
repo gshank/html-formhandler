@@ -3,6 +3,7 @@
     Various doc updates
     Move 'by_flag' processing into '_merge_updates'
     Handle disabled fields better; result_from_fields if no input
+    Fix bug: html_attributes callback called with 'input' instead of 'element'
 
 0.40006 Tues Apr 10, 2012
     Render::Table incorrect table start

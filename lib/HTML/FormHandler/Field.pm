@@ -938,7 +938,7 @@ sub element_attributes {
     push @$class, 'disabled' if $self->disabled;
     $attr->{class} = $class if @$class;
     # call form hook
-    my $mod_attr = $self->form->html_attributes($self, 'input', $attr, $result) if $self->form;
+    my $mod_attr = $self->form->html_attributes($self, 'element', $attr, $result) if $self->form;
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 

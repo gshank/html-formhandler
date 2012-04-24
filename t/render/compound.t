@@ -16,7 +16,7 @@ use HTML::FormHandler::Test;
     }}
     sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
-        $attr->{class} = ['frm', 'ele'] if $type eq 'input';
+        $attr->{class} = ['frm', 'ele'] if $type eq 'element';
         $attr->{class} = ['frm', 'lbl'] if $type eq 'label';
         $attr->{class} = ['frm', 'wrp'] if $type eq 'wrapper';
         return $attr;
