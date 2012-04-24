@@ -80,7 +80,7 @@ There are three options for standard inflation, or transforming the field's
 
 Provide a method on the field which inflates the field 'input' (from params):
 
-   has 'futility' => ( inflate_method => sub { \&inflate_field } );
+   has_field 'futility' => ( inflate_method => \&inflate_field );
    sub inflate_field {
        my ( $self, $value ) = @_;
        ....
@@ -108,7 +108,7 @@ In a validate method, you can change the format of the value, with $field->value
 Most general purpose deflation method. Provide a coderef which is a method
 on the field:
 
-   has_field => 'foo' => ( deflate_method => sub { \&deflate_foo } );
+   has_field => 'foo' => ( deflate_method => \&deflate_foo );
    sub deflate_foo {
        my ( $self, $value ) = @_;  # $self is the 'foo' field
        <perform conversion>
