@@ -561,7 +561,7 @@ has 'input_without_param' => (
     predicate => 'has_input_without_param'
 );
 has 'not_nullable' => ( is => 'rw', isa => 'Bool' );
-has 'init_value' => ( is => 'rw', clearer => 'clear_init_value' );
+has 'init_value' => ( is => 'rw', clearer => 'clear_init_value', predicate => 'has_init_value' );
 has 'default' => ( is => 'rw' );
 has 'default_over_obj' => ( is => 'rw', builder => 'build_default_over_obj' );
 sub build_default_over_obj { }
@@ -1262,6 +1262,18 @@ sub _result_from_input {
 
     if ($exists) {
         $result->_set_input($input);
+    }
+    elsif ( $self->disabled ) {
+        # Disabled fields are not submitted, and so have no input
+        # but we need to have them in results.
+        if ( $self->has_init_value ) {
+            $result->_set_input( $self->init_value );
+        }
+        else {
+            # This really ought to come from _result_from_object, but there's
+            # no way to get there from here.
+            return $self->_result_from_fields( $result );
+        }
     }
     elsif ( $self->has_input_without_param ) {
         $result->_set_input( $self->input_without_param );

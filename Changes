@@ -2,6 +2,7 @@
     Re-factor widget to provide 'render_element' method
     Various doc updates
     Move 'by_flag' processing into '_merge_updates'
+    Handle disabled fields better; result_from_fields if no input
 
 0.40006 Tues Apr 10, 2012
     Render::Table incorrect table start
