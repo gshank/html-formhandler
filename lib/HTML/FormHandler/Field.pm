@@ -748,6 +748,7 @@ has 'form'      => (
     weak_ref => 1,
     predicate => 'has_form',
 );
+sub is_form { 0 }
 has 'html_name' => (
     isa     => 'Str',
     is      => 'rw',
@@ -1244,7 +1245,10 @@ sub BUILD {
 sub _result_from_fields {
     my ( $self, $result ) = @_;
 
-    if ( my @values = $self->get_default_value ) {
+    if ( $self->disabled && $self->has_init_value ) {
+        $result->_set_value($self->init_value);
+    }
+    elsif ( my @values = $self->get_default_value ) {
         if ( $self->has_inflate_default_method ) {
             @values = $self->inflate_default(@values);
         }
@@ -1264,16 +1268,9 @@ sub _result_from_input {
         $result->_set_input($input);
     }
     elsif ( $self->disabled ) {
-        # Disabled fields are not submitted, and so have no input
-        # but we need to have them in results.
-        if ( $self->has_init_value ) {
-            $result->_set_input( $self->init_value );
-        }
-        else {
-            # This really ought to come from _result_from_object, but there's
-            # no way to get there from here.
-            return $self->_result_from_fields( $result );
-        }
+        # This really ought to come from _result_from_object, but there's
+        # no way to get there from here.
+        return $self->_result_from_fields( $result );
     }
     elsif ( $self->has_input_without_param ) {
         $result->_set_input( $self->input_without_param );

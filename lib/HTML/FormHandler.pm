@@ -783,6 +783,7 @@ L<HTML::FormHandler::Manual::Rendering>.
 
 # for consistency in api with field nodes
 sub form { shift }
+sub is_form { 1 }
 sub has_form { 1 }
 
 # Moose attributes

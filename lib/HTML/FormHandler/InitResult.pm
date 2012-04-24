@@ -15,6 +15,7 @@ Internal role for initializing the result objects.
 sub _result_from_fields {
     my ( $self, $self_result ) = @_;
 
+    # defaults for compounds, etc.
     if ( my @values = $self->get_default_value ) {
         my $value = @values > 1 ? \@values : shift @values;
         if( ref $value eq 'HASH' || blessed $value ) {
@@ -23,6 +24,7 @@ sub _result_from_fields {
         $self->init_value($value)   if defined $value;
         $self_result->_set_value($value) if defined $value;
     }
+    my $my_value;
     for my $field ( $self->sorted_fields ) {
         next if ($field->inactive && !$field->_active);
         my $result = HTML::FormHandler::Field::Result->new(
@@ -30,8 +32,13 @@ sub _result_from_fields {
             parent => $self_result
         );
         $result = $field->_result_from_fields($result);
+        $my_value->{ $field->name } = $result->value if $result->has_value;
         $self_result->add_result($result) if $result;
     }
+    # setting value here to handle disabled compound fields, where we want to
+    # preserve the 'value' because the fields aren't submitted...except for the
+    # form. Not sure it's the best idea to skip for form, but it maintains previous behavior
+    $self_result->_set_value($my_value) if ( keys %$my_value );
     $self->_set_result($self_result);
     $self_result->_set_field_def($self) if $self->DOES('HTML::FormHandler::Field');
     return $self_result;

@@ -13,18 +13,34 @@ use Data::Dumper;
 
         has_field 'foo' => ( type => 'Select', disabled => 1 );
         has_field 'bar';
+        has_field 'user' => ( type => 'Compound', required => 1 );
+        has_field 'user.email_address' => ( disabled => 1, required => 1 );
         has_field 'save' => ( type => 'Submit' );
     }
 
     my $form = MyApp::Test::Form1->new;
-    my $init_object = { foo => 'my_foo', bar => 'my_bar' };
+    my $init_object = {
+        foo => 'my_foo',
+        bar => 'my_bar',
+        user => { email_address => 'joe@nowhere.com' },
+    };
     $form->process( init_object => $init_object, params => {} );
-    is_deeply( $form->fif, $init_object, 'fif is correct' );
-    my $submitted = { bar => 'subm_bar' };
+    my $fif = {
+        foo => 'my_foo',
+        bar => 'my_bar',
+        'user.email_address' => 'joe@nowhere.com',
+    };
+    is_deeply( $form->fif, $fif, 'fif is correct' );
+    my $submitted = {
+        bar => 'subm_bar',
+    };
+
     $form->process( init_object => $init_object, params => $submitted );
-    is_deeply( $form->fif, { foo => 'my_foo', bar => 'subm_bar' },
+    $fif->{bar} = 'subm_bar';
+    is_deeply( $form->fif, $fif,
        'right fif after submission, init_object' );
-    is_deeply( $form->value, { foo => 'my_foo', bar => 'subm_bar' } );
+    $init_object->{bar} = 'subm_bar';
+    is_deeply( $form->value, $init_object, 'right value' );
 }
 
 {
