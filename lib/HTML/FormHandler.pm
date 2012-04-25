@@ -25,7 +25,7 @@ use Data::Clone;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.40006';
+our $VERSION = '0.40007';
 
 =head1 SYNOPSIS
 

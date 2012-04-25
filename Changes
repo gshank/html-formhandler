@@ -1,4 +1,4 @@
-0.40007 TBD
+0.40007 Tues Apr 24, 2012
     Re-factor widget to provide 'render_element' method
     Various doc updates
     Move 'by_flag' processing into '_merge_updates'
