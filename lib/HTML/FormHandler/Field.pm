@@ -583,6 +583,11 @@ has 'result' => (
 );
 has '_pin_result' => ( is => 'ro', reader => '_get_pin_result', writer => '_set_pin_result' );
 
+sub missing {
+    my $self = shift;
+    return $self->required && $self->validated && ( !$self->has_input || !$self->input_defined );
+}
+
 sub has_input {
     my $self = shift;
     return unless $self->has_result;
