@@ -97,7 +97,7 @@ Widget type is 'text'.
     # and separator symbol of ','
 
     has_field 'test_result' => (
-        type                    => 'FloatNumber',
+        type                    => 'Float',
         size                    => 8,               # Total size of number including decimal part.
         precision               => 2,               # Size of the part after decimal symbol.
         decimal_symbol          => '.',             # Decimal symbol accepted in web page form
