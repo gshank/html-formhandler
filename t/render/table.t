@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 
-use HTML::FormHandler::Field::Text;
+use HTML::FormHandler::Test;
 
 
 {
@@ -70,5 +70,10 @@ my $html ;
 ok( $html = $form->render, 'get table rendered output from form');
 like $html, qr/<form (.+)><table>/, "form start is rendered";
 like $html, qr/<\/table>\n<\/form>/, "form end is rendered";
+
+my $rendered = $form->render_field('number');
+my $expected = '<tr><td><label for="number">Number</label></td><td><input id="number" name="number" type="text" value="" /></td></tr>';
+
+is_html( $rendered, $expected, 'number field rendered ok' );
 
 done_testing;

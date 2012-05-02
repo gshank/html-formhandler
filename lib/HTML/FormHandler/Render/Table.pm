@@ -4,7 +4,7 @@ package HTML::FormHandler::Render::Table;
 use Moose::Role;
 
 with 'HTML::FormHandler::Render::Simple' =>
-    { -excludes => [ 'render', 'render_field_struct', 'render_end', 'render_start' ] };
+    { -excludes => [ 'render', 'wrap_field', 'render_end', 'render_start' ] };
 use HTML::FormHandler::Render::Util ('process_attrs');
 
 =head1 SYNOPSIS
@@ -58,18 +58,17 @@ sub render_end {
     return $output;
 }
 
-sub render_field_struct {
-    my ( $self, $field, $rendered_field, $class ) = @_;
-    my $output = qq{\n<tr$class>};
-    my $l_type =
-        defined $self->get_label_type( $field->widget ) ?
-        $self->get_label_type( $field->widget ) :
-        '';
+sub wrap_field {
+    my ( $self, $field, $rendered_field ) = @_;
+
+    my $attrs = process_attrs($field->wrapper_attributes);
+    my $output = qq{\n<tr$attrs>};
+    my $l_type = $field->widget eq 'Compound' ? 'legend' : 'label';
     if ( $l_type eq 'label' ) {
-        $output .= '<td>' . $self->_label($field) . '</td>';
+        $output .= '<td>' . $self->render_label($field) . '</td>';
     }
     elsif ( $l_type eq 'legend' ) {
-        $output .= '<td>' . $self->_label($field) . '</td></tr>';
+        $output .= '<td>' . $self->render_label($field) . '</td></tr>';
     }
     if ( $l_type ne 'legend' ) {
         $output .= '<td>';
