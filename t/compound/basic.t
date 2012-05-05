@@ -45,7 +45,7 @@ ok( $form->validated, 'form validated' );
 
 is_deeply($form->fif, $params, 'get fif with right value');
 is( $form->field('duration')->value->hours, 2, 'duration value is correct');
-$form->process( params => { name => 'Testing', 'duration.hours' => 'abc', 'duration.inutes' => 'xyz' } );
+$form->process( params => { name => 'Testing', 'duration.hours' => 'abc', 'duration.minutes' => 'xyz' } );
 ok( $form->has_errors, 'form does not validate' );
 my @errors = $form->errors;
 is( $errors[0], 'Invalid value for Duration: Hours', 'correct error message' );
@@ -81,8 +81,8 @@ $params->{'start_date.month'} = 8;
 $dtform->process( params => $params );
 ok( !$dtform->validated, 'form did not validate' );
 ok( $dtform->has_errors, 'form has error' );
-is_deeply( [$dtform->errors], ['That month is not available'], 'correct error' );
-
+my @errors = $dtform->errors;
+is_deeply( $errors[0], 'That month is not available', 'correct error' );
 
 {
    package Field::MyCompound;

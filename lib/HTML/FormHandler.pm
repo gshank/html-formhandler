@@ -792,6 +792,8 @@ has 'name' => (
     is      => 'rw',
     default => sub { return 'form' . int( rand 1000 ) }
 );
+sub full_name { '' }
+sub full_accessor { '' }
 has 'parent' => ( is => 'rw' );
 has 'result' => (
     isa       => 'HTML::FormHandler::Result',
@@ -1209,6 +1211,14 @@ sub errors {
     return @errors;
 }
 
+sub build_errors {
+    my $self = shift;
+    # this puts the errors in the result
+    foreach my $err_res (@{$self->result->error_results}) {
+        $self->result->_push_errors($err_res->all_errors);
+    }
+}
+
 sub uuid {
     my $form = shift;
     require Data::UUID;
@@ -1224,9 +1234,9 @@ sub validate_form {
     $self->validate;           # empty method for users
     $self->validate_model;     # model specific validation
     $self->fields_set_value;
+    $self->build_errors;       # move errors to result
     $self->_clear_dependency;
     $self->clear_posted;
-    $self->get_error_fields;
     $self->ran_validation(1);
     $self->dump_validated if $self->verbose;
     return $self->validated;
@@ -1416,13 +1426,6 @@ sub _munge_params {
     $new_params = {} if !defined $new_params;
     $self->{params} = $new_params;
 }
-
-after 'get_error_fields' => sub {
-   my $self = shift;
-   foreach my $err_res (@{$self->result->error_results}) {
-       $self->result->push_errors($err_res->all_errors);
-   }
-};
 
 sub add_form_error {
     my ( $self, @message ) = @_;

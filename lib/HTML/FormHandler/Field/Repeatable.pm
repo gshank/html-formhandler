@@ -191,6 +191,9 @@ sub create_element {
     }
     # copy the fields from this field into the instance
     $instance->add_field( $self->all_fields );
+    foreach my $fld ( $instance->all_fields ) {
+        $fld->parent($instance);
+    }
 
     # set required flag
     $instance->required( $self->required );

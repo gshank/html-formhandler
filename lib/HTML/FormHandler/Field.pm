@@ -576,7 +576,7 @@ has 'result' => (
     writer    => '_set_result',
     handles   => [
         '_set_input',   '_clear_input', '_set_value', '_clear_value',
-        'errors',       'all_errors',   'push_errors',  'num_errors', 'has_errors',
+        'errors',       'all_errors',   '_push_errors',  'num_errors', 'has_errors',
         'clear_errors', 'validated', 'add_warning', 'all_warnings', 'num_warnings',
         'has_warnings', 'warnings',
     ],
@@ -1306,8 +1306,13 @@ sub full_name {
     my $field = shift;
 
     my $name = $field->name;
-    my $parent = $field->parent || return $name;
-    return $parent->full_name . '.' . $name;
+    my $parent_name;
+    # field should always have a parent unless it's a standalone field test
+    if ( $field->parent ) {
+        $parent_name = $field->parent->full_name;
+    }
+    return $name unless length $parent_name;
+    return $parent_name . '.' . $name;
 }
 
 sub full_accessor {
@@ -1319,8 +1324,12 @@ sub full_accessor {
         return $parent->full_accessor;
     }
     my $accessor = $field->accessor;
-    return $accessor unless $parent;
-    return $parent->full_accessor . '.' . $accessor;
+    my $parent_accessor;
+    if ( $parent ) {
+        $parent_accessor = $parent->full_accessor;
+    }
+    return $accessor unless length $parent_accessor;
+    return $parent_accessor . '.' . $accessor;
 }
 
 sub add_error {
@@ -1335,10 +1344,17 @@ sub add_error {
         $out = $self->_localize(@message);
     }
     catch {
-        die "Error occurred localizing error message for " . $self->label . ".  $_";
+        die "Error occurred localizing error message for " . $self->label . ". Check brackets. $_";
     };
+    return $self->push_errors($out);;
+}
 
-    $self->push_errors($out);
+sub push_errors {
+    my $self = shift;
+    $self->_push_errors(@_);
+    if ( $self->parent ) {
+        $self->parent->propagate_error($self->result);
+    }
     return;
 }
 

@@ -91,7 +91,9 @@ Returns an array of error strings;
 
 =item has_errors
 
-Does the field have errors?
+Does the field have errors? Note that a compound field that contains subfields
+with errors will not return true for this method. If you want to know if there
+are errors in the subfields, do 'has_error_fields'.
 
 =item num_errors
 
@@ -127,6 +129,8 @@ These are the main methods that you might need to use.
 =item errors
 
 =item error_results
+
+The results with errors; 'error_fields' is a wrapper around this.
 
 =back
 

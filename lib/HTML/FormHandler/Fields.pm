@@ -204,20 +204,19 @@ sub clear_data {
     $_->clear_data for $self->all_fields;
 }
 
-sub get_error_fields {
-    my $self = shift;
+sub propagate_error {
+    my ( $self, $result ) = @_;
 
-    my @error_results;
-    foreach my $field ( $self->sorted_fields ) {
-        next unless $field->has_result;
-        if ( $field->has_fields ) {
-            $field->get_error_fields;
-            push @error_results, @{ $field->result->error_results }
-                if $field->result->has_error_results;
+    # References to fields with errors are propagated up the tree.
+    # All fields with errors should end up being in the form's
+    # error_results. Once.
+    my ($found) = grep { $_ == $result } $self->result->all_error_results;
+    unless ( $found ) {
+        $self->result->add_error_result($result);
+        if ( $self->parent ) {
+            $self->parent->propagate_error( $result );
         }
-        push @error_results, $field->result if $field->result->has_errors;
     }
-    $self->result->add_error_result(@error_results) if scalar @error_results;
 }
 
 sub dump_fields { shift->dump(@_) }
