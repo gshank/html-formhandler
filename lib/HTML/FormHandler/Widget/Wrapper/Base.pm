@@ -4,11 +4,24 @@ package HTML::FormHandler::Widget::Wrapper::Base;
 use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
 
+=head1 NAME
+
+HTML::FormHandler::Widget::Wrapper::Base
+
+=head1 DESCRIPTION
+
+Provides several common methods for wrapper widgets, including
+'do_render_label' and 'wrap_checkbox'.
+
+=cut
+
 sub do_render_label {
-    my ( $self, $result, $label_tag ) = @_;
+    my ( $self, $result, $label_tag, $class ) = @_;
 
     $label_tag ||= $self->get_tag('label_tag') || 'label';
-    my $attrs = process_attrs($self->label_attributes($result));
+    my $attr = $self->label_attributes( $result );
+    push @{ $attr->{class} }, @$class if $class;
+    my $attrs = process_attrs($attr);
     my $label;
     if( $self->does_wrap_label ) {
         $label = $self->wrap_label( $self->label );
