@@ -329,6 +329,7 @@ sub _merge_updates {
             my $attr = $class->meta->find_attribute_by_name( 'widget' );
             $widget = $attr->default if $attr;
         }
+        $widget = '' if $widget eq 'None';
         # widget wrapper
         my $widget_wrapper = $field_attr->{widget_wrapper};
         unless( $widget_wrapper ) {

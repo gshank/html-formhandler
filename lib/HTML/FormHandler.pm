@@ -532,7 +532,7 @@ so this is a tree structure.
 Returns those fields from the fields array which are currently active. This
 is the method that returns the fields that are looped through when rendering.
 
-=head3 field($name)
+=head3 field($name), subfield($name)
 
 This is the method that is usually called to access a field:
 
@@ -542,6 +542,16 @@ This is the method that is usually called to access a field:
     my $city = $form->field('addresses.0.city')->value;
 
 Pass a second true value to die on errors.
+
+Since fields are searched for using the form as a base, if you want to find
+a sub field in a compound field method, the 'subfield' method may be more
+useful, since you can search starting at the current field. The 'chained'
+method also works:
+
+    -- in a compound field --
+    $self->field('media.caption'); # fails
+    $self->field('media')->field('caption'); # works
+    $self->subfield('media.caption'); # works
 
 =head2 Constraints and validation
 

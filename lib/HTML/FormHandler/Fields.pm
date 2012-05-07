@@ -101,6 +101,11 @@ sub field_index {
     return;
 }
 
+sub subfield {
+    my ( $self, $name ) = @_;
+    return $self->field($name, undef, $self);
+}
+
 sub field {
     my ( $self, $name, $die, $f ) = @_;
 

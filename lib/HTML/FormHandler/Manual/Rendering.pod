@@ -426,6 +426,13 @@ The 'build_update_subfields' option is mainly useful if you have multiple
 repeatable fields that you want to set, or if you want defaults in a base
 class.
 
+=head3 widget and widget_wrapper set to 'None'
+
+If you want to implement the 'render' method in a custom field, you can set
+'widget' to 'None' and no widget will be applied. Setting the 'widget_wrapper'
+to 'None' will apply the 'None' wrapper, which simply returns the widget
+rendering.
+
 =head3 Error messages
 
 The default is currently to display error messages next to the rendered fields,
