@@ -82,6 +82,7 @@ my $struct = {
 my $form = Structured::Form->new;
 ok( $form, 'form created' );
 $form->process( params => $struct );
+is( $form->result->num_results, 6, 'correct number of results' );
 ok( $form->validated, 'form validated');
 is_deeply( $form->field('tags')->value, ['Perl', 'programming', 'Moose' ],
    'list field tags has right values' );
@@ -92,6 +93,7 @@ is( $form->field('options.flags.opt_in')->value, 1, 'get opt_in flag');
 my $form2 = Structured::Form->new;
 ok( $form2, 'form created' );
 $form2->process( init_object => $struct, params => {} );
+is( $form2->result->num_results, 6, 'correct number of results' );
 ok( !$form2->validated, 'form validated');
 is_deeply( $form2->field('employer')->item, { name => 'TechTronix', country => 'Utopia', }, 'has item');
 is_deeply( $form2->field('addresses')->item, $struct->{addresses}, 'item for repeatable' );
@@ -135,6 +137,7 @@ is_deeply( $form->values, $struct, 'values round-tripped from fif');
 # works with item and params
 $form2->process( item => $struct, params => $fif );
 ok( $form2->validated, 'form processed from fif' );
+is( $form2->result->num_results, 6, 'correct number of results' );
 is_deeply( $form2->field('employer')->item, { name => 'TechTronix', country => 'Utopia', }, 'has item');
 is_deeply( $form2->field('addresses')->item, $struct->{addresses}, 'item for repeatable' );
 

@@ -402,8 +402,6 @@ sub _update_or_create {
         $field = $self->new_field_with_traits( $class, $field_attr);
         $parent->add_field($field);
     }
-    $field->form->reload_after_update(1)
-        if ( $field->form && $field->reload_after_update );
     return $field;
 }
 

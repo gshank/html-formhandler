@@ -905,7 +905,6 @@ has 'defaults' => ( is => 'rw', isa => 'HashRef', default => sub {{}}, traits =>
 );
 has 'use_defaults_over_obj' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_defaults_over_obj' );
 has 'use_init_obj_over_item' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_init_obj_over_item' );
-has 'reload_after_update' => ( is => 'rw', isa     => 'Bool' );
 # flags
 has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );
@@ -1166,7 +1165,6 @@ sub process {
     $self->setup_form(@_);
     $self->validate_form      if $self->posted;
     $self->update_model       if ( $self->validated && !$self->no_update );
-    $self->after_update_model if $self->validated;
     $self->dump_fields        if $self->verbose;
     $self->processed(1);
     return $self->validated;
@@ -1177,7 +1175,6 @@ sub run {
     $self->setup_form(@_);
     $self->validate_form      if $self->posted;
     $self->update_model       if ( $self->validated && !$self->no_update );;
-    $self->after_update_model if $self->validated;
     my $result = $self->result;
     $self->clear;
     return $result;
@@ -1261,12 +1258,6 @@ sub has_errors {
 sub num_errors {
     my $self = shift;
     return $self->num_error_fields + $self->num_form_errors;
-}
-
-sub after_update_model {
-    my $self = shift;
-    $self->_result_from_object( $self->result, $self->item )
-        if ( $self->reload_after_update && $self->item );
 }
 
 sub setup_form {

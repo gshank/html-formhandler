@@ -652,7 +652,6 @@ sub _deflate_and_set_value {
 }
 
 sub is_repeatable { }
-has 'reload_after_update' => ( is => 'rw', isa => 'Bool' );
 
 has 'fif_from_value' => ( isa => 'Str', is => 'ro' );
 
