@@ -1,3 +1,14 @@
+    Add 'missing' method to Field
+    Use result in Bootstrap render_form_messages
+    Fix Render::Table
+    Propagate errors when they're added, so $form->has_errors
+        works in sub validate
+    Use do_render_label in Bootstrap wrapper to allow setting
+        label class/attributes
+    Add subfield convenience method.
+    Remove 'reload_after_update'. Didn't work anyway. Bug: duplicate
+        results with repeatables. (avoid with reload_after_update => 0)
+
 0.40007 Tues Apr 24, 2012
     Re-factor widget to provide 'render_element' method
     Various doc updates
