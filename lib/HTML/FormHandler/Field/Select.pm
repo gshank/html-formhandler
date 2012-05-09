@@ -259,6 +259,17 @@ has 'options' => (
     lazy    => 1,
     builder => 'build_options'
 );
+# this is used for rendering
+has 'options_index' => ( traits => ['Counter'], isa => 'Num',
+    is => 'rw', default => 0,
+    handles => { inc_options_index => 'inc', dec_options_index => 'dec',
+        reset_options_index => 'reset' },
+);
+sub clear_data {
+    my $self = shift;
+    $self->next::method();
+    $self->reset_options_index;
+}
 
 sub build_options { [] }
 has 'options_from' => ( isa => 'Str', is => 'rw', default => 'none' );

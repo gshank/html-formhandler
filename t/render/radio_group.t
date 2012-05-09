@@ -55,4 +55,16 @@ $expected =
 
 is_html( $rendered, $expected, 'output from radio group');
 
+# create form with no label rendering for opt_in
+$form = Test::Form->new( field_list => [ '+opt_in' => { do_label => 0 } ] );
+$form->process;
+# first individually rendered option
+$rendered = $form->field('opt_in')->render_option({ value => 'test', label => 'Test'});
+$expected = '<label class="radio" for="opt_in.0"><input id="opt_in.0" name="opt_in" type="radio" value="test" /> Test </label>';
+is_html( $rendered, $expected, 'individual option rendered ok' );
+# second rendered option is wrapped
+$rendered = $form->field('opt_in')->render_wrapped_option({ value => 'abcde', label => 'Abcde' });
+$expected = '<div><label class="radio" for="opt_in.1"><input id="opt_in.1" name="opt_in" type="radio" value="abcde" /> Abcde </label></div>';
+is_html( $rendered, $expected, 'indvidual wrapped option rendered ok' );
+
 done_testing;
