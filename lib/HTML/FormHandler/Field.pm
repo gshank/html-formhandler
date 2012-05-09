@@ -1310,7 +1310,7 @@ sub full_name {
     if ( $field->parent ) {
         $parent_name = $field->parent->full_name;
     }
-    return $name unless length $parent_name;
+    return $name unless defined $parent_name && length $parent_name;
     return $parent_name . '.' . $name;
 }
 
@@ -1327,7 +1327,7 @@ sub full_accessor {
     if ( $parent ) {
         $parent_accessor = $parent->full_accessor;
     }
-    return $accessor unless length $parent_accessor;
+    return $accessor unless defined $parent_accessor && length $parent_accessor;
     return $parent_accessor . '.' . $accessor;
 }
 

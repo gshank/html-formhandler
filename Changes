@@ -8,6 +8,7 @@
     Add subfield convenience method.
     Remove 'reload_after_update'. Didn't work anyway. Bug: duplicate
         results with repeatables. (avoid with reload_after_update => 0)
+    Re-factor RadioGroup widget to allow individually rendered options
 
 0.40007 Tues Apr 24, 2012
     Re-factor widget to provide 'render_element' method

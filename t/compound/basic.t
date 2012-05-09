@@ -81,7 +81,7 @@ $params->{'start_date.month'} = 8;
 $dtform->process( params => $params );
 ok( !$dtform->validated, 'form did not validate' );
 ok( $dtform->has_errors, 'form has error' );
-my @errors = $dtform->errors;
+@errors = $dtform->errors;
 is_deeply( $errors[0], 'That month is not available', 'correct error' );
 
 {
