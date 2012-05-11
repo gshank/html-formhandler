@@ -63,7 +63,7 @@ has 'fields' => (
 # both updates on the process call and updates from class applied roles
 has 'update_subfields' => ( is => 'rw', isa => 'HashRef', builder => 'build_update_subfields',
     traits => ['Hash'], handles => { clear_update_subfields => 'clear',
-    has_update_subfields => 'count' }, init_arg => undef );
+    has_update_subfields => 'count' } );
 sub build_update_subfields {{}}
 
 # compatibility wrappers for result errors

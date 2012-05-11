@@ -621,6 +621,10 @@ If you do want a label with these fields, you must set the 'do_label' flag to 1:
 
    has_field 'foo' ( type => 'Button', do_label => 1 );
 
+Select fields are also fairly complicated. They can be rendered with the
+'Select', 'RadioGroup', and 'CheckboxGroup' widgets. Option groups are also
+supported. See L<HTML::FormHandler::Field::Select>;
+
 =head2 Rendering labels
 
 A 'standard' label is built in the field if you don't supply one. The label

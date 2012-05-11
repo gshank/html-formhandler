@@ -26,8 +26,22 @@ sub render_element {
     my $output = '';
     $output .= "<br />" if $self->get_tag('radio_br_after');
 
-    foreach my $option ( @{ $self->options } ) {
-        $output .= $self->render_option( $option, $result );
+    foreach my $option ( @{ $self->{options} } ) {
+        if ( my $label = $option->{group} ) {
+            $label = $self->_localize( $label ) if $self->localize_labels;
+            my $attr = $option->{attributes} || {};
+            my $attr_str = process_attrs($attr);
+            my $lattr = $option->{label_attributes} || {};
+            my $lattr_str= process_attrs($attr);
+            $output .= qq{\n<div$attr_str><label$lattr_str>$label</label>};
+            foreach my $group_opt ( @{ $option->{options} } ) {
+                $output .= $self->render_option( $group_opt, $result );
+            }
+            $output .= qq{\n</div>};
+        }
+        else {
+            $output .= $self->render_option( $option, $result );
+        }
         $output .= '<br />' if $self->get_tag('radio_br_after');
     }
     $self->reset_options_index;
