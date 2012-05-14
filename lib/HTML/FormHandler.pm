@@ -843,6 +843,14 @@ has 'index' => (
         field_in_index => 'exists',
     }
 );
+has '_repeatable_fields' => ( is => 'rw', isa => 'ArrayRef',
+    traits => ['Array'], default => sub {[]},
+    handles => {
+        add_repeatable_field => 'push',
+        has_repeatable_fields => 'count',
+        all_repeatable_fields => 'elements',
+    },
+);
 
 has 'field_traits' => ( is => 'ro', traits => ['Array'], isa => 'ArrayRef',
     default => sub {[]}, handles => { 'has_field_traits' => 'count' } );
@@ -1165,6 +1173,7 @@ sub process {
     $self->setup_form(@_);
     $self->validate_form      if $self->posted;
     $self->update_model       if ( $self->validated && !$self->no_update );
+    $self->after_update_model if ( $self->validated && !$self->no_update );
     $self->dump_fields        if $self->verbose;
     $self->processed(1);
     return $self->validated;
@@ -1179,6 +1188,52 @@ sub run {
     $self->clear;
     return $result;
 }
+
+sub after_update_model {
+    my $self = shift;
+    # This an attempt to reload the repeatable
+    # relationships after the database is updated, so that we get the
+    # primary keys of the repeatable elements. Otherwise, if a form
+    # is re-presented, repeatable elements without primary keys may
+    # be created again. There is no reliable way to connect up
+    # existing repeatable elements with their db-created primary keys.
+    if ( $self->has_repeatable_fields && $self->item ) {
+        foreach my $field ( $self->all_repeatable_fields ) {
+            # Check to see if there are any repeatable subfields with
+            # null primary keys, so we can skip reloading for the case
+            # where all repeatables have primary keys.
+            my $needs_reload = 0;
+            foreach my $sub_field ( $field->fields ) {
+                if ( $sub_field->has_flag('is_compound') && $sub_field->has_primary_key ) {
+                    foreach my $pk_field ( @{ $field->primary_key } ) {
+                        $needs_reload++ unless $pk_field->fif;
+                    }
+                    last if $needs_reload;
+                }
+            }
+            next unless $needs_reload;
+            my @names = split( /\./, $field->full_name );
+            my $rep_item = $self->find_sub_item( $self->item, \@names );
+            # $rep_item is a single row or an array of rows or undef
+            # If we found a database item for the repeatable, replace
+            # the existing result with a result derived from the item.
+            if ( ref $rep_item ) {
+                my $parent = $field->parent;
+                my $result = $field->result;
+                my $new_result = HTML::FormHandler::Field::Result->new(
+                    name   => $field->name,
+                    parent => $parent,
+                );
+                $new_result = $field->_result_from_object( $result, $rep_item );
+                # find index of existing result
+                my $index = $parent->result->find_result_index( sub { $_ == $result } );
+                # replace existing result with new result
+                $parent->result->set_result_at_index( $index, $new_result );
+            }
+        }
+    }
+}
+
 
 sub db_validate {
     my $self = shift;

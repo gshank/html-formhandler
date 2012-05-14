@@ -79,6 +79,17 @@ The subfields of the elements will be in a fields array in each element.
 Every field that has a 'fields' array will also have an 'error_fields' array
 containing references to the fields that contain errors.
 
+=head2 Complications
+
+When new elements are created by a Repeatable field in a database form
+an attempt is made to re-load the Repeatable field from the database, because
+otherwise the repeatable elements will not have primary keys. Although this
+works, if you have included other fields in your repeatable elements
+that do *not* come from the database, the defaults/values must be
+able to be loaded in a way that works when the form is initialized from
+the database item. This is only an issue if you re-present the form
+after the database update succeeds.
+
 =head1 ATTRIBUTES
 
 =over
@@ -88,7 +99,7 @@ containing references to the fields that contain errors.
 This attribute contains the next index number available to create an
 additional array element.
 
-=item  num_when_empty
+=item num_when_empty
 
 This attribute (default 1) indicates how many empty fields to present
 in an empty form which hasn't been filled from parameters or database
@@ -171,6 +182,9 @@ sub create_element {
         type   => 'Repeatable::Instance',
         is_contains => 1,
     };
+    # primary_key array is used for reloading after database update
+    $instance_attr->{primary_key} = $self->primary_key
+        if $self->has_primary_key;
     if( $self->has_init_contains ) {
         $instance_attr = merge( $self->init_contains, $instance_attr );
     }

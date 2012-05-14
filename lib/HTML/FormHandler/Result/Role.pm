@@ -37,6 +37,8 @@ has '_results' => (
         num_results => 'count',
         has_results => 'count',
         clear_results => 'clear',
+        find_result_index => 'first_index',
+        set_result_at_index => 'set',
     }
 );
 

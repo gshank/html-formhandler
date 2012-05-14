@@ -102,6 +102,16 @@ sub _result_from_object {
     return $self_result;
 }
 
+sub find_sub_item {
+    my ( $self, $item, $field_name_array ) = @_;
+    my $this_fname = shift @$field_name_array;;
+    my $field = $self->field($this_fname);
+    my $new_item = $self->_get_value( $field, $item );
+    if ( scalar @$field_name_array ) {
+        $new_item = $field->find_sub_item( $new_item, $field_name_array );
+    }
+    return $new_item;
+}
 
 sub _get_value {
     my ( $self, $field, $item ) = @_;

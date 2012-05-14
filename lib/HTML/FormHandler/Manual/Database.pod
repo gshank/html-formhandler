@@ -87,7 +87,9 @@ compound field contained in the Repeatable.
   has_field 'addresses.city';
   has_field 'addresses.state';
 
-See also L<HTML::FormHandler::Field::Repeatable>.
+There are some complications with creating Repeatable elements (with
+the PrimaryKey field set to undef) in a database and re-presenting the form.
+See L<HTML::FormHandler::Field::Repeatable> for more info.
 
 =head1 Flags
 

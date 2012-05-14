@@ -1,3 +1,5 @@
+    Re-implement improved version of 'reload_after_update'.
+
 0.40008 Fri May 11, 2012
     Add 'missing' method to Field
     Use result in Bootstrap render_form_messages

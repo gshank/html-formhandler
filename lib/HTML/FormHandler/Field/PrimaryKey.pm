@@ -20,6 +20,18 @@ has 'is_primary_key' => ( isa => 'Bool', is => 'ro', default => '1' );
 has '+widget' => ( default => 'Hidden' );
 has '+do_label' => ( default => 0 );
 
+sub BUILD {
+    my $self = shift;
+    if ( $self->has_parent ) {
+        if ( $self->parent->has_primary_key ) {
+            push @{ $self->parent->primary_key }, $self;
+        }
+        else {
+            $self->parent->primary_key( [ $self ] );
+        }
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
 1;
