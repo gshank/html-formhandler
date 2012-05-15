@@ -1205,7 +1205,7 @@ sub after_update_model {
             my $needs_reload = 0;
             foreach my $sub_field ( $field->fields ) {
                 if ( $sub_field->has_flag('is_compound') && $sub_field->has_primary_key ) {
-                    foreach my $pk_field ( @{ $field->primary_key } ) {
+                    foreach my $pk_field ( @{ $sub_field->primary_key } ) {
                         $needs_reload++ unless $pk_field->fif;
                     }
                     last if $needs_reload;
