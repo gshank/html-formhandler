@@ -160,6 +160,36 @@ sub _apply_actions {
         if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' ) {
             $action = { type => $action };
         }
+        if ( my $when = $action->{when} ) {
+            my $matched = 0;
+            foreach my $key ( keys %$when ) {
+                my $check_against = $when->{$key};
+                my $from_form = ( $key =~ /^\+/ );
+                $key =~ s/^\+//;
+                my $field = $from_form ? $self->form->field($key) : $self->parent->subfield( $key );
+                unless ( $field ) {
+                    warn "field '$key' not found processing when";
+                    next;
+                }
+                if ( ref $check_against eq 'CODE' ) {
+                    $matched++
+                        if $check_against->($field->fif, $self);
+                }
+                elsif ( ref $check_against eq 'ARRAY' ) {
+                    foreach my $value ( @$check_against ) {
+                        $matched++ if ( $value eq $field->fif );
+                    }
+                }
+                elsif ( $check_against eq ( $field->fif || '' ) ) {
+                    $matched++;
+                }
+                else {
+                    $matched = 0;
+                    last;
+                }
+            }
+            next unless $matched;
+        }
         if ( exists $action->{type} ) {
             my $tobj;
             if ( ref $action->{type} eq 'MooseX::Types::TypeDecorator' ) {

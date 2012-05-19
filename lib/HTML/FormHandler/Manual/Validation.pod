@@ -110,6 +110,23 @@ which is localized.
 The 'check' key can point to a regex, arrayref of strings, or coderef. The value of
 the 'transform' key should be a coderef. The value of the 'type' key is a Moose type.
 
+In addition to the check and type keys, you can provide a 'when' key to only
+perform this validation when a particular field is a particular value:
+
+    has_field 'fee';
+    has_field 'fie' => ( apply => [
+        { when => { fee => 1 }, check => qr/when/, message => 'Wrong fie' },
+    has_field 'fo';
+    has_field 'fum_comp' => ( type => 'Compound' );
+    has_field 'fum_comp.one';
+    has_field 'fum_comp.two' => ( apply => [
+        { when => { '+fee' => [1,2,3] }, check => qr/when/, message => 'Wrong two' },
+    ]);
+
+The field name key in the 'when' hashref is assumed to be a field at the same
+"level" as this field (i.e. a sibling field in a compound). If you want to
+specify a field name from the form, prepend the name with a '+'.
+
 Transformations and coercions are called in an eval
 to catch the errors. Warnings are trapped in a sigwarn handler.
 
