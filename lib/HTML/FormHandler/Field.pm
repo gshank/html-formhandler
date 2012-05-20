@@ -1016,7 +1016,7 @@ sub build_validate_method {
     my $self = shift;
     my $set_validate = $self->set_validate;
     $set_validate ||= "validate_" . convert_full_name($self->full_name);
-    return sub { $self = shift; $self->form->$set_validate($self); }
+    return sub { my $self = shift; $self->form->$set_validate($self); }
         if ( $self->form && $self->form->can($set_validate) );
     return sub { };
 }

@@ -10,8 +10,11 @@ use Devel::Cycle;
 
     has_field test => ( type => "Text");
 
-    sub default_test{
+    sub default_test {
         return "test";
+    }
+    sub validate_test {
+        return 1;
     }
 
     __PACKAGE__->meta->make_immutable;
