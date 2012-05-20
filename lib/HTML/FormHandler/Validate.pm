@@ -59,21 +59,23 @@ sub validate_field {
     return unless $field->has_result;
     $field->clear_errors;    # this is only here for testing convenience
                              # See if anything was submitted
+    my $continue_validation = 1;
     if ( $field->required && ( !$field->has_input || !$field->input_defined ) ) {
         $field->add_error( $field->get_message('required'), $field->loc_label );
         if( $field->has_input ) {
            $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);
         }
-        return;
+        $continue_validation = 0;
     }
     elsif ( $field->DOES('HTML::FormHandler::Field::Repeatable') ) { }
     elsif ( !$field->has_input ) {
-        return;
+        $continue_validation = 0;
     }
     elsif ( !$field->input_defined ) {
         $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);
-        return;
+        $continue_validation = 0;
     }
+    return if ( !$continue_validation && !$field->validate_when_empty );
 
     # do building of node
     if ( $field->DOES('HTML::FormHandler::Fields') ) {
