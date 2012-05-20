@@ -50,7 +50,9 @@ use HTML::FormHandler::Render::Util ('process_attrs');
 use HTML::FormHandler::Field;
 
 has 'name' => ( is => 'ro', isa => 'Str', required => 1 );
-has 'form' => ( is => 'ro', isa => 'HTML::FormHandler', required => 1 );
+has 'form' => ( is => 'ro', isa => 'HTML::FormHandler', required => 1,
+   weak_ref => 1,
+);
 
 has 'class' => (
     is      => 'rw',
