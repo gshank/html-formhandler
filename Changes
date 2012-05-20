@@ -1,3 +1,7 @@
+   Fix memory leak on fields with defaults due to missing my causing
+   $self to be closed over so that RAM was leaked if forms were constructed
+   but never processed.
+
 0.40009 Mon May 14, 2012
     Re-implement improved version of 'reload_after_update'.
 
