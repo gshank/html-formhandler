@@ -11,6 +11,7 @@ my $field = HTML::FormHandler::Field::Text->new(
    required => 1,
    password => 1,
 );
+$field->build_result;
 
 is( $field->password, 1, 'password is set');
 
@@ -24,6 +25,7 @@ $field = HTML::FormHandler::Field::Text->new(
    type => 'Text',
    required => 1,
 );
+$field->build_result;
 
 is( $field->password, undef, 'password is not set');
 

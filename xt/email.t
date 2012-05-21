@@ -14,6 +14,7 @@ $ENV{LANG} = 'en_us'; # in case user has LANG set
 my $class = 'HTML::FormHandler::Field::Email';
 use_ok($class);
 my $field = $class->new( name => 'test_field', );
+$field->build_result;
 ok( defined $field, 'new() called' );
 
 $field->_set_input('foo@bar.com');

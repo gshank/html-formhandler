@@ -1,3 +1,6 @@
+   Remove automatic building of field results. If you have field tests, you
+      need to add $field->build_result after creating field with 'new'.
+
 0.40010 Sun May 20, 2012
    Add 'when' clause to apply actions
    Fix memory leak on fields with defaults due to missing my causing

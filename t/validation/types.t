@@ -67,6 +67,7 @@ ok( !$form->field('state')->has_errors, 'no errors on state' );
 
 # State
 my $field = HTML::FormHandler::Field->new( name => 'Test1', apply => [ State ] );
+$field->build_result;
 ok( $field, 'created field with type' );
 $field->_set_input('GG');
 ok( !$field->validate_field, 'field did not validate');
@@ -75,6 +76,7 @@ $field->_set_input('NY');
 ok( $field->validate_field, 'state field validated');
 # Email
 $field = HTML::FormHandler::Field->new( name => 'Test', apply => [ Email ] );
+$field->build_result;
 $field->_set_input('gail@gmail.com');
 ok( $field->validate_field, 'email field validated' );
 ok( !$field->has_errors, 'email field is valid');
@@ -108,6 +110,7 @@ my @test = (
 
 while (my ($name, $type, $good, $bad, $error_msg) = splice @test, 0, 5) {
     $field = HTML::FormHandler::Field->new(name => 'Test', apply => [&$type]);
+    $field->build_result;
     for (@$good) {
         $field->_set_input($_);
         ok($field->validate_field, "$name validated");
@@ -130,6 +133,7 @@ while (my ($name, $type, $good, $bad, $error_msg) = splice @test, 0, 5) {
 while (my ($name, $type, $trans) = splice @test, 0, 3) {
     my @trans = @$trans;
     $field = HTML::FormHandler::Field->new(name => 'Test', apply => [&$type]);
+    $field->build_result;
     while (my ($from, $to) = splice @trans, 0, 2) {
 	$field->_set_input($from);
 	ok($field->validate_field, "$name validated");

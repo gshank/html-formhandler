@@ -7,6 +7,7 @@ use HTML::FormHandler::I18N;
 $ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
 
 my $field = HTML::FormHandler::Field::Duration->new( name => 'duration' );
+$field->build_result;
 
 ok( $field, 'get compound field');
 

@@ -6,6 +6,7 @@ use HTML::FormHandler::Test;
 use_ok( 'HTML::FormHandler::Field::Submit' );
 
 my $field = HTML::FormHandler::Field::Submit->new(name => 'submit');
+$field->build_result;
 is( $field->value, 'Save', 'get right value');
 ok( $field->result, 'returns result');
 
