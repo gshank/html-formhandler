@@ -117,8 +117,6 @@ sub field {
         exists $self->index->{$name} ) {
         return $self->index->{$name};
     }
-    return $self->form->index->{$name}
-        if $self->form && exists $self->form->index->{$name};
     if ( $name =~ /\./ ) {
         my @names = split /\./, $name;
         $f ||= $self->form || $self;
