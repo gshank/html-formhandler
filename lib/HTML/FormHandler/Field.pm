@@ -192,6 +192,9 @@ arbitrary HTML attributes on a field's input tag.
 
    has_field 'foo' => ( element_attr => { readonly => 1, my_attr => 'abc' } );
 
+Note that the 'id' and 'type' attributes are not set using element_attr. Use
+the field's 'id' attribute (or 'build_id_method') to set the id.
+
 The 'label_attr' hashref is for label attributes, and the 'wrapper_attr'
 is for attributes on the wrapping element (a 'div' for the standard 'simple'
 wrapper).

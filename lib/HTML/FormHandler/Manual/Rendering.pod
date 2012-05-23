@@ -252,7 +252,9 @@ Flag that indicates whether or not a label should be rendered.
 
 =item element_attr
 
-Hashref of arbitrary HTML attributes to include in the element.
+Hashref of arbitrary HTML attributes to include in the element. Note that
+this does not include the 'id' and 'type' attributes, which are handled
+separately. The 'id' can be changed with the field's 'id' attribute.
 
 =item element_class
 
