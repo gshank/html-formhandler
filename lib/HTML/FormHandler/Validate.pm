@@ -12,6 +12,7 @@ use Moose::Role;
 use Carp;
 
 has 'required' => ( isa => 'Bool', is => 'rw', default => '0' );
+has 'required_when' => ( is => 'rw', isa => 'HashRef', predicate => 'has_required_when' );
 has 'required_message' => (
     isa     => 'ArrayRef|Str',
     is      => 'rw',
@@ -60,7 +61,9 @@ sub validate_field {
     $field->clear_errors;    # this is only here for testing convenience
                              # See if anything was submitted
     my $continue_validation = 1;
-    if ( $field->required && ( !$field->has_input || !$field->input_defined ) ) {
+    if ( ( $field->required ||
+           ( $field->has_required_when && $field->match_when($field->required_when) ) ) &&
+       ( !$field->has_input || !$field->input_defined ) ) {
         $field->add_error( $field->get_message('required'), $field->loc_label );
         if( $field->has_input ) {
            $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);
@@ -163,34 +166,7 @@ sub _apply_actions {
             $action = { type => $action };
         }
         if ( my $when = $action->{when} ) {
-            my $matched = 0;
-            foreach my $key ( keys %$when ) {
-                my $check_against = $when->{$key};
-                my $from_form = ( $key =~ /^\+/ );
-                $key =~ s/^\+//;
-                my $field = $from_form ? $self->form->field($key) : $self->parent->subfield( $key );
-                unless ( $field ) {
-                    warn "field '$key' not found processing when";
-                    next;
-                }
-                if ( ref $check_against eq 'CODE' ) {
-                    $matched++
-                        if $check_against->($field->fif, $self);
-                }
-                elsif ( ref $check_against eq 'ARRAY' ) {
-                    foreach my $value ( @$check_against ) {
-                        $matched++ if ( $value eq $field->fif );
-                    }
-                }
-                elsif ( $check_against eq ( $field->fif || '' ) ) {
-                    $matched++;
-                }
-                else {
-                    $matched = 0;
-                    last;
-                }
-            }
-            next unless $matched;
+            next unless $self->match_when($when);
         }
         if ( exists $action->{type} ) {
             my $tobj;
@@ -265,6 +241,39 @@ sub _apply_actions {
             $self->add_error(@message);
         }
     }
+}
+
+sub match_when {
+    my ( $self, $when ) = @_;
+$DB::single=1;
+    my $matched = 0;
+    foreach my $key ( keys %$when ) {
+        my $check_against = $when->{$key};
+        my $from_form = ( $key =~ /^\+/ );
+        $key =~ s/^\+//;
+        my $field = $from_form ? $self->form->field($key) : $self->parent->subfield( $key );
+        unless ( $field ) {
+            warn "field '$key' not found processing when";
+            next;
+        }
+        if ( ref $check_against eq 'CODE' ) {
+            $matched++
+                if $check_against->($field->fif, $self);
+        }
+        elsif ( ref $check_against eq 'ARRAY' ) {
+            foreach my $value ( @$check_against ) {
+                $matched++ if ( $value eq $field->fif );
+            }
+        }
+        elsif ( $check_against eq ( $field->fif || '' ) ) {
+            $matched++;
+        }
+        else {
+            $matched = 0;
+            last;
+        }
+    }
+    return $matched;
 }
 
 use namespace::autoclean;

@@ -30,7 +30,13 @@ You need to set 'required' all the way up, if that's the behavior that you
 want.
 
 If a field is empty and *not* required, no other field validation will be
-performed. The form's 'validate' method, however, will always be called.
+performed unless the 'validate_when_empty' flag is set. The form's 'validate'
+method, however, will always be called.
+
+There is also the 'required_when' attribute, which works the same way as the
+'when' key on the apply actions.
+
+    has_field 'fee' => ( required_when => { 'fie' => 2 } );
 
 =head2 range_start, range_end
 
@@ -289,6 +295,8 @@ is set for all of the fields in the group.
             ],
         },
     );
+
+You can also use the 'required_when' flag to do something similar.
 
 
 =pod
