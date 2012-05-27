@@ -245,7 +245,7 @@ sub _apply_actions {
 
 sub match_when {
     my ( $self, $when ) = @_;
-$DB::single=1;
+
     my $matched = 0;
     foreach my $key ( keys %$when ) {
         my $check_against = $when->{$key};

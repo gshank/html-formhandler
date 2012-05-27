@@ -28,6 +28,7 @@ Tags supported:
    before_element -- insert tag before input element
    input_prepend -- for Bootstrap 'input-prepend' class
    input_append -- for Bootstrap 'input-append' class
+   input_append_button -- 'input-append' with button instead of span
    no_errors -- don't append error to field rendering
    after_element -- insert tag after input element
 
@@ -56,11 +57,9 @@ sub wrap_field {
     # the controls div for ... controls
     $output .= qq{\n<div class="controls">} unless $form_actions || !$self->do_label;
     # handle input-prepend and input-append
-    if( my $ip_tag = $self->get_tag('input_prepend' ) ) {
-        $rendered_widget = $self->input_prepend($rendered_widget, $ip_tag);
-    }
-    elsif ( my $ia_tag = $self->get_tag('input_append' ) ) {
-        $rendered_widget = $self->input_append($rendered_widget, $ia_tag);
+    if( $self->get_tag('input_prepend') || $self->get_tag('input_append') ||
+            $self->get_tag('input_append_button') ) {
+        $rendered_widget = $self->do_prepend_append($rendered_widget);
     }
     elsif( lc $self->widget eq 'checkbox' ) {
         $rendered_widget = $self->wrap_checkbox($result, $rendered_widget, 'label')
@@ -82,24 +81,31 @@ sub wrap_field {
     return "$output";
 }
 
-sub input_prepend {
-    my ( $self, $rendered_widget, $ip_tag ) = @_;
-    my $rendered =
-qq{<div class="input-prepend">
-  <span class="add-on">$ip_tag</span>
-  $rendered_widget
-</div>};
-    return $rendered;
-}
+sub do_prepend_append {
+    my ( $self, $rendered_widget ) = @_;
 
-sub input_append {
-    my ( $self, $rendered_widget, $ia_tag ) = @_;
-    my $rendered =
-qq{<div class="input-append">
+    my @class;
+    if( my $ip_tag = $self->get_tag('input_prepend' ) ) {
+        $rendered_widget = qq{<span class="add-on">$ip_tag</span>$rendered_widget};
+        push @class, 'input-prepend';
+    }
+    if ( my $ia_tag = $self->get_tag('input_append' ) ) {
+        $rendered_widget = qq{$rendered_widget<span class="add-on">$ia_tag</span>};
+        push @class, 'input-append';
+    }
+    if ( my $iab_tag = $self->get_tag('input_append_button') ) {
+        my @buttons = ref $iab_tag eq 'ARRAY' ? @$iab_tag : ($iab_tag);
+        foreach my $btn ( @buttons ) {
+            $rendered_widget = qq{$rendered_widget<button type="button" class="btn">$btn</button>};
+        }
+        push @class, 'input-append';
+    }
+    my $attr = process_attrs( { class => \@class } );
+    $rendered_widget =
+qq{<div$attr>
   $rendered_widget
-  <span class="add-on">$ia_tag</span>
 </div>};
-    return $rendered;
+    return $rendered_widget;
 }
 
 1;

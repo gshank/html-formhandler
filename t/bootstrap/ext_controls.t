@@ -32,6 +32,15 @@ use HTML::FormHandler::Test;
     has_field 'appendedInput' => ( label => 'Appended text', size => 16, element_class => ['span2'],
         tags => { input_append =>  '.00', after_element => '<p class="help-block">Here\'s more help text</p>' }
     );
+    has_field 'appendedPrependedInput' => ( label => 'Append and prepend', size => 16, element_class => ['span2'],
+        tags => { input_append =>  '.00', input_prepend => '$' },
+    );
+    has_field 'appendedInputButton' => ( label => 'Append with button', size => 16, element_class => ['span2'],
+        tags => { input_append_button =>  'Go!' },
+    );
+    has_field 'appendedInputButtons' => ( label => 'Two-button append', size => 16, element_class => ['span2'],
+        tags => { input_append_button =>  ['Search', 'Options'] },
+    );
 
     has_field 'inlineCheckboxes' => ( type => 'Multiple', widget => 'CheckboxGroup',
         label => 'Inline checkboxes',
@@ -82,12 +91,12 @@ my $rendered = $form->block('form_sizes')->render;
 is_html( $rendered, $expected, 'form_sizes block rendered ok' );
 
 $expected =
-'<div class="control-group">
+'
+<div class="control-group">
   <label class="control-label" for="prependedInput">Prepended text</label>
   <div class="controls">
     <div class="input-prepend">
-      <span class="add-on">@</span>
-      <input class="span2" id="prependedInput" name="prependedInput" size="16" type="text" value="" />
+      <span class="add-on">@</span><input class="span2" id="prependedInput" name="prependedInput" size="16" type="text" value="" />
     </div>
     <p class="help-block">Here\'s some help text</p>
   </div>
@@ -100,14 +109,48 @@ $expected =
   <label class="control-label" for="appendedInput">Appended text</label>
   <div class="controls">
     <div class="input-append">
-      <input class="span2" id="appendedInput" name="appendedInput" size="16" type="text" value="" />
-      <span class="add-on">.00</span>
+      <input class="span2" id="appendedInput" name="appendedInput" size="16" type="text" value="" /><span class="add-on">.00</span>
     </div>
     <p class="help-block">Here\'s more help text</p>
   </div>
 </div>';
 $rendered = $form->field('appendedInput')->render;
 is_html( $rendered, $expected, 'appendedinput rendered ok' );
+
+$expected =
+'<div class="control-group">
+  <label class="control-label" for="appendedPrependedInput">Append and prepend</label>
+  <div class="controls">
+    <div class="input-prepend input-append">
+    <span class="add-on">$</span><input class="span2" id="appendedPrependedInput" name="appendedPrependedInput" size="16" type="text" value="" /><span class="add-on">.00</span>
+  </div>
+</div>';
+$rendered = $form->field('appendedPrependedInput')->render;
+is_html( $rendered, $expected, 'appendedPrependedInput rendered ok' );
+
+$expected =
+'<div class="control-group">
+  <label class="control-label" for="appendedInputButton">Append with button</label>
+  <div class="controls">
+    <div class="input-append">
+      <input class="span2" id="appendedInputButton" name="appendedInputButton" size="16" type="text" value="" /><button class="btn" type="button">Go!</button>
+    </div>
+  </div>
+</div>';
+$rendered = $form->field('appendedInputButton')->render;
+is_html( $rendered, $expected, 'appendedInputButton rendered ok' );
+
+$expected =
+'<div class="control-group">
+  <label class="control-label" for="appendedInputButtons">Two-button append</label>
+  <div class="controls">
+    <div class="input-append">
+      <input class="span2" id="appendedInputButtons" name="appendedInputButtons" size="16" type="text" value="" /><button class="btn" type="button">Search</button><button class="btn" type="button">Options</button>
+    </div>
+  </div>
+</div>';
+$rendered = $form->field('appendedInputButtons')->render;
+is_html( $rendered, $expected, 'appendedInputButtons rendered ok' );
 
 $expected =
 '<div class="control-group">
@@ -133,7 +176,7 @@ $expected =
   Option one is this and that&mdash;be sure to include why it’s great
 </label>';
 $rendered = $form->field('optionsCheckboxList1')->render;
-is_html( $rendered, $expected, 'optionsCheckboxList1 rendred ok by itself');
+is_html( $rendered, $expected, 'optionsCheckboxList1 rendered ok by itself');
 
 $expected =
 '<div class="control-group">
@@ -193,8 +236,7 @@ $expected =
           <label class="control-label" for="prependedInput">Prepended text</label>
           <div class="controls">
             <div class="input-prepend">
-              <span class="add-on">@</span>
-              <input class="span2" id="prependedInput" name="prependedInput" size="16" type="text" value="" />
+              <span class="add-on">@</span><input class="span2" id="prependedInput" name="prependedInput" size="16" type="text" value="" />
             </div>
             <p class="help-block">Here\'s some help text</p>
           </div>
@@ -203,8 +245,7 @@ $expected =
           <label class="control-label" for="appendedInput">Appended text</label>
           <div class="controls">
             <div class="input-append">
-              <input class="span2" id="appendedInput" name="appendedInput" size="16" type="text" value="" />
-              <span class="add-on">.00</span>
+              <input class="span2" id="appendedInput" name="appendedInput" size="16" type="text" value="" /><span class="add-on">.00</span>
             </div>
             <p class="help-block">Here\'s more help text</p>
           </div>

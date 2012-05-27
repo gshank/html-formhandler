@@ -1,5 +1,10 @@
    Remove automatic building of field results. If you have field tests, you
       need to add $field->build_result after creating field with 'new'.
+      Possible memory cycle if result is accessed when not built.
+   Add 'required_when'
+   Add Bulgarian message file (dpetrov)
+   Bootstrap input_append/prepend: no linefeeds between input
+   Add input_append_button tag to Bootstrap wrapper
 
 0.40010 Sun May 20, 2012
    Add 'when' clause to apply actions
