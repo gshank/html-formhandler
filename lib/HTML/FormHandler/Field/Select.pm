@@ -392,7 +392,7 @@ has 'localize_labels'  => ( isa => 'Bool', is => 'rw' );
 has 'active_column'    => ( isa => 'Str',       is => 'rw', default => 'active' );
 has 'auto_widget_size' => ( isa => 'Int',       is => 'rw', default => '0' );
 has 'sort_column'      => ( isa => 'Str',       is => 'rw' );
-has '+widget'          => ( default => 'select' );
+has '+widget'          => ( default => 'Select' );
 has 'empty_select'     => ( isa => 'Str',       is => 'rw' );
 has '+deflate_method'  => ( default => sub { \&select_deflate } );
 has '+input_without_param' => ( lazy => 1, builder => 'build_input_without_param' );
@@ -424,9 +424,9 @@ sub select_widget {
     my $field = shift;
 
     my $size = $field->auto_widget_size;
-    return $field->widget unless $field->widget eq 'select' && $size;
+    return $field->widget unless $field->widget eq 'Select' && $size;
     my $options = $field->options || [];
-    return 'select' if @$options > $size;
+    return 'Select' if @$options > $size;
     return $field->multiple ? 'checkbox_group' : 'radio_group';
 }
 
