@@ -37,7 +37,7 @@ Does not check by default.
 
 =cut
 
-has '+widget'           => ( default => 'password' );
+has '+widget'           => ( default => 'Password' );
 has '+password'         => ( default => 1 );
 has 'ne_username'       => ( isa     => 'Str', is => 'rw' );
 has '+type_attr'        => ( default => 'password' );
