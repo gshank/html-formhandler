@@ -406,6 +406,12 @@ sub build_input_without_param {
         return '';
     }
 }
+has 'value_when_empty' => ( is => 'ro', lazy => 1, builder => 'build_value_when_empty' );
+sub build_value_when_empty {
+    my $self = shift;
+    return [] if $self->multiple;
+    return undef;
+}
 
 our $class_messages = {
     'select_not_multiple' => 'This field does not take multiple values',
@@ -592,7 +598,7 @@ before 'value' => sub {
 
     if( $self->multiple ) {
         if ( !defined $value || $value eq '' ) {
-            $self->_set_value( [] );
+            $self->_set_value( $self->value_when_empty );
         }
         elsif ( $self->has_many && scalar @$value && ref($value->[0]) ne 'HASH' ) {
             my @new_values;
