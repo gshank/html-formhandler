@@ -1,14 +1,23 @@
 package HTML::FormHandler::Field::Multiple;
 # ABSTRACT: multiple select list
-
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
 our $VERSION = '0.01';
 
+=head1 DESCRIPTION
+
+This is a convenience field that inherits from the Select field and
+pre-sets some attributes. It sets the 'multiple' flag,
+sets the 'size' attribute to 5, and sets the 'sort_options_method' to
+move the currently selected options to the top of the options list.
+
+=cut
+
 has '+multiple' => ( default => 1 );
 has '+size'     => ( default => 5 );
+has '+sort_options_method' => ( default => sub { \&default_sort_options } );
 
-sub sort_options {
+sub default_sort_options {
     my ( $self, $options ) = @_;
 
     return $options unless scalar @$options && defined $self->value;
@@ -21,16 +30,6 @@ sub sort_options {
     push @out, grep { !$selected{ $_->{value} } } @$options;
     return \@out;
 }
-
-=head1 DESCRIPTION
-
-This inherits from the Select field,
-and sets the "multiple" flag true to accept multiple options.
-
-The currently selected items will be put at the top of the list.
-Widget type is 'select'.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

@@ -354,6 +354,15 @@ has 'options_method' => (
         get_options => 'execute_method',
     },
 );
+has 'sort_options_method' => (
+    traits  => ['Code'],
+    is      => 'rw',
+    isa     => 'CodeRef',
+    predicate => 'has_sort_options_method',
+    handles => {
+        sort_options => 'execute_method',
+    },
+);
 
 has 'set_options' => ( isa => 'Str', is => 'ro');
 sub _set_options_meth {
@@ -567,7 +576,8 @@ sub _load_options {
         push @{$opts}, { value => shift @options, label => shift @options } while @options;
     }
     if ($opts) {
-        my $opts = $self->sort_options($opts);    # allow sorting options
+        # sort options if sort method exists
+        $opts = $self->sort_options($opts) if $self->has_sort_options_method;
         $self->options($opts);
     }
 }
@@ -592,8 +602,6 @@ sub default_from_options {
         }
     }
 }
-
-sub sort_options { shift; return shift; }
 
 before 'value' => sub {
     my $self  = shift;

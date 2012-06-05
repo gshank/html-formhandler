@@ -8,10 +8,11 @@
    Correct camelcase for widgets in two fields
    Add 'value_when_empty' for multiple select
    Add SelectCSV multiple field
+   Change Select to use sort_options_method for sorting
 
 0.40010 Sun May 20, 2012
    Add 'when' clause to apply actions
-   Fix memory leak on fields with defaults due to missing my causing
+   Fix memory leak on fields with defaults due to missing 'my' causing
    $self to be closed over so that RAM was leaked if forms were constructed
    but never processed. (in default_<field_name> & validate_<field_name>
    methods)
