@@ -183,6 +183,11 @@ not add an entry to the list of options.
    has_field 'fruit' => ( type => 'Select,
         empty_select => '---Choose a Fruit---' );
 
+=head1 value_when_empty
+
+Usually the empty value is an empty arrayref. This attribute allows
+changing that. Used by SelectCSV field.
+
 =head2 label_column
 
 Sets or returns the name of the method to call on the foreign class
@@ -595,9 +600,8 @@ before 'value' => sub {
 
     return undef unless $self->has_result;
     my $value = $self->result->value;
-
     if( $self->multiple ) {
-        if ( !defined $value || $value eq '' ) {
+        if ( !defined $value || $value eq '' || ( ref $value eq 'ARRAY' && scalar @$value == 0 ) ) {
             $self->_set_value( $self->value_when_empty );
         }
         elsif ( $self->has_many && scalar @$value && ref($value->[0]) ne 'HASH' ) {
