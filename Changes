@@ -1,3 +1,4 @@
+0.40011 Tue Jun 5, 2012
    Remove automatic building of field results. If you have field tests, you
       need to add $field->build_result after creating field with 'new'.
       Possible memory cycle if result is accessed when not built.
