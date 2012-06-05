@@ -5,6 +5,9 @@
    Add Bulgarian message file (dpetrov)
    Bootstrap input_append/prepend: no linefeeds between input
    Add input_append_button tag to Bootstrap wrapper
+   Correct camelcase for widgets in two fields
+   Add 'value_when_empty' for multiple select
+   Add SelectCSV multiple field
 
 0.40010 Sun May 20, 2012
    Add 'when' clause to apply actions
