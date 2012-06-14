@@ -700,7 +700,7 @@ You can use 'update_field_list' or 'defaults' on the 'process' call:
 
     $form->process( update_field_list => { foo => { default => $foo_value } } );
     -- or --
-    $form->proces( defaults => { foo => $foo_value } );
+    $form->process( defaults => { foo => $foo_value } );
 
 You can set a Moose attribute in the form class, and set the default in a
 default_<field_name> method:

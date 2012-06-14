@@ -89,7 +89,7 @@ example:
     use HTML::FormHandler::Render::Util ('process_attrs');
     $c->stash( process_attrs => &process_attrs ); # or add to TT vars in your view
 
-    label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">
+    <label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">
     [% f.label %]: </label>
     <input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]"
     [% process_attrs(f.attributes) %] value="[% f.fif %]">

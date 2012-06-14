@@ -94,7 +94,7 @@ or set them in a base Chained method.
 
 Then you could just pass in the item_id when the form is processed.
 
-   return unless $c->stash->{form}->process($id);
+   return unless $c->stash->{form}->process( item_id => $id );
 
 =head2 Putting a form in a Moose attribute
 
