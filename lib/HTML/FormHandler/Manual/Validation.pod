@@ -299,4 +299,4 @@ is set for all of the fields in the group.
 You can also use the 'required_when' flag to do something similar.
 
 
-=pod
+=cut
