@@ -51,7 +51,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
 =head2 Form processing
 
-   process           Sets up form, validated, updates model
+   process           Sets up form, validates, updates model
    run               Returns a result object and clears form
    update_field_list Updates to fields on process
    posted            Flag to say whether or not to validate, instead of
@@ -77,7 +77,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
 =head3 Form Methods and process hooks
 
-   update_model      To perform additional database actions update
+   update_model      To perform additional database actions on update
    update_fields     Sub providing convenient place to update fields on 'process'
    update_subfields  Sub providing place to update fields on Build (useful for
                        roles and compound field classes)
@@ -138,7 +138,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
 
 =head2 Select fields
 
-   options       Sorted array of hashes, keys: "value", "label"
+   options       Sorted array of hashes; keys: "value", "label"
    options_method
    label_column  Column to use for labels (default: name)
    active_column Which values to list in options

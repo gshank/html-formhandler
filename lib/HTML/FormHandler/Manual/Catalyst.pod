@@ -113,7 +113,7 @@ C<< my $result = $self->edit_form->run( params => $c->req->body_parameters ); >>
 
 =head2 Using  HTML::FillInForm
 
-If you want to use L<HTML::FillInForm> to fill in values instead of the
+If you want to use L<HTML::FillInForm> to fill in values instead of
 doing it in directly in a template using either the field or the form 'fif'
 methods, you can use L<Catalyst::View::FillInForm> on your view class:
 
@@ -130,7 +130,7 @@ and set the 'fif' hash in the 'fillinform' stash variable:
     return unless $form->validated;
 
 When the 'fillinform' stash variable is set, HTML::FillInForm will automatically
-be used by your view to fill in the the form values. This can be very helpful
+be used by your view to fill in the form values. This can be very helpful
 when you want to build your forms by hand, or when you have legacy forms that
 you're just trying to hook up to FormHandler.
 

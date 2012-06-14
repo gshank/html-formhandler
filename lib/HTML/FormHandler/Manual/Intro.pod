@@ -40,7 +40,7 @@ must 'use' "HTML::FormHandler::Moose" and 'extend' FormHandler:
     extends 'HTML::FormHandler';
 
 Then you add some fields with 'has_field', and a field 'type' (the short
-name of the field package. (Fields with no type have type 'Text'.)
+name of the field package). (Fields with no type have type 'Text'.)
 
     has_field 'foo';
     has_field 'bar' => ( type => 'Select' );
@@ -130,7 +130,7 @@ If the validation succeeded, you may want to redirect:
 
 =head2 Rendering the form
 
-At it's simplest, all you need to do is C<< $form->render >> in a
+At its simplest, all you need to do is C<< $form->render >> in a
 template.
 
     [% form.render %]
@@ -140,7 +140,7 @@ anything with the right settings. Or you can render the form with a
 template.
 
 The form object will give you a hashref of values suitable for
-for filling in the form with C<< $form->fif >>.
+filling in the form with C<< $form->fif >>.
 
 By default FormHandler structures fields (and renders thems) in a way
 that matches the database. If you want to organize the rendering output
@@ -259,11 +259,11 @@ information.
 
 FormHandler's built-in errors are added to the form fields with
 C<< $field->add_error >>, and to the form with C<< $form->add_form_error >>.
-These methods call a C<< $self->_localize method >> which is a coderef set from
+These methods call a C<< $self->_localize >> method which is a coderef set from
 the field's default_localize sub, the field's 'localize_meth' attribute with
 C<< localize_meth => sub {} >>, or a form's sub localize_meth. The default localize
 uses Locale::Maketext.  You can also use duck_type classes for localization.
-See the documentation in L< HTML::FormHandler::TraitFor::I18N > and the tests in xt/locale.t.
+See the documentation in L<HTML::FormHandler::TraitFor::I18N> and the tests in xt/locale.t.
 
 If you wish to skip localization for a particular message (such as for system errors)
 you can use C<< $field->push_errors >> or C<< $form->push_form_errors >>.

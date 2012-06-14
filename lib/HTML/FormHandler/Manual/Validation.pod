@@ -144,7 +144,7 @@ on inflation and deflation.
 
 Moose types can be used to do both constraints and transformations. If a coercion
 exists it will be applied, resulting in a transformation. After coercing, the
-result is checked.  You can use type constraints from L<MooseX::Types>>
+result is checked.  You can use type constraints from L<MooseX::Types>
 libraries or defined using L<Moose::Util::TypeConstraints>.
 
 FormHandler supplies a library of Moose types in L<HTML::FormHandler::Types>.
@@ -239,7 +239,7 @@ is passed in as the second argument, to allow simple functions to work properly.
 
 =head2 message
 
-The message for the above checks can also be a an arrayref or coderef.
+The message for the above checks can also be an arrayref or coderef.
 The arrayref is useful for localized messages. You can also provide error
 messages for Moose types.
 
@@ -284,8 +284,8 @@ in t/constraints.t.
 =head1 Dependency
 
 The 'dependency' attribute is an array of arrays of field names.
-During validation, if any field in a given group
-contains the pattern /\S/ (non-blank), the 'required' flag
+During validation, if any field in a given group has a value that
+matches the pattern /\S/ (non-blank), the 'required' flag
 is set for all of the fields in the group.
 
    has '+dependency' => ( default => sub {

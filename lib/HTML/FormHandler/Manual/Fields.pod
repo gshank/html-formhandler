@@ -103,9 +103,9 @@ before processing by HFH, and will be added back in 'fif'. The field's
 
 If you want the FormHandler field name to be different than the
 database accessor, set 'accessor' on your fields. (It defaults to the field
-name). You could then use any name that you want for your field.
+name.) You could then use any name that you want for your field.
 
-There are a number of name related field attributes. The 'name' is
+There are a number of name-related field attributes. The 'name' is
 the name used to identify this particular field in this fields array.
 The 'full_name' includes the names of all parents of this field,
 like 'address.street.streetname'. The 'html_name' is the same as the
@@ -128,7 +128,7 @@ which is called by the base Field class from 'process'. Look at
 L<HTML::FormHandler::Field::Email>, for example.
 
 If the field's value will be an object instead of a simple scalar, such
-as a DateTime and you want to use the transformed value to fill in the
+as a DateTime, and you want to use the transformed value to fill in the
 form, then you will also need a deflation or field class 'deflate' method
 to reformat the object into a form suitable for an HTML form field.
 See L<HTML::FormHandler::Manual::InflationDeflation> for more info.
@@ -178,7 +178,7 @@ L<HTML::FormHandler::Field::Text>
 
 =head3 Select
 
-A field formatted as a select elememnt.
+A field formatted as a select element.
 
 L<HTML::FormHandler::Field::Select>
 
@@ -275,7 +275,7 @@ this name, C<< $field->html_name >>.
 A compound field can be used for a database relation that will have only
 one row (belongs_to or has_one). If the relation has a compound primary
 key, you may need to provide the primary key columns, either through
-hidden fields or by setting them in the C<< $form->value >> has before
+hidden fields or by setting them in the C<< $form->value >> hash before
 'update_model' is called.
 
 See also L<HTML::FormHandler::Field::Compound>.
@@ -392,13 +392,13 @@ L<HTML::FormHandler::Field::Checkbox>
 
 =head3 Boolean
 
-Checkbox that return 1 or 0;
+Checkbox that return 1 or 0.
 
 L<HTML::FormHandler::Field::Boolean>
 
 =head2 Select Fields
 
-Field that inherit from 'Select'.
+Fields that inherit from 'Select'.
 
 =head3 Select
 
@@ -493,7 +493,7 @@ L<HTML::FormHandler::Field::Reset>
 
 =head3 Button
 
-Button field that rendered by the Button widget.
+Button field that is rendered by the Button widget.
 
 L<HTML::FormHandler::Field::Button>
 
@@ -506,7 +506,7 @@ L<HTML::FormHandler::Field::Display>
 
 =head2 TextArea fields
 
-Fields that inherit from textarea.
+Fields that inherit from 'TextArea'.
 
 =head3 TextArea
 
@@ -514,7 +514,7 @@ L<HTML::FormHandler::Field::TextArea>
 
 =head3 HtmlArea
 
-A textarea that attempt to validate the textarea with html tidy.
+A textarea that attempt to validate the value with L<HTML::Tidy>.
 
 L<HTML::FormHandler::Field::HtmlArea>
 
@@ -522,7 +522,7 @@ L<HTML::FormHandler::Field::HtmlArea>
 
 =head3 Password
 
-Password field. Sets 'noupdate' flage if empty and not required.
+Password field. Sets 'noupdate' flag if empty and not required.
 
 L<HTML::FormHandler::Field::Password>
 
