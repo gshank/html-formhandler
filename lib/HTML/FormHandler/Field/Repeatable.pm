@@ -382,21 +382,23 @@ before 'value' => sub {
 
     return [] unless $self->has_value;
     my $value = $self->result->value;
-    my @new_value;
-    foreach my $element ( @{$value} ) {
-        next unless $element;
-        if ( ref $element eq 'HASH' ) {
-            foreach my $pk (@pk_elems) {
-                delete $element->{$pk}
-                    if exists $element->{$pk} &&
-                        ( !defined $element->{$pk} || $element->{$pk} eq '' );
+    if ( ref $value eq 'ARRAY' ) {
+        my @new_value;
+        foreach my $element ( @{$value} ) {
+            next unless $element;
+            if ( ref $element eq 'HASH' ) {
+                foreach my $pk (@pk_elems) {
+                    delete $element->{$pk}
+                        if exists $element->{$pk} &&
+                            ( !defined $element->{$pk} || $element->{$pk} eq '' );
+                }
+                next unless keys %$element;
+                next unless grep { defined $_ && length $_ } values %$element;
             }
-            next unless keys %$element;
-            next unless grep { defined $_ && length $_ } values %$element;
+            push @new_value, $element;
         }
-        push @new_value, $element;
+        $self->_set_value( \@new_value );
     }
-    $self->_set_value( \@new_value );
 };
 
 __PACKAGE__->meta->make_immutable;
