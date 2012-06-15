@@ -24,14 +24,14 @@ Another situation in which FormHandler rendering may be useful is when
 the form is complex enough that working in Perl is a better idea than
 putting lots of logic into templates.
 
-All of the rendering is designd to be easily replaced with elements of your
+All of the rendering is designed to be easily replaced with elements of your
 own, or to be replaced entirely. You can create your own rendering 'widgets'
 and load them into the fields by designating the directory in the
 'widget_name_space'. You could also create a completely separate renderer
 that's a separate object or class that takes a form object,
 or a role that is applied to your form.
 
-Note that Unless you set 'no_widgets' in the form, the rendering roles are
+Note that unless you set 'no_widgets' in the form, the rendering roles are
 automatically applied. You don't need to include anything else, unless you
 want to use a different renderer.
 
@@ -136,7 +136,7 @@ Default widget roles are found in the HTML::FormHandler::Widget directory.
 The name space used to look for the widget roles can be specified on a form or
 field basis by setting 'widget_name_space' to an arrayref of name spaces:
 
-   has '+widget_name_space' => ( default => sub { ['MyApp::Form::Widget' ]);
+   has '+widget_name_space' => ( default => sub { ['MyApp::Form::Widget' ] } );
 
 For the above widget ('MyWidget') and widget_name_space, you need to have a package named
 'MyApp::Form::Widget::Field::MyWidget'.
@@ -152,7 +152,7 @@ L<HTML::FormHandler::Render::Simple> as a basis. It used the method name
 instead of the 'render' method on the field.
 
 In addition to the 'Simple' wrapper, there is a 'Bootstrap' wrapper which
-creates html formatted to use the Twitter Bootstrap 2.0 CSS. There's also a sample
+creates HTML formatted to use the Twitter Bootstrap 2.0 CSS. There's also a sample
 "theme", L<HTML::FormHandler::Widget::Theme::Bootstrap>, which is a role that sets
 the widget_wrapper to 'Bootstrap', and provides Bootstrap-type formatting of the
 form error message.
@@ -165,7 +165,7 @@ You can make your own copy of an existing wrapper and add features to it.
 However, there are so many different ways to render the HTML around a field, that it's
 very difficult to handle more than a short list of standard presentations in
 one 'wrapper'. It may be better to make a number of more atomic widget wrappers and
-use those rather than complicate that already fairly complicated "Simple" and
+use those rather than complicate the already fairly complicated "Simple" and
 "Bootstrap" wrappers more.
 
 =head2 HTML attributes
@@ -178,7 +178,7 @@ label_class):
 
     has_field 'foo' => ( wrapper_class => ['form', 'special' ] );
 
-See the documentation in L<HTML::FormHandler::Field#Attributes_for_creating_HTML>.
+See the documentation on L<HTML::FormHandler::Field/Attributes_for_creating_HTML>.
 
 =head2 Form settings
 
@@ -601,7 +601,7 @@ Here's an example of a form rendering 'theme', taken from the t/bootstrap/basic.
     }}
 
 Note that the value 'all' key in the update_subfields hashref will be merged
-into the attributes used when building the all of the fields.
+into the attributes used when building all of the fields.
 
 =head2 Rendering fields
 
@@ -661,7 +661,7 @@ The base field class has a 'render_filter' attribute which is a coderef used to
 clean the values used to fill in the form for Render::Simple and the Widgets,
 and for some of the labels..
 The default filter changes quote, ampersand, <, and > to the equivalent html
-entities. If you wish to use some other sort of filtering, you can set use
+entities. If you wish to use some other sort of filtering, you can use the
 'render_filter' method in your form, or set a coderef on individual field
 objects. A 'render_filter' function in your form will be used by all fields.
 Setting it for a field will just be for that field.
@@ -675,7 +675,7 @@ Setting it for a field will just be for that field.
     has_field 'foo' => ( render_filter => sub { ... } );
 
 The filter is called in Render::Simple and in the widgets with
-C<< $self->html_filter( $fif ) or $field->html_filter( $fif ) >>.
+C<< $self->html_filter( $fif ) >> or C<< $field->html_filter( $fif ) >>.
 
 If you want to turn off the filter for a particular field, you can set it
 to a sub that just returns the value:
@@ -706,7 +706,7 @@ L<HTML::FormHandler::Field::Display>
 
 You can supply an HTML string to this field, to be displayed directly. There is no
 'value' associated with this field; it's a field for rendering only. The HTML
-string can be build with a form or field method.
+string can be built with a form or field method.
 
 Blocks or tags will often be a better solution.
 
