@@ -1,3 +1,7 @@
+0.40012 Fri Jun 15, 2012
+   Bug cloning merging repeatable instances; form reference garbage collected
+   Doc typos
+
 0.40011 Tue Jun 5, 2012
    Remove automatic building of field results. If you have field tests, you
       need to add $field->build_result after creating field with 'new'.
