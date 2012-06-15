@@ -1139,7 +1139,7 @@ sub language_handle {
         return;
     }
     return $self->get_language_handle if( $self->has_language_handle );
-    return $self->form->language_handle if ( $self->form );
+    return $self->form->language_handle if ( $self->has_form );
     require HTML::FormHandler::I18N;
     return $ENV{LANGUAGE_HANDLE} || HTML::FormHandler::I18N->get_handle;
 }

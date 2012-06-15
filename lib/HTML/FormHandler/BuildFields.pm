@@ -189,7 +189,13 @@ sub _make_field {
 sub _make_adhoc_field {
     my ( $self, $class, $field_attr ) = @_;
 
+    # remove and save form & parent, because sometimes hash cloning creates
+    # a new reference
+    my $parent = delete $field_attr->{parent};
+    my $form = delete $field_attr->{form};
     $field_attr = $self->_merge_updates( $field_attr, $class );
+    $field_attr->{parent} = $parent;
+    $field_attr->{form} = $form;
     my $field = $self->new_field_with_traits( $class, $field_attr );
     return $field;
 }
