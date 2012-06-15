@@ -24,10 +24,10 @@ selection lists, and validate input. A 'single' relationship is processed
 by L<HTML::FormHandler::Field::Compound>. A 'has_many' relationship is
 processed by L<HTML::FormHandler::Field::Repeatable>.
 
-You can pass in either the primary key and or a row object to the form. If a
+You can pass in either the primary key or a row object to the form. If a
 primary key (item_id) is passed in, you must also provide the schema.
 The model will use the item_class (DBIC source name) to fetch the row from the
-database. If you pass in a row object (item), the schema, source_class, and
+database. If you pass in a row object (item), the schema, item_class, and
 item_id will be set from the row.
 
 Executing C<< $form->process( item => $row, params => $params ); >> will validate

@@ -54,7 +54,7 @@ are now organized more-or-less similarly to the widget roles, with 'field',
 
 There is also a template which combines the template rendering code into
 one file, 'share/templates/form/form_in_one.tt'. You can copy this template
-into your own TT directories, perhaps as form.tt, and then specify it in
+into your own TT directories, perhaps as form.tt, and then specify it
 as the template for your Catalyst actions. You can customize it by adding
 additional widget and widget_wrapper blocks, and then setting those in your
 field definitions.
@@ -89,7 +89,7 @@ example:
     use HTML::FormHandler::Render::Util ('process_attrs');
     $c->stash( process_attrs => &process_attrs ); # or add to TT vars in your view
 
-    label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">
+    <label [% process_attrs(f.label_attributes) %]for="[% f.html_name %]">
     [% f.label %]: </label>
     <input type="[% f.input_type %]" name="[% f.html_name %]" id="[% f.id %]"
     [% process_attrs(f.attributes) %] value="[% f.fif %]">
@@ -97,7 +97,7 @@ example:
 =head1 Sample templates
 
 The following is copied from the provided share/templates/form/form_in_one.tt file,
-as an example. Note that some fields, like form actions of 'submit' & 'reset' don't
+as an example. Note that some fields, like form actions of 'submit' & 'reset', don't
 use the 'fif' value, but just the plain field value.
 
     [% PROCESS form_start -%]

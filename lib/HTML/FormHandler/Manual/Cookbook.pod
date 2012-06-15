@@ -11,7 +11,7 @@ Collection of use recipes for L<HTML::FormHandler>
 
 I had to create a tiny little form this week for admins to enter a comment, and
 it seemed silly to have to create a form file and a template file. I remembered
-that you can set the TT 'template' to a a string reference and not use a template
+that you can set the TT 'template' to a string reference and not use a template
 at all, which is nice when FormHandler will create the form HTML for you anyway.
 
     sub comment : Chained('base_sub') PathPart('comment') Args(0) {
@@ -147,7 +147,7 @@ Or you can do in a template:
      [% END %]
    </select>
 
-You can create a customi the select list in an 'options_' method:
+You can create a custom select list in an 'options_' method:
 
    sub options_country {
       my $self = shift;
@@ -348,7 +348,7 @@ Then just use an additional parameter when you create/process your form:
     $form->process( item => $item, params => $params, hostname => $c->req->host );
 
 Some kinds of DB relationships need to have primary keys which might be more easily
-set in the update model method;
+set in the update_model method;
 
     sub update_model {
         my $self = shift;
@@ -639,7 +639,7 @@ For updating a Repeatable field that is filled from a Resultset, and not a
 relationship on a single row. Creates a 'resultset' attribute to pass in
 a resultset. Massages the data into an array that's pointed to by an
 'employers' hash key, and does the reverse in the 'update_model' method.
-Yes, it's a kludge, but it could be worse. If you want to impement a more
+Yes, it's a kludge, but it could be worse. If you want to implement a more
 general solution, patches welcome.
 
     package Test::Resultset;
@@ -700,7 +700,7 @@ You can use 'update_field_list' or 'defaults' on the 'process' call:
 
     $form->process( update_field_list => { foo => { default => $foo_value } } );
     -- or --
-    $form->proces( defaults => { foo => $foo_value } );
+    $form->process( defaults => { foo => $foo_value } );
 
 You can set a Moose attribute in the form class, and set the default in a
 default_<field_name> method:
@@ -728,7 +728,7 @@ method:
 
 =head2 Static form, dynamic field IDs
 
-The problem: you have a form that will be used in multiple places on a page, but you don't
+The problem: you have a form that will be used in multiple places on a page, but you
 want to use a static form instead of doing 'new' for each. You can pass a form name in
 on the process call and use 'html_prefix' in the form:
 
@@ -782,7 +782,7 @@ Use 'build_id_method' to give your fields a different format 'id':
         return $full_name;
     }
 
-The above method provides an IDs of "foo_two" and "foo_three" instead of
+The above method provides IDs of "foo_two" and "foo_three" instead of
 "foo.two" and "foo.three".
 
 =cut

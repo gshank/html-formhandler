@@ -18,7 +18,7 @@ checks as Data::FormValidator. It would be possible to implement many
 of them, but there hasn't been much demand for them. So far FormHandler
 users seem to be satisfed with the "do your own checks in a Perl method"
 solution. Because of the greater complexity of FormHandler's data model -
-with Repeatable arrays and nested compounds, etc, it's somewhat harder
+with Repeatable arrays and nested compounds, etc - it's somewhat harder
 to do some of them automatically.
 
 =head1 Differences/conversions

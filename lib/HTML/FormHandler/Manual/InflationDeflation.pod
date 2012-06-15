@@ -10,7 +10,7 @@ How to inflate and deflate field values.
 =head2 DESCRIPTION
 
 When working with the various ways that data can be transformed, in and out,
-the meaning of the terms 'inflate' and 'deflate' start to feel kind of slippery.
+the meaning of the terms 'inflate' and 'deflate' starts to feel kind of slippery.
 The one constant is that values presented in an HTML form must be in a string
 format, or presented with select elements or checkboxes.
 
