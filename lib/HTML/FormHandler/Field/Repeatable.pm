@@ -151,7 +151,7 @@ sub _fields_validate {
         next if ( $field->is_inactive );
         # Validate each field and "inflate" input -> value.
         $field->validate_field;    # this calls the field's 'validate' routine
-        push @value_array, $field->value;
+        push @value_array, $field->value if $field->has_value;
     }
     $self->_set_value( \@value_array );
 }
@@ -372,34 +372,6 @@ sub _result_from_fields {
     $self->result->_set_field_def($self);
     return $result;
 }
-
-before 'value' => sub {
-    my $self = shift;
-
-    my @pk_elems =
-        map { $_->accessor } grep { $_->has_flag('is_primary_key') } $self->contains->all_fields
-        if $self->contains->has_flag('is_compound');
-
-    return [] unless $self->has_value;
-    my $value = $self->result->value;
-    if ( ref $value eq 'ARRAY' ) {
-        my @new_value;
-        foreach my $element ( @{$value} ) {
-            next unless $element;
-            if ( ref $element eq 'HASH' ) {
-                foreach my $pk (@pk_elems) {
-                    delete $element->{$pk}
-                        if exists $element->{$pk} &&
-                            ( !defined $element->{$pk} || $element->{$pk} eq '' );
-                }
-                next unless keys %$element;
-                next unless grep { defined $_ && length $_ } values %$element;
-            }
-            push @new_value, $element;
-        }
-        $self->_set_value( \@new_value );
-    }
-};
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

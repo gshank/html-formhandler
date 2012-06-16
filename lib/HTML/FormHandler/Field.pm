@@ -564,6 +564,7 @@ has 'input_without_param' => (
     predicate => 'has_input_without_param'
 );
 has 'not_nullable' => ( is => 'rw', isa => 'Bool' );
+has 'no_value_if_empty' => ( is => 'rw', isa => 'Bool' );
 has 'validate_when_empty' => ( is => 'rw', isa => 'Bool' );
 has 'init_value' => ( is => 'rw', clearer => 'clear_init_value', predicate => 'has_init_value' );
 has 'default' => ( is => 'rw' );

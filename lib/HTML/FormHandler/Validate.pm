@@ -75,7 +75,14 @@ sub validate_field {
         $continue_validation = 0;
     }
     elsif ( !$field->input_defined ) {
-        $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);
+        if ( $field->not_nullable ) {
+            $field->_set_value($field->input);
+        }
+        elsif ( $field->no_value_if_empty || $field->has_flag('is_contains') ) {
+        }
+        else {
+            $field->_set_value(undef);
+        }
         $continue_validation = 0;
     }
     return if ( !$continue_validation && !$field->validate_when_empty );

@@ -19,6 +19,7 @@ That primary key is in the 'item_id' attribute.
 has 'is_primary_key' => ( isa => 'Bool', is => 'ro', default => '1' );
 has '+widget' => ( default => 'Hidden' );
 has '+do_label' => ( default => 0 );
+has '+no_value_if_empty' => ( default => 1 );
 
 sub BUILD {
     my $self = shift;

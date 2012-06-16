@@ -23,6 +23,7 @@ sub build_tags {{ wrapper => 1 }}
 
 has '+do_label' => ( default => 0 );
 has '+do_wrapper' => ( default => 1 );
+has '+no_value_if_empty' => ( default => 1 );
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
