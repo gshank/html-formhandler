@@ -102,7 +102,7 @@ created using the 'field_list' attribute to set fields:
         field_list => [
             'username' => {
                 type  => 'Text',
-                apply => [ { check => qr/^[0-9a-z]*/,
+                apply => [ { check => qr/^[0-9a-z]*\z/,
                    message => 'Contains invalid characters' } ],
             },
             'select_bar' => {
@@ -151,7 +151,7 @@ You can split the pieces of your forms up into logical parts and compose
 complete forms from FormHandler classes, roles, fields, collections of
 validations, transformations and Moose type constraints.
 You can write custom methods to process forms, add any attribute you like,
-use Moose method modifiers.  FormHandler forms are Perl classes, so there's
+and use Moose method modifiers.  FormHandler forms are Perl classes, so there's
 a lot of flexibility in what you can do.
 
 HTML::FormHandler provides rendering through roles which are applied to
@@ -162,7 +162,7 @@ L<HTML::FormHandler::Render::Table> that contain methods for rendering
 field widget classes, and the L<HTML::FormHandler::Widget> roles, which are
 more atomic roles which are automatically applied to fields and form. See
 L<HTML::FormHandler::Manual::Rendering> for more details.
-(And you can easily use hand-build forms - FormHandler doesn't care.)
+(And you can easily use hand-built forms - FormHandler doesn't care.)
 
 The typical application for FormHandler would be in a Catalyst, DBIx::Class,
 Template Toolkit web application, but use is not limited to that. FormHandler
@@ -218,8 +218,8 @@ Examples of creating a form object with new:
         ],
     );
 
-See the model class for more information about the 'item', 'item_id',
-'item_class', and schema (for the DBIC model).
+See the model class for more information about 'item', 'item_id',
+'item_class', and 'schema' (for the DBIC model).
 L<HTML::FormHandler::Model::DBIC>.
 
 FormHandler forms are handled in two steps: 1) create with 'new',
@@ -256,7 +256,7 @@ A non-database form requires only parameters.
        schema => $schema, params => $c->req->parameters );
    $form->process( params => $c->req->parameters );
 
-This process method returns the 'validated' flag. (C<< $form->validated >>)
+This process method returns the 'validated' flag (C<< $form->validated >>).
 If it is a database form and the form validates, the database row
 will be updated.
 
@@ -358,7 +358,7 @@ Returns a hashref of all field values. Useful for non-database forms, or if
 you want to update the database yourself. The 'fif' method returns
 a hashref with the field names for the keys and the field's 'fif' for the
 values; 'value' returns a hashref with the field accessors for the keys, and the
-field's 'value' (possibly inflated) for the the values.
+field's 'value' (possibly inflated) for the values.
 
 Forms containing arrays to be processed with L<HTML::FormHandler::Field::Repeatable>
 will have parameters with dots and numbers, like 'addresses.0.city', while the
@@ -452,7 +452,7 @@ initially built. It takes the same field name keys as 'update_field_list', plus
         foo => { element_class => 'blue' },
     }}
 
-The 'all' hash key will apply updates to all fields (conflicting attributes
+The 'all' hash key will apply updates to all fields. (Conflicting attributes
 in a field definition take precedence.)
 
 The 'by_flag' hash key will apply updates to fields with a particular flag.
@@ -482,9 +482,8 @@ have to say 'default' for every field).
 
 =head3 active/inactive
 
-A field can be marked 'inactive' and set to active at new or process time;
-Then the field name can be specified in the 'active' array, either on 'new',
-or on 'process':
+A field can be marked 'inactive' and set to active at new or process time
+by specifying the field name in the 'active' array:
 
    has_field 'foo' => ( type => 'Text', inactive => 1 );
    ...
@@ -502,8 +501,8 @@ time:
    $form->process( inactive => ['foo'] );
 
 Fields specified as active/inactive on new will have the form's inactive/active
-arrayref cleared and the the field's inactive flag set appropriately, so the
-that state will be effective for the life of the form object. Fields specified as
+arrayref cleared and the field's inactive flag set appropriately, so that
+the state will be effective for the life of the form object. Fields specified as
 active/inactive on 'process' will have the field's '_active' flag set for the life
 of the request (the _active flag will be cleared when the form is cleared).
 
@@ -534,7 +533,7 @@ is the method that returns the fields that are looped through when rendering.
 
 =head3 field($name), subfield($name)
 
-This is the method that is usually called to access a field:
+'field' is the method that is usually called to access a field:
 
     my $title = $form->field('title')->value;
     [% f = form.field('title') %]
@@ -579,7 +578,7 @@ default is 'validate_' plus the field name:
 
 If the field name has dots they should be replaced with underscores.
 
-Note that you also provide a coderef which will be a method on the field:
+Note that you can also provide a coderef which will be a method on the field:
 
    has_field 'foo' => ( validate_method => \&validate_foo );
 
@@ -625,7 +624,7 @@ or in tests.  If you add other attributes to your form that are set on
 each request, you may need to clear those yourself.
 
 If you do not call the form's 'process' method on a persistent form,
-such as in a REST controller's non-POST method or if you only call
+such as in a REST controller's non-POST method, or if you only call
 process when the form is posted, you will also need to call C<< $form->clear >>.
 
 The 'run' method which returns a result object always performs 'clear', to
