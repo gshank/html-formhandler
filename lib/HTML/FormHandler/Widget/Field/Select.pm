@@ -107,7 +107,7 @@ sub render_option {
     # handle label
     my $label = $option->{label};
     $label = $self->_localize($label) if $self->localize_labels;
-    $output .= '>' . ( $self->html_filter($label) || '' ) . '</option>';
+    $output .= '>' . ( $self->html_filter($label) ) . '</option>';
     $self->inc_options_index;
     return $output;
 }

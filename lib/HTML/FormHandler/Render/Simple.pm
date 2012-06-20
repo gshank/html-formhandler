@@ -276,7 +276,7 @@ sub render_select {
         $output .= $html_attributes;
         my $label = $option->{label};
         $label = $field->_localize($label) if $field->localize_labels;
-        $output .= '>' . ( $field->html_filter($label) || '' ) . '</option>';
+        $output .= '>' . ( $field->html_filter($label) ) . '</option>';
         $index++;
     }
     $output .= '</select>';
