@@ -1,3 +1,8 @@
+   Re-write elimination of PrimaryKey field from repeatable value,
+       add 'no_value_if_empty' attribute
+   Fix bug with labels '0' not being displayed
+   Change 'missing' to an attribute.
+
 0.40012 Fri Jun 15, 2012
    Bug cloning merging repeatable instances; form reference garbage collected
    Doc typos

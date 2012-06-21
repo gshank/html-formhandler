@@ -23,6 +23,8 @@ has 'field_def' => (
     writer => '_set_field_def',
 );
 
+has 'missing' => ( is => 'rw',  isa => 'Bool' );
+
 sub fif {
     my $self = shift;
     return $self->field_def->fif($self);

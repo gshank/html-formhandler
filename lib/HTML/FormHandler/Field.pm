@@ -581,15 +581,10 @@ has 'result' => (
         '_set_input',   '_clear_input', '_set_value', '_clear_value',
         'errors',       'all_errors',   '_push_errors',  'num_errors', 'has_errors',
         'clear_errors', 'validated', 'add_warning', 'all_warnings', 'num_warnings',
-        'has_warnings', 'warnings',
+        'has_warnings', 'warnings', 'missing',
     ],
 );
 has '_pin_result' => ( is => 'ro', reader => '_get_pin_result', writer => '_set_pin_result' );
-
-sub missing {
-    my $self = shift;
-    return $self->required && $self->validated && ( !$self->has_input || !$self->input_defined );
-}
 
 sub has_input {
     my $self = shift;

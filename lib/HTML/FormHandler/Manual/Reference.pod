@@ -157,6 +157,7 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    validate_method  Validation coderef, or 'validate_$fieldname' in form (default)
    required      Field is required
    required_when Takes a hashref of field name keys and values
+   missing       Flag set when a 'required' or 'required_when' fails
    maxlength     Text fields. Validated.
    minlength     Text fields. Used in validation
    range_start   Range start for number fields

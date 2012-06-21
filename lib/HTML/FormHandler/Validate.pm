@@ -64,6 +64,7 @@ sub validate_field {
     if ( ( $field->required ||
            ( $field->has_required_when && $field->match_when($field->required_when) ) ) &&
        ( !$field->has_input || !$field->input_defined ) ) {
+        $field->missing(1);
         $field->add_error( $field->get_message('required'), $field->loc_label );
         if( $field->has_input ) {
            $field->not_nullable ? $field->_set_value($field->input) : $field->_set_value(undef);

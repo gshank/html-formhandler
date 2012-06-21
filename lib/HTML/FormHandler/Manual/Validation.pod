@@ -38,6 +38,11 @@ There is also the 'required_when' attribute, which works the same way as the
 
     has_field 'fee' => ( required_when => { 'fie' => 2 } );
 
+When a 'required' or 'required_when' check fails, a 'missing' flag is set
+in the result:
+
+    if ( $field->missing ) { ... }
+
 =head2 range_start, range_end
 
 Starting and ending range for number fields.
