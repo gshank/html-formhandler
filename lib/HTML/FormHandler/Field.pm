@@ -78,7 +78,7 @@ The name of the field with all parents:
 
 =item full_accessor
 
-The field accessor with all parents
+The field accessor with all parents.
 
 =item html_name
 
@@ -169,7 +169,7 @@ want to use a MakeText language handle. Default is an empty list.
 
 =item add_error
 
-Add an error to the list of errors. Field will be localized
+Add an error to the list of errors. Error message will be localized
 using '_localize' method.
 See also L<HTML::FormHandler::TraitFor::I18N>.
 
@@ -243,7 +243,7 @@ attributes, etc.
 The slots for the class attributes are arrayrefs; they will coerce a
 string into an arrayref.
 In addition, these 'wrapping methods' call a hook method in the form class,
-'html_attributes' which you can use to customize and localize the various
+'html_attributes', which you can use to customize and localize the various
 attributes. (Field types: 'element', 'wrapper', 'label')
 
    sub html_attributes {
@@ -257,7 +257,7 @@ The 'process_attrs' function will also handle an array of strings, such as for t
 
 =head2 tags
 
-A hashref containing flags and string for use in the rendering code.
+A hashref containing flags and strings for use in the rendering code.
 The value of a tag can be a string, a coderef (accessed as a method on the
 field) or a block specified with a percent followed by the blockname
 ('%blockname').
@@ -293,8 +293,8 @@ to create a widget template.
 
 Widget types for some of the provided field classes:
 
-    Widget         : Field classes
-    ---------------:-----------------------------------
+    Widget                 : Field classes
+    -----------------------:---------------------------------
     Text                   : Text, Integer
     Checkbox               : Checkbox, Boolean
     RadioGroup             : Select, Multiple, IntRange (etc)
@@ -334,7 +334,7 @@ For more about widgets, see L<HTML::FormHandler::Manual::Rendering>.
 
 =head2 Defaults
 
-See also the section in L<HTML::FormHandler::Manual::Intro#Defaults>.
+See also the documentation on L<HTML::FormHandler::Manual::Intro/Defaults>.
 
 =over
 
@@ -406,7 +406,7 @@ the DB model.
 Set messages created by FormHandler by setting in the 'messages'
 hashref. Some field subclasses have additional settable messages.
 
-required:  Error message text added to errors if required field is not present
+required:  Error message text added to errors if required field is not present.
 The default is "Field <field label> is required".
 
 =item range_start
@@ -420,7 +420,7 @@ does not have 'options'.
 The IntRange field uses this range to create a select list
 with a range of integers.
 
-In a FormHandler field_list
+In a FormHandler field_list:
 
     age => {
         type            => 'Integer',
@@ -492,11 +492,11 @@ Deflate to a string format for presenting in HTML.
 
 =item inflate_default_method
 
-Modify the 'default' provided by an 'item' or 'init_object'
+Modify the 'default' provided by an 'item' or 'init_object'.
 
 =item deflate_value_method
 
-Modify the value return by C<< $form->value >>.
+Modify the value returned by C<< $form->value >>.
 
 =item deflation
 
