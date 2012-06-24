@@ -7,6 +7,7 @@ our $VERSION = '0.01';
 
 has '+widget' => ( default => 'Hidden' );
 has '+do_label' => ( default => 0 );
+has '+html5_type_attr' => ( default => 'hidden' );
 
 =head1 DESCRIPTION
 

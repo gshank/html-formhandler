@@ -17,6 +17,7 @@ Uses the 'reset' widget.
 has '+widget' => ( default => 'Reset' );
 has '+value' => ( default => 'Reset' );
 has '+type_attr' => ( default => 'reset' );
+has '+html5_type_attr' => ( default => 'reset' );
 sub do_label {0}
 
 __PACKAGE__->meta->make_immutable;
