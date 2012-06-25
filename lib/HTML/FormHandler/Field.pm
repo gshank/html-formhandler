@@ -443,6 +443,9 @@ an empty string instead of a null value (such as a NOT NULL column), set this at
 This attribute is also used when you want an empty array to stay an empty array and not
 be set to undef.
 
+It's also used when you have a compound field and you want the 'value' returned
+to contain subfields with undef, instead of the whole field to be undef.
+
 =back
 
 =head2 apply

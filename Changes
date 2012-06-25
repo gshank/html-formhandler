@@ -1,8 +1,14 @@
+0.40013 Sun Jun 24, 2012
    Re-write elimination of PrimaryKey field from repeatable value,
        add 'no_value_if_empty' attribute
    Fix bug with labels '0' not being displayed
    Change 'missing' to an attribute.
    Submit field has 'submit' html5_type_attr
+   Add html5_type_attr to Hidden, Reset, and Password fields
+   Add new behavior for compound fields and 'not_nullable' flag,
+      where compound field value is not set to undef when all
+      subfields are empty. This is needed for some kinds of db
+      relationships, to ensure that subfields are set to null.
 
 0.40012 Fri Jun 15, 2012
    Bug cloning merging repeatable instances; form reference garbage collected

@@ -75,6 +75,13 @@ PrimaryKey field, or add extra values in update_model.
 
 See also L<HTML::FormHandler::Field::Compound>.
 
+The default for compound fields is that if all subfields are empty,
+the value of the compound field is set to undef (null). For some types
+of relations, you may want to set the 'not_nullable' flag to force
+the field to contain all subfields anyway, such as when the related
+rows are not deleted when empty. See test t/compound/empty.t for a
+demonstration of the difference in output.
+
 =head2 Repeatable fields
 
 The 'Repeatable' field type allows you to update arrays of columns from related tables
