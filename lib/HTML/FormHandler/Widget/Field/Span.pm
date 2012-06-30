@@ -29,6 +29,7 @@ sub render_element {
 sub render {
     my ( $self, $result ) = @_;
     $result ||= $self->result;
+    die "No result for form field '" . $self->full_name . "'. Field may be inactive." unless $result;
     my $output = $self->render_element( $result );
     return $self->wrap_field( $result, $output );
 }

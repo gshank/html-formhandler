@@ -33,6 +33,7 @@ like( $rendered, qr{<div class="minx finx">}, 'classes on div for field' );
     extends 'HTML::FormHandler';
 
     sub build_do_form_wrapper {1}
+    sub build_form_wrapper_attr { { id => 'frm_wrapper' } }
     has '+name' => ( default => 'myapp_form' );
     sub form_element_attr { { name => 'myapp_form' } }
     has_field 'foo';
@@ -56,7 +57,7 @@ $form = MyApp::Form->new;
 $form->process( params => {} );
 my $expected =
 '<form id="myapp_form" class="form_element hfh"method="post" name="myapp_form" >
-  <fieldset class="form_wrapper hfh">
+  <fieldset class="form_wrapper hfh" id="frm_wrapper">
   <div class="form_messages"></div>
   <div class="wrapper hfh"><label class="label hfh" for="foo">Foo</label><input type="text" name="foo" id="foo" value="" class="element hfh" /></div>
   <div class="wrapper hfh"><label class="label hfh" for="bar">Bar</label><input type="text" name="bar" id="bar" value="" class="element hfh" /></div>
