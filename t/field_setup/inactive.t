@@ -22,7 +22,6 @@ is( scalar @{$form->sorted_fields}, 1, 'right number of sorted fields' );
 
 throws_ok( sub { $form->field('foo')->render },
     qr/No result for form field/,  'dies when rendering inactive field' );
-diag($@);
 
 $form->field('foo')->clear_inactive;
 is( scalar @{$form->sorted_fields}, 2, 'right number of sorted fields after clear_inactive' );
