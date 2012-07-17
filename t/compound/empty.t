@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Data::Printer;
 
 # tests behavior for an empty compound field, where the compund field value
 # is undef
@@ -28,7 +27,6 @@ use Data::Printer;
     };
     $form->process( params => $params );
     my $value = $form->value;
-    diag(p($value));
     my $exp_value = {
         comp_foo => undef,
         bar => 'my_bar',
@@ -59,7 +57,6 @@ use Data::Printer;
         'comp_foo.three' => '',
         'bar' => 'my_bar',
     };
-$DB::single=1;
     $form->process( params => $params );
     my $value = $form->value;
     my $exp_value = {
