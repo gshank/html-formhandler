@@ -1138,9 +1138,25 @@ sub language_handle {
         return;
     }
     return $self->get_language_handle if( $self->has_language_handle );
+    # if language handle isn't set use form language handle if possible
     return $self->form->language_handle if ( $self->has_form );
-    require HTML::FormHandler::I18N;
-    return $ENV{LANGUAGE_HANDLE} || HTML::FormHandler::I18N->get_handle;
+    # no form, no language handle. This should only happen when
+    # testing fields.
+    my $lh;
+    if ( $ENV{LANGUAGE_HANDLE} ) {
+        if ( blessed $ENV{LANGUAGE_HANDLE} ) {
+            $lh = $ENV{LANGUAGE_HANDLE};
+        }
+        else {
+            $lh = HTML::FormHandler::I18N->get_handle( $ENV{LANGUAGE_HANDLE} );
+        }
+    }
+    else {
+       require HTML::FormHandler::I18N;
+       $lh =  HTML::FormHandler::I18N->get_handle;
+    }
+    $self->set_language_handle($lh);
+    return $lh;
 }
 
 has 'localize_meth' => (

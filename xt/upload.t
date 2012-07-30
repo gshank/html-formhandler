@@ -5,7 +5,7 @@ use HTML::FormHandler::Test;
 
 use_ok('HTML::FormHandler::Field::Upload');
 use HTML::FormHandler::I18N;
-$ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('en_en');
+$ENV{LANGUAGE_HANDLE} = 'en_en';
 
 {
     package Mock::Upload;

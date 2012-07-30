@@ -74,7 +74,7 @@ $form->field('test_field')->clear_errors;
 dies_ok( sub { $form->field('test_field')->add_error('You are not authorized for this archive. See: [<a href="/help/auth">more information</a>],  [<a href="/need_auth">request authorization</a>]') }, 'dies on maketext error' );
 
 ################ Locale xx_xx set via ENV{LANGUAGE_HANDLE}
-$ENV{LANGUAGE_HANDLE} = HTML::FormHandler::I18N->get_handle('xx_xx');
+$ENV{LANGUAGE_HANDLE} = 'xx_xx';
 
 # create form w/ locale must work
 undef $form;
