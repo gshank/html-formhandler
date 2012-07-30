@@ -21,7 +21,7 @@ Relevant field flags:
 If 'do_label' is set and not 'do_wrapper', only the label plus
 the form element will be rendered.
 
-Supported 'tags':
+Supported 'tags', all set via the 'tags' hashref on the field:
 
     wrapper_tag    -- the tag to use in the wrapper, default 'div'
 
@@ -37,6 +37,10 @@ Supported 'tags':
 
     no_wrapped_label -- for checkboxes. Don't provide an inner wrapped label
                         (from Base wrapper)
+
+Example:
+
+    has_field 'foo' => ( tags => { wrapper_tag => 'span', no_errors => 1 } );
 
 =cut
 
