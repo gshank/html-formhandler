@@ -124,7 +124,12 @@ sub _get_value {
     elsif( $field->form && $field->form->use_defaults_over_obj && ( @values = $field->get_default_value )  ) {
     }
     elsif ( blessed($item) && $item->can($accessor) ) {
-        @values = $item->$accessor;
+        my $v = $item->$accessor;
+        if($field->has_flag('multiple') && ref($v) eq 'ARRAY'){
+            @values = @$v;
+        } else {
+            @values = $v;
+        }
     }
     elsif ( exists $item->{$accessor} ) {
         my $v = $item->{$accessor};

@@ -58,7 +58,7 @@ The name of the element fields will be an array index,
 starting with 0. Therefore the first array element can be accessed with:
 
    $form->field('tags')->field('0')
-   $form->field('addresses')->field('0)->field('city')
+   $form->field('addresses')->field('0')->field('city')
 
 or using the shortcut form:
 
