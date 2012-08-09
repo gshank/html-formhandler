@@ -16,6 +16,19 @@ use HTML::FormHandler::Test;
             { value => '"yes"', label => 'Yes' },
         ]
     );
+
+    has_field 'option_group' => (
+        type    => 'Select',
+        widget  => 'RadioGroup',
+        options => [
+            {
+                group            => 'First Group',
+                options          => [ { value => 1, label => 'Yes'}, {value => 2, label => 'No' } ],
+                attributes       => { class => 'firstgroup' },
+                label_attributes => { class => 'group1' },
+            }
+        ]
+    )
 }
 
 my $form = Test::Form->new;
@@ -54,6 +67,26 @@ $expected =
 </div>';
 
 is_html( $rendered, $expected, 'output from radio group');
+
+# option group attributes
+$rendered = $form->field('option_group')->render;
+$expected =
+'<div>
+  <label for="option_group">Option group</label>
+  <div class="firstgroup">
+    <label class="group1">First Group</label>
+    <label class="radio" for="option_group.0">
+      <input type="radio" value="1" name="option_group" id="option_group.0" />
+      Yes
+    </label>
+    <label class="radio" for="option_group.1">
+      <input type="radio" value="2" name="option_group" id="option_group.1" />
+      No
+    </label>
+  </div>
+</div>';
+
+is_html( $rendered, $expected, 'output from ragio group with option group and label attributes');
 
 # create form with no label rendering for opt_in
 $form = Test::Form->new( field_list => [ '+opt_in' => { do_label => 0 } ] );
