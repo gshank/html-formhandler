@@ -263,20 +263,21 @@ sub match_when {
         my $from_form = ( $key =~ /^\+/ );
         $key =~ s/^\+//;
         my $field = $from_form ? $self->form->field($key) : $self->parent->subfield( $key );
+        my $field_fif = defined $field->fif ? $field->fif : '';
         unless ( $field ) {
             warn "field '$key' not found processing when";
             next;
         }
         if ( ref $check_against eq 'CODE' ) {
             $matched++
-                if $check_against->($field->fif, $self);
+                if $check_against->($field_fif, $self);
         }
         elsif ( ref $check_against eq 'ARRAY' ) {
             foreach my $value ( @$check_against ) {
-                $matched++ if ( $value eq $field->fif );
+                $matched++ if ( $value eq $field_fif );
             }
         }
-        elsif ( $check_against eq ( $field->fif || '' ) ) {
+        elsif ( $check_against eq $field_fif ) {
             $matched++;
         }
         else {
