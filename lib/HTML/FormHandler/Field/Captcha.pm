@@ -15,11 +15,11 @@ Requires that that three methods be available from a form object:
   $self->form->set_captcha;
 
 Using Catalyst and the Catalyst session plugin this field can be used
-in a form by using L<HTML::FormHandler::Form::Captcha>.
+in a form by using L<HTML::FormHandler::TraitFor::Captcha>.
 
    package MyApp::Form::Post;
    use HTML::FormHandler::Moose;
-   with 'HTML::FormHandler::Form::Captcha';
+   with 'HTML::FormHandler::TraitFor::Captcha';
 
 You can set the following attributes on the 'captcha' field:
 

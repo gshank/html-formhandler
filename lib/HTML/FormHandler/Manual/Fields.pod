@@ -552,7 +552,7 @@ L<HTML::FormHandler::Field::PrimaryKey>
 =head3 Captcha
 
 A Captcha field using GD::SecurityImage. Requires the use of the
-L<HTML::FormHandler::Form::Captcha> role, or similar code.
+L<HTML::FormHandler::TraitFor::Captcha> role, or similar code.
 
 L<HTML::FormHandler::Field::Captcha>
 
