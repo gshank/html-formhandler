@@ -28,6 +28,32 @@ use HTML::FormHandler::Test;
         ],
     );
 
+    has_field 'optgroup' => (
+        type => 'Multiple',
+        widget => 'CheckboxGroup',
+    );
+
+    sub options_optgroup { (
+        {
+            group => 'First Group',
+            options => [
+                { value => 1, label => 'One' },
+                { value => 2, label => 'Two' },
+                { value => 3, label => 'Three' },
+            ],
+            attributes => { class => 'group1' },
+        },
+        {
+            group => 'Second Group',
+            options => [
+                { value => 4, label => 'Four' },
+                { value => 5, label => 'Five' },
+                { value => 6, label => 'Six' },
+            ],
+            label_attributes => { class => 'group2' },
+        },
+    ) }
+
 }
 my $form = Test::Form->new;
 $form->process;
@@ -92,5 +118,44 @@ $expected =
   </label>
 </div>';
 is_html( $rendered, $expected, 'output from checkbox group' );
+
+$rendered = $form->field('optgroup')->render;
+$expected = 
+'<div>
+  <label for="optgroup">Optgroup</label>
+  <div class="group1">
+    <label>First Group</label>
+    <label class="checkbox" for="optgroup.0">
+      <input type="checkbox" value="1" name="optgroup" id="optgroup.0" />
+      One
+    </label>
+    <label class="checkbox" for="optgroup.1">
+      <input type="checkbox" value="2" name="optgroup" id="optgroup.1" />
+      Two
+    </label>
+    <label class="checkbox" for="optgroup.2">
+      <input type="checkbox" value="3" name="optgroup" id="optgroup.2" />
+      Three
+    </label>
+  </div>
+  <div>
+    <label class="group2">Second Group</label>
+    <label class="checkbox" for="optgroup.3">
+      <input type="checkbox" value="4" name="optgroup" id="optgroup.3" />
+      Four
+    </label>
+    <label class="checkbox" for="optgroup.4">
+      <input type="checkbox" value="5" name="optgroup" id="optgroup.4" />
+      Five
+    </label>
+    <label class="checkbox" for="optgroup.5">
+      <input type="checkbox" value="6" name="optgroup" id="optgroup.5" />
+      Six
+    </label>
+  </div>
+</div>';
+
+is_html( $rendered, $expected,
+    'output from checkbox group with option group attributes' );
 
 done_testing;
