@@ -89,7 +89,7 @@ the select list.  The primary key is used as the value. The other columns used a
     label_column  --  Used for the labels in the options (default 'name')
     active_column --  The name of the column to be used in the query (default 'active')
                       that allows the rows retrieved to be restricted
-    sort_column   --  The name of the column used to sort the options
+    sort_column   --  The name or arrayref of names of the column(s) used to sort the options
 
 See also L<HTML::FormHandler::Model::DBIC>, the 'lookup_options' method.
 
@@ -196,7 +196,7 @@ to fetch the text to use for the select list.
 Refers to the method (or column) name to use in a related
 object class for the label for select lists.
 
-Defaults to "name"
+Defaults to "name".
 
 =head2 localize_labels
 
@@ -228,14 +228,10 @@ See L<select_widget> below.
 
 =head2 sort_column
 
-Sets or returns the column used in the foreign class for sorting the
-options labels.  Default is undefined.
+Sets or returns the column or arrayref of columns used in the foreign class
+for sorting the options labels.  Default is undefined.
 
-If this column exists in the foreign table then labels returned will be sorted
-by this column.
-
-If not defined or the column is not found as a method on the foreign class then
-the label_column is used as the sort condition.
+If not defined the label_column is used as the sort condition.
 
 =head2 select_widget
 
@@ -405,7 +401,7 @@ has 'label_column'     => ( isa => 'Str',       is => 'rw', default => 'name' );
 has 'localize_labels'  => ( isa => 'Bool', is => 'rw' );
 has 'active_column'    => ( isa => 'Str',       is => 'rw', default => 'active' );
 has 'auto_widget_size' => ( isa => 'Int',       is => 'rw', default => '0' );
-has 'sort_column'      => ( isa => 'Str',       is => 'rw' );
+has 'sort_column'      => ( isa => 'Str|ArrayRef[Str]',       is => 'rw' );
 has '+widget'          => ( default => 'Select' );
 has 'empty_select'     => ( isa => 'Str',       is => 'rw' );
 has '+deflate_method'  => ( default => sub { \&select_deflate } );
