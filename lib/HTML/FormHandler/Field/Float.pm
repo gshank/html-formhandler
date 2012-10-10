@@ -54,7 +54,7 @@ sub validate {
 
     if ($value =~ m/^-?([0-9]+)(\Q$symbol\E([0-9]+))?$/x) {     # \Q ... \E - All the characters between the \Q and the \E are interpreted as literal characters.
         $integer_part = $1;
-        $decimal_part = $3;
+        $decimal_part = defined $3 ? $3 : '';
     }
     else {
         return $field->add_error( $field->get_message('float_needed'), $symbol );
