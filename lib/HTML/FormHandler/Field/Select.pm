@@ -244,7 +244,6 @@ otherwise will return C<checkbox_group>.
 
 Returns the option label for the option value that matches the field's current value.
 Can be helpful for displaying information about the field in a more friendly format.
-This does a string compare.
 
 =head2 error messages
 
@@ -447,13 +446,28 @@ sub select_widget {
 }
 
 sub as_label {
-    my $field = shift;
+    my $self = shift;
 
-    my $value = $field->value;
+    my $value = $self->value;
     return unless defined $value;
-
-    for ( $field->options ) {
-        return $_->{label} if $_->{value} eq $value;
+    if ( $self->multiple ) {
+        my @labels;
+        my %value_hash;
+        @value_hash{@$value} = ();
+        for ( $self->options ) {
+            if ( exists $value_hash{$_->{value}} ) {
+                push @labels, $_->{label};
+                delete $value_hash{$_->{value}};
+                last unless keys %value_hash;
+            }
+        }
+        my $str = join(', ', @labels);
+        return $str;
+    }
+    else {
+        for ( $self->options ) {
+            return $_->{label} if $_->{value} eq $value;
+        }
     }
     return;
 }

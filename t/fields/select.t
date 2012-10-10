@@ -104,7 +104,6 @@ $field_options = $form->field('build_attr')->options;
 is_deeply( $field_options, $build_attr_options,
     'get options for fruit after process' );
 
-
 $form->process( $params );
 ok( $form->validated, 'form validated' );
 is( $form->field('fruit')->value, 2, 'fruit value is correct');
@@ -114,6 +113,7 @@ is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], test_field => '', bui
     'fif is correct');
 is_deeply( $form->values, { fruit => 2, vegetables => [2, 4], empty => [], build_attr => undef },
     'values are correct');
+is( $form->field('vegetables')->as_label, 'broccoli, peas', 'multiple as_label works');
 
 $params = {
     fruit => 2,
