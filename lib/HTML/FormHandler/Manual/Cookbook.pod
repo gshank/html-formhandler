@@ -358,6 +358,17 @@ set in the update_model method;
         $self->next::method;
     }
 
+If you need to access a database field in order to create the value for a
+form field you can use a C< default_* > method.
+
+    sub default_myformfield {
+        my ($self, $field, $item) = @_;
+        return unless defined $item;
+        my $databasefield =  $item->databasefield;
+        my $value = ... # do stuff
+        return $value;
+    }
+
 =head2 Additional changes to the database
 
 If you want to do additional database updates besides the ones that FormHandler
