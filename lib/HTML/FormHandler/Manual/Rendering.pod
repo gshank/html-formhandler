@@ -225,6 +225,28 @@ Hashref of arbitrary HTML attributes to be included in the form wrapper
 
 =back
 
+=head2 Form messages
+
+Some messages are rendered at the top of the form (inside the form tag)
+by the 'render_form_messages' method, which is implemented in
+L<HTML::FormHandler::Widget::Form::Simple> and
+L<HTML::FormHandler::Widget::Theme::BootstrapFormMessages> (which is
+included by the Bootstrap theme).
+
+There are three types of form messages: 'error_message', 'success_message',
+and 'info_message'. The 'error_message' and 'success_message' are set inside
+the form:
+
+    has '+success_message' => ( default => 'Form successfully submitted' );
+    has '+error_message' => ( default => 'There were errors in your form.' );
+
+And then are displayed after the form is validated.
+
+The 'info_message' is cleared out when a form is re-processed, and so would
+normally be set on the process call, or between new & process.
+
+    $form->process( params => {}, info_message => 'Fill in the form' );
+
 =head2 Field settings
 
     has_field 'foo' => ( widget => 'MyWidget', widget_wrapper => 'SpecialWrapper',

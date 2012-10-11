@@ -44,6 +44,7 @@ use HTML::FormHandler::Test;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
     with 'MyApp::Form::Basic::Theme';
+    with 'HTML::FormHandler::Widget::Theme::BootstrapFormMessages';
 
     has '+name' => ( default => 'basic_form' );
     has_field 'foo' => ( type => 'Text' );
@@ -62,7 +63,6 @@ my $expected = '<div class="row">
     </div>
     <div class="span9">
       <form class="well" method="post" id="basic_form">
-      <div class="form_messages"></div>
         <label for="foo">Foo</label>
         <input type="text" class="span3" placeholder="Type something…" name="foo" id="foo" value="">
         <span class="help-inline">Associated help text!</span>
@@ -74,9 +74,6 @@ my $expected = '<div class="row">
   </div> <!-- /row -->';
 
 is_html($rendered, $expected, 'rendered correctly');
-
-done_testing;
-exit;
 
 # check foo
 $rendered = $form->field('foo')->render;
@@ -90,7 +87,13 @@ is_html($rendered, $expected, 'foo field is correct' );
 $rendered = $form->field('bar')->render;
 $expected =
 '<label class="checkbox" for="bar">
- <input type="checkbox" name="bar" id="bar" value="1">Check me out</label>';
+ <input type="checkbox" name="bar" id="bar" value="1"> Check me out </label>';
 is_html($rendered, $expected, 'bar field is correct' );
+
+$form->process( params => {}, info_message => 'Fill in the form!' );
+$rendered = $form->render_form_messages;
+$expected =
+'<div class="alert alert-info"><span>Fill in the form!</span>';
+is_html($rendered, $expected, 'info message rendered ok' );
 
 done_testing;

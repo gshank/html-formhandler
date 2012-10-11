@@ -140,6 +140,12 @@ sub render_form_messages {
         my $success_class = $self->get_tag('success_class') || 'success_message';
         $output .= qq{\n<span class="$success_class">$msg</span>};
     }
+    if( $self->has_info_message && $self->info_message ) {
+        my $msg = $self->info_message;
+        $msg = $self->_localize($msg);
+        my $info_class = $self->get_tag('info_class') || 'info_message';
+        $output .= qq{\n<span class="$info_class">$msg</span>};
+    }
     $output .= "\n</div>";
     return $output;
 }

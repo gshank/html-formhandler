@@ -44,4 +44,11 @@ $form->process( params => {} );
 $rendered = $form->render;
 unlike( $rendered, qr/class="success_message"/, 'no success message when not validated' );
 
+$form->process( params => {}, info_message => 'Please fill out the form completely' );
+$rendered = $form->render;
+like( $rendered, qr/class="info_message"/, 'info message is there' );
+$form->process( params => {} );
+$rendered = $form->render;
+unlike( $rendered, qr/class="info_message"/, 'info message has been cleared' );
+
 done_testing;
