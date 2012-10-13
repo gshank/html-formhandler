@@ -1,3 +1,15 @@
+0.40014 Sat Oct 13, 2012
+   Add useful message and die in field widgets with no result
+   Use string instead of object in LANGUAGE_HANDLE
+   Fix bug in required_when when value is 0
+   Allow using arrayref for sort_column.
+   Select field as_label for multiple fields.
+   Minor doc fixes
+   Bug - option group label attributes
+   Add info_message to form and rendering.
+   Add 'use_fields_for_input_without_param' flag
+   Call inflate_default_method on repeatable elements
+
 0.40013 Sun Jun 24, 2012
    Re-write elimination of PrimaryKey field from repeatable value,
        add 'no_value_if_empty' attribute
