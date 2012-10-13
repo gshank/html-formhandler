@@ -912,6 +912,7 @@ has 'defaults' => ( is => 'rw', isa => 'HashRef', default => sub {{}}, traits =>
 );
 has 'use_defaults_over_obj' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_defaults_over_obj' );
 has 'use_init_obj_over_item' => ( is => 'rw', isa => 'Bool', clearer => 'clear_use_init_obj_over_item' );
+has 'use_fields_for_input_without_param' => ( is => 'rw', isa => 'Bool' );
 # flags
 has [ 'verbose', 'processed', 'did_init_obj' ] => ( isa => 'Bool', is => 'rw' );
 has 'user_data' => ( isa => 'HashRef', is => 'rw' );

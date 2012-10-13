@@ -59,7 +59,13 @@ sub validate_field {
 
     return unless $field->has_result;
     $field->clear_errors;    # this is only here for testing convenience
-                             # See if anything was submitted
+
+    # if the 'fields_for_input_without_param' flag is set, and the field doesn't have input,
+    # copy the value to the input.
+    if ( !$field->has_input && $field->form && $field->form->use_fields_for_input_without_param ) {
+        $field->result->_set_input($field->value);
+    }
+    # handle required and required_when processing, and transfer input to value
     my $continue_validation = 1;
     if ( ( $field->required ||
            ( $field->has_required_when && $field->match_when($field->required_when) ) ) &&

@@ -90,6 +90,19 @@ the new 'use_defaults_over_obj' and 'use_init_obj_over_item' flags, make it less
 necessary. Note that the 'default_over_obj' attribute only provides a default if
 an item/init_object and accessor exists.
 
+=head2 Defaults when processing params
+
+Normally when a form is posted, the params will contain all the values
+that are necessary to fill in the form. However, when a form is used in
+an API-like fashion, such as complex search forms, sometimes it is
+convenient to only provide particular params and let the others use
+defaults. However when the results are built from input, fields with
+no input are skipped unless the field has a value for 'input_without_param'.
+There is an additional form-level flag, 'use_fields_for_input_without_param'
+which will cause fields with no param entry to be built from the fields.
+This means that 'defaults' on the field will be used to provide a value
+and an input for the field.
+
 =head2 Query parameters for defaults
 
 You can use either the 'defaults' hashref or the 'init_object' to provide query

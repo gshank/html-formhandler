@@ -61,9 +61,10 @@ sub _result_from_input {
                 name   => $field_name,
                 parent => $self_result
             );
+            my $exists = exists $input->{$field->input_param || $field_name};
             $result =
                 $field->_result_from_input( $result, $input->{$field->input_param || $field_name},
-                exists $input->{$field->input_param || $field_name} );
+                $exists );
             $self_result->add_result($result) if $result;
         }
     }
