@@ -70,4 +70,30 @@ is_deeply( $form->fif, $fif, 'right fif' );
 is( $form->field('foo.one')->fif, 'x', 'correct fif' );
 is( $form->field('foo')->value, 'one-x-two-xx-three-xxx', 'right value for foo field' );
 
+{
+    package Test::RepDeflate;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo' => ( type => 'Repeatable' );
+    has_field 'foo.contains' => ( type => '+Test::Field' );
+    has_field 'bar';
+    sub validate_foo {
+        my ( $self, $field ) = @_;
+        my $value = $field->value;
+        unless ( ref $value eq 'ARRAY' ) {
+            $self->add_error('wrong value');
+        }
+    }
+}
+
+$form = Test::RepDeflate->new;
+$init_object = { foo => ['one-1-two-2-three-3', 'one-10-two-11-three-12'], bar => 'xxyyzz' };
+$form->process( init_object => $init_object, params => {} );
+is_deeply( $form->value, { foo => [ { one => 1, two => 2, three => 3 }, { one => 10, two => 11, three => 12 } ],
+        bar => 'xxyyzz' }, 'value is correct?' );
+is_deeply( $form->fif, { 'foo.0.one' => 1, 'foo.0.two' => 2, 'foo.0.three' => 3,
+             'foo.1.one' => 10, 'foo.1.two' => 11, 'foo.1.three' => 12, bar => 'xxyyzz' },
+    'fif is correct' );
+
 done_testing;

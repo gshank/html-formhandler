@@ -301,6 +301,9 @@ sub _result_from_object {
         my $field = $self->clone_element($index);
         my $result =
             HTML::FormHandler::Field::Result->new( name => $index, parent => $self->result );
+        if( $field->has_inflate_default_method ) {
+            $element = $field->inflate_default($element);
+        }
         $result = $field->_result_from_object( $result, $element );
         push @new_values, $result->value;
         $self->add_field($field);
@@ -344,7 +347,7 @@ sub add_extra {
     $self->index($index);
 }
 
-# create an empty form
+# create an empty field
 sub _result_from_fields {
     my ( $self, $result ) = @_;
 
