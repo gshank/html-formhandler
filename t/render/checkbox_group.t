@@ -120,7 +120,7 @@ $expected =
 is_html( $rendered, $expected, 'output from checkbox group' );
 
 $rendered = $form->field('optgroup')->render;
-$expected = 
+$expected =
 '<div>
   <label for="optgroup">Optgroup</label>
   <div class="group1">
