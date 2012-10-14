@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Data::Printer;
 
 {
     package MyApp::Form::Test;
