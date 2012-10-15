@@ -1,3 +1,6 @@
+0.40016 Mon Oct 15, 2012
+   Fix bug with DBIC model interface
+
 0.40015 Sun Oct 14, 2012
    Remove extraneous use of Data::Printer
    Correct spelling of PadWalker
