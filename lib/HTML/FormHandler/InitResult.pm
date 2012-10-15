@@ -61,10 +61,9 @@ sub _result_from_input {
                 name   => $field_name,
                 parent => $self_result
             );
-            my $exists = exists $input->{$field->input_param || $field_name};
             $result =
                 $field->_result_from_input( $result, $input->{$field->input_param || $field_name},
-                $exists );
+                exists $input->{$field->input_param || $field_name} );
             $self_result->add_result($result) if $result;
         }
     }
@@ -125,11 +124,11 @@ sub _get_value {
     elsif( $field->form && $field->form->use_defaults_over_obj && ( @values = $field->get_default_value )  ) {
     }
     elsif ( blessed($item) && $item->can($accessor) ) {
-        my $v = $item->$accessor;
-        if($field->has_flag('multiple') && ref($v) eq 'ARRAY'){
-            @values = @$v;
-        } else {
-            @values = $v;
+        # this must be an array, so that DBIx::Class relations are arrays not resultsets
+        @values = $item->$accessor;
+        # for non-DBIC blessed object where access returns arrayref
+        if ( scalar @values == 1 && ref $values[0] eq 'ARRAY' && $field->has_flag('multiple') ) {
+            @values = @{$values[0]};
         }
     }
     elsif ( exists $item->{$accessor} ) {
