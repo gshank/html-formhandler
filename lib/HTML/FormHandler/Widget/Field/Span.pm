@@ -20,7 +20,7 @@ sub render_element {
     my $output = '<span';
     $output .= ' id="' . $self->id . '"';
     $output .= process_attrs($self->element_attributes($result));
-    $output .= ' />';
+    $output .= '>';
     $output .= $self->value;
     $output .= '</span>';
     return $output;
