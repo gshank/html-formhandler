@@ -391,8 +391,9 @@ sub _update_or_create {
             $field = $parent->field( $field_attr->{name} );
             die "Field to update for " . $field_attr->{name} . " not found"
                 unless $field;
-            delete $field_attr->{name};
             foreach my $key ( keys %{$field_attr} ) {
+                next if $key eq 'name' || $key eq 'form' || $key eq 'parent' ||
+                    $key eq 'full_name' || $key eq 'type';
                 $field->$key( $field_attr->{$key} )
                     if $field->can($key);
             }

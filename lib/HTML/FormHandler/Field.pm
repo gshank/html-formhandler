@@ -222,8 +222,8 @@ The order attribute may be used to set the order in which fields are rendered.
 The following are discouraged. Use 'element_attr', 'label_attr', and 'wrapper_attr'
 instead.
 
-   css_class   - instead use wrapper_attr => { class => '...' }
-   input_class - instead use element_attr => { class => '...' }
+   css_class   - instead use wrapper_class => [ '...' ]
+   input_class - instead use element_class => [ '...' ]
    title       - instead use element_attr => { title => '...' }
    style       - instead use element_attr => { style => '...' }
    tabindex    - instead use element_attr => { tabindex => 1 }
