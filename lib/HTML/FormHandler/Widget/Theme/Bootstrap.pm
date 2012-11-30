@@ -3,18 +3,32 @@ package HTML::FormHandler::Widget::Theme::Bootstrap;
 
 =head1 SYNOPSIS
 
-Sample Bootstrap theme role. Apply to your subclass of HTML::FormHandler
-Sets the widet wrapper to 'Bootstrap' and renders form messages using Bootstrap
-formatting and classes.  Does 'form-horizontal' with 'build_form_element_class'.
-Implement your own sub to use 'form-vertical':
+Also see L<HTML::FormHandler::Manual::Rendering>.
 
-   sub build_form_element_class { ['form-vertical'] }
+Sample Bootstrap theme role. Can be applied to your subclass of HTML::FormHandler.
+Sets the widget wrapper to 'Bootstrap' and renders form messages using Bootstrap
+formatting and classes.
 
-Form error messages:
+There is an example app using Bootstrap at http://github.com:gshank/formhandler-example.
+
+This is a lightweight example of what you could do in your own custom
+Bootstrap theme. The heavy lifting is done by the Bootstrap wrapper,
+L<HTML::FormHandler::Widget::Wrapper::Bootstrap>,
+which you can use by itself in your form with:
+
+    has '+widget_wrapper' => ( default => 'Bootstrap' );
+
+It also uses L<HTML::FormHandler::Widget::Theme::BootstrapFormMessages>
+to render the form messages in a Bootstrap style:
 
    <div class="alert alert-error">
        <span class="error_message">....</span>
    </div>
+
+By default this does 'form-horizontal' with 'build_form_element_class'.
+Implement your own sub to use 'form-vertical':
+
+   sub build_form_element_class { ['form-vertical'] }
 
 
 =cut
@@ -29,38 +43,5 @@ after 'before_build' => sub {
 };
 
 sub build_form_element_class { ['form-horizontal'] }
-
-sub render_form_messages {
-    my ( $self, $result ) = @_;
-
-    $result ||= $self->result;
-    my $output = '';
-    if ( $result->has_form_errors || $result->has_errors ) {
-        $output = qq{\n<div class="alert alert-error">};
-        my $msg = $self->error_message;
-        $msg ||= 'There were errors in your form';
-        $msg = $self->_localize($msg);
-        $output .= qq{\n<span class="error_message">$msg</span>};
-        $output .= qq{\n<span class="error_message">$_</span>}
-            for $result->all_form_errors;
-        $output .= "\n</div>";
-    }
-    elsif ( $result->validated ) {
-        my $msg = $self->success_message;
-        $msg ||= "Your form was successfully submitted";
-        $msg = $self->_localize($msg);
-        $output = qq{\n<div class="alert alert-success">};
-        $output .= qq{\n<span>$msg</span>};
-        $output .= "\n</div>";
-    }
-    if ( $self->has_info_message && $self->info_message ) {
-        my $msg = $self->info_message;
-        $msg = $self->_localize($msg);
-        $output = qq{\n<div class="alert alert-info">};
-        $output .= qq{\n<span>$msg</span>};
-        $output .= "\n</div>";
-    }
-    return $output;
-}
 
 1;
