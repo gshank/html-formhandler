@@ -1,3 +1,10 @@
+0.40017 Sat Dec 1, 2012
+   Fix bad html in Span widget
+   Fix unitialized warning processing has_field with '+'
+   Use get_default_value in Submit/Rest field
+   Improve doc for bootstrap theme, use BootstrapFormMessages role
+   Add lazy to render_filter for random failures in 5.17.6
+
 0.40016 Mon Oct 15, 2012
    Fix bug with DBIC model interface
 
