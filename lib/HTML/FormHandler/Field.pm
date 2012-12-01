@@ -1095,6 +1095,7 @@ has 'render_filter' => (
      traits => ['Code'],
      is     => 'ro',
      isa    => 'CodeRef',
+     lazy   => 1,
      builder => 'build_render_filter',
      handles => { html_filter => 'execute' },
 );
@@ -1163,6 +1164,7 @@ has 'localize_meth' => (
      traits => ['Code'],
      is     => 'ro',
      isa    => 'CodeRef',
+     lazy   => 1,
      builder => 'build_localize_meth',
      handles => { '_localize' => 'execute_method' },
 );
