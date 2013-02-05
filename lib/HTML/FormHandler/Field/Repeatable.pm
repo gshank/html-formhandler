@@ -138,6 +138,7 @@ has 'init_contains' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
 
 has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
 has 'num_extra'      => ( isa => 'Int',  is => 'rw', default => 0 );
+has 'extra_for_js'   => ( isa => 'Str',  is => 'rw' );
 has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 has 'is_repeatable'        => ( is      => 'ro', default => 1 );
@@ -316,6 +317,10 @@ sub _result_from_object {
             $num_extra--;
             $index++;
         }
+    }
+    if ( $self->extra_for_js ) {
+        $self->_add_extra($self->extra_for_js);
+        $self->field($self->extra_for_js)->add_wrapper_class('for_js');
     }
     $self->index($index);
     $values = \@new_values if scalar @new_values;
