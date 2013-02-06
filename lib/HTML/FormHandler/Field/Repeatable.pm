@@ -278,6 +278,10 @@ sub _result_from_input {
             $index++;
         }
     }
+    if ( $self->extra_for_js ) {
+        $self->_add_extra($self->extra_for_js);
+        $self->field($self->extra_for_js)->add_wrapper_class('for_js');
+    }
     $self->index($index);
     $self->result->_set_field_def($self);
     return $self->result;
@@ -375,6 +379,10 @@ sub _result_from_fields {
         $self->add_field($field);
         $index++;
         $count--;
+    }
+    if ( $self->extra_for_js ) {
+        $self->_add_extra($self->extra_for_js);
+        $self->field($self->extra_for_js)->add_wrapper_class('for_js');
     }
     $self->index($index);
     $self->result->_set_field_def($self);
