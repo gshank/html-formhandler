@@ -28,8 +28,12 @@ $form->process( $unemployed_params);
 
 ok( $form->field('employers')->field('XXX'), 'extra field from input results' );
 
-my $rendered = $form->field('employers')->render;
+my $rendered = $form->field('employers.XXX')->render;
 my $expected = qq{<div class="for_js" id="employers.XXX.wrp">};
 like($rendered, qr/$expected/, 'special wrapping div');
+
+$rendered = $form->field('employers.0')->render;
+unlike($rendered, qr/$expected/, 'no wrapping div on non-for_js element');
+
 
 done_testing;

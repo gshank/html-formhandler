@@ -7,6 +7,7 @@ extends 'HTML::FormHandler::Field::Compound';
 use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
 use HTML::FormHandler::Field::PrimaryKey;
 use HTML::FormHandler::Merge ('merge');
+use Data::Clone ('data_clone');
 
 =head1 SYNOPSIS
 
@@ -293,11 +294,14 @@ sub _add_extra_for_js {
     my $self = shift;
     $self->_add_extra($self->extra_for_js);
     my $field = $self->field($self->extra_for_js);
+
     # add an extra div around the field so that the html can be easily pulled out
+    # need to clone tags, otherwise tags shared with all repeatable instances
+    my $tags = data_clone( $field->tags );
     my $id = $self->_extra_for_js_id;
-    $self->field($self->extra_for_js)->set_tag('before_wrapper',
-        qq{<div class="for_js" id="$id">} );
-    $self->field($self->extra_for_js)->set_tag('after_wrapper', '</div>');
+    $tags->{before_wrapper} = qq{<div class="for_js" id="$id">};
+    $tags->{after_wrapper} = '</div>';
+    $field->tags($tags);
 }
 
 # this is called when there is an init_object or a db item with values
