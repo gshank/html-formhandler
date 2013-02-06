@@ -44,8 +44,9 @@ sub wrap_field {
         || $self->type_attr eq 'reset' );
     # create attribute string for wrapper
     my $attr = $self->wrapper_attributes($result);
-    my $div_class = $form_actions ? "form-actions" : "control-group";
-    unshift @{$attr->{class}}, $div_class;
+    # no 'control-group' class for Hidden fields, 'form-actions' for submit/reset
+    my $div_class = $self->type eq 'Hidden' ? undef : $form_actions ? "form-actions" : "control-group";
+    unshift @{$attr->{class}}, $div_class if $div_class;
     my $attr_str = process_attrs( $attr );
     # wrapper is always a div
     $output .= qq{\n<div$attr_str>}
