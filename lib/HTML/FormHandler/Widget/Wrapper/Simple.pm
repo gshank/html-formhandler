@@ -53,6 +53,7 @@ sub wrap_field {
     my $label_tag = $self->label_tag || '';
     my $wrapper_tag;
     if( $self->do_wrapper ) {
+        $output .= $self->get_tag('before_wrapper');
         $wrapper_tag = $self->get_tag('wrapper_tag');
         # default wrapper tags
         $wrapper_tag ||= $self->has_flag('is_repeatable') ? 'fieldset' : 'div';
@@ -85,6 +86,7 @@ sub wrap_field {
     }
     if( $self->do_wrapper ) {
         $output .= "\n</$wrapper_tag>";
+        $output .= $self->get_tag('after_wrapper');
     }
     return "$output";
 }

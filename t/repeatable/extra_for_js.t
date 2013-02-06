@@ -28,4 +28,8 @@ $form->process( $unemployed_params);
 
 ok( $form->field('employers')->field('XXX'), 'extra field from input results' );
 
+my $rendered = $form->field('employers')->render;
+my $expected = qq{<div class="for_js" id="employers.XXX.wrp">};
+like($rendered, qr/$expected/, 'special wrapping div');
+
 done_testing;

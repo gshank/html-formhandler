@@ -278,13 +278,26 @@ sub _result_from_input {
             $index++;
         }
     }
-    if ( $self->extra_for_js ) {
-        $self->_add_extra($self->extra_for_js);
-        $self->field($self->extra_for_js)->add_wrapper_class('for_js');
-    }
+    $self->_add_extra_for_js if $self->extra_for_js;
     $self->index($index);
     $self->result->_set_field_def($self);
     return $self->result;
+}
+
+sub _extra_for_js_id {
+    my $self = shift;
+    return '' unless $self->extra_for_js;
+    return $self->full_name . "." . $self->extra_for_js . ".wrp";
+}
+sub _add_extra_for_js {
+    my $self = shift;
+    $self->_add_extra($self->extra_for_js);
+    my $field = $self->field($self->extra_for_js);
+    # add an extra div around the field so that the html can be easily pulled out
+    my $id = $self->_extra_for_js_id;
+    $self->field($self->extra_for_js)->set_tag('before_wrapper',
+        qq{<div class="for_js" id="$id">} );
+    $self->field($self->extra_for_js)->set_tag('after_wrapper', '</div>');
 }
 
 # this is called when there is an init_object or a db item with values
@@ -322,10 +335,7 @@ sub _result_from_object {
             $index++;
         }
     }
-    if ( $self->extra_for_js ) {
-        $self->_add_extra($self->extra_for_js);
-        $self->field($self->extra_for_js)->add_wrapper_class('for_js');
-    }
+    $self->_add_extra_for_js if $self->extra_for_js;
     $self->index($index);
     $values = \@new_values if scalar @new_values;
     $self->_set_value($values);
@@ -380,10 +390,7 @@ sub _result_from_fields {
         $index++;
         $count--;
     }
-    if ( $self->extra_for_js ) {
-        $self->_add_extra($self->extra_for_js);
-        $self->field($self->extra_for_js)->add_wrapper_class('for_js');
-    }
+    $self->_add_extra_for_js if $self->extra_for_js;
     $self->index($index);
     $self->result->_set_field_def($self);
     return $result;
