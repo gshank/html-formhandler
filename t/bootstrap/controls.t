@@ -161,7 +161,7 @@ is_html($rendered, $expected, 'textarea renders ok' );
 
 # actions
 $expected =
-'<div class="form-actions">
+'<div class="form-actions" id="actions">
   <button id="actions.save" name="actions.save" type="submit" class="btn btn-primary">Save changes</button>
   <button id="actions.cancel" name="actions.cancel" type="reset" class="btn">Cancel</button>
 </div>';
@@ -226,7 +226,7 @@ $expected = '
               <textarea class="input-xlarge" id="textarea" name="textarea" cols="20" rows="4"></textarea>
             </div>
           </div>
-          <div class="form-actions">
+          <div class="form-actions" id="actions">
             <button id="actions.save" name="actions.save" type="submit" class="btn btn-primary">Save changes</button>
             <button id="actions.cancel" name="actions.cancel" type="reset" class="btn">Cancel</button>
           </div>

@@ -76,7 +76,7 @@ $expected =
 is_html( $rendered, $expected, 'error on compound subfield has error class' );
 
 $expected =
-'<div class="error">
+'<div class="error" id="fringe">
   <div>
     <label for="fringe.olivia">Olivia</label>
     <input type="text" name="fringe.olivia" id="fringe.olivia" value="I\'m the true Olivia" />

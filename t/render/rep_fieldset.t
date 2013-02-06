@@ -23,7 +23,7 @@ my $expected =
 '<form id="test_form" method="post">
   <div class="form_messages">
   </div>
-  <fieldset class="hfh-repinst">
+  <fieldset class="hfh-repinst" id="records.0">
     <div>
       <label for="records.0.one">One</label>
       <input type="text" name="records.0.one" id="records.0.one" value="" />
@@ -33,7 +33,7 @@ my $expected =
       <input type="text" name="records.0.two" id="records.0.two" value="" />
     </div>
   </fieldset>
-  <fieldset class="hfh-repinst">
+  <fieldset class="hfh-repinst" id="records.1">
     <div>
       <label for="records.1.one">One</label>
       <input type="text" name="records.1.one" id="records.1.one" value="" />
@@ -67,7 +67,7 @@ $expected =
 '<form id="test_form" method="post">
   <div class="form_messages">
   </div>
-  <fieldset class="hfh-repinst">
+  <fieldset class="hfh-repinst" id="records.0">
     <div>
       <label for="records.0.one">One</label>
       <input type="text" name="records.0.one" id="records.0.one" value="" />
@@ -77,7 +77,7 @@ $expected =
       <input type="text" name="records.0.two" id="records.0.two" value="" />
     </div>
   </fieldset>
-  <fieldset class="hfh-repinst">
+  <fieldset class="hfh-repinst" id="records.1">
     <div>
       <label for="records.1.one">One</label>
       <input type="text" name="records.1.one" id="records.1.one" value="" />

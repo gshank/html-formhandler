@@ -84,7 +84,7 @@ use HTML::FormHandler::Test;
     my $expected =
     '<form id="test_rep" method="post">
       <div class="form_messages"></div>
-      <div class="hfh-repinst">
+      <div class="hfh-repinst" id="my_rep.0">
         <div>
           <label for="my_rep.0.one">One</label>
           <input id="my_rep.0.one" name="my_rep.0.one" type="text" value="" />

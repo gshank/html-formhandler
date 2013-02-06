@@ -196,7 +196,7 @@ is_html( $output7,
 my $output8 = $form->render_field( $form->field('start_date') );
 is_html( $output8,
    '
-<fieldset class="start_date"><legend>Start date</legend>
+<fieldset class="start_date" id="start_date"><legend>Start date</legend>
 <div><label class="label" for="start_date.month">Month</label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" />
 </div>
 <div><label class="label" for="start_date.day">Day</label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" />

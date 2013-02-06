@@ -37,7 +37,7 @@ use HTML::FormHandler::Test;
 my $form = MyApp::Form->new;
 my $rendered = $form->field('my_comp')->render;
 my $expected =
-'<span class="frm wrp">
+'<span class="frm wrp" id="my_comp">
   <span class="frm lbl">My comp</span>
   <div class="frm wrp">
     <span class="frm lbl">One</span>
@@ -72,7 +72,7 @@ $form->process( $params );
 
 $rendered = $form->field('start_date')->render;
 is_html( $rendered,
-'<fieldset class="start_date"><legend>Start date</legend>
+'<fieldset class="start_date" id="start_date"><legend>Start date</legend>
   <div>
     <label for="start_date.month">Month: </label>
     <input type="text" name="start_date.month" id="start_date.month" size="8" value="7" />

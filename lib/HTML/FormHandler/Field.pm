@@ -975,6 +975,9 @@ sub wrapper_attributes {
     push @$class, 'error' if ( $result->has_error_results || $result->has_errors );
     push @$class, 'warning' if $result->has_warnings;
     $attr->{class} = $class if @$class;
+    # add id if compound field and id doesn't exist unless 'no_wrapper_id' tag
+    $attr->{id} = $self->id
+        if ( $self->has_flag('is_compound') && not exists $attr->{id} && ! $self->get_tag('no_wrapper_id') );
     # call form hook
     my $mod_attr = $self->form->html_attributes($self, 'wrapper', $attr, $result) if $self->form;
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;

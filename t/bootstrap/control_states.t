@@ -172,7 +172,7 @@ $rendered = $form->field('selectError')->render;
 is_html( $rendered, $expected, 'selectError rendered ok' );
 
 $expected =
-'<div class="form-actions">
+'<div class="form-actions" id="form_actions">
   <button type="submit" class="btn btn-primary" name="form_actions.save" id="form_actions.save">Save changes</button>
   <button type="reset" class="btn" name="form_actions.cancel" id="form_actions.cancel">Cancel</button>
 </div>';
@@ -246,7 +246,7 @@ $expected =
       <span class="help-inline">Woohoo!</span>
     </div>
   </div>
-  <div class="form-actions">
+  <div class="form-actions" id="form_actions">
     <button type="submit" class="btn btn-primary" name="form_actions.save" id="form_actions.save">Save changes</button>
     <button type="reset" class="btn" name="form_actions.cancel" id="form_actions.cancel">Cancel</button>
   </div>

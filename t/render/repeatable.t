@@ -36,8 +36,8 @@ my $rendered = $form->render;
 my $expected =
 '<form id="test_form" method="post">
   <div class="form_messages"></div>
-  <fieldset class="hfhrep"><legend>Foo Records</legend>
-    <div class="hfh repinst">
+  <fieldset class="hfhrep" id="foo"><legend>Foo Records</legend>
+    <div class="hfh repinst" id="foo.0">
       <div><input type="hidden" name="foo.0.id" id="foo.0.id" value="" /></div>
       <div>
         <label for="foo.0.one">One</label>
@@ -52,7 +52,7 @@ my $expected =
         <input type="text" name="foo.0.three" id="foo.0.three" value="" />
       </div>
     </div>
-    <div class="hfh repinst">
+    <div class="hfh repinst" id="foo.1">
       <div><input type="hidden" name="foo.1.id" id="foo.1.id" value="" /></div>
       <div><label for="foo.1.one">One</label>
         <input type="text" name="foo.1.one" id="foo.1.one" value="" />
