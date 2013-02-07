@@ -39,6 +39,7 @@ has '_results' => (
         clear_results => 'clear',
         find_result_index => 'first_index',
         set_result_at_index => 'set',
+        _pop_result => 'pop',
     }
 );
 

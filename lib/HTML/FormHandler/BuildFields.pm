@@ -346,10 +346,13 @@ sub _merge_updates {
             $field_attr->{widget_wrapper} = $widget_wrapper;
         }
         # add widget and wrapper roles to field traits
-        if( $widget ) {
+        if ( $widget ) {
             my $widget_role = $self->get_widget_role( $widget, 'Field' );
+            push @{$field_attr->{traits}}, $widget_role;
+        }
+        if ( $widget_wrapper ) {
             my $wrapper_role = $self->get_widget_role( $widget_wrapper, 'Wrapper' );
-            push @{$field_attr->{traits}}, $widget_role, $wrapper_role;
+            push @{$field_attr->{traits}}, $wrapper_role;
         }
     }
     return $field_attr;

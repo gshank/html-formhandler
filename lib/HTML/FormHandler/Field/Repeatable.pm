@@ -139,7 +139,7 @@ has 'init_contains' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
 
 has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
 has 'num_extra'      => ( isa => 'Int',  is => 'rw', default => 0 );
-has 'extra_for_js'   => ( isa => 'Str',  is => 'rw' );
+has 'setup_for_js' => ( isa => 'Bool', is => 'rw' );
 has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
 has 'is_repeatable'        => ( is      => 'ro', default => 1 );
@@ -279,29 +279,28 @@ sub _result_from_input {
             $index++;
         }
     }
-    $self->_add_extra_for_js if $self->extra_for_js;
     $self->index($index);
+    $self->_setup_for_js if $self->setup_for_js;
     $self->result->_set_field_def($self);
     return $self->result;
 }
 
-sub _extra_for_js_id {
+sub _setup_for_js {
     my $self = shift;
-    return '' unless $self->extra_for_js;
-    return $self->full_name . "." . $self->extra_for_js . ".wrp";
-}
-sub _add_extra_for_js {
-    my $self = shift;
-    $self->_add_extra($self->extra_for_js);
-    my $field = $self->field($self->extra_for_js);
-
-    # add an extra div around the field so that the html can be easily pulled out
-    # need to clone tags, otherwise tags shared with all repeatable instances
-    my $tags = data_clone( $field->tags );
-    my $id = $self->_extra_for_js_id;
-    $tags->{before_wrapper} = qq{<div class="for_js" id="$id">};
-    $tags->{after_wrapper} = '</div>';
-    $field->tags($tags);
+    return unless $self->form;
+    my $full_name = $self->full_name;
+    my $index_level =()= $full_name =~ /{index\d+}/g;
+    $index_level++;
+    my $field_name = "{index-$index_level}";
+    my $field = $self->_add_extra($field_name);
+    my $rendered = $field->render;
+    # remove extra result & field, now that it's rendered
+    $self->result->_pop_result;
+    $self->_pop_field;
+    # set the information in the form
+    # $self->index is the index of the next instance
+    $self->form->set_for_js( $self->full_name,
+        { index => $self->index, html => $rendered, level => $index_level } );
 }
 
 # this is called when there is an init_object or a db item with values
@@ -339,8 +338,8 @@ sub _result_from_object {
             $index++;
         }
     }
-    $self->_add_extra_for_js if $self->extra_for_js;
     $self->index($index);
+    $self->_setup_for_js if $self->setup_for_js;
     $values = \@new_values if scalar @new_values;
     $self->_set_value($values);
     $self->result->_set_field_def($self);
@@ -356,6 +355,7 @@ sub _add_extra {
     $result = $field->_result_from_fields($result);
     $self->result->add_result($result) if $result;
     $self->add_field($field);
+    return $field;
 }
 
 sub add_extra {
@@ -394,8 +394,8 @@ sub _result_from_fields {
         $index++;
         $count--;
     }
-    $self->_add_extra_for_js if $self->extra_for_js;
     $self->index($index);
+    $self->_setup_for_js if $self->setup_for_js;
     $self->result->_set_field_def($self);
     return $result;
 }

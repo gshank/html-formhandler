@@ -1059,6 +1059,17 @@ sub get_tag {
         if ( $self->form && $self->form->block_exists($block_name) );
     return '';
 }
+has 'for_js' => (
+    isa => 'HashRef',
+    traits => ['Hash'],
+    is => 'rw',
+    default => sub { {} },
+    handles => {
+        set_for_js => 'set',
+        has_for_js => 'count',
+        clear_for_js => 'clear',
+    }
+);
 
 has 'action' => ( is => 'rw' );
 has 'posted' => ( is => 'rw', isa => 'Bool', clearer => 'clear_posted', predicate => 'has_posted' );
@@ -1256,6 +1267,7 @@ sub clear {
     $self->clear_use_init_obj_over_item;
     $self->clear_no_update;
     $self->clear_info_message;
+    $self->clear_for_js;
 }
 
 sub values { shift->value }
