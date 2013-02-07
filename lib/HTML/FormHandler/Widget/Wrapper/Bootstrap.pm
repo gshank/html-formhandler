@@ -56,9 +56,9 @@ sub wrap_field {
     # render the label
     $output .= "\n" . $self->do_render_label($result, undef, ['control-label'] )
         if $self->do_label;
-    $output .=  $self->get_tag('before_element');
     # the controls div for ... controls
     $output .= qq{\n<div class="controls">} unless $form_actions || !$self->do_label;
+    $output .=  $self->get_tag('before_element');
     # handle input-prepend and input-append
     if( $self->get_tag('input_prepend') || $self->get_tag('input_append') ||
             $self->get_tag('input_append_button') ) {
