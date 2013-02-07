@@ -1,4 +1,4 @@
-0.40018 tbd
+0.40018 Thur Feb 7, 2013
    Don't put 'control-group' on Bootstrap hidden field div because of spacing issues
    Support for repeatable add/remove javascript
        add 'setup_for_js' flag to Field::Repeatable
@@ -8,6 +8,7 @@
        add 'id' to wrappers of compound fields
        update Display field to use 'render_method'
        allow applying wrapper widget even if field has render method
+   Fix positioning of 'before_element' tag in Bootstrap wrapper
 
 0.40017 Sat Dec 1, 2012
    Fix bad html in Span widget
