@@ -49,8 +49,10 @@ sub wrap_field {
     unshift @{$attr->{class}}, $div_class if $div_class;
     my $attr_str = process_attrs( $attr );
     # wrapper is always a div
-    $output .= qq{\n<div$attr_str>}
-        if $self->do_wrapper;
+    if ( $self->do_wrapper ) {
+        $output .= $self->get_tag('before_wrapper');
+        $output .= qq{\n<div$attr_str>};
+    }
     # render the label
     $output .= "\n" . $self->do_render_label($result, undef, ['control-label'] )
         if $self->do_label;
@@ -78,7 +80,10 @@ sub wrap_field {
     # close 'control' div
     $output .= '</div>' unless $form_actions || !$self->do_label;
     # close wrapper
-    $output .= "\n</div>" if $self->do_wrapper;
+    if ( $self->do_wrapper ) {
+        $output .= "\n</div>";
+        $output .= $self->get_tag('after_wrapper');
+    }
     return "$output";
 }
 

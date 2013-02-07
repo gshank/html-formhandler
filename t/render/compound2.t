@@ -64,7 +64,7 @@ my $expected =
     <div class="controls">
     <input type="text" name="email" id="email" value="joe@nowhere.com" class="span3" placeholder="Register.Email" /></div>
 </div>
-<div class="control-group error">
+<div class="control-group error" id="password">
     <label class="control-label" for="password">Register.Password</label>
     <div class="controls">
     <input type="password" name="password.password" id="password.password" value="" class="span2 error" placeholder="Register.Password" />

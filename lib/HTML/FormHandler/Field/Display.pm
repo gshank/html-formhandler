@@ -41,51 +41,43 @@ or set the name of the rendering method:
      ....
    }
 
-You can also supply an 'html' method with a trait or a custom field. See examples
-in t/field_traits.t and t/xt/display.t of the distribution.
+or provide a 'render_method':
+
+   has_field 'my_button' => ( type => 'Display', render_method => \&render_my_button );
+   sub render_my_button {
+       my $self = shift;
+       ....
+       return '...';
+   }
 
 =cut
 
 has 'html' => ( is => 'rw', isa => 'Str', builder => 'build_html', lazy => 1 );
 sub build_html {''}
 has 'set_html' => ( isa => 'Str', is => 'ro');
-sub _set_html_meth {
-    my $self = shift;
-    return $self->set_html if $self->set_html;
-    my $name = $self->full_name;
-    $name =~ s/\./_/g;
-    $name =~ s/_\d+_/_/g;
-    return 'html_' . $name;
-}
-sub _can_form_html {
-    my $self = shift;
-    my $set_html = $self->_set_html_meth;
-    return
-        unless $self->form &&
-            $set_html &&
-            $self->form->can( $set_html );
-    return $set_html;
-}
-sub _form_html {
-    my $self = shift;
-    return unless (my $meth = $self->_can_form_html);
-    if( $self->form->meta->has_attribute( $meth ) ) {
-        return $self->form->$meth;
-    }
-    else {
-        return $self->form->$meth($self);
-    }
-}
+has '+do_label' => ( default => 0 );
 
-sub render {
+has 'render_method' => (
+    traits => ['Code'],
+    is     => 'ro',
+    isa    => 'CodeRef',
+    lazy   => 1,
+    predicate => 'does_render_method',
+    handles => { 'render' => 'execute_method' },
+    builder => 'build_render_method',
+);
+
+sub build_render_method {
     my $self = shift;
-    if ( my $meth = $self->_can_form_html ) {
-        return $self->form->$meth( $self );
-    }
-    elsif ( $self->html ) {
+
+    my $set_html = $self->set_html;
+    $set_html ||= "html_" . HTML::FormHandler::Field::convert_full_name($self->full_name);
+    return sub { my $self = shift; $self->form->$set_html($self); }
+        if ( $self->form && $self->form->can($set_html) );
+    return sub {
+        my $self = shift;
         return $self->html;
-    }
-    return '';
+    };
 }
 
 sub _result_from_object {
@@ -95,11 +87,6 @@ sub _result_from_object {
     $result->_set_field_def($self);
     return $result;
 }
-
-after 'clear_data' => sub {
-    my $self = shift;
-    $self->clear_value;
-};
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;

@@ -57,6 +57,7 @@ has 'fields' => (
         num_fields => 'count',
         has_fields => 'count',
         set_field_at => 'set',
+        _pop_field => 'pop',
     }
 );
 # This is for updates applied via roles or compound field classes; allows doing

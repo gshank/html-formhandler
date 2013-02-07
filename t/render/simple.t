@@ -196,7 +196,7 @@ is_html( $output7,
 my $output8 = $form->render_field( $form->field('start_date') );
 is_html( $output8,
    '
-<fieldset class="start_date"><legend>Start date</legend>
+<fieldset class="start_date" id="start_date"><legend>Start date</legend>
 <div><label class="label" for="start_date.month">Month</label><input type="text" name="start_date.month" id="start_date.month" size="8" value="7" />
 </div>
 <div><label class="label" for="start_date.day">Day</label><input type="text" name="start_date.day" id="start_date.day" size="8" value="14" />
@@ -225,37 +225,5 @@ my $output = $form->render;
 ok( $output, 'get rendered output from form');
 
 is_html( $form->render_field( $form->field('no_render')), '', 'no_render' );
-
-{
-    package Test::Field::Rendering;
-    use HTML::FormHandler::Moose;
-    extends 'HTML::FormHandler';
-
-    has_field 'my_html' => ( type => 'Display', html => '<h2>You got here!</h2>' );
-    has_field 'explanation' => ( type => 'Display' );
-    has_field 'between' => ( type => 'Display', set_html => 'between_html' );
-    has_field 'nolabel' => ( type => 'Text', do_label => 0 );
-
-    sub html_explanation {
-       my ( $self, $field ) = @_;
-       return "<p>I have an explanation somewhere around here...</p>";
-    }
-
-    sub between_html {
-        my ( $self, $field ) = @_;
-        return "<div>Somewhere, over the rainbow...</div>";
-    }
-
-}
-
-$form = Test::Field::Rendering->new;
-is_html( $form->field('my_html')->render, '<h2>You got here!</h2>', 'display field renders' );
-is_html( $form->field('explanation')->render, '<p>I have an explanation somewhere around here...</p>',
-    'display field renders with form method' );
-is_html( $form->field('between')->render, '<div>Somewhere, over the rainbow...</div>',
-    'set_html field renders' );
-is_html( $form->field('nolabel')->render, '
-<div><input type="text" name="nolabel" id="nolabel" value="" />
-</div>', 'do_label => 0 works');
 
 done_testing;

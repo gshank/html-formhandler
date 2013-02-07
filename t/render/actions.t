@@ -26,7 +26,7 @@ my $expected =
     <label for="foo">Foo</label>
     <input id="foo" name="foo" type="text" value="" />
   </div>
-  <div class="form-actions">
+  <div class="form-actions" id="actions">
     <input id="actions.save" name="actions.save" type="submit" value="Save" />
     <input id="actions.cancel" name="actions.cancel" type="reset" value="Reset" />
   </div>
