@@ -1,3 +1,11 @@
+0.40020 TBD
+   Tweak Bootsrap wrapper to check do_wrapper instead of do_label when rendering
+       'controls' div
+   Reminder: It's always a good idea to make your own set of of widgets so that
+       updates don't throw off your rendering. This change was hardly noticeable
+       in the FH testcases, but it's possible you were relying on the old behavior
+       for CSS.
+
 0.40019 Fri Feb 8, 2013
    Move back 'before_element' tag; breaks existing rendering. Add additional
       'before_element_inside_div' tag instead.

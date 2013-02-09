@@ -59,7 +59,8 @@ sub wrap_field {
         if $self->do_label;
     $output .=  $self->get_tag('before_element');
     # the controls div for ... controls
-    $output .= qq{\n<div class="controls">} unless $form_actions || !$self->do_label;
+    $output .= qq{\n<div class="controls">}
+        unless $form_actions || !$self->do_wrapper;
     # yet another tag
     $output .= $self->get_tag('before_element_inside_div');
     # handle input-prepend and input-append
@@ -81,7 +82,7 @@ sub wrap_field {
     # extra after element stuff
     $output .= $self->get_tag('after_element');
     # close 'control' div
-    $output .= '</div>' unless $form_actions || !$self->do_label;
+    $output .= '</div>' unless $form_actions || !$self->do_wrapper;
     # close wrapper
     if ( $self->do_wrapper ) {
         $output .= "\n</div>";

@@ -23,7 +23,7 @@ my $form = MyApp::Form::Test->new;
 ok( $form );
 
 my $rendered = $form->field('foo')->render;
-my $expected = '<div><input id="foo" name="foo" type="hidden" value="" /></div>';
+my $expected = '<div><div class="controls"><input id="foo" name="foo" type="hidden" value="" /></div></div>';
 is_html( $rendered, $expected, 'rendered ok' );
 
 $rendered = $form->field('bar')->render;

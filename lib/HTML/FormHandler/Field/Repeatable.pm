@@ -38,7 +38,7 @@ If the MyAddress field contains fields 'address_id', 'street', 'city', and
 'state', then this syntax is functionally equivalent to the first method
 where the fields are declared with dots ('addresses.city');
 
-You can pass attributes to the 'contains' field by supplying a 'contains' hashref.
+You can pass attributes to the 'contains' field by supplying an 'init_contains' hashref.
 
     has_field 'addresses' => ( type => 'Repeatable,
        init_contains => { wrapper_attr => { class => ['hfh', 'repinst'] } },
@@ -132,6 +132,7 @@ has 'contains' => (
     is        => 'rw',
     predicate => 'has_contains',
 );
+
 has 'init_contains' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
     default => sub {{}},
     handles => { has_init_contains => 'count' },
@@ -139,11 +140,11 @@ has 'init_contains' => ( is => 'rw', isa => 'HashRef', traits => ['Hash'],
 
 has 'num_when_empty' => ( isa => 'Int',  is => 'rw', default => 1 );
 has 'num_extra'      => ( isa => 'Int',  is => 'rw', default => 0 );
-has 'setup_for_js' => ( isa => 'Bool', is => 'rw' );
+has 'setup_for_js'   => ( isa => 'Bool', is => 'rw' );
 has 'index'          => ( isa => 'Int',  is => 'rw', default => 0 );
 has 'auto_id'        => ( isa => 'Bool', is => 'rw', default => 0 );
-has 'is_repeatable'        => ( is      => 'ro', default => 1 );
-has '+widget'              => ( default => 'Repeatable' );
+has 'is_repeatable'  => ( isa => 'Bool', is => 'ro', default => 1 );
+has '+widget'        => ( default => 'Repeatable' );
 
 sub _fields_validate {
     my $self = shift;
