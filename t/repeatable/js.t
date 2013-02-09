@@ -24,12 +24,9 @@ use HTML::FormHandler::Test;
     # The 'remove' doesn't have to be a display field. It could be other html associated
     # with the repeatable element wrapper or label.
     has_field 'foo.remove' => (
-        type => 'Display', render_method => \&render_remove );
-    sub render_remove {
-        my $self = shift; # self is field
-        my $id = $self->parent->id;
-        return qq{<span class="btn rm_element" data-rep-elem-id="$id">Remove</span>};
-    }
+        type => 'RmElement',
+        value => 'Remove',
+    );
     has_field 'foo.one';
     has_field 'foo.two';
 
@@ -65,7 +62,9 @@ $expected = '
 <fieldset id="foo">
   <div class="controls">
     <div class="hfh-repinst" id="foo.0">
-      <span class="btn rm_element" data-rep-elem-id="foo.0">Remove</span>
+      <div>
+          <div class="rm_element btn" data-rep-elem-id="foo.0" id="foo.0.remove">Remove</div>
+      </div>
       <div>
         <label for="foo.0.one">One</label>
         <input id="foo.0.one" name="foo.0.one" type="text" value="" />

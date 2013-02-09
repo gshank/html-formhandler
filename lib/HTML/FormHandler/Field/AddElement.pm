@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::AddElement;
+# ABSTRACT: Field to support repeatable javascript add
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Display';
 use HTML::FormHandler::Render::Util ('process_attrs');
@@ -52,7 +53,8 @@ sub build_render_method {
         $attrs->{'data-rep-id'} = $rep_field->id;
         $attrs->{id} = $self->id;
         my $attr_str = process_attrs($attrs);
-        my $output = qq{<div$attr_str>$value</div>};
+        my $wrapper_tag = $self->get_tag('wrapper_tag') || 'div';
+        my $output = qq{<$wrapper_tag$attr_str>$value</$wrapper_tag>};
         $output = $self->wrap_field($self->result, $output);
         return $output;
     };

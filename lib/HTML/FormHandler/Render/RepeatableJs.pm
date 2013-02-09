@@ -1,4 +1,5 @@
 package HTML::FormHandler::Render::RepeatableJs;
+# ABSTRACT: role providing method to construct repeatable javascript
 use Moose::Role;
 
 use JSON ('encode_json');
@@ -23,9 +24,9 @@ Or just write out the rep_ data to javascript variables, and write the
 function in javascript.
 This function uses a plain javascript confirmation dialog.
 You almost certainly want to do something else.
-This javascript depends on the Bootstrap 'controls' div class
-in order to position the new elements. You will have to modify
-it to work if you don't use Bootstrap rendering.
+This javascript depends on the Repeatable field having a 'controls' div class
+in order to position the new elements. Use the Bootstrap wrapper or the
+'control_div' tag on the Simple wrapper.
 
 A role to be used in a Form Class:
 
@@ -61,26 +62,13 @@ repeatable element. That requires that the wrapper have the repeatable
 instance ID (now rendered by default). If you don't have wrappers around
 your repeatable elements, this won't work.
 
-See HTML::FormHandler::Field::AddElement for an example of rendering
+See L<HTML::FormHandler::Field::AddElement> for an example of rendering
 an HTML element that can be used to provide the AddElement button.
 See that field for the requirements for the add HTML.
 
-There is no example of a remove button because it's very basic
-and there are too many different places to put it and ways to do it.
-The main requirements are that the button have a 'data-rep-elem-id'
-attribute that contains the id of the repeatable element to remove,
-and a class of 'rm_element'. It should be a child field of the
-repeatable.
-
-This one works:
-
-    has_field 'elements.rm_element' => (
-        type => 'Display', render_method => \&render_rm_element );
-    sub render_rm_element {
-        my $self = shift;
-        my $id = $self->parent->id;
-        return qq{<span class="btn rm_element" data-rep-elem-id="$id">Remove</span>};
-    }
+See L<HTML::FormHandler::Field::RmElement> for an example of rendering
+an HTML element that can be used to provide a 'remove' button.
+See that field for the requirements for the remove HTML.
 
 =cut
 
