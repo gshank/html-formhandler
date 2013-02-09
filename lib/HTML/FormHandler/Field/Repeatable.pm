@@ -129,7 +129,8 @@ This might be useful if the form is being re-presented to the user.
 
 Saves information in the form for javascript to use when adding repeatable elements.
 If using the example javascript, you also must set 'do_wrapper' in the
-Repeatable field and use the Bootstrap widget wrapper.
+Repeatable field and use the Bootstrap widget wrapper (or wrap the repeatable
+elements in a 'controls' div by setting tags => { control_div => 1 }.
 See t/repeatable/js.t for an example. See also
 L<HTML::FormHandler::Render::RepeatableJs> and L<HTML::FormHandler::Field::AddElement>.
 

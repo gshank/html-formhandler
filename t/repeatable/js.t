@@ -10,15 +10,15 @@ use HTML::FormHandler::Test;
     extends 'HTML::FormHandler';
     with 'HTML::FormHandler::Render::RepeatableJs';
 
-    # Note: if using RepeatableJs, repeatable must use Bootstrap wrapper
-    #   but other wrappers can be 'Simple'
+    # Note: if using RepeatableJs, repeatable elements must be
+    # wrapped in a 'controls' div (like the Bootstrap wrapper)
     #       set 'setup_for_js' flag
     #       do_wrapper is turned on by 'setup_for_js' flag
     has_field 'foo' => (
         type => 'Repeatable',
         setup_for_js => 1,
-        widget_wrapper => 'Bootstrap',
         do_wrapper => 1,
+        tags => { control_div => 1 },
     );
 
     # The 'remove' doesn't have to be a display field. It could be other html associated
@@ -62,7 +62,7 @@ my $rendered = $form->field('add_element')->render;
 is_html( $rendered, $expected, 'add_element rendered ok' );
 
 $expected = '
-<div class="control-group" id="foo">
+<fieldset id="foo">
   <div class="controls">
     <div class="hfh-repinst" id="foo.0">
       <span class="btn rm_element" data-rep-elem-id="foo.0">Remove</span>
@@ -76,7 +76,7 @@ $expected = '
       </div>
     </div>
   </div>
-</div>';
+</fieldset>';
 $rendered = $form->field('foo')->render;
 is_html( $rendered, $expected, 'repeatable field renders ok' );
 
