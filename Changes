@@ -1,3 +1,7 @@
+0.40019 Fri Feb 8, 2013
+   Move back 'before_element' tag; breaks existing rendering. Add additional
+      'before_element_inside_div' tag instead.
+
 0.40018 Thur Feb 7, 2013
    Don't put 'control-group' on Bootstrap hidden field div because of spacing issues
    Support for repeatable add/remove javascript

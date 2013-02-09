@@ -12,7 +12,7 @@ use HTML::FormHandler::Test;
 
     has_field 'foo' => ( type => 'Hidden' );
     has_field 'bar' => (
-      tags => { before_element => '<p>Start</p>',
+      tags => { before_element_inside_div => '<p>Start</p>',
                 after_element => '<p>End</p>',
       }
     );

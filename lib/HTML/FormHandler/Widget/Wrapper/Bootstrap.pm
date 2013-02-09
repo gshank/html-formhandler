@@ -25,7 +25,8 @@ Tags supported:
 
    label_no_filter -- don't html filter the label
    label_after -- useful for putting a colon, or other trailing formatting
-   before_element -- insert tag before input element
+   before_element -- insert tag before input, outside element's control div
+   before_element_inside_div -- insert tag before input element, inside control div
    input_prepend -- for Bootstrap 'input-prepend' class
    input_append -- for Bootstrap 'input-append' class
    input_append_button -- 'input-append' with button instead of span
@@ -56,9 +57,11 @@ sub wrap_field {
     # render the label
     $output .= "\n" . $self->do_render_label($result, undef, ['control-label'] )
         if $self->do_label;
+    $output .=  $self->get_tag('before_element');
     # the controls div for ... controls
     $output .= qq{\n<div class="controls">} unless $form_actions || !$self->do_label;
-    $output .=  $self->get_tag('before_element');
+    # yet another tag
+    $output .= $self->get_tag('before_element_inside_div');
     # handle input-prepend and input-append
     if( $self->get_tag('input_prepend') || $self->get_tag('input_append') ||
             $self->get_tag('input_append_button') ) {
