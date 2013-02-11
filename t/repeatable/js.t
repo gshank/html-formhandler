@@ -18,7 +18,7 @@ use HTML::FormHandler::Test;
         type => 'Repeatable',
         setup_for_js => 1,
         do_wrapper => 1,
-        tags => { control_div => 1 },
+        tags => { controls_div => 1 },
     );
 
     # The 'remove' doesn't have to be a display field. It could be other html associated

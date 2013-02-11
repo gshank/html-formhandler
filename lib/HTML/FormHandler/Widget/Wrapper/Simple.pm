@@ -71,11 +71,11 @@ sub wrap_field {
     # append 'before_element'
     $output .= $self->get_tag('before_element');
     # start control div
-    $output .= qq{\n<div class="controls">} if $self->get_tag('control_div');
+    $output .= qq{\n<div class="controls">} if $self->get_tag('controls_div');
     # the input element itself
     $output .= "\n$rendered_widget";
     # end control div
-    $output .= "\n</div>" if $self->get_tag('control_div');
+    $output .= "\n</div>" if $self->get_tag('controls_div');
     # the 'after_element'
     $output .= $self->get_tag('after_element');
     # the error messages

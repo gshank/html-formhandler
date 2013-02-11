@@ -26,7 +26,7 @@ This function uses a plain javascript confirmation dialog.
 You almost certainly want to do something else.
 This javascript depends on the Repeatable field having a 'controls' div class
 in order to position the new elements. Use the Bootstrap wrapper or the
-'control_div' tag on the Simple wrapper.
+'controls_div' tag on the Simple wrapper.
 
 A role to be used in a Form Class:
 
