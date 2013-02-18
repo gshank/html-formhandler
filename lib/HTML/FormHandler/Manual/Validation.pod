@@ -127,6 +127,7 @@ perform this validation when a particular field is a particular value:
     has_field 'fee';
     has_field 'fie' => ( apply => [
         { when => { fee => 1 }, check => qr/when/, message => 'Wrong fie' },
+    ]);
     has_field 'fo';
     has_field 'fum_comp' => ( type => 'Compound' );
     has_field 'fum_comp.one';
