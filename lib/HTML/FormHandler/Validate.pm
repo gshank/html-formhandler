@@ -109,7 +109,7 @@ sub validate_field {
 
     $field->_inner_validate_field();
     $field->_apply_actions;
-    $field->validate;
+    $field->validate( $field->value );
     $field->test_ranges;
     $field->_validate($field)    # form field validation method
         if ( $field->has_value && defined $field->value );

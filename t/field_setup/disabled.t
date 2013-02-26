@@ -4,7 +4,7 @@ use Test::More;
 use Data::Dumper;
 
 # tests that an init_value provided by item/init_object is used
-# for disabled fields
+# for disabled fields, and that disabled fields are not validated.
 {
     {
         package MyApp::Test::Form1;
@@ -14,7 +14,15 @@ use Data::Dumper;
         has_field 'foo' => ( type => 'Select', disabled => 1 );
         has_field 'bar';
         has_field 'user' => ( type => 'Compound', required => 1 );
-        has_field 'user.email_address' => ( disabled => 1, required => 1 );
+        has_field 'user.email_address' => ( disabled => 1, required => 1,
+            validate_method => \&check_email
+        );
+        sub check_email {
+            my $self = shift;
+            if ( $self->value && $self->value =~ /joe/ ) {
+                $self->add_error("No emails with 'joe'");
+            }
+        }
         has_field 'save' => ( type => 'Submit' );
     }
 

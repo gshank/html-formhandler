@@ -153,7 +153,7 @@ sub _fields_validate {
     # validate all fields
     my %value_hash;
     foreach my $field ( $self->all_fields ) {
-        next if ( $field->is_inactive || !$field->has_result );
+        next if ( $field->is_inactive || $field->disabled || !$field->has_result );
         # Validate each field and "inflate" input -> value.
         $field->validate_field;    # this calls the field's 'validate' routine
         $value_hash{ $field->accessor } = $field->value

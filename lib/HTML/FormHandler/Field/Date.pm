@@ -20,7 +20,7 @@ or DateTime strftime formats. (Default format is format => '%Y-%m-%d'.)
    oo - "%j" - day of the year (three digit)
    D  - "%a" - day name short
    DD - "%A" - day name long
-   m  - "%{day_of_month" - month of year (no leading zero)
+   m  - "%{day_of_month}" - month of year (no leading zero)
    mm - "%m" - month of year (two digit) "%m"
    M  - "%b" - month name short
    MM - "%B" - month name long
