@@ -269,11 +269,11 @@ sub match_when {
         my $from_form = ( $key =~ /^\+/ );
         $key =~ s/^\+//;
         my $field = $from_form ? $self->form->field($key) : $self->parent->subfield( $key );
-        my $field_fif = defined $field->fif ? $field->fif : '';
         unless ( $field ) {
-            warn "field '$key' not found processing when";
+            warn "field '$key' not found processing 'when' for '" . $self->full_name . "'";
             next;
         }
+        my $field_fif = defined $field->fif ? $field->fif : '';
         if ( ref $check_against eq 'CODE' ) {
             $matched++
                 if $check_against->($field_fif, $self);
