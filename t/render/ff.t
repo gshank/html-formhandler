@@ -13,7 +13,7 @@ use HTML::FormHandler::Test;
         my $class = $attr->{class} || [];
         if( $type eq 'wrapper' ) {
             # this is not exactly like what FF does, but it's close
-            push @$class, lc $field->type;
+            push @$class, $field->type_attr;
             push @$class, 'label' if $field->do_label;
             $attr->{class} = $class;
         }
