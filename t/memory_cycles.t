@@ -10,6 +10,15 @@ use Test::Memory::Cycle;
 
    has '+name' => ( default => 'testform' );
    has_field 'reqname' => ( required => 1 );
+   has_field 'vegetables' => ( type => 'Multiple' );
+   sub options_vegetables {
+       return (
+           1   => 'lettuce',
+           2   => 'broccoli',
+           3   => 'carrots',
+           4   => 'peas',
+       );
+   }
    has_field 'entries' => (
         type             => 'Repeatable',
         required         => 1,
