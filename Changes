@@ -1,3 +1,10 @@
+0.40021 Mon Mar 4, 2013
+   Don't validate disabled fields
+   check for existence of field in match_when before getting $field->fif,
+       improve error message
+   add type_attr to Select field; update t/render/ff.t to use it
+   cleanup select field options_method building
+
 0.40020 Sun Feb 20, 2013
    More support for repeatable javascript:
      Tweak Bootsrap wrapper to check do_wrapper instead of do_label when rendering
