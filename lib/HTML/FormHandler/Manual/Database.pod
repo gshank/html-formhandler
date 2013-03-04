@@ -24,6 +24,9 @@ selection lists, and validate input. A 'single' relationship is processed
 by L<HTML::FormHandler::Field::Compound>. A 'has_many' relationship is
 processed by L<HTML::FormHandler::Field::Repeatable>.
 
+Do not use database row method names, such as 'delete', as field names in
+a database form.
+
 You can pass in either the primary key or a row object to the form. If a
 primary key (item_id) is passed in, you must also provide the schema.
 The model will use the item_class (DBIC source name) to fetch the row from the
