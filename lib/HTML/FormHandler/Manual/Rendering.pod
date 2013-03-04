@@ -130,9 +130,15 @@ providing the 'wrap_field' method, are applied to each field when the form is bu
 Each field has a default widget, but you can change that by setting 'widget' to a different
 widget role:
 
-    has_field 'foxy' => ( widget => 'MyWidget' );
+    has_field 'foxy' => ( widget => 'MyWidget', widget_wrapper => 'MyWrapper' );
 
-Default widget roles are found in the HTML::FormHandler::Widget directory.
+Often if you need custom rendering what you need to provide is a custom widget_wrapper.
+The 'widgets' render only the input elements, and that often doesn't need to be
+changed. If you have standard HTML that is used when rendering forms, making custom
+widget_wrappers is often the way to go.
+
+Default widget roles are found in the HTML::FormHandler::Widget directory, in the
+'Field', 'Form', and 'Wrapper subdirectories.
 The name space used to look for the widget roles can be specified on a form or
 field basis by setting 'widget_name_space' to an arrayref of name spaces:
 
