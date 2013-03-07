@@ -15,7 +15,7 @@ Each individual field may have additional attributes that relate to validation,
 which are not documented here. See the individual field documentation, linked
 from L<HTML::FormHandler::Manual::Fields>.
 
-=head2 required
+=head2 required, required_when
 
 Setting the 'required' flag on a field initiates a check for the existence
 of some value. If the field does not have a value, the 'required' error
@@ -30,8 +30,8 @@ You need to set 'required' all the way up, if that's the behavior that you
 want.
 
 If a field is empty and *not* required, no other field validation will be
-performed unless the 'validate_when_empty' flag is set. The form's 'validate'
-method, however, will always be called.
+performed unless the 'validate_when_empty' flag (see below) is set. The form's 
+'validate' method, however, will always be called.
 
 There is also the 'required_when' attribute, which works the same way as the
 'when' key on the apply actions.
@@ -50,6 +50,12 @@ Starting and ending range for number fields.
 =head2 unique
 
 Attribute used by the DBIC model to check for uniqueness.
+
+=head2 validate_when_empty
+
+If its 'validate_when_empty' flag is set to a true value, then a field will
+always undergo validation when its form is processed, even when that field
+is empty.
 
 =head1 Validation methods
 
@@ -138,6 +144,10 @@ perform this validation when a particular field is a particular value:
 The field name key in the 'when' hashref is assumed to be a field at the same
 "level" as this field (i.e. a sibling field in a compound). If you want to
 specify a field name from the form, prepend the name with a '+'.
+
+The 'when' hashref can contain multiple key/value pairs. This simply extends its
+test across multiple fields; all fields named in the hashref's keys must match
+their respective values in order for the overall 'when' test to pass.
 
 Transformations and coercions are called in an eval
 to catch the errors. Warnings are trapped in a sigwarn handler.

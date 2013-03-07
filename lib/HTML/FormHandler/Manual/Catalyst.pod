@@ -30,6 +30,8 @@ by both the create and edit actions.
    use Moose;
    BEGIN { extends 'Catalyst::Controller' }
 
+   use BookDB::Form::Borrower;
+
    sub borrower_base : Chained PathPart('borrower') CaptureArgs(0) { }
 
    sub list : Chained('borrower_base') PathPart('list') Args(0) {
