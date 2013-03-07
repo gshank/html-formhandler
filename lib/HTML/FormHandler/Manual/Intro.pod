@@ -46,7 +46,7 @@ name of the field package). (Fields with no type have type 'Text'.)
     has_field 'bar' => ( type => 'Select' );
 
 Basic field types are Text, Select, Checkbox, Submit, Hidden, Reset,
-Textarea, Password, Upload. See L<HTML::FormHandler::Manual::Fields> for
+TextArea, Password, Upload. See L<HTML::FormHandler::Manual::Fields> for
 more information.
 
 =head2 Or create a form class dynamically
