@@ -47,7 +47,6 @@ sub _result_from_object {
 sub fif { }
 
 has '+widget'    => ( default => '' );
-has '+writeonly' => ( default => 1 );
 has '+noupdate'  => ( default => 1 );
 
 sub validate_field { }
