@@ -1,3 +1,9 @@
+0.40022 Mon Mar 18, 2013
+   Remove 'writeonly' flag from Display field, because fix to not pull
+      values from an item/init_object with that flag  meant that values were not
+      being applied to Display fields, when people were relying on that.
+   Switch to using github issues instead of RT
+
 0.40021 Mon Mar 4, 2013
    Don't validate disabled fields
    check for existence of field in match_when before getting $field->fif,
