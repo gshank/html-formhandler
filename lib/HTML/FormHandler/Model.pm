@@ -164,5 +164,17 @@ Update the model with validated fields
 
 sub update_model { }
 
+=head2 item_values
+
+    $self->item_values->{id};
+
+The current values, in the form of a hashref, that the L</item>
+has.  Used to abstract details of how to access the raw values of
+a given model.
+
+=cut
+
+sub item_values { } 
+
 use namespace::autoclean;
 1;
