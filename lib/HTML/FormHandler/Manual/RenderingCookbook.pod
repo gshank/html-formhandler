@@ -1,0 +1,68 @@
+package HTML::FormHandler::Manual::RenderingCookbook;
+# ABSTRACT: rendering recipes
+
+=head1 NAME
+
+HTML::FormHandler::Manual::Rendering::Cookbook
+
+=head1 SYNOPSIS
+
+Collection of rendering recipes
+
+=head1 Recipes
+
+=head2 Custom renderer, custom attributes
+
+You want to be able to specify the attributes that are rendered in the 'td' tag
+of the table renderer...
+
+First make your own copy of 'HTML::FormHandler::Widget::Wrapper::Table, in your
+own name space, and specify that name space in the 'widget_name_space' for the
+form.
+
+Change this line in the Table wrapper:
+
+    $output .= '<td>' . $self->do_render_label($result) . '</td>';
+
+to this:
+
+    my $td_attr = process_attrs($self->get_tag('td_attr') || {} );
+    $output .= "<td$td_attr>" . $self->do_render_label($result) . '</td>';
+
+Now you can specify the attributes for the 'td' tag on a field:
+
+    has_field 'foo' => ( tags => { td_attr => { class => ['emph', 'label'] } } );
+
+=head2 Render a collection of checkboxes like a checkbox group
+
+
+
+=head2 Add a 'required' class to labels
+
+Create a custom widget wrapper:
+
+    package MyApp::Form::Widget::Wrapper::CustomLabel;
+
+    use Moose::Role;
+    with 'HTML::FormHandler::Widget::Wrapper::Simple';
+
+    sub render_label {
+        my ($self) = @_;
+        return '<label class="label' . ($self->required ?
+            ' required' : '') .  '" for="' . $self->id . '">' .
+                 $self->html_filter($self->loc_label) . ':
+            </label>';
+    }
+
+Or enable html5 output which adds a 'required' attribute.
+
+Or use the 'html_attributes' callback:
+
+    <in a form>
+    sub html_attributes {
+        my ( $self, $field, $type, $attr ) = @_;
+        push @{$attr->{class}} = 'required'
+            if ( $type eq 'label' && $field->required );
+    }
+
+=cut
