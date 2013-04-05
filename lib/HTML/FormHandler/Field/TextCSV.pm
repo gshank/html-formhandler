@@ -15,19 +15,31 @@ that require that, such as 'select2'.
 
 =cut
 
-has '+inflate_default_method' => ( default => sub { \&textcsv_inflate_default } );
-has '+deflate_value_method' => ( default => sub { \&textcsv_deflate_value } );
+has '+deflate_method' => ( default => sub { \&textcsv_deflate } );
+has '+inflate_method' => ( default => sub { \&textcsv_inflate } );
+has 'multiple' => ( isa => 'Bool', is => 'rw', default => '0' );
+sub build_value_when_empty { [] }
+sub _inner_validate_field {
+    my $self = shift;
+    my $value = $self->value;
+    return unless $value;
+    if ( ref $value ne 'ARRAY' ) {
+        $value = [$value];
+        $self->_set_value($value);
+    }
+}
 
-sub textcsv_inflate_default {
+sub textcsv_deflate {
     my ( $self, $value ) = @_;
-    if( defined $value && ref $value eq 'ARRAY' ) {
+    if( defined $value && length $value ) {
+        my $value = ref $value eq 'ARRAY' ? $value : [$value];
         my $new_value = join(',', @$value);
         return $new_value;
     }
     return $value;
 }
 
-sub textcsv_deflate_value {
+sub textcsv_inflate {
     my ( $self, $value ) = @_;
     if ( defined $value && length $value ) {
         my @values = split(/,/, $value);
@@ -36,4 +48,6 @@ sub textcsv_deflate_value {
     return $value;
 }
 
+__PACKAGE__->meta->make_immutable;
 1;
+
