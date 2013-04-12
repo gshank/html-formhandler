@@ -46,10 +46,10 @@ my $dyn_form = HTML::FormHandler->new(
         { type => 'Submit', name => 'submit_btn' },
     ],
 );
-ok( $form, 'dynamic form built' );
-is( $form->has_blocks, 3, 'right number of blocks' );
+ok( $dyn_form, 'dynamic form built' );
+is( $dyn_form->has_blocks, 3, 'right number of blocks' );
 
-my $dyn_rendered = $form->render;
+my $dyn_rendered = $dyn_form->render;
 is_html( $dyn_rendered, $rendered, 'both forms render the same');
 
 done_testing;
