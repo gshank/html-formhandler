@@ -1236,6 +1236,7 @@ sub after_update_model {
                     name   => $field->name,
                     parent => $parent,
                 );
+                $field->init_state;
                 $new_result = $field->_result_from_object( $result, $rep_item );
                 # find index of existing result
                 my $index = $parent->result->find_result_index( sub { $_ == $result } );
