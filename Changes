@@ -1,3 +1,8 @@
+0.40023 Tue Apr 30, 2013
+   Add Brazilian Portuguese translation file
+   Fix bug in process of re-loading repeatables without primary keys after db update
+   Add TextCSV field for multiple values in a text field (useful with js libraries)
+
 0.40022 Mon Mar 18, 2013
    Remove 'writeonly' flag from Display field, because fix to not pull
       values from an item/init_object with that flag  meant that values were not

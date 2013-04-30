@@ -25,7 +25,7 @@ use Data::Clone;
 use 5.008;
 
 # always use 5 digits after decimal because of toolchain issues
-our $VERSION = '0.40022';
+our $VERSION = '0.40023';
 
 =head1 SYNOPSIS
 
@@ -1649,6 +1649,8 @@ ijw: Ian Wells
 amiri: Amiri Barksdale
 
 ozum: Ozum Eldogan
+
+lukast: Lukas Thiemeier
 
 Initially based on the source code of L<Form::Processor> by Bill Moseley
 
