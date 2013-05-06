@@ -21,7 +21,6 @@ The inheritance hierarchy of HTML::FormHandler Fields
          DateMDY
       Email
    TextArea
-      HtmlArea
    Select
       Multiple
       BoolSelect
@@ -511,12 +510,6 @@ Fields that inherit from 'TextArea'.
 =head3 TextArea
 
 L<HTML::FormHandler::Field::TextArea>
-
-=head3 HtmlArea
-
-A textarea that attempt to validate the value with L<HTML::Tidy>.
-
-L<HTML::FormHandler::Field::HtmlArea>
 
 =head2 Password fields
 

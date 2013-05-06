@@ -300,7 +300,7 @@ Widget types for some of the provided field classes:
     RadioGroup             : Select, Multiple, IntRange (etc)
     Select                 : Select, Multiple, IntRange (etc)
     CheckboxGroup          : Multiple select
-    TextArea               : TextArea, HtmlArea
+    TextArea               : TextArea
     Compound               : Compound, Repeatable, DateTime
     Password               : Password
     Hidden                 : Hidden
