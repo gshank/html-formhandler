@@ -17,7 +17,7 @@ use HTML::FormHandler::Field::Text;
             );
    has_field 'fruit' => ( type => 'Select' );
    has_field 'vegetables' => ( type => 'Multiple', input_without_param => [], not_nullable => 1 );
-   has_field 'empty' => ( type => 'Multiple' );
+   has_field 'empty' => ( type => 'Multiple', no_option_validation => 1 );
    has_field 'build_attr' => ( type => 'Select' );
 
    sub default_fruit { 2 }
@@ -85,11 +85,6 @@ $field_options = $form->field('build_attr')->options;
 is_deeply( $field_options, $build_attr_options,
     'get options for fruit' );
 
-my $params = {
-   fruit => 2,
-   vegetables => [2,4],
-};
-
 is( $form->field('fruit')->value, 2, 'initial value ok');
 
 $form->process( params => {},
@@ -104,14 +99,20 @@ $field_options = $form->field('build_attr')->options;
 is_deeply( $field_options, $build_attr_options,
     'get options for fruit after process' );
 
+my $params = {
+   fruit => 2,
+   vegetables => [2,4],
+   empty => 'test',
+};
+
 $form->process( $params );
 ok( $form->validated, 'form validated' );
 is( $form->field('fruit')->value, 2, 'fruit value is correct');
 is_deeply( $form->field('vegetables')->value, [2,4], 'vegetables value is correct');
 
-is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], test_field => '', build_attr => '' },
+is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], empty => ['test'], test_field => '', build_attr => '' },
     'fif is correct');
-is_deeply( $form->values, { fruit => 2, vegetables => [2, 4], empty => [], build_attr => undef },
+is_deeply( $form->values, { fruit => 2, vegetables => [2, 4], empty => ['test'], build_attr => undef },
     'values are correct');
 is( $form->field('vegetables')->as_label, 'broccoli, peas', 'multiple as_label works');
 
