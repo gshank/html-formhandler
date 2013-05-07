@@ -1,3 +1,9 @@
+0.40024 Tue May 7, 2013
+   Add 'no_option_validation' flag to select field.
+   Remove HtmlArea field. (Has always been broken, and there were complaints about
+      not prereqing HTML::Tidy, which I won't do due to difficulty of installing)
+   Change 'use' of GD::SecurityImage to a 'require'. (Will not prereq this one either.)
+
 0.40023 Tue Apr 30, 2013
    Add Brazilian Portuguese translation file
    Fix bug in process of re-loading repeatables without primary keys after db update
