@@ -20,9 +20,11 @@ The inheritance hierarchy of HTML::FormHandler Fields
       Date
          DateMDY
       Email
+      TextCSV
    TextArea
    Select
       Multiple
+      SelectCSV
       BoolSelect
       IntRange
          Hour
@@ -44,6 +46,9 @@ The inheritance hierarchy of HTML::FormHandler Fields
       Reset
       Button
       Display
+      AddElement
+      RmElement
+      NonEditable
    PrimaryKey
    Upload
    File
@@ -354,6 +359,15 @@ decimal_symbol_for_db.
 
 L<HTML::FormHandler::Field::Float>
 
+=head3 TextCSV
+
+A text field that takes multiple values from a database and converts
+them to comma-separated values. This is intended for javascript fields
+that require that, such as 'select2'. This is the only 'multiple' text
+field. This text field would be a select-type field for the user.
+
+L<HTML::FormHandler::Field::TextCSV>
+
 =head2 Compound Fields
 
 Fields subclassed from 'Compound'.
@@ -409,6 +423,15 @@ Multiple select. Also sorts the selected options to the top of
 the select list.
 
 L<HTML::FormHandler::Field::Multiple>
+
+=head2 SelectCSV
+
+A multiple select field for comma-separated values in the database.
+It expects database values like: '1,5,7'. The string will be inflated
+into an arrayref for validation and form filling, and will be deflated
+into a comma-separated string in the output value.
+
+L<HTML::FormHandler::Field::SelectCSV>
 
 =head3 BoolSelect
 
@@ -502,6 +525,22 @@ Non-data field used for inserting HTML into the form. Probably
 now better handled by a Block or a rendering tag.
 
 L<HTML::FormHandler::Field::Display>
+
+=head3 AddElement
+
+Example field for adding a repeatable element.
+
+L<HTML::FormHandler::Field::AddElement>
+
+=head3 RmElement
+
+Example field for removing a repeatable element
+
+L<HTML::FormHandler::Field::RmElement>
+
+=head3 NonEditable
+
+For Bootstrap-style non-editable fields.
 
 =head2 TextArea fields
 
