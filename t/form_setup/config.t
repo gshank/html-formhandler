@@ -8,6 +8,8 @@ BEGIN {
        unless eval { require Template };
     plan skip_all => 'Config::Any required'
        unless eval { require Config::Any };
+    plan skip_all => 'YAML::Syck required'
+       unless eval { require YAML::Syck };
 }
 
 use HTML::FormHandler::Foo;
