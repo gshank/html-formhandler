@@ -1,3 +1,6 @@
+0.40025 Thu May 9, 2013
+   Add skip in t/setup_form_config.t unless YAML::Syck (Config::Any)
+
 0.40024 Tue May 7, 2013
    Add 'no_option_validation' flag to select field.
    Remove HtmlArea field. (Has always been broken, and there were complaints about
