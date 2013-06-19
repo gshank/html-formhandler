@@ -53,6 +53,13 @@ ok( !$form->process( $bad_1 ), 'bad 1' );
 
 ok( $form->has_errors, 'form has error' );
 
+my $errors_by_id = {
+    fruit => [q{'4' is not a valid value}],
+    reqname => ['You must supply a reqname'],
+    silly_name => ['Not a valid silly_name'],
+};
+is_deeply( $form->errors_by_id, $errors_by_id, 'right errors' );
+
 ok( $form->field('fruit')->has_errors, 'fruit has error' );
 
 ok( $form->field('reqname')->has_errors, 'reqname has error' );

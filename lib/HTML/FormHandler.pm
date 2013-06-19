@@ -1288,6 +1288,13 @@ sub errors {
     return @errors;
 }
 
+sub errors_by_id {
+    my $self = shift;
+    my %errors;
+    $errors{$_->id} = [$_->all_errors] for $self->error_fields;
+    return \%errors;
+}
+
 sub build_errors {
     my $self = shift;
     # this puts the errors in the result
