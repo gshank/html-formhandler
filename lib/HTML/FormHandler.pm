@@ -1295,6 +1295,13 @@ sub errors_by_id {
     return \%errors;
 }
 
+sub errors_by_name {
+    my $self = shift;
+    my %errors;
+    $errors{$_->html_name} = [$_->all_errors] for $self->error_fields;
+    return \%errors;
+}
+
 sub build_errors {
     my $self = shift;
     # this puts the errors in the result

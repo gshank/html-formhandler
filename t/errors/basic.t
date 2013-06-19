@@ -59,6 +59,7 @@ my $errors_by_id = {
     silly_name => ['Not a valid silly_name'],
 };
 is_deeply( $form->errors_by_id, $errors_by_id, 'right errors' );
+is_deeply( $form->errors_by_name, $errors_by_id, 'errors by name are the same as by id');
 
 ok( $form->field('fruit')->has_errors, 'fruit has error' );
 
