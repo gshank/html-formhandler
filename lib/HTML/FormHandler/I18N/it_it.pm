@@ -6,10 +6,14 @@ use warnings;
 use base 'HTML::FormHandler::I18N';
 
 use utf8;
+our $VERSION = '0.01';
 
 # Auto define lexicon
 our %Lexicon = (
     '_AUTO' => 1,
+
+    # H::F
+    'There were errors in your form'=> q(Alcuni dati sono sbagliati),
 
     # H::F::Field
     'field is invalid' => 'Campo non valido',
@@ -31,7 +35,7 @@ our %Lexicon = (
     'Must be a non-empty single line of no more than 255 chars' => 'Deve essere un testo di una riga, non vuoto e con un massimo di 255 caratteri',
     'Must be made up of letters, digits, and underscores' => 'Può essere composto da lettere, cifre e "_"',
     'Not a valid IP address' => q(L'indirizzo IP non è valido),
-    'Must not be all digits' => 'Non deveno essere solo da cifre',
+    'Must not be all digits' => 'Non devono essere solo cifre',
     'Not a valid state' => 'Non è uno stato valido',
     'Field contains non-printable characters' => 'Il campo contiene caratteri non stampabili',
     'Must be between 4 and 255 chars' => 'Deve essere tra 4 e 255 caratteri',
