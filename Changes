@@ -1,3 +1,8 @@
+0.40026 Wed Jul 3, 2013
+   Add Italian message file
+   Doc tweaks
+   Add errors_by_id and errors_by_name convenience methods
+
 0.40025 Thu May 9, 2013
    Add skip in t/setup_form_config.t unless YAML::Syck (Config::Any)
 
