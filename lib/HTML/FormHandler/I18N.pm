@@ -15,7 +15,8 @@ sub maketext {
         $out = $lh->SUPER::maketext(@message);
     }
     catch {
-        die "Unable to do maketext on: " . $message[0];
+        die "Unable to do maketext on: " . $message[0] .
+            "\nIf the message contains brackets you may need to escape them with a tilde.";
     };
     return $out;
 }

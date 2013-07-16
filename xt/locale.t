@@ -72,6 +72,8 @@ is_deeply($form->field('test_field')->errors, ['You won'], 'error is translated 
 # translating an error with bracket issues
 $form->field('test_field')->clear_errors;
 dies_ok( sub { $form->field('test_field')->add_error('You are not authorized for this archive. See: [<a href="/help/auth">more information</a>],  [<a href="/need_auth">request authorization</a>]') }, 'dies on maketext error' );
+lives_ok( sub { $form->field('test_field')->add_error('An error with ~[escaped brackets~]'); },
+   'does not die when brackets are escaped with tilde' );
 
 ################ Locale xx_xx set via ENV{LANGUAGE_HANDLE}
 $ENV{LANGUAGE_HANDLE} = 'xx_xx';
