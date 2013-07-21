@@ -15,7 +15,11 @@ the L<HTML::FormHandler/fields> method).
 
 Set this attribute to the name of your password field (default 'password')
 
-Customize error message 'pass_conf_not_matched'
+Customize error message 'pass_conf_not_matched' or 'required'
+
+    has_field '_password' => ( type => 'PasswordConf',
+         messages => { required => 'You must enter the password a second time' },
+    );
 
 =cut
 

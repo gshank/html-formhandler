@@ -103,7 +103,9 @@ is ( $field->value, $pass, 'Input and value match' );
 
    has '+field_name_space' => ( default => 'Field' );
    has_field 'password' => ( type => 'Password', required => 1 );
-   has_field '_password' => ( type => 'PasswordConf', );
+   has_field '_password' => ( type => 'PasswordConf',
+        messages => { required => 'You must enter the password a second time' },
+   );
 
 }
 
@@ -111,7 +113,8 @@ $form = Password::Form->new;
 ok( $form, 'form created' );
 
 $params = {
-   password => ''
+   password => '',
+   _password => '',
 };
 
 $form->process( params => $params );
@@ -120,6 +123,7 @@ ok( !$form->validated, 'form validated' );
 ok( !$form->field('password')->noupdate, q[noupdate is 'false' on password field] );
 
 ok( $form->field('_password')->has_errors, 'Password confirmation has errors' );
+is( $form->field('_password')->errors->[0], 'You must enter the password a second time' );
 
 $form->process( params => { password => 'aaaaaa', _password => 'bbbb' } );
 ok( $form->field('_password')->has_errors, 'Password confirmation has errors' );
