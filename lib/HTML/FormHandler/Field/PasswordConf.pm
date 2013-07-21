@@ -24,6 +24,7 @@ has '+password'         => ( default => 1 );
 has '+required'         => ( default => 1 );
 has 'password_field'    => ( isa     => 'Str', is => 'rw', default => 'password' );
 has 'pass_conf_message' => ( isa     => 'Str', is      => 'rw' );
+has 'required_message'  => ( isa     => 'Str', is => 'rw' ) ;
 
 our $class_messages = {
     required => 'Please enter a password confirmation',
@@ -38,6 +39,9 @@ sub get_class_messages  {
     };
     $messages->{pass_conf_not_matched} = $self->pass_conf_message
         if $self->pass_conf_message;
+    $messages->{required} = $self->required_message
+	if $self->required_message ;
+
     return $messages;
 }
 
