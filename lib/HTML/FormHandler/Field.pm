@@ -1211,6 +1211,7 @@ our $class_messages = {
     'not_allowed'     => '[_1] not allowed',
     'error_occurred'  => 'error occurred',
     'required'        => '[_1] field is required',
+    'unique'          => 'Duplicate value for [_1]',
 };
 
 sub get_class_messages  {
@@ -1218,6 +1219,8 @@ sub get_class_messages  {
     my $messages = { %$class_messages };
     $messages->{required} = $self->required_message
         if $self->required_message;
+    $messages->{unique} = $self->unique_message
+        if $self->unique_message;
     return $messages;
 }
 
