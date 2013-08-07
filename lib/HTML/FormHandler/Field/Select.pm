@@ -318,6 +318,7 @@ has 'options' => (
     lazy    => 1,
     builder => 'build_options'
 );
+sub options_ref { [shift->options] }
 # this is used for rendering
 has 'options_index' => ( traits => ['Counter'], isa => 'Num',
     is => 'rw', default => 0,

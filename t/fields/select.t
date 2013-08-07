@@ -61,7 +61,7 @@ my $veg_options =   [ {'label' => 'lettuce',
       'value' => 3 },
      {'label' => 'peas',
       'value' => 4 } ];
-my $field_options = $form->field('vegetables')->options;
+my $field_options = $form->field('vegetables')->options_ref;
 is_deeply( $field_options, $veg_options,
    'get options for vegetables' );
 
@@ -81,7 +81,7 @@ my $build_attr_options = [ {'label' => 'testing',
        'value' => 2 },
       {'label' => 'attr builder',
        'value' => 3 } ];
-$field_options = $form->field('build_attr')->options;
+$field_options = $form->field('build_attr')->options_ref;
 is_deeply( $field_options, $build_attr_options,
     'get options for fruit' );
 
