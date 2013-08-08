@@ -1,3 +1,7 @@
+0.40027 Thu Aug 8, 2013
+   Add 'options_ref' method for using options in TT templates
+   Add unique messages to field messages hash
+
 0.40026 Wed Jul 3, 2013
    Add Italian message file
    Doc tweaks
