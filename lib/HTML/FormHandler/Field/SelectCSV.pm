@@ -35,7 +35,7 @@ sub selectcsv_inflate_default {
 sub selectcsv_deflate_value {
     my ( $self, $value ) = @_;
     if ( defined $value ) {
-        my $str = join( ',', @$value );
+        my $str = join( ',', sort @$value );
         return $str;
     }
     return;

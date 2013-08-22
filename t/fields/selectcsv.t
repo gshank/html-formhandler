@@ -45,7 +45,7 @@ is_deeply( $fif, { foo => [1], bar => [1,2], box => [2] },
 my $rendered = $form->render;
 ok( $rendered, 'rendering worked' );
 
-my $params = { bar => [1,2]  };
+my $params = { bar => [2,1]  };
 $form->process( $params );
 $fif = $form->fif;
 is_deeply( $fif, $params, 'fif ok' );
