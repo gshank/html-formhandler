@@ -35,3 +35,15 @@ $field->_set_input('someuser@example.com');
 $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 3' );
 
+{
+    package MyApp::Form::Test;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo';
+    has_field 'email' => (
+        type => 'Email',
+        email_valid_params => { -mxcheck => 1 },
+    );
+}
+
