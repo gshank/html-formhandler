@@ -48,7 +48,7 @@ apply(
 
 =head1 DESCRIPTION
 
-Validates that a postive or negative real value is entered.
+Validates that a positive or negative real value is entered.
 Formatted with two decimal places.
 
 Uses a period for the decimal point. Widget type is 'text'.
