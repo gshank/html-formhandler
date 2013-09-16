@@ -510,7 +510,7 @@ The 'first_fset' block will render like this:
     </fieldset>
 
 In order to actually get this block to be used when you render with
-C<< $form->render >>, you need to supply a 'render_list' on the the form
+C<< $form->render >>, you need to supply a 'render_list' on the form
 level:
 
    sub build_render_list { ['first_fset', 'submit_btn'] }
