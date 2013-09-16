@@ -52,7 +52,7 @@ This class represents an array. It can either be an array of hashrefs
 The 'contains' keyword is used for elements that do not have names
 because they are not hash elements.
 
-This field node will build arrays of fields from the the parameters or an
+This field node will build arrays of fields from the parameters or an
 initial object, or empty fields for an empty form.
 
 The name of the element fields will be an array index,
