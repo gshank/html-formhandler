@@ -1374,7 +1374,7 @@ sub setup_form {
             $self->_result_from_object( $self->result, $init_object );
         }
         elsif ( !$self->posted ) {
-            # no initial object. empty form form must be initialized
+            # no initial object. empty form must be initialized
             $self->_result_from_fields( $self->result );
         }
     }

@@ -105,7 +105,7 @@ Output an HTML string for a 'checkbox' widget
 
 Output an HTML string for a 'radio_group' selection widget.
 This widget should be for a field that inherits from 'Select',
-since it requires the existance of an 'options' array.
+since it requires the existence of an 'options' array.
 
 =head2 render_textarea
 

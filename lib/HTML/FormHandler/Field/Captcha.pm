@@ -8,7 +8,7 @@ use HTTP::Date;
 =head1 SYNOPSIS
 
 A Captcha class using GD::SecurityImage.
-Requires that that three methods be available from a form object:
+Requires that three methods be available from a form object:
 
   $self->form->get_captcha;
   $self->form->set_captcha;
