@@ -292,7 +292,7 @@ sub _merge_updates {
             $all_updates = merge( $all_updates, { tags => $self->form->widget_tags } );
         }
     }
-    # get updates from compund field update_subfields and widget_tags
+    # get updates from compound field update_subfields and widget_tags
     if ( $self->has_flag('is_compound') ) {
         my $comp_field_updates = $self->update_subfields;
         my $comp_all_updates = {};
