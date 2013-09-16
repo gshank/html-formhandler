@@ -133,7 +133,7 @@ things in the form's 'validate' sub.
 
 =item Email
 
-Use the 'Email' field type, or use the the FH Moose Type, 'email'.
+Use the 'Email' field type, or use the FH Moose Type, 'email'.
 
      has_field 'email' => ( type => 'Email' );
      -- or --
