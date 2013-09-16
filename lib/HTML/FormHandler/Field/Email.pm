@@ -49,7 +49,7 @@ apply(
 
 =head1 DESCRIPTION
 
-Validates that the input looks like an email address uisng L<Email::Valid>.
+Validates that the input looks like an email address using L<Email::Valid>.
 Widget type is 'text'.
 
 If form has 'is_html5' flag active it will render <input type="email" ... />

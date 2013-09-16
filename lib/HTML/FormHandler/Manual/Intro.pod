@@ -142,7 +142,7 @@ template.
 The form object will give you a hashref of values suitable for
 filling in the form with C<< $form->fif >>.
 
-By default FormHandler structures fields (and renders thems) in a way
+By default FormHandler structures fields (and renders them) in a way
 that matches the database. If you want to organize the rendering output
 in different ways, you can use blocks to organize your fields.
 

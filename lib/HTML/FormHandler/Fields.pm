@@ -17,7 +17,7 @@ num_fields, has_fields, and set_field_at methods.
 
 =head2 field( $full_name )
 
-Return the field objct with the full_name passed. Will return undef
+Return the field object with the full_name passed. Will return undef
 if the field is not found, or will die if passed a second parameter.
 
 =head2 field_index

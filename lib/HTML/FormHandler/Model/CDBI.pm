@@ -149,7 +149,7 @@ The active column name is determined by calling:
         : $field->active_column;
 
 Which allows setting the name of the active column globally if
-your tables are consistantly named (all lookup tables have the same
+your tables are consistently named (all lookup tables have the same
 column name to indicate they are active), or on a per-field basis.
 
 In addition, if the foreign class is the same as the item's class (or the class returned
