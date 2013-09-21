@@ -1,3 +1,10 @@
+0.40028 Sat Sep 21, 2013
+   Fixed bug when rendering blocks with 'run' (results)
+   Sort the deflated values of SelectCSV field
+   Allow passing Email::Valid params to Email field
+   Typos fixed
+   Add 'use_init_obj_when_no_accessor_in_item' flag for dual-purpose init_obj
+
 0.40027 Thu Aug 8, 2013
    Add 'options_ref' method for using options in TT templates
    Add unique messages to field messages hash
