@@ -1,0 +1,52 @@
+use strict;
+use warnings;
+use Test::More;
+
+{
+    package Test::Form;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has '+use_init_obj_when_no_accessor_in_item' => ( default => 1 );
+    has_field 'foo';
+    has_field 'bar';
+    has_field 'max';
+    has_field 'my_comp' => ( type => 'Compound' );
+    has_field 'my_comp.one';
+    has_field 'my_comp.two';
+}
+
+my $form = Test::Form->new;
+my $item = { foo => 'item_foo', bar => 'item_bar' };
+my $init_obj = { max => 'init_obj_max' };
+
+$form->process( item => $item, init_object => $init_obj, params => {} );
+is( $form->field('foo')->fif, 'item_foo' );
+is( $form->field('bar')->fif, 'item_bar' );
+is( $form->field('max')->fif, 'init_obj_max', 'init_obj value pulled in' );
+
+$init_obj = { my_comp => { one => 'init_obj_one', two => 'init_obj_two' } };
+$form->process( item => $item, init_object => $init_obj, params => {} );
+is( $form->field('foo')->fif, 'item_foo' );
+is( $form->field('bar')->fif, 'item_bar' );
+is( $form->field('max')->fif, '' );
+is( $form->field('my_comp.one')->fif, 'init_obj_one', 'init_obj value pulled in for compound' );
+
+$init_obj = { foo => 'init_obj_foo', bar => 'init_obj_bar', max => 'init_obj_max',
+    my_comp => { one => 'init_obj_one', two => 'init_obj_two' } };
+
+$item = undef;
+$form->process( item => $item, init_object => $init_obj, params => {} );
+is( $form->field('foo')->fif, 'init_obj_foo' );
+is( $form->field('bar')->fif, 'init_obj_bar' );
+is( $form->field('max')->fif, 'init_obj_max' );
+is( $form->field('my_comp.one')->fif, 'init_obj_one', 'init_obj value pulled in for compound' );
+
+$item = { foo => 'item_foo', bar => 'item_bar' };
+$form->process( item => $item, init_object => $init_obj, params => {} );
+is( $form->field('foo')->fif, 'item_foo' );
+is( $form->field('bar')->fif, 'item_bar' );
+is( $form->field('max')->fif, 'init_obj_max' );
+is( $form->field('my_comp.one')->fif, 'init_obj_one', 'init_obj value pulled in for compound' );
+
+done_testing;

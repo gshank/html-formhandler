@@ -79,6 +79,7 @@ sub _result_from_object {
 
     return unless ( $item || $self->has_fields );    # empty fields for compounds
     my $my_value;
+    my $init_obj = $self->form->init_object;
     for my $field ( $self->sorted_fields ) {
         next if ( $field->inactive && !$field->_active );
         my $result = HTML::FormHandler::Field::Result->new(
@@ -87,7 +88,18 @@ sub _result_from_object {
         );
         if ( (ref $item eq 'HASH' && !exists $item->{ $field->accessor } ) ||
              ( blessed($item) && !$item->can($field->accessor) ) ) {
-            $result = $field->_result_from_fields($result);
+            my $found = 0;
+            if ($field->form->use_init_obj_when_no_accessor_in_item) {
+                # if we're using an item, look for accessor not found in item
+                # in the init_object
+                my @names = split( /\./, $field->full_name );
+                my $init_obj_value = $self->find_sub_item( $init_obj, \@names );
+                if ( defined $init_obj_value ) {
+                    $found = 1;
+                    $result = $field->_result_from_object( $result, $init_obj_value );
+                }
+            }
+            $result = $field->_result_from_fields($result) unless $found;
         }
         else {
            my $value = $self->_get_value( $field, $item ) unless $field->writeonly;
@@ -102,6 +114,9 @@ sub _result_from_object {
     return $self_result;
 }
 
+# this is used for reloading repeatables form the database if they've changed and
+# for finding field values in the init_object when we have an item and the
+# 'use_init_obj_when_no_accessor_in_item' flag is set
 sub find_sub_item {
     my ( $self, $item, $field_name_array ) = @_;
     my $this_fname = shift @$field_name_array;;

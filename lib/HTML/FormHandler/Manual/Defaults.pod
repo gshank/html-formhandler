@@ -63,6 +63,17 @@ and set the 'use_init_obj_over_item' flag:
 Note that the 'use_init_obj_over_item' and 'use_defaults_over_obj' flags
 are automatically cleared (if you're using persistent forms).
 
+For forms where some defaults come from a database row, and some defaults
+come from some other dynamic source (so that putting them into the field
+definitions doesn't make sense), you can use the
+'use_init_obj_when_no_accessor_in_item' flag to provide two different
+sets of defaults, one set in the 'item' (usually a db row) and one set in
+the init_obj. If the 'item' is undefined, the values in the init_object
+are used.
+
+    in form: has '+use_init_obj_when_no_accessor_in_item' => ( default => 1 );
+    $form->process( item => $item, init_object => { foo => '...' }, .. );
+
 There is a convenience method for setting 'defaults' on a number of fields at
 once, the form's 'defaults' attribute, which uses the same mechanism as
 'update_field_list' but only sets defaults. Note that this hashref is
