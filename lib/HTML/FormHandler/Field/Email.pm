@@ -33,8 +33,8 @@ apply(
             check => sub {
                 my ( $value, $field ) = @_;
                 my $checked = Email::Valid->address(
-                    -address => $value,
                     %{ $field->email_valid_params || {} },
+                    -address => $value,
                 );
                 $field->value($checked)
                     if $checked;
