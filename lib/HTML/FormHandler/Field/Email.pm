@@ -33,8 +33,8 @@ apply(
             check => sub {
                 my ( $value, $field ) = @_;
                 my $checked = Email::Valid->address(
-                    -address => $value,
                     %{ $field->email_valid_params || {} },
+                    -address => $value,
                 );
                 $field->value($checked)
                     if $checked;
@@ -54,6 +54,10 @@ Widget type is 'text'.
 
 If form has 'is_html5' flag active it will render <input type="email" ... />
 instead of type="text"
+
+This field has an 'email_valid_params' attribute that accepts a hash
+reference of extra values passed to L<Email::Valid/address> when
+validating email addresses.
 
 =head1 DEPENDENCIES
 
