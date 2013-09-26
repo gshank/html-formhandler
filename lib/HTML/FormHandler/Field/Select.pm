@@ -394,6 +394,7 @@ has 'active_column'    => ( isa => 'Str',       is => 'rw', default => 'active' 
 has 'auto_widget_size' => ( isa => 'Int',       is => 'rw', default => '0' );
 has 'sort_column'      => ( isa => 'Str|ArrayRef[Str]',       is => 'rw' );
 has '+widget'          => ( default => 'Select' );
+sub html_element { 'select' }
 has '+type_attr'       => ( default => 'select' );
 has 'empty_select'     => ( isa => 'Str',       is => 'rw' );
 has '+deflate_method'  => ( default => sub { \&select_deflate } );

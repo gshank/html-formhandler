@@ -1,3 +1,22 @@
+0.40050
+   *** 'widget_tags' in a field have been deprecated for a long time; removing.
+      There are still widget_tags in the form and compound fields.
+      Use 'tags' in a field instead.
+   *** Initial support of Bootstrap3 - still EXPERIMENTAL. Do not use in
+      production yet. Changes in interface may occur over the next few weeks.
+   Supporting Bootstrap 3.0 required a surprising amount of minor refactoring:
+      Checkboxes and radio elements now have an additional div wrapping them.
+      This required setting flags in the wrapper that could be seen by the
+      field widgets. Used 'wrapper_tags' attribute, which is not the most satisfying
+      solution but does work. The former 'controls' div now doesn't have the
+      'controls' class, but is used for sizing. Added new attribute
+      'element_wrapper_class' to provide these classes. Split out addition of
+      classes to the wrapper and element into 'add_standard_wrapper_classes' and
+      'add_standard_element_classes', because B3.0 now wants 'has-error' and
+      'has-warning' instead of the former 'error' class. 'control-group' was
+      changed to 'form-group'. The 'form-control' class has been added to
+      text, passowrd, textarea, and select fields.
+
 0.40028 Sat Sep 21, 2013
    Fixed bug when rendering blocks with 'run' (results)
    Sort the deflated values of SelectCSV field

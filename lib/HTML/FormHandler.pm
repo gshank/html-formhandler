@@ -1032,16 +1032,6 @@ sub has_flag {
     return $self->$flag_name;
 }
 
-# used to transfer tags to fields from form
-has 'widget_tags' => (
-    isa => 'HashRef',
-    traits => ['Hash'],
-    is => 'rw',
-    default => sub {{}},
-    handles => {
-        has_widget_tags => 'count'
-    }
-);
 has 'form_tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',

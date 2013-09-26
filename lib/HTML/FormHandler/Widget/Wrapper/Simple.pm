@@ -70,12 +70,26 @@ sub wrap_field {
         if $self->do_label;
     # append 'before_element'
     $output .= $self->get_tag('before_element');
-    # start control div
-    $output .= qq{\n<div class="controls">} if $self->get_tag('controls_div');
+
+    # start controls div
+    if ( $self->get_tag('controls_div') ) {
+        $output .= qq{\n<div class="controls">};
+    }
+    elsif ( $self->has_element_wrapper_class ) {
+        my $ew_attr = $self->element_wrapper_attributes($result);
+        my $element_wrapper_attrs =  process_attrs( $ew_attr );
+        $output .= qq{\n<div$element_wrapper_attrs>};
+    }
+
     # the input element itself
     $output .= "\n$rendered_widget";
-    # end control div
-    $output .= "\n</div>" if $self->get_tag('controls_div');
+
+    # close controls div
+    if ( $self->get_tag('controls_div') || $self->has_element_wrapper_class ) {
+        # end control div
+        $output .= "\n</div>";
+    }
+
     # the 'after_element'
     $output .= $self->get_tag('after_element');
     # the error messages

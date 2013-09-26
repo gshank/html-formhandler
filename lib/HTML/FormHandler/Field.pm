@@ -234,12 +234,16 @@ function (from HTML::FormHandler::Render::Util) and passing in a method that
 adds in error classes, provides backward compatibility with the deprecated
 attributes, etc.
 
-    attribute hashref  class attribute       wrapping method
-    =================  =================     ================
-    element_attr       element_class         element_attributes
-    label_attr         label_class           label_attributes
-    wrapper_attr       wrapper_class         wrapper_attributes
+    attribute hashref  class attribute        wrapping method
+    =================  =================      ================
+    element_attr       element_class          element_attributes
+    label_attr         label_class            label_attributes
+    wrapper_attr       wrapper_class          wrapper_attributes
+                       element_wrapper_class  element_wrapper_attributes
 
+('element_wrapper' is for an inner div around the input element, not
+including the label. Used for Bootstrap3 rendering, but also available
+in the Simple wrapper.)
 The slots for the class attributes are arrayrefs; they will coerce a
 string into an arrayref.
 In addition, these 'wrapping methods' call a hook method in the form class,
@@ -268,7 +272,7 @@ This attribute used to be named 'widget_tags', which is deprecated.
 
 =head2 html5_type_attr [string]
 
-This string is used when rendering the input tag as the value for the type attribute.
+This string is used when rendering an input element as the value for the type attribute.
 It is used when the form has the is_html5 flag on.
 
 =head2 widget
@@ -780,16 +784,17 @@ sub uwrapper { ucc_widget( shift->widget_wrapper || '' ) || 'simple' }
 sub twrapper { shift->uwrapper . ".tt" }
 sub uwidget { ucc_widget( shift->widget || '' ) || 'simple' }
 sub twidget { shift->uwidget . ".tt" }
-# deprecated. use 'tags' instead.
-has 'widget_tags' => (
+# for use of wrapper classes
+has 'wrapper_tags' => (
     isa => 'HashRef',
     traits => ['Hash'],
     is => 'rw',
-    default => sub {{}},
+    builder => 'build_wrapper_tags',
     handles => {
-        has_widget_tags => 'count'
+        has_wrapper_tags => 'count'
     }
 );
+sub build_wrapper_tags { {} }
 has 'tags'         => (
     traits => ['Hash'],
     isa => 'HashRef',
@@ -863,6 +868,7 @@ has 'disabled'   => ( isa => 'Bool', is => 'rw' );
 has 'readonly'   => ( isa => 'Bool', is => 'rw' );
 has 'tabindex' => ( is => 'rw', isa => 'Int' );
 
+sub html_element { 'input' }
 has 'type_attr' => ( is => 'rw', isa => 'Str', default => 'text' );
 has 'html5_type_attr' => ( isa => 'Str', is => 'ro', default => 'text' );
 sub input_type {
@@ -925,6 +931,31 @@ sub set_html_attr { shift->set_element_attr(@_) }
     }
 }
 
+# we're assuming that the only attribute we want in an element wrapper is a class
+has 'element_wrapper_class' => (
+    is => 'rw', isa => 'HFH::ArrayRefStr',
+    traits => ['Array'],
+    coerce => 1,
+    builder => "build_element_wrapper_class",
+    handles => {
+        has_element_wrapper_class => 'count',
+        _add_element_wrapper_class => 'push',
+    },
+);
+sub add_element_wrapper_class { shift->_add_element_wrapper_class((ref $_[0] eq 'ARRAY' ? @{$_[0]} : @_)); }
+sub build_element_wrapper_class { [] }
+sub element_wrapper_attributes {
+    my ( $self, $result ) = @_;
+    $result ||= $self->result;
+    # local copy of label_attr
+    my $attr = {};
+    my $class = [@{$self->element_wrapper_class}];
+    $attr->{class} = $class if @$class;
+    # call form hook
+    my $mod_attr = $self->form->html_attributes($self, 'element_wrapper', $attr, $result) if $self->form;
+    return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
+}
+
 sub attributes { shift->element_attributes(@_) }
 sub element_attributes {
     my ( $self, $result ) = @_;
@@ -945,13 +976,18 @@ sub element_attributes {
     }
     $attr = {%$attr, %{$self->element_attr}};
     my $class = [@{$self->element_class}];
-    push @$class, 'error' if $result->has_errors;
-    push @$class, 'warning' if $result->has_warnings;
-    push @$class, 'disabled' if $self->disabled;
+    $self->add_standard_element_classes($result, $class);
     $attr->{class} = $class if @$class;
     # call form hook
     my $mod_attr = $self->form->html_attributes($self, 'element', $attr, $result) if $self->form;
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
+}
+
+sub add_standard_element_classes {
+    my ( $self, $result, $class ) = @_;
+    push @$class, 'error' if $result->has_errors;
+    push @$class, 'warning' if $result->has_warnings;
+    push @$class, 'disabled' if $self->disabled;
 }
 
 sub label_attributes {
@@ -973,8 +1009,7 @@ sub wrapper_attributes {
     my $attr = {%{$self->wrapper_attr}};
     my $class = [@{$self->wrapper_class}];
     # add 'error' to class
-    push @$class, 'error' if ( $result->has_error_results || $result->has_errors );
-    push @$class, 'warning' if $result->has_warnings;
+    $self->add_standard_wrapper_classes($result, $class);
     $attr->{class} = $class if @$class;
     # add id if compound field and id doesn't exist unless 'no_wrapper_id' tag
     $attr->{id} = $self->id
@@ -983,6 +1018,13 @@ sub wrapper_attributes {
     my $mod_attr = $self->form->html_attributes($self, 'wrapper', $attr, $result) if $self->form;
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
+
+sub add_standard_wrapper_classes {
+    my ( $self, $result, $class ) = @_;
+    push @$class, 'error' if ( $result->has_error_results || $result->has_errors );
+    push @$class, 'warning' if $result->has_warnings;
+}
+
 
 sub wrapper_tag {
     my $self = shift;
@@ -1261,7 +1303,7 @@ sub BUILD {
     my ( $self, $params ) = @_;
 
     # temporary, for compatibility. move widget_tags to tags
-    $self->merge_tags($self->widget_tags) if $self->has_widget_tags;
+    $self->merge_tags($self->wrapper_tags) if $self->has_wrapper_tags;
     # run default method builder
     $self->build_default_method;
     # build validate_method; needs to happen before validation

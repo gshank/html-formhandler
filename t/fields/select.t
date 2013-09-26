@@ -16,7 +16,7 @@ use HTML::FormHandler::Field::Text;
                id    => 'f99',
             );
    has_field 'fruit' => ( type => 'Select' );
-   has_field 'vegetables' => ( type => 'Multiple', input_without_param => [], not_nullable => 1 );
+   has_field 'vegetables' => ( type => 'Multiple' );
    has_field 'empty' => ( type => 'Multiple', no_option_validation => 1 );
    has_field 'build_attr' => ( type => 'Select' );
 

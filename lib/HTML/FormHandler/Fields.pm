@@ -67,6 +67,17 @@ has 'update_subfields' => ( is => 'rw', isa => 'HashRef', builder => 'build_upda
     has_update_subfields => 'count' } );
 sub build_update_subfields {{}}
 
+# used to transfer tags to fields from form and compound fields
+has 'widget_tags' => (
+    isa => 'HashRef',
+    traits => ['Hash'],
+    is => 'rw',
+    default => sub {{}},
+    handles => {
+        has_widget_tags => 'count'
+    }
+);
+
 # compatibility wrappers for result errors
 sub error_fields {
     my $self = shift;

@@ -76,6 +76,7 @@ use HTML::FormHandler::Field::Text;
     has_field 'no_render' => ( widget => 'NoRender' );
     has_field 'plain' => ( widget_wrapper => 'None' );
     has_field 'boxed' => ( widget_wrapper => 'Fieldset', wrapper_attr => { class => 'boxed' } );
+    has_field 'element_wrapper_field' => ( element_wrapper_class => 'large' );
 
     sub html_attributes {
         my ( $self, $field, $type, $attr ) = @_;
@@ -239,6 +240,15 @@ is_html( $form->field('boxed')->render,
 '<fieldset class="boxed"><legend>Boxed</legend>
   <input type="text" name="boxed" id="boxed" value="Testing single fieldset" />
 </fieldset>', 'fieldset wrapper renders' );
+
+is_html( $form->field('element_wrapper_field')->render,
+'<div>
+  <label class="label" for="element_wrapper_field">Element wrapper field</label>
+  <div class="large">
+    <input id="element_wrapper_field" name="element_wrapper_field" type="text" value="" />
+  </div>
+</div>',
+   'element wrapper renders ok' );
 
 # table widget
 $form = Test::Form->new( widget_form => 'Table', widget_wrapper => 'Table' );
