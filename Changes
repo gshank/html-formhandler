@@ -16,6 +16,7 @@
       'has-warning' instead of the former 'error' class. 'control-group' was
       changed to 'form-group'. The 'form-control' class has been added to
       text, passowrd, textarea, and select fields.
+   Add 'preserve_case' attribute to Email field
 
 0.40028 Sat Sep 21, 2013
    Fixed bug when rendering blocks with 'run' (results)

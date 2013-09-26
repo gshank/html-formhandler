@@ -72,13 +72,19 @@ ok( defined $field, 'new() called' );
 my $address = 'test@example.com';
 $field->_set_input( $address );
 $field->validate_field;
-ok( !$field->has_errors, 'Test for errors 1' );
+ok( !$field->has_errors, 'Email Test for errors 1' );
 is( $field->value, $address, 'is value input string' );
 my $Address = 'Test@example.com';
 $field->_set_input( $Address );
 $field->validate_field;
-ok( !$field->has_errors, 'Test for errors 2' );
+ok( !$field->has_errors, 'Email Test for errors 2' );
 is( $field->value, lc($Address), 'is value input string' );
+$field->preserve_case(1);
+$field->_set_input( $Address );
+$field->validate_field;
+ok( !$field->has_errors, 'Email Test for errors 3' );
+is( $field->value, $Address, 'field was not lowercased' );
+
 
 $field->_set_input( 'test @ example . com' );
 $field->validate_field;
