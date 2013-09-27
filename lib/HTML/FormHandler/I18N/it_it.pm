@@ -6,7 +6,7 @@ use warnings;
 use base 'HTML::FormHandler::I18N';
 
 use utf8;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 # Auto define lexicon
 our %Lexicon = (
@@ -51,9 +51,11 @@ our %Lexicon = (
     # H::F::Field::Date
     'Date is too early' => 'La data è troppo remota',
     'Date is too late'  => 'La data è troppo avanti',
+    'Your datetime does not match your pattern.'=>q(Il formato della data non coincide con quello richiesto.),
 
     # H::F::Field::DateTime
     'Not a valid DateTime' => 'Non è un DateTime valido',
+
 
     # H::F::Field::Duration
     'Invalid value for [_1]: [_2]' => 'Durata non valida per [_1]: [_2]',
@@ -95,14 +97,12 @@ our %Lexicon = (
 
     # H::F::Model
     'Value must be unique in the database' => 'Il valore deve essere unico nella base dati',
-
+    # H::F::Widget::Theme::BootstrapFormMessages
+    'There were errors in your form' => q(Alcuni valori nel modulo sono sbagliati),
+    'Your form was successfully submitted' => q(I valori sono stati inviati al server correttamente),
   );
 
 1;
-
-
-
-
 
 __END__
 =pod
