@@ -64,6 +64,19 @@ the 'fill-in-form' values provided with the form's 'fif' function.
     <input id="bar" name="bar" value="[% fif.bar %]">
     <input type="submit" name="submit" value="Save">
     </form>
+    
+If you are looking for an easy way to get your fields to line up in an evenly spaced manner, 
+all uniformly aligned, and to do so without using templates or tables, you can externally style the
+default FormHandler output with the following CSS rule (not supported in internet explorer 6).
+
+*I<This above is useful for simple forms.  Complex forms with fieldsets and other extra features>
+*I<will require further styling of the HTML.  The following rule is also HTML 5 compatible.>
+
+   form#id_of_your_form div div label, form#id_of_your_form div div input {
+      float: left;
+      display: inline-block;
+      width: 40%
+   } /* make sure the parent element is sized appropriately.  700px is a good width */
 
 Going a little bit farther in using FormHandler rendering, you can render
 each of the fields individually:
