@@ -22,14 +22,19 @@ sub validate {
     my $field = shift;
     my $value = $field->value;
 
-    unless ($value =~ /^qr\// and $value =~ /\/$/) {
-        $field->add_error( $field->get_message('regex_format'), 'qr/.+?/');
+    # Check for qr operator first, because we will eval this
+    unless ($value =~ /^qr\// and $value =~ /\/[imsxadlup]*$/) {
+        $field->add_error( $field->get_message('regex_format'), 'qr/.+?/i');
         return 1;
     }
-    unless ($value =~ /^qr\/.+\/$/) {
-        $field->add_error( $field->get_message('regex_empty'), 'qr/.+?/');
+
+    # Check that there is something inside the qr.
+    unless ($value =~ /^qr\/.+\/[imsxadlup]*$/) {
+        $field->add_error( $field->get_message('regex_empty'), 'qr/.+?/i');
         return 1;
     }
+
+    # Evaluate the regex.
     my $validated;
     try {
         $validated = eval($value);
@@ -37,7 +42,7 @@ sub validate {
         $field->add_error($field->get_message('evaluation_error'), $_);
     };
     unless (ref($validated) eq 'Regexp') {
-        $field->add_error( $field->get_message('regex_format'), 'qr/.+?/');
+        $field->add_error( $field->get_message('regex_format'), 'qr/.+?/i');
         return 1;
     }
     return 1;

@@ -606,4 +606,10 @@ $field->validate_field;
 ok( !$field->has_errors, 'RegExp Test for success' );
 is( $field->value, $re4, 'Value is original input string' );
 
+my $re5 = 'qr/.+?/imsxlp';
+$field->_set_input( $re5 );
+$field->validate_field;
+ok( !$field->has_errors, 'RegExp Test for success with modifiers' );
+is( $field->value, $re5, 'Value is original input string' );
+
 done_testing;
