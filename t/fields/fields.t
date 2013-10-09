@@ -581,4 +581,29 @@ $field->_set_input( 0 );
 $field->validate_field;
 ok( !$field->has_errors, 'accepted 0 value' );
 
+# regex 
+$class = 'HTML::FormHandler::Field::RegExp';
+use_ok($class);
+$field = $class->new( name => 'reggie', );
+$field->build_result;
+ok( defined $field, 'new() called' );
+
+my $re = 'q';
+$field->_set_input( $re );
+$field->validate_field;
+ok( $field->has_errors, 'RegExp Test for errors 1' );
+like(${$field->errors}[0], qr/RegExp should be of the format/, "RegExp format error correct");
+
+my $re2 = 'qr//';
+$field->_set_input( $re2 );
+$field->validate_field;
+ok( $field->has_errors, 'RegExp Test for errors 2' );
+like(${$field->errors}[0], qr/RegExp is empty/, "RegExp empty error correct");
+
+my $re4 = 'qr/.+?/';
+$field->_set_input( $re4 );
+$field->validate_field;
+ok( !$field->has_errors, 'RegExp Test for success' );
+is( $field->value, $re4, 'Value is original input string' );
+
 done_testing;
