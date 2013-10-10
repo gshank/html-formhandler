@@ -5,7 +5,7 @@ use Try::Tiny;
 extends 'HTML::FormHandler::Field::Text';
 
 our $class_messages = {
-    'regex_format' => 'RegExp should be of the format [_1]',
+    'regex_format' => 'RegExp should be of the format [_1] (a, d, l, and u modifiers are mutually exclusive)',
     'evaluation_error' => 'Unknown error in eval: [_1]',
     'regex_empty' => 'RegExp is empty',
 };
