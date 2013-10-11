@@ -149,8 +149,16 @@ The 'when' hashref can contain multiple key/value pairs. This simply extends its
 test across multiple fields; all fields named in the hashref's keys must match
 their respective values in order for the overall 'when' test to pass.
 
+     when => { foo => 3 }        # when the foo field value is 3
+     when => { foo => [1,2,3]}   # when foo is 1, 2, or 3
+     when => { foo => sub { $_[0] > 0 }}  # when foo is greater than 0
+     when => { foo => sub { $_[0] ne ''}} # when foo is the empty string
+
 Transformations and coercions are called in an eval
 to catch the errors. Warnings are trapped in a sigwarn handler.
+
+If the conditions get too complicated to easily fit into a when condition, you
+can always create a validation method instead.
 
 See also L<HTML::FormHandler::Field> and L<HTML::FormHandler::Validate>.
 See L<HTML::FormHandler::Manual::Inflation::Deflation> for information
