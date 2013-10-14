@@ -30,7 +30,7 @@ You need to set 'required' all the way up, if that's the behavior that you
 want.
 
 If a field is empty and *not* required, no other field validation will be
-performed unless the 'validate_when_empty' flag (see below) is set. The form's 
+performed unless the 'validate_when_empty' flag (see below) is set. The form's
 'validate' method, however, will always be called.
 
 There is also the 'required_when' attribute, which works the same way as the

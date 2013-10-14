@@ -22,6 +22,8 @@ ok( !$result->validated, 'did not validate' );
 ok( $result->field('foo_required')->has_errors, 'foo has error' );
 ok( $result->has_errors, 'result has errors' );
 is( $result->num_errors, 1, 'number of errors is correct' );
+is_deeply( $result->errors_by_name, { foo_required => ['Foo required field is required'] },
+   'correct errors_by_name' );
 is( $result->errors->[0], 'Foo required field is required', 'result field has error' );
 is_html( $result->field('foo_required')->render, '
 <div class="error">
