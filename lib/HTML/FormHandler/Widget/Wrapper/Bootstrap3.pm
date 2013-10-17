@@ -64,7 +64,7 @@ sub wrap_field {
     $output .=  $self->get_tag('before_element');
 
     # the controls div; used to have 'controls' class. Now it comes from
-    # the 'element_wrapper_class'
+    # the 'element_wrapper_class'. Used for column layout.
     my $ew_attr = $self->element_wrapper_attributes($result);
     my $element_wrapper_attrs =  process_attrs( $ew_attr );
     $output .= qq{\n<div$element_wrapper_attrs>}
@@ -78,7 +78,7 @@ sub wrap_field {
         $rendered_widget = $self->do_prepend_append($rendered_widget);
     }
     elsif( lc $self->widget eq 'checkbox' ) {
-        $rendered_widget = $self->wrap_checkbox($result, $rendered_widget, 'label')
+        $rendered_widget = $self->wrap_checkbox($result, $rendered_widget, 'b3_label_left')
     }
 
     $output .= "\n$rendered_widget";
@@ -123,6 +123,26 @@ sub add_standard_wrapper_classes {
     push @$class, 'has-error' if ( $result->has_error_results || $result->has_errors );
     push @$class, 'has-warning' if $result->has_warnings;
     # TODO: has-success?
+}
+
+sub add_standard_label_classes {
+    my ( $self, $result, $class ) = @_;
+    if ( my $classes = $self->form->get_tag('layout_classes') ) {
+        push @$class, @{$classes->{label_class}}
+            if exists $classes->{label_class};
+    }
+}
+
+sub add_standard_element_wrapper_classes {
+    my ( $self, $result, $class ) = @_;
+    if ( my $classes = $self->form->get_tag('layout_classes') ) {
+        push @$class, @{$classes->{element_wrapper_class}}
+            if exists $classes->{element_wrapper_class};
+        if ( exists $classes->{no_label_element_wrapper_class} &&
+            ( ! $self->do_label || $self->type_attr eq 'checkbox' )) {
+            push @$class, @{$classes->{no_label_element_wrapper_class}};
+        }
+    }
 }
 
 sub wrap_checkbox {

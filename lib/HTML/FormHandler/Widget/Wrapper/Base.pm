@@ -13,6 +13,15 @@ HTML::FormHandler::Widget::Wrapper::Base
 Provides several common methods for wrapper widgets, including
 'do_render_label' and 'wrap_checkbox'.
 
+Implements the checkbox 'option_wrapper' rendering:
+
+    b3_label_left
+    b3_label_right
+    b3_label_left_inline
+    label_left
+    label_right
+    no_wrapped_label
+
 =cut
 
 sub do_render_label {
@@ -36,18 +45,25 @@ sub do_render_label {
 }
 
 sub wrap_checkbox {
+    my ( $self, $result, $rendered_widget, $default_wrapper ) = @_;
+
+    my $option_wrapper = $self->option_wrapper || $default_wrapper;
+    if ( $option_wrapper && $option_wrapper ne 'standard' ) {
+        return $self->$option_wrapper($result, $rendered_widget);
+    }
+    else {
+        return $self->standard_wrap_checkbox($result, $rendered_widget);
+    }
+
+}
+
+sub standard_wrap_checkbox {
     my ( $self, $result, $rendered_widget ) = @_;
 
     return $rendered_widget
         if( $self->get_tag('no_wrapped_label' ) );
 
-    my $label =  $self->option_label || '';
-    if( $label eq '' && ! $self->do_label ) {
-        $label = $self->html_filter($self->loc_label);
-    }
-    elsif( $label ne '' ) {
-        $label = $self->html_filter($self->_localize($label));
-    }
+    my $label = $self->get_checkbox_label;
     my $id = $self->id;
     my $for = qq{ for="$id"};
 
@@ -69,6 +85,74 @@ sub wrap_checkbox {
     }
     return $output;
 }
+
+sub get_checkbox_label {
+    my $self = shift;
+
+    my $label =  $self->option_label || '';
+    if( $label eq '' && ! $self->do_label ) {
+        $label = $self->html_filter($self->loc_label);
+    }
+    elsif( $label ne '' ) {
+        $label = $self->html_filter($self->_localize($label));
+    }
+    return $label;
+}
+
+sub b3_label_left {
+    my ( $self, $result, $rendered_widget ) = @_;
+
+    my $label = $self->get_checkbox_label;
+    my $id = $self->id;
+    my $output = qq{<div class="checkbox">};
+    $output .= qq{<label for="$id">\n$label\n$rendered_widget</label>};
+    $output .= qq{</div>};
+    return $output;
+}
+
+sub b3_label_left_inline {
+    my ( $self, $result, $rendered_widget ) = @_;
+
+    my $label = $self->get_checkbox_label;
+    my $id = $self->id;
+    my $output .= qq{<label class="checkbox-inline" for="$id">\n$label\n$rendered_widget</label>};
+    return $output;
+}
+
+sub b3_label_right {
+    my ( $self, $result, $rendered_widget ) = @_;
+
+    my $label = $self->get_checkbox_label;
+    my $id = $self->id;
+    my $output = qq{<div class="checkbox">};
+    $output .= qq{<label for="$id">$rendered_widget\n$label\n</label>};
+    $output .= qq{</div>};
+    return $output;
+}
+
+sub label_left {
+    my ( $self, $result, $rendered_widget ) = @_;
+
+    my $label = $self->get_checkbox_label;
+    my $id = $self->id;
+    my $output .= qq{<label class="checkbox" for="$id">\n$label\n$rendered_widget</label>};
+    return $output;
+}
+
+sub label_right {
+    my ( $self, $result, $rendered_widget ) = @_;
+
+    my $label = $self->get_checkbox_label;
+    my $id = $self->id;
+    my $output .= qq{<label class="checkbox" for="$id">$rendered_widget\n$label\n</label>};
+    return $output;
+}
+
+sub no_wrapped_label {
+    my ( $self, $result, $rendered_widget ) = @_;
+    return $rendered_widget;
+}
+
 
 # for compatibility with older code
 sub render_label {

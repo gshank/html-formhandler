@@ -335,6 +335,7 @@ sub build_options { [] }
 has 'options_from' => ( isa => 'Str', is => 'rw', default => 'none' );
 has 'do_not_reload' => ( isa => 'Bool', is => 'ro' );
 has 'no_option_validation' => ( isa => 'Bool', is => 'rw' );
+has 'option_wrapper' => ( is => 'rw' );
 
 sub BUILD {
     my $self = shift;

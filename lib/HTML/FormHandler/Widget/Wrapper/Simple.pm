@@ -64,9 +64,9 @@ sub wrap_field {
         $label_tag = 'legend' if $wrapper_tag eq 'fieldset';
     }
     # write label; special processing for checkboxes
-    $rendered_widget = $self->wrap_checkbox($result, $rendered_widget, $label_tag)
+    $rendered_widget = $self->wrap_checkbox($result, $rendered_widget)
         if ( lc $self->widget eq 'checkbox' );
-    $output .= "\n" . $self->do_render_label($result, $label_tag )
+    $output .= "\n" . $self->do_render_label($result, $label_tag)
         if $self->do_label;
     # append 'before_element'
     $output .= $self->get_tag('before_element');
