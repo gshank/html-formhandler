@@ -32,5 +32,7 @@ is_html( $result->field('foo_required')->render, '
   <span class="error_message">Foo required field is required</span>
 </div>', 'error field has error' );
 
+my @errors = $result->form_and_field_errors;
+is( scalar @errors, 1, 'one error' );
 
 done_testing;

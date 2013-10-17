@@ -33,6 +33,9 @@ form errors):
 
     my @errors = $form->errors;
 
+Note: this is a form method, not a result method. For the same thing
+from a result object, use C<< $result->form_and_field_errors >>.
+
 =item has_errors
 
 Both 'form' errors and errors from the tree of subfields
