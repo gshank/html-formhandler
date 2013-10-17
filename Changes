@@ -1,3 +1,11 @@
+0.40051 Thu Oct 17, 2013
+   Update Italian message file
+   Minor doc updates
+   add errors_by_name and errors_by_id to result
+   add Bootstrap3 theme for those using the Bootstrap theme
+   better form-horizontal Bootstrap 3.0 support
+   provide method in result (form_and_field_errors) to return form and field errors
+
 0.40050 Thu Sep 26, 2013
    *** 'widget_tags' in a field have been deprecated for a long time; removing.
       There are still widget_tags in the form and compound fields.
