@@ -4,6 +4,7 @@ package HTML::FormHandler::Widget::Wrapper::Bootstrap3;
 use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
+use List::AllUtils ('any');
 
 with 'HTML::FormHandler::Widget::Wrapper::Base';
 
@@ -128,18 +129,23 @@ sub add_standard_wrapper_classes {
 sub add_standard_label_classes {
     my ( $self, $result, $class ) = @_;
     if ( my $classes = $self->form->get_tag('layout_classes') ) {
-        push @$class, @{$classes->{label_class}}
-            if exists $classes->{label_class};
+        my $label_class = $classes->{label_class};
+        if ( $label_class && not any { $_ =~ /^col\-/ } @$class ) {
+            push @$class, @{$classes->{label_class}};
+        }
     }
 }
 
 sub add_standard_element_wrapper_classes {
     my ( $self, $result, $class ) = @_;
     if ( my $classes = $self->form->get_tag('layout_classes') ) {
-        push @$class, @{$classes->{element_wrapper_class}}
-            if exists $classes->{element_wrapper_class};
+        if ( exists $classes->{element_wrapper_class} &&
+             not any { $_ =~ /^col\-/ } @$class ) {
+            push @$class, @{$classes->{element_wrapper_class}};
+        }
         if ( exists $classes->{no_label_element_wrapper_class} &&
-            ( ! $self->do_label || $self->type_attr eq 'checkbox' )) {
+             ( ! $self->do_label || $self->type_attr eq 'checkbox' ) &&
+             not any { $_ =~ /^col\-.*offset/ } @$class ) {
             push @$class, @{$classes->{no_label_element_wrapper_class}};
         }
     }
