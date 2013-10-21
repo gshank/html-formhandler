@@ -115,6 +115,7 @@ is_deeply( $form->fif, { fruit => 2, vegetables => [2, 4], empty => ['test'], te
 is_deeply( $form->values, { fruit => 2, vegetables => [2, 4], empty => ['test'], build_attr => undef },
     'values are correct');
 is( $form->field('vegetables')->as_label, 'broccoli, peas', 'multiple as_label works');
+is( $form->field('vegetables')->as_label([3,4]), 'carrots, peas', 'pass in multiple as_label works');
 
 $params = {
     fruit => 2,
