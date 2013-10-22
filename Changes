@@ -1,3 +1,6 @@
+0.40053 Tue Oct 22, 2013
+   Bad version number on prereq
+
 0.40052 Mon Oct 21, 2013
    allow overriding layout_classes in Bootstrap3 wrapper
    allow passing in value to 'as_label' method in Select field
