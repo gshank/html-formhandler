@@ -48,7 +48,11 @@ sub wrap_checkbox {
     my ( $self, $result, $rendered_widget, $default_wrapper ) = @_;
 
     my $option_wrapper = $self->option_wrapper || $default_wrapper;
-    if ( $option_wrapper && $option_wrapper ne 'standard' ) {
+    if ( $option_wrapper && $option_wrapper ne 'standard' && 
+         $option_wrapper ne 'label' ) {
+        unless ( $self->can($option_wrapper) ) {
+            die "HFH: no option_wrapper method '$option_wrapper'";
+        }
         return $self->$option_wrapper($result, $rendered_widget);
     }
     else {
