@@ -3,6 +3,8 @@ use warnings;
 use Test::More;
 use HTML::FormHandler::Test;
 
+$ENV{LANGUAGE_HANDLE} = 'en_en';
+
 use_ok('HTML::FormHandler::Widget::Wrapper::Bootstrap3');
 
 {
