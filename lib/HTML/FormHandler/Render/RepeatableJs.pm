@@ -114,7 +114,7 @@ sub render_repeatable_js {
     rep_index[data_rep_id] = index;
   });
 
-  \$(document).on('click', '.rm_element', function() {
+  \$(document).on('click', '.rm_element', function(event) {
     cont = confirm('Remove?');
     if (cont) {
       var id = \$(this).attr('data-rep-elem-id');
