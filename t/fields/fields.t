@@ -31,37 +31,6 @@ $field->validate_field;
 ok( !$field->has_errors, 'Test for errors 4' );
 is( $field->value, 0, 'Test true == 0' );
 
-# checkbox
-$class = 'HTML::FormHandler::Field::Checkbox';
-use_ok($class);
-$field = $class->new( name => 'test', );
-$field->build_result;
-ok( defined $field, 'new() called' );
-$field->_set_input(1);
-$field->validate_field;
-ok( !$field->has_errors, 'Test for errors 1' );
-is( $field->value, 1, 'input 1 is 1' );
-$field->_set_input(0);
-$field->validate_field;
-ok( !$field->has_errors, 'Test for errors 2' );
-is( $field->value, 0, 'input 0 is 0' );
-$field->_set_input('checked');
-$field->validate_field;
-ok( !$field->has_errors, 'Test for errors 3' );
-is( $field->value, 'checked', 'value is "checked"' );
-$field->_set_input(undef);
-$field->validate_field;
-ok( !$field->has_errors, 'Test for errors 4' );
-is( $field->value, 0, 'input undef is 0' );
-$field = $class->new(
-   name     => 'test_field2',
-   required => 1
-);
-$field->build_result;
-$field->_set_input(0);
-$field->validate_field;
-ok( $field->has_errors, 'required field fails with 0' );
-
 
 # email
 $class = 'HTML::FormHandler::Field::Email';

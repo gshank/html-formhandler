@@ -34,6 +34,10 @@ fields, will not be ignored if there is no input. If a particular
 checkbox should not be processed for a particular form, you must
 set 'inactive' to 1 instead.
 
+Note that a checkbox is only 'checked' when the 'checkbox_value' is
+provided. The 'value' for a non-checked checkbox is only really
+useful for creating form values such as are stored in a database.
+
 =cut
 
 has '+widget'              => ( default => 'Checkbox' );
@@ -42,13 +46,6 @@ has '+input_without_param' => ( default => 0 );
 has '+type_attr'           => ( default => 'checkbox' );
 has 'option_label'         => ( is => 'rw' );
 has 'option_wrapper'       => ( is => 'rw' );
-
-sub value {
-    my $field = shift;
-    return $field->next::method(@_) if @_;
-    my $v = $field->next::method();
-    return defined $v ? $v : 0;
-}
 
 sub validate {
     my $self = shift;

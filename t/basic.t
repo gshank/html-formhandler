@@ -91,7 +91,8 @@ my $init_object = {
 # if you're going to load something on new and expect it to work without
 # process, you need to have no_preload turned off
 $form = My::Form->new( init_object => $init_object, no_preload => 0 );
-is( $form->field('optname')->value, 'Over Again', 'value with int_obj' );
+is( $form->field('optname')->value, 'Over Again', 'value with init_obj' );
+# non-posted params
 $form->process( params => {} );
 my $value = $form->value;
 ok( !$form->validated, 'form validated' );
@@ -104,18 +105,20 @@ ok( !$form->validated, 'form validated' );
 # TODO verify behavior is correct
 my $init_obj_plus_defaults = {
    'fruit' => undef,
-   'must_select' => 0,
-   'my_selected' => 0,
+   'must_select' => undef,
+   'my_selected' => undef,
    'optname' => 'Over Again',
    'reqname' => 'Starting Perl',
    'somename' => undef,
 };
 is_deeply( $form->value, $init_obj_plus_defaults, 'value with empty params' );
 $init_object->{my_selected} = 0;    # checkboxes must be forced to 0
+$init_object->{must_select} = 0;
 my %fif = %$init_object;
 $fif{somename}    = '';
 $fif{fruit}       = '';
-$fif{must_select} = 0;
+$fif{must_select} = '';
+$fif{my_selected} = '';
 is_deeply( $form->fif, \%fif, 'get right fif with init_object' );
 # make sure that checkbox is 0 in values
 $init_object->{must_select} = 1;
@@ -125,6 +128,8 @@ ok( $form->process($init_object), 'form validates with params' );
 #is_deeply( $form->value, \%init_obj_value, 'value init obj' );
 $init_object->{fruit} = undef;
 is_deeply( $form->value, $init_object, 'value init obj' );
+$fif{must_select} = 1;
+$fif{my_selected} = 0;
 is_deeply( $form->fif, \%fif, 'get right fif with init_object' );
 
 $form->clear;
