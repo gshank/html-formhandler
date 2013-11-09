@@ -111,8 +111,8 @@ $result = $form->run( params => {} );
 ok( !$result->validated, 'form did not validate' );
 my $values = {
    'fruit' => undef,
-   'must_select' => 0,
-   'my_selected' => 0,
+   'must_select' => undef,
+   'my_selected' => undef,
    'optname' => 'Over Again',
    'reqname' => 'Starting Perl',
    'somename' => undef,

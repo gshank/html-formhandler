@@ -93,7 +93,11 @@ sub wrap_radio {
 
     # use "simple" label attributes for inner label
     my @label_class = ('radio');
-    push @label_class, 'inline' if $self->get_tag('inline');
+    if ( $self->get_tag('inline') ) {
+        my $class = 'inline';
+        $class = 'radio-inline' if $self->has_flag('is_b3');
+        push @label_class, $class;
+    }
     my $lattrs = process_attrs( { class => \@label_class } );
 
     # return wrapped radio, either on left or right

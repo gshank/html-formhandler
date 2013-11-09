@@ -36,6 +36,8 @@ Tags supported:
 
 =cut
 
+sub is_b3 {1}
+
 sub build_wrapper_tags {
     {
         radio_element_wrapper => 1,

@@ -67,7 +67,11 @@ sub render_option {
     # create option label attributes
     my $lattr = $option->{label_attributes} || {};
     push @{ $lattr->{class} }, 'checkbox';
-    push @{ $lattr->{class} }, 'inline' if $self->get_tag('inline');
+    if ( $self->get_tag('inline') ) {
+        my $class = 'inline';
+        $class = 'checkbox-inline' if $self->has_flag('is_b3');
+        push @{ $lattr->{class} }, $class;
+    }
     my $lattr_str = process_attrs( $lattr );
 
     my $id = $self->id . '.' . $self->options_index;
