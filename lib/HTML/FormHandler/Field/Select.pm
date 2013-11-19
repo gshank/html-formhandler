@@ -304,8 +304,9 @@ structure. See L<HTML::FormHandler::Manual::Cookbook>.
 =cut
 
 has 'options' => (
-    isa       => 'ArrayRef',
+    isa       => 'HFH::SelectOptions',
     is        => 'rw',
+    coerce    => 1,
     traits    => ['Array'],
     auto_deref => 1,
     handles  => {

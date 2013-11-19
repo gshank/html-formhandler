@@ -17,5 +17,19 @@ coerce 'HFH::ArrayRefStr'
   => from 'Undef'
   => via { return []; };
 
+subtype 'HFH::SelectOptions'
+  => as 'ArrayRef[HashRef]';
+
+coerce 'HFH::SelectOptions'
+  => from 'ArrayRef[Str]'
+  => via {
+         my @options = @$_;
+         die "Options array must contain an even number of elements"
+            if @options % 2;
+         my $opts;
+         push @{$opts}, { value => shift @options, label => shift @options } while @options;
+         return $opts;
+     };
+
 no Moose::Util::TypeConstraints;
 1;
