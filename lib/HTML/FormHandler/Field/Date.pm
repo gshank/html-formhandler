@@ -94,7 +94,7 @@ sub date_deflate {
     my ( $self, $value ) = @_;
 
     # if not a DateTime, assume correctly formatted string and return
-    return $value unless ref $value eq 'DateTime';
+    return $value unless blessed $value && $value->isa('DateTime');
     my $format = $self->get_strf_format;
     my $string = $value->strftime($format);
     return $string;

@@ -92,6 +92,12 @@ is( $field->fif, '07-07-09', 'fif ok');
 
    has_field 'start_date' => ( type => 'Date' );
    has_field 'end_date' => ( type => 'Date', required => 1 );
+   has_field 'another_date' => ( type => 'Date' );
+}
+
+{
+    package My::Date;
+    use base 'DateTime';
 }
 
 my $form = Test::Date->new;
@@ -99,9 +105,11 @@ ok( $form, 'form with date created' );
 ok( $form->render_field('end_date'), 'date field renders' );
 ok( !$form->process( params => { end_date => '' } ), "Didn't validate Test::Date with empty string for end_date" );
 
-$form = Test::Date->new( item => { end_date => '1999-01-01', start_date => '' } );
+my $adate = My::Date->new( year => '2014', month => '05', day => '20' );
+$form = Test::Date->new( item => { end_date => '1999-01-01', start_date => '', another_date => $adate } );
 ok( !$form->process( params => { } ), "Didn't validate Test::Date with empty params" );
-ok( $form->process( params => { end_date => '1999-12-31' } ), "Didn't validate Test::Date with empty params" );
+is( $form->field('another_date')->fif, '2014-05-20', 'date fif is correct' );
+ok( $form->process( params => { end_date => '1999-12-31', another_date => '2014-05-20' } ), "validated ok" );
 
 #
 # DateTime
