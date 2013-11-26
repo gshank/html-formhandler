@@ -1,3 +1,13 @@
+0.40054 Tue Nov 26, 2013
+   Check for old unimplemented parameter to wrap_checkbox, and check
+       for existence of option_wrapper
+   add language handle to bootstrap3 tests
+   pass event to repeatable js click handler
+   stop forcing undefined Checkbox fields to 0; didn't allow undef for value
+   different inline class for Bootstrap3 for checkboxes and radios
+   select options: add coercion of arrayref of hashrefs from arrayref of strings
+   allow Date field to use DateTime subclasses
+
 0.40053 Tue Oct 22, 2013
    Bad version number on prereq
 
