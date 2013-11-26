@@ -447,6 +447,17 @@ sub as_label {
     $value = $self->value unless defined $value;
     return unless defined $value;
     if ( $self->multiple ) {
+        unless ( ref($value) eq 'ARRAY' ) {
+            if( $self->has_inflate_default_method ) {
+                my @values = $self->inflate_default($value);
+                $value = \@values;
+            }
+            else {
+                # not sure under what circumstances this would happen, but
+                # just in case
+                return $value;
+            }
+        }
         my @labels;
         my %value_hash;
         @value_hash{@$value} = ();

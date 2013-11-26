@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Exception;
 
 # tests the SelectCSV field
 {
@@ -42,11 +43,14 @@ my $fif = $form->fif;
 is_deeply( $fif, { foo => [1], bar => [1,2], box => [2] },
    'fif is correct' );
 
+lives_ok( sub { $form->field('bar')->as_label }, 'as_label works with SelectCSV field' );
+
 my $rendered = $form->render;
 ok( $rendered, 'rendering worked' );
 
 my $params = { bar => [2,1]  };
 $form->process( $params );
+lives_ok( sub { $form->field('bar')->as_label }, 'as_label works with SelectCSV field' );
 $fif = $form->fif;
 is_deeply( $fif, $params, 'fif ok' );
 my $value = $form->value;
