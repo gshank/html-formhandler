@@ -10,6 +10,9 @@ HTML::FormHandler::Widget::Field::Select
 Renders single and multiple selects. Options hashrefs must
 have 'value' and 'label' keys, and may have an 'attributes' key.
 
+See L<HTML::FormHandler::Field::Select> for documentation on
+select fields and options.
+
 =cut
 
 use Moose::Role;

@@ -10,6 +10,9 @@ Renders a radio group (from a 'Select' field);
 
 Tags: radio_br_after
 
+See L<HTML::FormHandler::Field::Select> for documentation on
+select fields and options.
+
 =cut
 
 sub type_attr { 'radio' }

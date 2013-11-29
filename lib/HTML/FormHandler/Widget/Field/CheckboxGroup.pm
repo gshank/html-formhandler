@@ -17,6 +17,9 @@ They may have an 'attributes' hashref key. The 'checked'
 attribute should not be set in the options hashref. It should
 be set by supplying a default value or from params input.
 
+See L<HTML::FormHandler::Field::Select> for documentation on
+select fields and options.
+
 =cut
 
 sub render {
