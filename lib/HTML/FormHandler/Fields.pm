@@ -249,7 +249,7 @@ sub dump {
 sub dump_validated {
     my $self = shift;
     warn "HFH: fields validated:\n";
-    foreach my $field ( $self->all_fields ) {
+    foreach my $field ( $self->sorted_fields ) {
         $field->dump_validated if $field->can('dump_validated');
         my $message = $field->has_errors ? join( ' | ', $field->all_errors) : 'validated';
         warn "HFH: ", $field->name, ": $message\n";
