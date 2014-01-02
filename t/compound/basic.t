@@ -73,11 +73,12 @@ is( $errors[0], 'Invalid value for Duration: Hours', 'correct error message' );
 
 my $dtform = Form::Start->new;
 ok( $dtform, 'datetime form' );
+my $year = (localtime)[5] + 1900;
 $params = { name => 'DT_testing', 'start_date.month' => '10',
-    'start_date.day' => '2', 'start_date.year' => '2008' };
+    'start_date.day' => '2', 'start_date.year' => $year };
 $dtform->process( params => $params );
 ok( $dtform->validated, 'form validated' );
-is( $dtform->field('start_date')->value->mdy, '10-02-2008', 'datetime value');
+is( $dtform->field('start_date')->value->mdy, "10-02-$year", 'datetime value');
 $params->{'start_date.month'} = 8;
 $dtform->process( params => $params );
 ok( !$dtform->validated, 'form did not validate' );
