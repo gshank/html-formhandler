@@ -1,3 +1,7 @@
+0.40055 Thu Jan 2, 2014
+   handle SelectCSV field in as_label method of Select field
+   2014 bug in t/compound/basic.t test (rt91793)
+
 0.40054 Tue Nov 26, 2013
    Check for old unimplemented parameter to wrap_checkbox, and check
        for existence of option_wrapper
