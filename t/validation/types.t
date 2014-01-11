@@ -141,4 +141,50 @@ while (my ($name, $type, $trans) = splice @test, 0, 3) {
     }
 }
 
+SKIP: {
+    eval { require Type::Tiny };
+
+    skip "Type::Tiny not installed", 9 if $@;
+
+    {
+        package Test::Form::Type::Tiny;
+
+        use HTML::FormHandler::Moose;
+        extends 'HTML::FormHandler';
+        
+        my $NUM = Type::Tiny->new(
+            name       => "Number",
+            constraint => sub { $_ =~ /^\d+$/ },
+            message    => sub { "$_ ain't a number" },
+        );
+
+        has_field 'test_a' => ( apply => [ $NUM ] );
+        has_field 'test_b' => ( apply => [ { type => $NUM } ] );
+    }
+
+    my $form = Test::Form::Type::Tiny->new;
+
+    ok($form, 'get form');
+
+    my $params = {
+        test_a => 'str1',
+        test_b => 'str2',
+    };
+    $form->process($params);
+    ok( !$form->validated, 'form did not validate' );
+    ok( $form->field('test_a')->has_errors, 'errors on Type::Tiny type');
+    ok( $form->field('test_b')->has_errors, 'errors on Type::Tiny type');
+    is( $form->field('test_a')->errors->[0], "str1 ain't a number", 'error from Type::Tiny' );
+    is( $form->field('test_b')->errors->[0], "str2 ain't a number", 'error from Type::Tiny' );
+
+    $params = {
+        test_a => '123',
+        test_b => '456',
+    };
+    $form->process($params);
+    ok( $form->validated, 'form validated' );
+    ok( !$form->field('test_a')->has_errors, 'no errors on Type::Tiny type');
+    ok( !$form->field('test_b')->has_errors, 'no errors on Type::Tiny type');
+}
+
 done_testing;

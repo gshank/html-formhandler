@@ -179,7 +179,7 @@ sub _apply_actions {
         my $value     = $self->value;
         my $new_value = $value;
         # Moose constraints
-        if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' ) {
+        if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' || ref $action eq 'Type::Tiny' ) {
             $action = { type => $action };
         }
         if ( my $when = $action->{when} ) {
@@ -187,7 +187,7 @@ sub _apply_actions {
         }
         if ( exists $action->{type} ) {
             my $tobj;
-            if ( ref $action->{type} eq 'MooseX::Types::TypeDecorator' ) {
+            if ( ref $action->{type} eq 'MooseX::Types::TypeDecorator' || ref $action->{type} eq 'Type::Tiny' ) {
                 $tobj = $action->{type};
             }
             else {
