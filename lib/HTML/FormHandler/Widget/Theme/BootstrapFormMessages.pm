@@ -19,7 +19,8 @@ sub render_form_messages {
     $result ||= $self->result;
     my $output = '';
     if ( $result->has_form_errors || $result->has_errors ) {
-        $output = qq{\n<div class="alert alert-error">};
+        my $alert_error_class = $self->form_messages_alert_error_class;
+        $output = qq{\n<div class="alert $alert_error_class">};
         my $msg = $self->error_message;
         $msg ||= 'There were errors in your form';
         $msg = $self->_localize($msg);
@@ -45,5 +46,7 @@ sub render_form_messages {
     }
     return $output;
 }
+
+sub form_messages_alert_error_class { 'alert-error' }
 
 1;
