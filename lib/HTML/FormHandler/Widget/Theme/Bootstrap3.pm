@@ -44,4 +44,6 @@ after 'before_build' => sub {
 
 sub build_form_element_class { ['form-horizontal'] }
 
+sub form_messages_alert_error_class { 'alert-danger' }
+
 1;
