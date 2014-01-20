@@ -34,7 +34,7 @@ use lib 't/lib';
        => from 'Str'
          => via { 0+$_ };
 
-   enum 'RGBColors' => qw(red green blue);
+   enum 'RGBColors' => [ qw(red green blue) ];
 
    no Moose::Util::TypeConstraints;
 
