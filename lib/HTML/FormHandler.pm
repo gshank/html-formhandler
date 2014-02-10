@@ -1208,6 +1208,7 @@ sub after_update_model {
     # existing repeatable elements with their db-created primary keys.
     if ( $self->has_repeatable_fields && $self->item ) {
         foreach my $field ( $self->all_repeatable_fields ) {
+            next unless $field->is_active;
             # Check to see if there are any repeatable subfields with
             # null primary keys, so we can skip reloading for the case
             # where all repeatables have primary keys.
@@ -1229,12 +1230,8 @@ sub after_update_model {
             if ( ref $rep_item ) {
                 my $parent = $field->parent;
                 my $result = $field->result;
-                my $new_result = HTML::FormHandler::Field::Result->new(
-                    name   => $field->name,
-                    parent => $parent,
-                );
                 $field->init_state;
-                $new_result = $field->_result_from_object( $result, $rep_item );
+                my $new_result = $field->_result_from_object( $result, $rep_item );
                 # find index of existing result
                 my $index = $parent->result->find_result_index( sub { $_ == $result } );
                 # replace existing result with new result
