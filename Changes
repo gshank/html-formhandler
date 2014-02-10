@@ -1,3 +1,10 @@
+0.40056 Mon Feb 20, 2014
+   use sorted_fields in 'dump_validated'
+   added Type::Tiny support
+   Use alert-danger rather than alert-error with in Bootstrap3
+   Fixes RT#91966 (deprecated way to call enum warning)
+   bug in reloading repeatable fields; skip inactive fields
+
 0.40055 Thu Jan 2, 2014
    handle SelectCSV field in as_label method of Select field
    2014 bug in t/compound/basic.t test (rt91793)
