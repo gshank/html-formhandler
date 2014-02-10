@@ -151,7 +151,7 @@ SKIP: {
 
         use HTML::FormHandler::Moose;
         extends 'HTML::FormHandler';
-        
+
         my $NUM = Type::Tiny->new(
             name       => "Number",
             constraint => sub { $_ =~ /^\d+$/ },
