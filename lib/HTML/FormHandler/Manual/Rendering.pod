@@ -343,10 +343,10 @@ Types: element, wrapper, label, form_element, form_wrapper, checkbox_label
    sub html_attributes {
        my ( $self, $obj, $type, $attrs, $result ) = @_;
        # obj is either form or field
-       $attr->{class} = 'label' if $type eq 'label';
-       $attr->{placeholder} = $self->_localize($attr->{placeholder})
-           if exists $attr->{placeholder};
-       return $attr;
+       $attrs->{class} = 'label' if $type eq 'label';
+       $attrs->{placeholder} = $self->_localize($attrs->{placeholder})
+           if exists $attrs->{placeholder};
+       return $attrs;
    }
 
 This callback is called in the methods that wrap the various '_attr' attributes,
