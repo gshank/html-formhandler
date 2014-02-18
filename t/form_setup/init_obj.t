@@ -49,4 +49,12 @@ is( $form->field('bar')->fif, 'item_bar' );
 is( $form->field('max')->fif, 'init_obj_max' );
 is( $form->field('my_comp.one')->fif, 'init_obj_one', 'init_obj value pulled in for compound' );
 
+# test form reuse
+$form->process( params => {} );
+is( $form->field('foo')->fif, '' );
+is( $form->field('bar')->fif, '' );
+is( $form->field('max')->fif, '' );
+is( $form->field('my_comp.one')->fif, '', "all fields empty on form reuse with init_object" );
+
+
 done_testing;
