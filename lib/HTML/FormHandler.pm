@@ -1254,6 +1254,8 @@ sub clear {
     $self->clear_data;
     $self->clear_params;
     $self->clear_posted;
+    $self->clear_item;
+    $self->clear_init_object;
     $self->clear_ctx;
     $self->processed(0);
     $self->did_init_obj(0);
