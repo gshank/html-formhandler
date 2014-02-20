@@ -75,4 +75,33 @@ my $expected =
 </form>';
 is_html( $rendered, $expected, 'rendered correctly' );
 
+{
+    package Test::ElementClassField;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler::Field::Text';
+
+    sub build_element_class { ['foo'] }
+}
+{
+    package Test::ElementClassForm;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field 'foo' => (
+        type          => '+Test::ElementClassField',
+        element_class => 'bar',
+    );
+
+    sub build_update_subfields {
+    {
+        all => {
+            element_class => 'baz',
+        },
+    }
+};
+}
+$form = Test::ElementClassForm->new;
+$form->process;
+is_deeply( $form->field('foo')->element_class, [qw( baz )], 'foo has correct classes' );
+
 done_testing;
