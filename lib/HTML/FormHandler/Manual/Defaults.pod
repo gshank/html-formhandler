@@ -54,6 +54,17 @@ flag 'use_defaults_over_obj'.
 
    $form->process( item => $empty_row, use_defaults_over_obj => 1 );
 
+If you always want new DBIC results to be ignored, you could set the flag in
+a base form method:
+
+    sub set_active {
+        my $self = shift;
+        $self->next::method;
+        if ( $self->item and ! $self->item->in_storage ) {
+            $self->use_defaults_over_obj(1);
+        }
+    }
+
 You could also pass in another object or hashref in the 'init_object' attribute,
 and set the 'use_init_obj_over_item' flag:
 
