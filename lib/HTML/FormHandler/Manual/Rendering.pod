@@ -1,6 +1,8 @@
 package HTML::FormHandler::Manual::Rendering;
 # ABSTRACT: how to render with FormHandler
 
+=encoding UTF-8
+
 =head1 SYNOPSIS
 
 L<Manual Index|HTML::FormHandler::Manual>
@@ -64,8 +66,8 @@ the 'fill-in-form' values provided with the form's 'fif' function.
     <input id="bar" name="bar" value="[% fif.bar %]">
     <input type="submit" name="submit" value="Save">
     </form>
-    
-If you are looking for an easy way to get your fields to line up in an evenly spaced manner, 
+
+If you are looking for an easy way to get your fields to line up in an evenly spaced manner,
 all uniformly aligned, and to do so without using templates or tables, you can externally style the
 default FormHandler output with the following CSS rule (not supported in internet explorer 6).
 
