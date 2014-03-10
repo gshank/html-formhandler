@@ -20,7 +20,7 @@ use_ok('HTML::FormHandler::Render::Table');
 
     has '+is_html5' => (default => 1);
 
-    has_field 'foo' => ( css_class => 'schoen', style => 'bunt', title => 'MyTitle', required => 1, maxlength=> 10 );
+    has_field 'foo' => ( element_class => 'schoen', style => 'bunt', title => 'MyTitle', required => 1, maxlength=> 10 );
     has_field 'bar' => ( element_attr => { arbitrary => 'something', title => 'AltTitle' } );
     has_field 'range' => ( type => "Integer", range_start => 5, range_end => 10 );
     has_field 'email' => ( type => "Email");
@@ -40,25 +40,25 @@ use_ok('HTML::FormHandler::Render::Table');
 my %results;
 {
     my $form
-        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
+        = Test::Form->new( form_element_attr => { class => 'beautifully' }, style => 'colorful' );
     $results{Widgets} = $form->render;
 }
 {
     my $form
         = Test::Form->new_with_traits( traits => ['Test::Form::WithTT::Role'],
-            css_class => 'beautifully', style => 'colorful' );
+            form_element_attr => { class => 'beautifully' }, style => 'colorful' );
     $results{TT} = $form->tt_render;
 }
 {
     my $form
         = Test::Form->new_with_traits( traits => ['HTML::FormHandler::Render::Simple'],
-            css_class => 'beautifully', style => 'colorful' );
+            form_element_attr => { class => 'beautifully' }, style => 'colorful' );
     $results{Simple} = $form->render;
 }
 {
     my $form
         = Test::Form->new_with_traits( traits => ['HTML::FormHandler::Render::Table'],
-            css_class => 'beautifully', style => 'colorful' );
+            form_element_attr => { class => 'beautifully' }, style => 'colorful' );
     $results{Table} = $form->render;
 }
 is( scalar( grep {$_} values %results ),

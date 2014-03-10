@@ -25,7 +25,7 @@ use HTML::FormHandler::Field::Text;
         size  => 20,
         label => 'TEST',
         id    => 'f99',
-        input_class => 'test123',
+        element_class => 'test123',
     );
     has_field 'number';
     has_field hobbies => (

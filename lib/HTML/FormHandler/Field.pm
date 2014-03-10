@@ -222,8 +222,6 @@ The order attribute may be used to set the order in which fields are rendered.
 The following are discouraged. Use 'element_attr', 'label_attr', and 'wrapper_attr'
 instead.
 
-   css_class   - instead use wrapper_class => [ '...' ]
-   input_class - instead use element_class => [ '...' ]
    title       - instead use element_attr => { title => '...' }
    style       - instead use element_attr => { style => '...' }
    tabindex    - instead use element_attr => { tabindex => 1 }
@@ -745,18 +743,6 @@ has 'wrap_label_method' => (
 );
 has 'title'     => ( isa => 'Str', is => 'rw' );
 has 'style'     => ( isa => 'Str', is => 'rw' );
-# deprecated; remove in six months.
-has 'css_class' => ( isa => 'Str', is => 'rw', trigger => \&_css_class_set );
-sub _css_class_set {
-    my ( $self, $value ) = @_;
-    $self->add_wrapper_class($value);
-}
-# deprecated; remove in six months;
-has 'input_class' => ( isa => 'Str', is => 'rw', trigger => \&_input_class_set );
-sub _input_class_set {
-    my ( $self, $value ) = @_;
-    $self->add_element_class($value);
-}
 has 'form'      => (
     isa => 'HTML::FormHandler',
     is => 'rw',

@@ -11,7 +11,6 @@ sub html_form_tag {
         [ id      => 'name' ],
         [ method  => 'http_method' ],
         [ enctype => 'enctype' ],
-        [ class   => 'css_class' ],
         [ style   => 'style' ],
     );
 

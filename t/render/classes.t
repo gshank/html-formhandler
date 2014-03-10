@@ -92,11 +92,16 @@ is_html( $rendered, $expected, 'rendered correctly' );
         element_class => 'bar',
     );
 
+    # Note: all => { element_class => 'baz' } does not
+    # override the specific setting on the field. This is
+    # deliberate. The idea is that the more specific setting
+    # should override the general setting. Like all of these things,
+    # sometimes people are going to want it one way and sometimes the
+    # other. If you want to set the element_class for all elements
+    # at once, don't put a specific element_class on the field.
     sub build_update_subfields {
     {
-        all => {
-            element_class => 'baz',
-        },
+        foo => { element_class => 'baz' },
     }
 };
 }

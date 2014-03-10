@@ -21,7 +21,7 @@ ok( $dir, 'found template dir' );
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
 
-    has_field 'foo' => ( css_class => 'schoen', style => 'bunt', title => 'MyTitle' );
+    has_field 'foo' => ( element_class => 'schoen', style => 'bunt', title => 'MyTitle' );
     has_field 'bar' => ( element_attr => { arbitrary => 'something', title => 'AltTitle' } );
 
 }
@@ -38,25 +38,25 @@ ok( $dir, 'found template dir' );
 my %results;
 {
     my $form
-        = Test::Form->new( css_class => 'beautifully', style => 'colorful' );
+        = Test::Form->new( form_element_class => 'beautifully', style => 'colorful' );
     $results{Widgets} = $form->render;
 }
 {
     my $form
         = Test::Form->new_with_traits( traits => ['Test::Form::WithTT::Role'],
-            css_class => 'beautifully', style => 'colorful' );
+            form_element_class => 'beautifully', style => 'colorful' );
     $results{TT} = $form->tt_render;
 }
 {
     my $form
         = Test::Form->new_with_traits( traits => ['HTML::FormHandler::Render::Simple'],
-            css_class => 'beautifully', style => 'colorful' );
+            form_element_class => 'beautifully', style => 'colorful' );
     $results{Simple} = $form->render;
 }
 {
     my $form
         = Test::Form->new_with_traits( traits => ['HTML::FormHandler::Render::Table'],
-            css_class => 'beautifully', style => 'colorful' );
+            form_element_class => 'beautifully', style => 'colorful' );
     $results{Table} = $form->render;
 }
 is( scalar( grep {$_} values %results ),

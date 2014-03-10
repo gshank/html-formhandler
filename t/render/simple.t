@@ -16,7 +16,7 @@ use HTML::FormHandler::Field::Text;
    sub build_form_wrapper_class { 'form_wrapper' }
    has '+name' => ( default => 'testform' );
    has_field 'test_field' => (
-               input_class => 'test123',
+               element_class => 'test123',
                size => 20,
                label => 'TEST',
                id    => 'f99',

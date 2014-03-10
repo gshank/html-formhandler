@@ -764,7 +764,6 @@ to be used for defaults instead of the item.
 
 Discouraged (use form_element_attr instead):
 
-   css_class - adds a 'class' attribute to the form tag
    style - adds a 'style' attribute to the form tag
    enctype - Request enctype
 
@@ -932,7 +931,6 @@ has 'error_message' => ( is => 'rw', predicate => 'has_error_message', clearer =
 has 'success_message' => ( is => 'rw', predicate => 'has_success_message', clearer => 'clear_success_message' );
 has 'info_message'  => ( is => 'rw', predicate => 'has_info_message', clearer => 'clear_info_message' );
 # deprecated
-has 'css_class' =>     ( isa => 'Str',  is => 'ro' );
 has 'style'     =>     ( isa => 'Str',  is => 'rw' );
 
 has 'is_html5'  => ( isa => 'Bool', is => 'ro', default => 0 );
@@ -999,7 +997,6 @@ sub form_element_attributes {
     $attr->{action} = $self->action if $self->action;
     $attr->{method} = $self->http_method if $self->http_method;
     $attr->{enctype} = $self->enctype if $self->enctype;
-    $attr->{class} = $self->css_class if $self->css_class;
     $attr->{style} = $self->style if $self->style;
     $attr = {%$attr, %{$self->form_element_attr}};
     my $class = [@{$self->form_element_class}];
