@@ -159,7 +159,7 @@ my $no_repeat = {
 $form->process( $no_repeat );
 is_deeply( $form->value()->{addresses}, [],  'Addresses deleted not in params' );
 
-$form->process({});
+$form->process( init_object => $init_object );
 ok( exists $form->value->{addresses}[0], 'Addresses are back' );
 is( $form->field('addresses')->field('0')->field('sector')->num_options, 3, 'right number of options');
 $form->clear_init_object;
