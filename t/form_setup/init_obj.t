@@ -56,5 +56,17 @@ is( $form->field('bar')->fif, '' );
 is( $form->field('max')->fif, '' );
 is( $form->field('my_comp.one')->fif, '', "all fields empty on form reuse with init_object" );
 
+# test params_to_values method
+my $params = {
+   foo => 'one',
+   bar => 'two',
+   max => 'three',
+   'my_comp.one' => 'xxx',
+   'my_comp.two' => 'yyy',
+};
+$init_obj = $form->params_to_values($params);
+$form->process( init_object => $init_obj, params => {} );
+is_deeply( $form->fif, $params, 'fif is the same as params' );
+is_deeply( $form->value, $init_obj, 'value is the same as init_obj');
 
 done_testing;

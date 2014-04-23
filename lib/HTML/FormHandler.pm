@@ -1505,6 +1505,13 @@ sub _munge_params {
     $self->{params} = $new_params;
 }
 
+sub params_to_values {
+    my ( $self, $params ) = @_;
+    my $_fix_params = $self->params_class->new( @{ $self->params_args || [] } );
+    my $new_params = $_fix_params->expand_hash($params);
+    return $new_params;
+}
+
 sub add_form_error {
     my ( $self, @message ) = @_;
 
