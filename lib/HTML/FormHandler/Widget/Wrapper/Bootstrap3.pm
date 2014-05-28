@@ -188,7 +188,7 @@ sub do_prepend_append {
         my @buttons = ref $iab_tag eq 'ARRAY' ? @$iab_tag : ($iab_tag);
         my $group = qq{<span class="input-group-btn">};
         foreach my $btn ( @buttons ) {
-            $group = qq{<button type="button" class="btn">$btn</button>};
+            $group .= qq{<button type="button" class="btn">$btn</button>};
         }
         $group .= qq{</span>};
         $rendered_widget = qq{$rendered_widget$group};
