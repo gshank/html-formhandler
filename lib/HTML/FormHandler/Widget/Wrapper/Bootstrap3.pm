@@ -158,7 +158,7 @@ sub wrap_checkbox {
 
     # use the regular label
     my $label =  $self->option_label || $self->label;
-    $label = $self->html_filter($self->_localize($label));
+    $label = $self->get_tag('label_no_filter') ? $self->_localize($label) : $self->html_filter($self->_localize($label));
     my $id = $self->id;
     my $for = qq{ for="$id"};
 

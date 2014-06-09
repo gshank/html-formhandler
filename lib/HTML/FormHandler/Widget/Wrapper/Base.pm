@@ -95,10 +95,10 @@ sub get_checkbox_label {
 
     my $label =  $self->option_label || '';
     if( $label eq '' && ! $self->do_label ) {
-        $label = $self->html_filter($self->loc_label);
+        $label = $self->get_tag('label_no_filter') ? $self->loc_label : $self->html_filter($self->loc_label);
     }
     elsif( $label ne '' ) {
-        $label = $self->html_filter($self->_localize($label));
+        $label = $self->get_tag('label_no_filter') ? $self->_localize($label) : $self->html_filter($self->_localize($label));
     }
     return $label;
 }
