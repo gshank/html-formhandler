@@ -60,7 +60,7 @@ our %Lexicon = (
     'Invalid value for [_1]: [_2]' => 'قيمة غير صحيحة لـ [_1]: [_2]',
 
     # H::F::Field::Email
-    'Email should be of the format [_1]' => 'يجب أن يكون البريد الإلكتروني بصياغة [_1]',
+    'Email should be of the format [_1]' => 'يجب أن يكون البريد الإلكتروني بصيغة [_1]',
 
     # H::F::Field::Integer
     'Value must be an integer' => 'يجب أن تكون هذه القيمة عددًا صحيحًا',
