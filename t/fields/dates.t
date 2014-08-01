@@ -59,6 +59,7 @@ $field->_set_input('08/01/2009');
 $field->validate_field;
 ok( $field->has_errors, 'Date is too early' );
 is( $field->fif, '08/01/2009', 'Correct value' );
+
 $field->clear_date_start;
 $field->reset_result;
 $field->date_end('2010-01-01');
@@ -69,11 +70,13 @@ $field->_set_input('02/29/2009');
 $field->validate_field;
 ok( $field->has_errors, 'Not a valid date' );
 is( $field->fif, '02/29/2009', 'isa DateTime' );
+
 $field->reset_result;
 $field->_set_input('12/31/2008');
 $field->validate_field;
 ok( $field->validated, 'No errors 2' );
 is( $field->fif, $field->value->strftime("%m/%d/%Y", 'fif ok' ), 'fif ok');
+
 $field->reset_result;
 $field->_deflate_and_set_value( DateTime->new( year => 2008, month => 12, day => 31 ) );
 is( $field->fif, '12/31/2008', 'fif from deflated value ok');
@@ -82,6 +85,15 @@ $field->_set_input('07-07-09');
 $field->validate_field;
 ok( $field->validated, 'No errors 3' );
 is( $field->fif, '07-07-09', 'fif ok');
+
+$field->reset_result;
+$field->format("%m/%d/%Y");
+$field->_set_input('12/31/2008');
+$field->time_zone('America/Los_Angeles');
+$field->validate_field;
+ok( $field->validated, 'No errors 3a');
+is( $field->value->time_zone->name, 'America/Los_Angeles' );
+
 
 
 {
