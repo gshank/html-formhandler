@@ -30,6 +30,8 @@ create the file Book.pm.
 
    package MyApp::Form::Book;
 
+   use utf8; # if using non-latin1 languages
+
    use HTML::FormHandler::Moose;
    extends 'HTML::FormHandler::Model::DBIC';
 
