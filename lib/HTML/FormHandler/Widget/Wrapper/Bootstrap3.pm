@@ -162,10 +162,10 @@ sub wrap_checkbox {
     my $id = $self->id;
     my $for = qq{ for="$id"};
 
-	# return unwrapped checkbox with 'checkbox-inline'
-	return qq{<label class="checkbox-inline" $for>$rendered_widget\n$label\n</label>}
-		if( $self->get_tag('inline') );
-	
+    # return unwrapped checkbox with 'checkbox-inline'
+    return qq{<label class="checkbox-inline" $for>$rendered_widget\n$label\n</label>}
+        if( $self->get_tag('inline') );
+
     # return wrapped checkbox, either on left or right
     return qq{<div class="checkbox"><label$for>\n$label\n$rendered_widget</label></div>}
         if( $self->get_tag('label_left') );
