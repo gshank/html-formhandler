@@ -1,3 +1,20 @@
+0.40057 Fri Aug 1, 2014
+   added support for tag 'inline' in bootstrap3 wrapper
+   add test for inline-checkboxes
+   add test for prefilled with init_object form reuse
+   clear item and init_object which are required for form reuse
+   add failing test for element_class override through build_update_subfields
+   add a bit of doc about handling DBIC new results & 'use_default_over_obj'
+   =encoding utf-8 in Manual/Rendering.pod
+   remove deprecated css_class and input_class attributes
+   add param_to_values method to convert parameters to init_object-like hashref
+   Add code to respect the label_no_filter tag on checkboxes for Bootstrap
+       and the Base widgets.
+   fix bootstrap3 input_append_button
+   Respect label_no_filter on checkbox labels.
+   add Arabic translations
+   use time_zone and locale options in Date field
+
 0.40056 Mon Feb 20, 2014
    use sorted_fields in 'dump_validated'
    added Type::Tiny support
