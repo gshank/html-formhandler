@@ -39,6 +39,18 @@ use_ok('HTML::FormHandler::Widget::Wrapper::Bootstrap3');
 my $form = MyApp::Form::Test->new;
 ok( $form, 'form builds' );
 
+is_deeply(
+    $form->form_element_class,
+    [ 'form-horizontal' ],
+    'form has "form-horizontal" in form_element_class',
+);
+
+like(
+    $form->render,
+    qr/class="form-horizontal"/,
+    'form has form-horizontal class in rendered output',
+);
+
 my $expected = '
 <div class="form-group">
   <label class="col-lg-2 control-label" for="foo">Foo</label>
