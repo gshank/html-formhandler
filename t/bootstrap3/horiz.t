@@ -11,8 +11,8 @@ use_ok('HTML::FormHandler::Widget::Wrapper::Bootstrap3');
     package MyApp::Form::Test;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
+    with 'HTML::FormHandler::Widget::Theme::Bootstrap3';
 
-    has '+widget_wrapper' => ( default => 'Bootstrap3' );
     sub build_form_tags {{
         'layout_classes' => {
             label_class => ['col-lg-2'],
