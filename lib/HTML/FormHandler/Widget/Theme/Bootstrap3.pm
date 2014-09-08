@@ -21,7 +21,7 @@ which you can use by itself in your form with:
 It also uses L<HTML::FormHandler::Widget::Theme::BootstrapFormMessages>
 to render the form messages in a Bootstrap style:
 
-   <div class="alert alert-error">
+   <div class="alert alert-danger">
        <span class="error_message">....</span>
    </div>
 
