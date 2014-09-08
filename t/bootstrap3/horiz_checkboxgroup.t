@@ -39,23 +39,31 @@ $form->process;
 my $expected = '
 <div class="form-group">
   <label class="col-lg-2 control-label" for="checkboxes">Checkboxes</label>
-  <div class="checkbox col-lg-10">
-    <label for="checkboxes.0">
-      <input id="checkboxes.0" name="checkboxes" type="checkbox" value="1" />
-      tag1
-    </label>
-    <label for="checkboxes.1">
-      <input id="checkboxes.1" name="checkboxes" type="checkbox" value="2" />
-      tag2
-    </label>
-    <label for="checkboxes.2">
-      <input id="checkboxes.2" name="checkboxes" type="checkbox" value="3" />
-      tag3
-    </label>
-    <label for="checkboxes.3">
-      <input id="checkboxes.3" name="checkboxes" type="checkbox" value="4" />
-      tag4
-    </label>
+  <div class="col-lg-10">
+    <div class="checkbox">
+      <label for="checkboxes.0">
+        <input id="checkboxes.0" name="checkboxes" type="checkbox" value="1" />
+        tag1
+      </label>
+    </div>
+    <div class="checkbox">
+      <label for="checkboxes.1">
+        <input id="checkboxes.1" name="checkboxes" type="checkbox" value="2" />
+        tag2
+      </label>
+    </div>
+    <div class="checkbox">
+      <label for="checkboxes.2">
+        <input id="checkboxes.2" name="checkboxes" type="checkbox" value="3" />
+        tag3
+      </label>
+    </div>
+    <div class="checkbox">
+      <label for="checkboxes.3">
+        <input id="checkboxes.3" name="checkboxes" type="checkbox" value="4" />
+        tag4
+      </label>
+    </div>
   </div>
 </div>
 ';
