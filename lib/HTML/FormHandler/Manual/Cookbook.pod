@@ -178,7 +178,7 @@ Some of the choices are:
 
    1) validate (for the form or field)
    2) validate_model
-   3) model_update
+   3) update_model
 
 When the field is flagged 'writeonly', the value from the database will not
 be used to fill in the form (put in the C<< $form->fif >> hash, or the
