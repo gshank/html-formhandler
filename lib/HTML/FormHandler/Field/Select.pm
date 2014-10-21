@@ -183,7 +183,7 @@ not add an entry to the list of options.
    has_field 'fruit' => ( type => 'Select',
         empty_select => '---Choose a Fruit---' );
 
-=head1 value_when_empty
+=head2 value_when_empty
 
 Usually the empty value is an empty arrayref. This attribute allows
 changing that. Used by SelectCSV field.
