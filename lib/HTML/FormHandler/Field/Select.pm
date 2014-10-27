@@ -415,7 +415,7 @@ has 'value_when_empty' => ( is => 'ro', lazy => 1, builder => 'build_value_when_
 sub build_value_when_empty {
     my $self = shift;
     return [] if $self->multiple;
-    return undef;
+    return;
 }
 
 our $class_messages = {
@@ -621,7 +621,7 @@ sub default_from_options {
 before 'value' => sub {
     my $self  = shift;
 
-    return undef unless $self->has_result;
+    return unless $self->has_result;
     my $value = $self->result->value;
     if( $self->multiple ) {
         if ( !defined $value || $value eq '' || ( ref $value eq 'ARRAY' && scalar @$value == 0 ) ) {

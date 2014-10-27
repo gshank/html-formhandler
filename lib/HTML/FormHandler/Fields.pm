@@ -124,7 +124,7 @@ sub field {
     my $index;
     # if this is a full_name for a compound field
     # walk through the fields to get to it
-    return undef unless ( defined $name );
+    return unless ( defined $name );
     if( $self->form && $self == $self->form &&
         exists $self->index->{$name} ) {
         return $self->index->{$name};

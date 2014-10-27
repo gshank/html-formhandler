@@ -102,7 +102,11 @@ sub _result_from_object {
             $result = $field->_result_from_fields($result) unless $found;
         }
         else {
-           my $value = $self->_get_value( $field, $item ) unless $field->writeonly;
+           my $value;
+           unless( $field->writeonly ) {
+                $value = $self->_get_value( $field, $item );
+           }
+
            $result = $field->_result_from_object( $result, $value );
         }
         $self_result->add_result($result) if $result;

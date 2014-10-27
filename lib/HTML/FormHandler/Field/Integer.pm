@@ -1,4 +1,8 @@
 package HTML::FormHandler::Field::Integer;
+
+use strict;
+use warnings;
+
 # ABSTRACT: validate an integer value
 
 use HTML::FormHandler::Moose;

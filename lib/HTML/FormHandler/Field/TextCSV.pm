@@ -1,4 +1,8 @@
 package HTML::FormHandler::Field::TextCSV;
+
+use strict;
+use warnings;
+
 # ABSTRACT: CSV Text field from multiple
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
@@ -49,5 +53,5 @@ sub textcsv_inflate {
 }
 
 __PACKAGE__->meta->make_immutable;
-1;
 
+1;

@@ -1,4 +1,8 @@
 package HTML::FormHandler::Field::PasswordConf;
+
+use strict;
+use warnings;
+
 # ABSTRACT: password confirmation
 
 use HTML::FormHandler::Moose;

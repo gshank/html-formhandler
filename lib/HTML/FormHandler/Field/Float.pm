@@ -1,9 +1,15 @@
 package HTML::FormHandler::Field::Float;
+
+use strict;
+use warnings;
+
 # ABSTRACT: validate a float value
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.02';
+
+
 
 
 has '+size'                 => ( default => 8 );

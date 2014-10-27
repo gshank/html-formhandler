@@ -612,8 +612,11 @@ sub reset_result {
 }
 sub build_result {
     my $self = shift;
-    my @parent = ( 'parent' => $self->parent->result )
-        if ( $self->parent && $self->parent->result );
+
+    my @parent = ( $self->parent && $self->parent->result )
+        ? ( 'parent' => $self->parent->result )
+        : ();
+
     my $result = HTML::FormHandler::Field::Result->new(
         name      => $self->name,
         field_def => $self,
@@ -627,7 +630,8 @@ sub input {
     my $self = shift;
 
     # allow testing fields individually by creating result if no form
-    return undef unless $self->has_result || !$self->form;
+    return unless $self->has_result || !$self->form;
+
     my $result = $self->result;
     return $result->_set_input(@_) if @_;
     return $result->input;
@@ -637,9 +641,11 @@ sub value {
     my $self = shift;
 
     # allow testing fields individually by creating result if no form
-    return undef unless $self->has_result || !$self->form;
+    return unless $self->has_result || !$self->form;
+
     my $result = $self->result;
-    return undef unless $result;
+    return unless $result;
+
     return $result->_set_value(@_) if @_;
     return $result->value;
 }
@@ -939,7 +945,12 @@ sub element_wrapper_attributes {
     $self->add_standard_element_wrapper_classes( $result, $class );
     $attr->{class} = $class if @$class;
     # call form hook
-    my $mod_attr = $self->form->html_attributes($self, 'element_wrapper', $attr, $result) if $self->form;
+
+    my $mod_attr;
+    if( $self -> form ) {
+        $mod_attr = $self->form->html_attributes($self, 'element_wrapper', $attr, $result);
+    }
+
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 sub add_standard_element_wrapper_classes {
@@ -968,8 +979,13 @@ sub element_attributes {
     my $class = [@{$self->element_class}];
     $self->add_standard_element_classes($result, $class);
     $attr->{class} = $class if @$class;
+
     # call form hook
-    my $mod_attr = $self->form->html_attributes($self, 'element', $attr, $result) if $self->form;
+    my $mod_attr;
+    if( $self->form ) {
+        $mod_attr = $self->form->html_attributes($self, 'element', $attr, $result);
+    }
+
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 
@@ -989,7 +1005,12 @@ sub label_attributes {
     $self->add_standard_label_classes($result, $class);
     $attr->{class} = $class if @$class;
     # call form hook
-    my $mod_attr = $self->form->html_attributes($self, 'label', $attr, $result) if $self->form;
+
+    my $mod_attr;
+    if( $self -> form() ) {
+        $mod_attr = $self->form->html_attributes($self, 'label', $attr, $result);
+    }
+
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 
@@ -1010,7 +1031,12 @@ sub wrapper_attributes {
     $attr->{id} = $self->id
         if ( $self->has_flag('is_compound') && not exists $attr->{id} && ! $self->get_tag('no_wrapper_id') );
     # call form hook
-    my $mod_attr = $self->form->html_attributes($self, 'wrapper', $attr, $result) if $self->form;
+
+    my $mod_attr;
+    if( $self -> form ) {
+        $mod_attr = $self->form->html_attributes($self, 'wrapper', $attr, $result);
+    }
+
     return ref($mod_attr) eq 'HASH' ? $mod_attr : $attr;
 }
 

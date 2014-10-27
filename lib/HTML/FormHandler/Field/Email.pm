@@ -1,4 +1,8 @@
 package HTML::FormHandler::Field::Email;
+
+use strict;
+use warnings;
+
 # ABSTRACT: validates email using Email::Valid
 
 use HTML::FormHandler::Moose;
