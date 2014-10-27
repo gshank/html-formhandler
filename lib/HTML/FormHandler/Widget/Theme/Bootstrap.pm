@@ -42,6 +42,6 @@ after 'before_build' => sub {
        if $self->widget_wrapper eq 'Simple';
 };
 
-sub build_form_element_class { ['form-horizontal'] }
+sub build_form_element_class { return ['form-horizontal'] }
 
 1;
