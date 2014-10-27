@@ -117,7 +117,12 @@ sub render_wrapper_start {
     return qq{<$wrapper_tag$attrs>};
 }
 
-sub render_form_errors { shift->render_form_messages(@_) }
+sub render_form_errors {
+    my ( $self, @result ) = @_;
+
+    return $self->render_form_messages( @result );
+}
+
 sub render_form_messages {
     my ( $self, $result ) = @_;
     $result ||= $self->result;
