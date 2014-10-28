@@ -99,8 +99,17 @@ has 'warnings' => (
     }
 );
 
-sub validated { !$_[0]->has_error_results && $_[0]->has_input }
-sub is_valid { shift->validated }
+sub validated {
+    my $self = shift;
+
+    return !$self->has_error_results && $self->has_input
+}
+
+sub is_valid {
+    my $self = shift;
+
+    return $self->validated;
+}
 
 # this ought to be named 'result' for consistency,
 # but the result objects are named 'result'.
@@ -129,7 +138,12 @@ sub get_result {
     return unless $die;
     die "Field '$name' not found in '$self'";
 }
-sub field { shift->get_result(@_) }
+
+sub field {
+    my ( $self, @params ) = @_;
+
+    return $self->get_result(@params);
+}
 
 use namespace::autoclean;
 1;
