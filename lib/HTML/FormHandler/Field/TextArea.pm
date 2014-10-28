@@ -8,7 +8,7 @@ our $VERSION = '0.02';
 has '+widget' => ( default => 'Textarea' );
 has 'cols'    => ( isa     => 'Int', is => 'rw' );
 has 'rows'    => ( isa     => 'Int', is => 'rw' );
-sub html_element { 'textarea' }
+sub html_element { return 'textarea'; }
 
 =head1 Summary
 
