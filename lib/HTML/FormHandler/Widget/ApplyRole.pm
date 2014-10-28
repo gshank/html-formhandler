@@ -15,6 +15,8 @@ sub apply_widget_role {
 
     my $render_role = $self->get_widget_role( $widget_name, $dir );
     $render_role->meta->apply($target) if $render_role;
+
+    return;
 }
 
 sub get_widget_role {
