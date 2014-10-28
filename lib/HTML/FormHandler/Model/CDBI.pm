@@ -242,7 +242,8 @@ sub init_value {
 
     my $value = @values > 1 ? \@values : shift @values;
     $field->init_value($value);
-    $field->value($value);
+
+    return $field->value($value);
 }
 
 =head2 validate_model
