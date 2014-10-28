@@ -124,7 +124,7 @@ sub validate_field {
 
 sub _inner_validate_field { }
 
-sub validate { 1 }
+sub validate { return 1; }
 
 has 'actions' => (
     traits     => ['Array'],
@@ -161,7 +161,8 @@ sub _build_apply_list {
             }
         }
     }
-    $self->add_action(@apply_list);
+
+    return $self->add_action(@apply_list);
 }
 
 sub _apply_actions {
@@ -258,6 +259,8 @@ sub _apply_actions {
             $self->add_error(@message);
         }
     }
+
+    return;
 }
 
 sub match_when {
