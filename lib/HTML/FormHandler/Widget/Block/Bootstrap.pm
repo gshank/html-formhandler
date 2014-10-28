@@ -7,9 +7,12 @@ has 'after_controls' => ( is => 'rw' );
 
 sub BUILD {
     my $self = shift;
+
     $self->add_class('control-group');
     $self->add_label_class('control-label');
     $self->label_tag('label');
+
+    return;
 }
 
 sub render_from_list {
