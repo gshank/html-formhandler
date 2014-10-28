@@ -27,7 +27,7 @@ has 'page_name_space' => (
     builder => 'build_page_name_space',
 );
 
-sub build_page_name_space { '' }
+sub build_page_name_space { return ''; }
 
 sub page_index {
     my ( $self, $name ) = @_;
