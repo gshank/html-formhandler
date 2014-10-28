@@ -16,14 +16,20 @@ sub before_build {
     $self->add_tt_include_path('share/templates/foo');
     $self->process_config_file;
     $self->process_config;
+
+    return;
 }
 
-sub build_tt_template { 'form.tt' }
+sub build_tt_template { return 'form.tt'; }
 
 has 'config_file' => ( isa => 'Str', is => 'rw' );
 has 'config' => ( isa => 'HashRef', is => 'rw' );
 
-sub submitted_and_valid { shift->validated }
+sub submitted_and_valid {
+    my $self = shift;
+
+    return $self->validated;
+}
 
 sub process_config_file {
     my $self = shift;
@@ -37,8 +43,8 @@ sub process_config_file {
         driver_args => { General => { -UTF8 => 1 }, },
     });
     $config = $config->[0]->{$self->config_file};
-    $self->config($config);
 
+    return $self->config($config);
 }
 
 sub process_config {
@@ -50,6 +56,8 @@ sub process_config {
             unless $self->can($key);
         $self->$key($value);
     }
+
+    return;
 }
 
 __PACKAGE__->meta->make_immutable;
