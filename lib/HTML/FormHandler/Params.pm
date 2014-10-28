@@ -119,6 +119,8 @@ sub _collapse_hash {
     else {
         croak "Unknown reference type for ", $self->join_name(@segments), ":", ref $deep;
     }
+
+    return;
 }
 
 __PACKAGE__->meta->make_immutable;
