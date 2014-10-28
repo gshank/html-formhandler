@@ -50,7 +50,7 @@ has 'tt_include_path' => (
        add_tt_include_path => 'push',
     }
 );
-sub build_tt_include_path {[]}
+sub build_tt_include_path { return []; }
 
 has 'tt_config' => (
     traits => ['Hash'],
@@ -71,7 +71,7 @@ sub build_tt_config {
 # either file name string or string ref?
 has 'tt_template' => ( is => 'rw', isa => 'Str', lazy => 1,
    builder => 'build_tt_template' );
-sub build_tt_template { 'form/form.tt' }
+sub build_tt_template { return 'form/form.tt'; }
 
 has 'tt_engine' => ( is => 'rw', isa => 'Template', lazy => 1,
    builder => 'build_tt_engine'
@@ -85,7 +85,7 @@ sub build_tt_engine {
 
 has 'tt_vars' => ( is => 'rw', traits => ['Hash'],
     builder => 'build_tt_vars');
-sub build_tt_vars {{}}
+sub build_tt_vars { return {}; }
 
 has 'default_tt_vars' => ( is => 'ro', isa => 'HashRef',
    lazy => 1, builder => 'build_default_tt_vars' );
@@ -101,7 +101,7 @@ has 'tt_default_options' => (
     lazy => 1,
     builder => 'build_tt_default_options',
 );
-sub build_tt_default_options {{}}
+sub build_tt_default_options { return {}; }
 
 
 sub tt_render {
