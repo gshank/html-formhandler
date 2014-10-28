@@ -53,7 +53,7 @@ or provide a 'render_method':
 =cut
 
 has 'html' => ( is => 'rw', isa => 'Str', builder => 'build_html', lazy => 1 );
-sub build_html {''}
+sub build_html { return ''; }
 has 'set_html' => ( isa => 'Str', is => 'ro');
 has '+do_label' => ( default => 0 );
 
