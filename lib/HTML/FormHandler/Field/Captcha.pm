@@ -113,9 +113,12 @@ sub gen_captcha {
         validated => 0,
     };
     $self->image($image);
-    $self->form->set_captcha($captcha);
+
+    return $self->form->set_captcha($captcha);
 }
 
 __PACKAGE__->meta->make_immutable;
+
 use namespace::autoclean;
+
 1;
