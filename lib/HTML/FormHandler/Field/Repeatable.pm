@@ -167,7 +167,8 @@ sub _fields_validate {
         $field->validate_field;    # this calls the field's 'validate' routine
         push @value_array, $field->value if $field->has_value;
     }
-    $self->_set_value( \@value_array );
+
+    return $self->_set_value( \@value_array );
 }
 
 sub init_state {
@@ -183,7 +184,7 @@ sub init_state {
             $self->contains( $self->create_element );
         }
     }
-    $self->clear_fields;
+    return $self->clear_fields;
 }
 
 sub create_element {
@@ -254,7 +255,7 @@ sub clone_element {
 
 sub clone_fields {
     my ( $self, $parent, $fields ) = @_;
-    my @field_array;
+
     $parent->fields( [] );
     foreach my $field ( @{$fields} ) {
         my $new_field = $field->clone( errors => [], error_fields => [] );
@@ -264,6 +265,8 @@ sub clone_fields {
         $new_field->parent($parent);
         $parent->add_field($new_field);
     }
+
+    return;
 }
 
 # params exist and validation will be performed (later)
@@ -281,6 +284,8 @@ sub _result_from_input {
         foreach my $element ( @{$input} ) {
             next if not defined $element; # skip empty slots
             my $field  = $self->clone_element($index);
+            #need more tests
+            #Reused variable name in lexical scope: $result
             my $result = HTML::FormHandler::Field::Result->new(
                 name   => $index,
                 parent => $self->result
@@ -311,7 +316,7 @@ sub _setup_for_js {
     $self->_pop_field;
     # set the information in the form
     # $self->index is the index of the next instance
-    $self->form->set_for_js( $self->full_name,
+    return $self->form->set_for_js( $self->full_name,
         { index => $self->index, html => $rendered, level => $index_level } );
 }
 
@@ -332,6 +337,9 @@ sub _result_from_object {
     foreach my $element ( @{$values} ) {
         next unless $element;
         my $field = $self->clone_element($index);
+
+        #need more tests
+        #Reused variable name in lexical scope: $result
         my $result =
             HTML::FormHandler::Field::Result->new( name => $index, parent => $self->result );
         if( $field->has_inflate_default_method ) {
@@ -379,7 +387,8 @@ sub add_extra {
         $count--;
         $index++;
     }
-    $self->index($index);
+
+    return $self->index($index);
 }
 
 # create an empty field
@@ -398,6 +407,8 @@ sub _result_from_fields {
     $self->fields( [] );
     while ( $count > 0 ) {
         my $field = $self->clone_element($index);
+        #need more tests
+        #Reused variable name in lexical scope: $result
         my $result =
             HTML::FormHandler::Field::Result->new( name => $index, parent => $self->result );
         $result = $field->_result_from_fields($result);
