@@ -83,14 +83,22 @@ sub error_fields {
     my $self = shift;
     return map { $_->field_def } @{ $self->result->error_results };
 }
-sub has_error_fields { shift->result->has_error_results }
+sub has_error_fields {
+    my $self = shift;
+
+    return $self->result->has_error_results;
+}
 
 sub add_error_field {
     my ( $self, $field ) = @_;
 
     return $self->result->add_error_result( $field->result );
 }
-sub num_error_fields { shift->result->num_error_results }
+sub num_error_fields {
+    my $self = shift;
+
+    return $self->result->num_error_results;
+}
 
 has 'field_name_space' => (
     isa     => 'HFH::ArrayRefStr',
