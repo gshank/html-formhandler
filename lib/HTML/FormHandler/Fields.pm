@@ -65,7 +65,7 @@ has 'fields' => (
 has 'update_subfields' => ( is => 'rw', isa => 'HashRef', builder => 'build_update_subfields',
     traits => ['Hash'], handles => { clear_update_subfields => 'clear',
     has_update_subfields => 'count' } );
-sub build_update_subfields {{}}
+sub build_update_subfields { return {}; }
 
 # used to transfer tags to fields from form and compound fields
 has 'widget_tags' => (
@@ -87,7 +87,8 @@ sub has_error_fields { shift->result->has_error_results }
 
 sub add_error_field {
     my ( $self, $field ) = @_;
-    $self->result->add_error_result( $field->result );
+
+    return $self->result->add_error_result( $field->result );
 }
 sub num_error_fields { shift->result->num_error_results }
 
@@ -170,7 +171,7 @@ sub _fields_validate {
         $value_hash{ $field->accessor } = $field->value
             if ( $field->has_value && !$field->noupdate );
     }
-    $self->_set_value( \%value_hash );
+    return $self->_set_value( \%value_hash );
 }
 
 sub fields_set_value {
@@ -181,7 +182,7 @@ sub fields_set_value {
         $value_hash{ $field->accessor } = $field->value
             if ( $field->has_value && !$field->noupdate );
     }
-    $self->_set_value( \%value_hash );
+    return $self->_set_value( \%value_hash );
 }
 
 sub fields_fif {
@@ -217,6 +218,8 @@ sub clear_data {
     $self->clear_result;
     $self->clear_active;
     $_->clear_data for $self->all_fields;
+
+    return;
 }
 
 sub propagate_error {
@@ -232,9 +235,15 @@ sub propagate_error {
             $self->parent->propagate_error( $result );
         }
     }
+
+    return;
 }
 
-sub dump_fields { shift->dump(@_) }
+sub dump_fields {
+    my ( $self, @options ) = @_;
+
+    return $self->dump( @options );
+}
 
 sub dump {
     my $self = shift;
@@ -244,6 +253,8 @@ sub dump {
         $field->dump;
     }
     warn "HFH: ------- end fields -------\n";
+
+    return
 }
 
 sub dump_validated {
@@ -254,6 +265,8 @@ sub dump_validated {
         my $message = $field->has_errors ? join( ' | ', $field->all_errors) : 'validated';
         warn "HFH: ", $field->name, ": $message\n";
     }
+
+    return;
 }
 
 use namespace::autoclean;
