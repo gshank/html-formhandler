@@ -54,7 +54,7 @@ Set a captcha in C<< $self->ctx->{session} >>
 sub set_captcha {
     my ( $self, $captcha ) = @_;
     return unless $self->ctx;
-    $self->ctx->session( captcha => $captcha );
+    return $self->ctx->session( captcha => $captcha );
 }
 
 =head2 captcha_image_url
