@@ -5,7 +5,7 @@ use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
 
-sub html_element { 'button' }
+sub html_element { return 'button'; }
 
 sub render_element {
     my ( $self, $result ) = @_;
