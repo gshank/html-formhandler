@@ -117,7 +117,6 @@ sub is_valid {
 sub get_result {
     my ( $self, $name, $die ) = @_;
 
-    my $index;
     # if this is a full_name for a compound field
     # walk through the fields to get to it
     if ( $name =~ /\./ ) {
