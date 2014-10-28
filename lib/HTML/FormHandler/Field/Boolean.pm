@@ -13,9 +13,9 @@ Similar to Checkbox, except only returns values of 1 or 0.
 =cut
 
 sub value {
-    my $self = shift;
+    my ( $self, @params ) = @_;
 
-    my $v = $self->next::method(@_);
+    my $v = $self->next::method( @params );
 
     return $v ? 1 : 0;
 }
