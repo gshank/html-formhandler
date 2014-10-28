@@ -37,7 +37,7 @@ feature, please show up on the FormHandler mailing list or irc channel
 
 =cut
 
-sub is_wizard {1}
+sub is_wizard { return 1; }
 
 has_field 'page_num' => ( type => 'Hidden', default => 1 );
 
@@ -70,6 +70,8 @@ sub build_active {
     foreach my $field_name ( @page_fields ) {
         $self->field($field_name)->inactive(1);
     }
+
+    return;
 }
 
 
@@ -90,6 +92,8 @@ sub set_active {
             warn "field $fname not found for page " . $page->name;
         }
     }
+
+    return;
 }
 
 after 'validate_form' => sub {
@@ -116,7 +120,7 @@ sub clear_page {
     $self->clear_params;
     $self->processed(0);
 #   $self->did_init_obj(0);
-    $self->clear_result;
+    return $self->clear_result;
 }
 
 sub save_page {
@@ -126,8 +130,12 @@ sub save_page {
     while ( my ($key, $value) = each %{$self->value}) {
         $stash->{$key} = $value;
     }
+
+    return;
 }
 
 __PACKAGE__->meta->make_immutable;
+
 use namespace::autoclean;
+
 1;
