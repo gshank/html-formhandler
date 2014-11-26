@@ -11,8 +11,8 @@ use_ok('HTML::FormHandler::Widget::Wrapper::Bootstrap3');
     package MyApp::Form::Test;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
+    with 'HTML::FormHandler::Widget::Theme::Bootstrap3';
 
-    has '+widget_wrapper' => ( default => 'Bootstrap3' );
     sub build_form_tags {{
         'layout_classes' => {
             label_class => ['col-lg-2'],
@@ -38,6 +38,18 @@ use_ok('HTML::FormHandler::Widget::Wrapper::Bootstrap3');
 
 my $form = MyApp::Form::Test->new;
 ok( $form, 'form builds' );
+
+is_deeply(
+    $form->form_element_class,
+    [ 'form-horizontal' ],
+    'form has "form-horizontal" in form_element_class',
+);
+
+like(
+    $form->render,
+    qr/class="form-horizontal"/,
+    'form has form-horizontal class in rendered output',
+);
 
 my $expected = '
 <div class="form-group">
