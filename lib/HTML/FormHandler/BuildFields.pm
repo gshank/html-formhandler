@@ -423,6 +423,7 @@ sub new_field_with_traits {
     my $traits = delete $field_attr->{traits} || [];
     if( @$traits ) {
         $class = $class->with_traits( @$traits );
+        $class->meta->make_immutable;
     }
     my $field = $class->new( %{$field_attr} );
 
