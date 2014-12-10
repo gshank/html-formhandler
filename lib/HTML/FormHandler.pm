@@ -1336,6 +1336,7 @@ sub num_errors {
     my $self = shift;
     return $self->num_error_fields + $self->num_form_errors;
 }
+sub get_errors { shift->errors }
 
 sub setup_form {
     my ( $self, @args ) = @_;
