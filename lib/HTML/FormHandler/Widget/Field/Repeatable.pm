@@ -9,8 +9,16 @@ Renders a repeatable field
 
 =cut
 
+has 'wrap_repeatable_element_method' => (
+     traits => ['Code'],
+     is     => 'ro',
+     isa    => 'CodeRef',
+     handles => { 'wrap_repeatable_element' => 'execute_method' },
+);
+
 sub render_subfield {
     my ( $self, $result, $subfield ) = @_;
+
     my $subresult = $result->field( $subfield->name );
 
     return "" unless $subresult
@@ -18,7 +26,11 @@ sub render_subfield {
             and $subfield->name < $self->num_when_empty
         );
 
-    return $subfield->render($subresult);
+    my $output = $subfield->render($subresult);
+    if ( $self->wrap_repeatable_element_method ) {
+        $output = $self->wrap_repeatable_element($output);
+    }
+    return $output;
 }
 
 use namespace::autoclean;
