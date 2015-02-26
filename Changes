@@ -1,3 +1,11 @@
+0.40058 Thu Feb 25, 2015
+   add HorizCheckboxGroup for alternative CheckboxGroup rendering
+   minor doc typos
+   do $class->meta->make_immutable after new_with_traits
+   Czech translation
+   'get_errors' synonym for 'errors' on form
+   add repeatable_element_wrapper ability
+
 0.40057 Fri Aug 1, 2014
    added support for tag 'inline' in bootstrap3 wrapper
    add test for inline-checkboxes
