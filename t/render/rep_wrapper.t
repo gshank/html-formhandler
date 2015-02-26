@@ -23,8 +23,9 @@ use HTML::FormHandler::Test;
     has_field 'bar';
 
     sub wrap_foo_elements {
-        my ( $self, $input ) = @_;
+        my ( $self, $input, $field_name ) = @_;
         my $output = qq{\n<div class="somewrapper">};
+        $output .= qq{<span>$field_name</span>};
         $output .= $input;
         $output .= qq{</div>};
     }
@@ -46,7 +47,7 @@ my $expected =
 '<form id="test_form" method="post">
   <div class="form_messages"></div>
   <fieldset class="hfhrep" id="foo"><legend>Foo Records</legend>
-    <div class="somewrapper">
+    <div class="somewrapper"><span>0</span>
     <div class="hfh repinst" id="foo.0">
       <div><input type="hidden" name="foo.0.id" id="foo.0.id" value="" /></div>
       <div>
@@ -63,7 +64,7 @@ my $expected =
       </div>
     </div>
     </div>
-    <div class="somewrapper">
+    <div class="somewrapper"><span>1</span>
     <div class="hfh repinst" id="foo.1">
       <div><input type="hidden" name="foo.1.id" id="foo.1.id" value="" /></div>
       <div><label for="foo.1.one">One</label>

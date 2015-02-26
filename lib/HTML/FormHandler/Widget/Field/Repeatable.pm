@@ -28,7 +28,7 @@ sub render_subfield {
 
     my $output = $subfield->render($subresult);
     if ( $self->wrap_repeatable_element_method ) {
-        $output = $self->wrap_repeatable_element($output);
+        $output = $self->wrap_repeatable_element($output, $subfield->name);
     }
     return $output;
 }

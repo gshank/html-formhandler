@@ -76,7 +76,6 @@ sub render_option {
         push @{ $lattr->{class} }, $class;
     }
     my $lattr_str = process_attrs( $lattr );
-
     my $id = $self->id . '.' . $self->options_index;
     my $output .= qq{\n<label$lattr_str for="$id">};
     my $value = $option->{value};
