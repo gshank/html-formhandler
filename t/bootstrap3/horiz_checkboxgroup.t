@@ -21,7 +21,7 @@ use HTML::FormHandler::Test;
 
     has_field 'checkboxes' => (
         type   => 'Multiple',
-        widget => 'CheckboxGroup',
+        widget => 'HorizCheckboxGroup',
     );
     sub options_checkboxes {
         return (
