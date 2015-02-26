@@ -1,3 +1,7 @@
+0.40059 Thu Feb 25, 2015
+   Remove clear->item_id that snaked in via merge error
+   Pass subfield name to repeatable element wrapper
+
 0.40058 Thu Feb 25, 2015
    add HorizCheckboxGroup for alternative CheckboxGroup rendering
    minor doc typos
