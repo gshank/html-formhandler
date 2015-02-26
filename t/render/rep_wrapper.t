@@ -42,7 +42,6 @@ my $form = Test::Form->new;
 $form->process({});
 ok( $form, 'form built' );
 my $rendered = $form->render;
-diag($rendered);
 my $expected =
 '<form id="test_form" method="post">
   <div class="form_messages"></div>
