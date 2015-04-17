@@ -221,7 +221,7 @@ lives_ok(
 }
 
 lives_ok(
-    sub { $form = Test::Date::HTML5->new; $form->render; },
+    sub { $form = Test::Date::HTML5::WithDefault->new; $form->render; },
     "HTML5 renders fine with default date format",
 );
 
