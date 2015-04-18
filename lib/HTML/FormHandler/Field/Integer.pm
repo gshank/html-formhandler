@@ -6,7 +6,7 @@ extends 'HTML::FormHandler::Field::Text';
 our $VERSION = '0.02';
 
 has '+size' => ( default => 8 );
-has '+html5_type_attr' => ( default => 'number' );
+has '+html5_type_attr' => ( default => 'tel' );
 
 our $class_messages = {
     'integer_needed' => 'Value must be an integer',
@@ -46,7 +46,7 @@ This accepts a positive or negative integer.  Negative integers may
 be prefixed with a dash.  By default a max of eight digits are accepted.
 Widget type is 'text'.
 
-If form has 'is_html5' flag active it will render <input type="number" ... />
+If form has 'is_html5' flag active it will render <input type="tel" ... />
 instead of type="text"
 
 The 'range_start' and 'range_end' attributes may be used to limit valid numbers.
