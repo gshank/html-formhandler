@@ -161,7 +161,7 @@ If the conditions get too complicated to easily fit into a when condition, you
 can always create a validation method instead.
 
 See also L<HTML::FormHandler::Field> and L<HTML::FormHandler::Validate>.
-See L<HTML::FormHandler::Manual::Inflation::Deflation> for information
+See L<HTML::FormHandler::Manual::InflationDeflation> for information
 on inflation and deflation.
 
 =head2 Moose types
