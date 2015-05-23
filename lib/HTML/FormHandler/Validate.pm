@@ -173,13 +173,19 @@ sub _apply_actions {
         $error_message = $error;
         return 1;
     };
+
+    my $is_type = sub {
+        my $ref = ref shift;
+        return $ref eq 'MooseX::Types::TypeDecorator' || $ref eq 'Type::Tiny';
+    };
+
     for my $action ( @{ $self->actions || [] } ) {
         $error_message = undef;
         # the first time through value == input
         my $value     = $self->value;
         my $new_value = $value;
         # Moose constraints
-        if ( !ref $action || ref $action eq 'MooseX::Types::TypeDecorator' || ref $action eq 'Type::Tiny' ) {
+        if ( !ref $action || $is_type->($action) ) {
             $action = { type => $action };
         }
         if ( my $when = $action->{when} ) {
@@ -187,7 +193,7 @@ sub _apply_actions {
         }
         if ( exists $action->{type} ) {
             my $tobj;
-            if ( ref $action->{type} eq 'MooseX::Types::TypeDecorator' || ref $action->{type} eq 'Type::Tiny' ) {
+            if ( $is_type->($action->{type}) ) {
                 $tobj = $action->{type};
             }
             else {
