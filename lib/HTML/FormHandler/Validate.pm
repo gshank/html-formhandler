@@ -175,8 +175,8 @@ sub _apply_actions {
     };
 
     my $is_type = sub {
-        my $ref = ref shift;
-        return $ref eq 'MooseX::Types::TypeDecorator' || $ref eq 'Type::Tiny';
+        my $class = blessed shift or return;
+        return $class eq 'MooseX::Types::TypeDecorator' || $class->isa('Type::Tiny');
     };
 
     for my $action ( @{ $self->actions || [] } ) {
