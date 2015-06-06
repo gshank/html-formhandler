@@ -41,11 +41,12 @@ has 'item' => (
     clearer => 'clear_item',
     trigger => sub { shift->set_item(@_) }
 );
-sub build_item { return }
+sub build_item { return; }
 
 sub set_item {
     my ( $self, $item ) = @_;
-    $self->item_class( ref $item );
+
+    return $self->item_class( ref $item );
 }
 
 =head2 item_id

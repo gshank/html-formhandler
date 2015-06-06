@@ -1,6 +1,10 @@
 package HTML::FormHandler::Merge;
-# ABSTRACT: internal hash merging
+
+use strict;
 use warnings;
+
+# ABSTRACT: internal hash merging
+
 use Data::Clone;
 use base 'Exporter';
 

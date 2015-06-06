@@ -84,6 +84,8 @@ sub validate {
     else {
         $self->_set_value( {@dt_parms} );
     }
+
+    return;
 }
 
 __PACKAGE__->meta->make_immutable;

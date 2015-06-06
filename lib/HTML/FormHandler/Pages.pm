@@ -27,7 +27,7 @@ has 'page_name_space' => (
     builder => 'build_page_name_space',
 );
 
-sub build_page_name_space { '' }
+sub build_page_name_space { return ''; }
 
 sub page_index {
     my ( $self, $name ) = @_;
@@ -45,7 +45,7 @@ sub page {
     my $index;
     # if this is a full_name for a compound page
     # walk through the pages to get to it
-    return undef unless ( defined $name );
+    return unless ( defined $name );
     if ( $name =~ /\./ ) {
         my @names = split /\./, $name;
         my $f = $self->form || $self;

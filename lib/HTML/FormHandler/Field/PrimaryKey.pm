@@ -31,6 +31,8 @@ sub BUILD {
             $self->parent->primary_key( [ $self ] );
         }
     }
+
+    return;
 }
 
 __PACKAGE__->meta->make_immutable;

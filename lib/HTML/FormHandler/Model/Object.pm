@@ -13,7 +13,10 @@ sub update_model {
         next unless $item->can($name);
         $item->$name( $field->value );
     }
+
+    return;
 }
 
 use namespace::autoclean;
+
 1;

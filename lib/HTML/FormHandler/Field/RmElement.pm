@@ -1,4 +1,8 @@
 package HTML::FormHandler::Field::RmElement;
+
+use strict;
+use warnings;
+
 # ABSTRACT: field to support repeatable javascript remove
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Display';

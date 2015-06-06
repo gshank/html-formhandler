@@ -47,6 +47,6 @@ sub render_form_messages {
     return $output;
 }
 
-sub form_messages_alert_error_class { 'alert-error' }
+sub form_messages_alert_error_class { return 'alert-error'; }
 
 1;

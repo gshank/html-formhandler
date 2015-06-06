@@ -53,10 +53,10 @@ has 'blocks' => (
         block_exists => 'exists',
     },
 );
-sub build_blocks { {} }
+sub build_blocks { return {}; }
 
 has 'block_list' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => 'build_block_list' );
-sub build_block_list {[]}
+sub build_block_list { return []; }
 
 has 'render_list' => (
     is      => 'rw',
@@ -135,6 +135,8 @@ sub make_block {
         $block = $class->new(%$block_attr);
         $self->add_block( $name, $block );
     }
+
+    return;
 }
 
 # loops through all inherited classes and composed roles

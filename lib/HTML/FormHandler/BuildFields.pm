@@ -25,7 +25,7 @@ has 'build_include_method' => ( is => 'ro', isa => 'CodeRef', traits => ['Code']
     default => sub { \&default_build_include  }, handles => { build_include => 'execute_method' } );
 has 'include' => ( is => 'rw', isa => 'ArrayRef', traits => ['Array'], builder => 'build_include',
     lazy => 1, handles => { has_include => 'count' } );
-sub default_build_include { [] }
+sub default_build_include { return []; }
 
 sub has_field_list {
     my ( $self, $field_list ) = @_;
@@ -63,13 +63,16 @@ sub _build_fields {
             $self->_process_field_list( $flist );
         }
     }
-    my $mlist = $self->model_fields if $self->fields_from_model;
-    $self->_process_field_list( $mlist ) if $mlist;
+
+    if( $self->fields_from_model() ) {
+        if( my $mlist = $self->model_fields() ) {
+            $self->_process_field_list( $mlist );
+        }
+    }
 
     return unless $self->has_fields;
 
-    $self->_order_fields;
-
+    return $self->_order_fields;
 }
 
 
@@ -97,6 +100,7 @@ sub _build_meta_field_list {
         }
     }
     return $field_list if scalar @$field_list;
+    return;
 }
 
 sub _process_field_list {
@@ -105,6 +109,8 @@ sub _process_field_list {
     if ( ref $flist eq 'ARRAY' ) {
         $self->_process_field_array( $self->_array_fields( $flist ) );
     }
+
+    return;
 }
 
 # munges the field_list array into an array of field attributes
@@ -145,6 +151,8 @@ sub _process_field_array {
         }
         $num_dots++;
     }
+
+    return;
 }
 
 sub clean_fields {
@@ -184,6 +192,8 @@ sub _make_field {
     my $field = $self->_update_or_create( $parent, $field_attr, $class, $do_update );
 
     $self->form->add_to_index( $field->full_name => $field ) if $self->form;
+
+    return;
 }
 
 sub _make_adhoc_field {
@@ -451,6 +461,8 @@ sub _order_fields {
         $field->order($order) unless $field->order;
         $order++;
     }
+
+    return;
 }
 
 use namespace::autoclean;

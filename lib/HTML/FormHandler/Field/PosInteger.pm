@@ -1,6 +1,9 @@
 package HTML::FormHandler::Field::PosInteger;
 # ABSTRACT: positive integer field
 
+use strict;
+use warnings;
+
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Integer';
 our $VERSION = '0.02';
@@ -38,5 +41,7 @@ Customize error message 'integer_positive'.
 =cut
 
 __PACKAGE__->meta->make_immutable;
+
 use namespace::autoclean;
+
 1;

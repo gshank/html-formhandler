@@ -43,6 +43,8 @@ sub _process_page_list {
     }
     my %plist_copy = %{$plist};
     $plist = \%plist_copy;
+
+    return;
 }
 
 sub _array_pages {
@@ -75,6 +77,8 @@ sub _process_page_array {
         }
         $num_dots++;
     }
+
+    return;
 }
 
 sub _make_page {
@@ -129,7 +133,8 @@ sub _make_page {
         # set parent
         $page_attr->{parent} = $self;
     }
-    $self->_update_or_create_page( $page_attr->{parent} || $self->form,
+
+    return $self->_update_or_create_page( $page_attr->{parent} || $self->form,
         $page_attr, $class, $do_update );
 }
 
@@ -161,6 +166,8 @@ sub _update_or_create_page {
         $page = $self->new_page_with_traits( $class, $page_attr);
         $parent->push_page($page);
     }
+
+    return;
 }
 
 sub new_page_with_traits {
@@ -218,6 +225,7 @@ sub _build_meta_page_list {
         }
     }
     return \@page_list if scalar @page_list;
+    return;
 }
 
 1;

@@ -64,7 +64,7 @@ has 'class' => (
         add_class => 'push',
     }
 );
-sub build_class { [] }
+sub build_class { return []; }
 has 'attr' => (
     is      => 'rw',
     traits  => ['Hash'],
@@ -75,7 +75,7 @@ has 'attr' => (
         delete__attr => 'delete'
     },
 );
-sub build_attr { {} }
+sub build_attr { return {}; }
 has 'wrapper' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'tag' => ( is => 'rw', isa => 'Str', default => 'div' );
 has 'label'     => ( is => 'rw', isa => 'Str', predicate => 'has_label' );
@@ -90,7 +90,7 @@ has 'label_class' => (
         add_label_class => 'push',
     }
 );
-sub build_label_class { [] }
+sub build_label_class { return []; }
 
 has 'render_list' => (
     is      => 'rw',
@@ -104,7 +104,7 @@ has 'render_list' => (
         get_render_list    => 'get',
     }
 );
-sub build_render_list { [] }
+sub build_render_list { return []; }
 
 has 'content' => ( is => 'rw' );
 has 'after_plist' => ( is => 'rw' );
@@ -133,6 +133,7 @@ sub render {
     my $label = $self->render_label;
     my $block = qq{\n$start_wrapper$label$content$rendered_fb$after_plist$end_wrapper};
 
+    return $block;
 }
 
 sub render_attribute_string {

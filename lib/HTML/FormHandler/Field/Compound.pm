@@ -71,7 +71,10 @@ has '+field_name_space' => (
 
 sub BUILD {
     my $self = shift;
+
     $self->_build_fields;
+
+    return;
 }
 
 # this is for testing compound fields outside
@@ -92,6 +95,8 @@ sub test_validate_field {
             $self->result->_push_errors($err_res->all_errors);
         }
     }
+
+    return;
 }
 
 around '_result_from_object' => sub {

@@ -120,14 +120,16 @@ sub validate {
         my $date_start = $val_strp->parse_datetime( $self->date_start );
         die "date_start: " . $val_strp->errmsg unless $date_start;
         my $cmp = DateTime->compare( $date_start, $dt );
-        $self->add_error($self->get_message('date_early')) if $cmp eq 1;
+        $self->add_error($self->get_message('date_early')) if $cmp == 1;
     }
     if ( $self->date_end ) {
         my $date_end = $val_strp->parse_datetime( $self->date_end );
         die "date_end: " . $val_strp->errmsg unless $date_end;
         my $cmp = DateTime->compare( $date_end, $dt );
-        $self->add_error($self->get_message('date_late')) if $cmp eq -1;
+        $self->add_error($self->get_message('date_late')) if $cmp == -1;
     }
+
+    return;
 }
 
 sub get_strf_format {
@@ -140,12 +142,14 @@ sub get_strf_format {
         my $strf = $dp_to_dt->{$dpf};
         $format =~ s/$dpf/$strf/g;
     }
-    $format     =~ s/\%1/\%d/g,
-        $format =~ s/\%2/\%y/g,
-        $format =~ s/\%3/\%m/g,
-        $format =~ s/\%4/\%{day_of_year}/g,
-        $format =~ s/\%5/\%{day_of_month}/g,
-        return $format;
+
+    $format =~ s/\%1/\%d/g;
+    $format =~ s/\%2/\%y/g;
+    $format =~ s/\%3/\%m/g;
+    $format =~ s/\%4/\%{day_of_year}/g;
+    $format =~ s/\%5/\%{day_of_month}/g;
+
+    return $format;
 }
 
 __PACKAGE__->meta->make_immutable;

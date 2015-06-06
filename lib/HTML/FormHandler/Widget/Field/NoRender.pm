@@ -8,7 +8,7 @@ Renders a field as the empty string.
 
 =cut
 
-sub render { '' }
+sub render { return ''; }
 
 use namespace::autoclean;
 1;

@@ -796,9 +796,9 @@ L<HTML::FormHandler::Manual::Rendering>.
 =cut
 
 # for consistency in api with field nodes
-sub form { shift }
-sub is_form { 1 }
-sub has_form { 1 }
+sub form { return $_[0]; }
+sub is_form { return 1; }
+sub has_form { return 1; }
 
 # Moose attributes
 has 'name' => (
@@ -806,8 +806,8 @@ has 'name' => (
     is      => 'rw',
     default => sub { return 'form' . int( rand 1000 ) }
 );
-sub full_name { '' }
-sub full_accessor { '' }
+sub full_name { return ''; }
+sub full_accessor { return ''; }
 has 'parent' => ( is => 'rw' );
 has 'result' => (
     isa       => 'HTML::FormHandler::Result',
@@ -872,7 +872,7 @@ has 'widget_name_space' => (
 has 'widget_form'       => ( is => 'ro', isa => 'Str', default => 'Simple', writer => 'set_widget_form' );
 has 'widget_wrapper'    => ( is => 'ro', isa => 'Str', default => 'Simple', writer => 'set_widget_wrapper' );
 has 'do_form_wrapper' => ( is => 'rw', builder => 'build_do_form_wrapper' );
-sub build_do_form_wrapper { 0 }
+sub build_do_form_wrapper { return 0; }
 has 'no_widgets'        => ( is => 'ro', isa => 'Bool' );
 has 'no_preload'        => ( is => 'ro', isa => 'Bool' );
 has 'no_update'         => ( is => 'rw', isa => 'Bool', clearer => 'clear_no_update' );
@@ -945,6 +945,8 @@ sub _html_attr_set {
     my $class = delete $value->{class};
     $self->form_element_attr($value);
     $self->add_form_element_class if $class;
+
+    return;
 }
 
 {
@@ -988,7 +990,7 @@ sub _html_attr_set {
     }
 }
 
-sub attributes { shift->form_element_attributes(@_) }
+sub attributes { return shift->form_element_attributes(@_) }
 sub form_element_attributes {
     my ( $self, $result ) = @_;
     $result ||= $self->result;
@@ -1041,7 +1043,7 @@ has 'form_tags'         => (
       has_tag => 'exists',
     },
 );
-sub build_form_tags {{}}
+sub build_form_tags { return {}; }
 sub get_tag {
     my ( $self, $name ) = @_;
     return '' unless $self->tag_exists($name);
@@ -1080,7 +1082,12 @@ has 'params' => (
         has_params => 'count',
     },
 );
-sub submitted { shift->has_params }
+
+sub submitted {
+    my $self = shift;
+    return $self->has_params;
+}
+
 has 'dependency' => ( isa => 'ArrayRef', is => 'rw' );
 has '_required' => (
     traits     => ['Array'],
@@ -1104,7 +1111,7 @@ has 'messages' => ( is => 'rw',
         'set_message' => 'set',
     },
 );
-sub build_messages { {} }
+sub build_messages { return {}; }
 
 my $class_messages = {};
 sub get_class_messages  {
@@ -1131,13 +1138,13 @@ has 'params_class' => (
 has 'params_args' => ( is => 'ro', isa => 'ArrayRef' );
 
 sub BUILDARGS {
-    my $class = shift;
+    my ( $class, @args ) = @_;
 
-    if ( scalar @_ == 1 && ref( $_[0]) ne 'HASH' ) {
-        my $arg = $_[0];
+    if ( scalar(@args) == 1 && ref( $args[0] ) ne 'HASH' ) {
+        my $arg = $args[0];
         return blessed($arg) ? { item => $arg } : { item_id => $arg };
     }
-    return $class->SUPER::BUILDARGS(@_);
+    return $class->SUPER::BUILDARGS( @args );
 }
 
 sub BUILD {
@@ -1172,11 +1179,11 @@ sub before_build {}
 sub after_build {}
 
 sub process {
-    my $self = shift;
+    my ( $self, @params ) = @_;
 
     warn "HFH: process ", $self->name, "\n" if $self->verbose;
     $self->clear if $self->processed;
-    $self->setup_form(@_);
+    $self->setup_form( @params );
     $self->validate_form      if $self->posted;
     $self->update_model       if ( $self->validated && !$self->no_update );
     $self->after_update_model if ( $self->validated && !$self->no_update );
@@ -1186,8 +1193,8 @@ sub process {
 }
 
 sub run {
-    my $self = shift;
-    $self->setup_form(@_);
+    my ( $self, @params ) = @_;
+    $self->setup_form(@params);
     $self->validate_form      if $self->posted;
     $self->update_model       if ( $self->validated && !$self->no_update );;
     my $result = $self->result;
@@ -1236,6 +1243,8 @@ sub after_update_model {
             }
         }
     }
+
+    return;
 }
 
 
@@ -1262,9 +1271,10 @@ sub clear {
     $self->clear_no_update;
     $self->clear_info_message;
     $self->clear_for_js;
+    return;
 }
 
-sub values { shift->value }
+sub values { return shift->value; }
 
 # deprecated?
 sub error_field_names {
@@ -1301,6 +1311,8 @@ sub build_errors {
     foreach my $err_res (@{$self->result->error_results}) {
         $self->result->_push_errors($err_res->all_errors);
     }
+
+    return;
 }
 
 sub uuid {
@@ -1326,7 +1338,7 @@ sub validate_form {
     return $self->validated;
 }
 
-sub validate { 1 }
+sub validate { return 1; }
 
 sub has_errors {
     my $self = shift;
@@ -1379,6 +1391,7 @@ sub setup_form {
         $self->_result_from_input( $self->result, $params, 1 );
     }
 
+    return;
 }
 
 # if active => [...] is set at process time, set 'active' flag
@@ -1408,6 +1421,8 @@ sub set_active {
         }
         $self->clear_inactive;
     }
+
+    return;
 }
 
 # if active => [...] is set at build time, remove 'inactive' flags
@@ -1437,16 +1452,22 @@ sub build_active {
         }
         $self->clear_inactive;
     }
+
+    return;
 }
 
-sub fif { shift->fields_fif(@_) }
+sub fif {
+    my ( $self, @params ) = @_;
+
+    return $self->fields_fif( @params );
+}
 
 # this is subclassed by the model, which may
 # do a lot more than this
 sub init_value {
     my ( $self, $field, $value ) = @_;
     $field->init_value($value);
-    $field->_set_value($value);
+    return $field->_set_value($value);
 }
 
 sub _set_dependency {
@@ -1476,6 +1497,8 @@ sub _set_dependency {
             last;
         }
     }
+
+    return;
 }
 
 sub _clear_dependency {
@@ -1483,6 +1506,8 @@ sub _clear_dependency {
 
     $_->required(0) for @{$self->_required};
     $self->clear_required;
+
+    return;
 }
 
 sub peek {
@@ -1504,6 +1529,8 @@ sub _munge_params {
     }
     $new_params = {} if !defined $new_params;
     $self->{params} = $new_params;
+
+    return;
 }
 
 sub params_to_values {
@@ -1549,6 +1576,8 @@ sub update_fields {
         }
         $self->clear_defaults;
     }
+
+    return;
 }
 
 sub update_field {
@@ -1568,6 +1597,8 @@ sub update_field {
             $field->$attr_name($attr_value);
         }
     }
+
+    return;
 }
 
 =head1 SUPPORT

@@ -1,4 +1,8 @@
 package HTML::FormHandler::Field::SelectCSV;
+
+use strict;
+use warnings;
+
 # ABSTRACT: Multiple select field from CSV value
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Select';
@@ -21,7 +25,7 @@ This field is useful for MySQL 'set' columns.
 has '+inflate_default_method' => ( default => sub { \&selectcsv_inflate_default } );
 has '+deflate_value_method' => ( default => sub { \&selectcsv_deflate_value } );
 has '+multiple' => ( default => 1 );
-sub build_value_when_empty { undef }
+sub build_value_when_empty { }
 
 sub selectcsv_inflate_default {
     my ( $self, $value ) = @_;

@@ -319,7 +319,11 @@ has 'options' => (
     lazy    => 1,
     builder => 'build_options'
 );
-sub options_ref { [shift->options] }
+sub options_ref {
+    my $self = shift;
+
+    return [ $self->options ];
+}
 # this is used for rendering
 has 'options_index' => ( traits => ['Counter'], isa => 'Num',
     is => 'rw', default => 0,
@@ -329,10 +333,10 @@ has 'options_index' => ( traits => ['Counter'], isa => 'Num',
 sub clear_data {
     my $self = shift;
     $self->next::method();
-    $self->reset_options_index;
+    return $self->reset_options_index;
 }
 
-sub build_options { [] }
+sub build_options { return []; }
 has 'options_from' => ( isa => 'Str', is => 'rw', default => 'none' );
 has 'do_not_reload' => ( isa => 'Bool', is => 'ro' );
 has 'no_option_validation' => ( isa => 'Bool', is => 'rw' );
@@ -347,6 +351,8 @@ sub BUILD {
         $self->default_from_options([$self->options]);
     }
     $self->input_without_param; # vivify
+
+    return;
 }
 
 has 'options_method' => (
@@ -372,6 +378,8 @@ sub build_options_method {
             $self->_set_options_method( sub { my $self = shift; $self->form->$set_options($self); } );
         }
     }
+
+    return;
 }
 
 has 'sort_options_method' => (
@@ -396,7 +404,7 @@ has 'active_column'    => ( isa => 'Str',       is => 'rw', default => 'active' 
 has 'auto_widget_size' => ( isa => 'Int',       is => 'rw', default => '0' );
 has 'sort_column'      => ( isa => 'Str|ArrayRef[Str]',       is => 'rw' );
 has '+widget'          => ( default => 'Select' );
-sub html_element { 'select' }
+sub html_element { return 'select'; }
 has '+type_attr'       => ( default => 'select' );
 has 'empty_select'     => ( isa => 'Str',       is => 'rw' );
 has '+deflate_method'  => ( default => sub { \&select_deflate } );
@@ -415,7 +423,7 @@ has 'value_when_empty' => ( is => 'ro', lazy => 1, builder => 'build_value_when_
 sub build_value_when_empty {
     my $self = shift;
     return [] if $self->multiple;
-    return undef;
+    return;
 }
 
 our $class_messages = {
@@ -528,7 +536,7 @@ sub _result_from_object {
     $result = $self->next::method( $result, $item );
     $self->_load_options;
     $result->_set_value($self->default)
-        if( defined $self->default && not $result->has_value );
+        if( defined( $self->default ) and not $result->has_value );
     return $result;
 }
 
@@ -538,7 +546,7 @@ sub _result_from_fields {
     $result = $self->next::method($result);
     $self->_load_options;
     $result->_set_value($self->default)
-        if( defined $self->default && not $result->has_value );
+        if( defined( $self->default ) and not $result->has_value );
     return $result;
 }
 
@@ -550,7 +558,7 @@ sub _result_from_input {
     $result = $self->next::method( $result, $input, $exists );
     $self->_load_options;
     $result->_set_value($self->default)
-        if( defined $self->default && not $result->has_value );
+        if( defined( $self->default ) and not $result->has_value );
     return $result;
 }
 
@@ -595,6 +603,8 @@ sub _load_options {
         $opts = $self->sort_options($opts) if $self->has_sort_options_method;
         $self->options($opts);
     }
+
+    return;
 }
 
 # This is because setting 'checked => 1' or 'selected => 1' in an options
@@ -616,12 +626,14 @@ sub default_from_options {
             $self->default($defaults[0]);
         }
     }
+
+    return;
 }
 
 before 'value' => sub {
     my $self  = shift;
 
-    return undef unless $self->has_result;
+    return unless $self->has_result;
     my $value = $self->result->value;
     if( $self->multiple ) {
         if ( !defined $value || $value eq '' || ( ref $value eq 'ARRAY' && scalar @$value == 0 ) ) {

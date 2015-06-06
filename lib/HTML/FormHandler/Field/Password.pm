@@ -1,4 +1,8 @@
 package HTML::FormHandler::Field::Password;
+
+use strict;
+use warnings;
+
 # ABSTRACT: password field
 
 use HTML::FormHandler::Moose;

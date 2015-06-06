@@ -17,9 +17,11 @@ sub BUILD {
 
     $self->add_wrapper_class('hfh-repinst')
        unless $self->has_wrapper_class;
+
+    return;
 }
 
-sub build_tags {{ wrapper => 1 }}
+sub build_tags { return { wrapper => 1 }; }
 
 has '+do_label' => ( default => 0 );
 has '+do_wrapper' => ( default => 1 );

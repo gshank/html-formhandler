@@ -66,7 +66,11 @@ has '_value' => (
     predicate => 'has_value',
 );
 
-sub value { shift->_get_value || {} }
+sub value {
+    my $self = shift;
+
+    return $self->_get_value || {};
+}
 
 has 'form_errors' => (
     traits     => ['Array'],
@@ -89,13 +93,18 @@ sub form_and_field_errors {
     return (@form_errors, @field_errors);
 }
 
-sub validated { !$_[0]->has_error_results && $_[0]->has_input && !$_[0]->has_form_errors }
+sub validated {
+    my $self = shift;
+
+    return !$self->has_error_results && $self->has_input && !$self->has_form_errors;
+}
 
 has 'ran_validation' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub fif {
     my $self = shift;
-    $self->form->fields_fif($self);
+
+    return $self->form->fields_fif($self);
 }
 
 sub peek {

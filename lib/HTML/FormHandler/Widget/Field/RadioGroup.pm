@@ -15,7 +15,7 @@ select fields and options.
 
 =cut
 
-sub type_attr { 'radio' }
+sub type_attr { return 'radio'; }
 
 sub render {
     my ( $self, $result ) = @_;

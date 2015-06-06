@@ -26,9 +26,8 @@ Moose::Exporter->setup_import_methods(
 );
 
 sub init_meta {
-    my $class = shift;
+    my ( $class, %options ) = @_;
 
-    my %options = @_;
     Moose::Role->init_meta(%options);
     my $meta = Moose::Util::MetaRole::apply_metaroles(
         for            => $options{for_class},
@@ -41,18 +40,21 @@ sub init_meta {
 sub has_field {
     my ( $class, $name, %options ) = @_;
 
-    $class->meta->add_to_field_list( { name => $name, %options } );
+    return $class->meta->add_to_field_list( { name => $name, %options } );
 }
 
 sub has_block {
     my ( $class, $name, %options ) = @_;
-    $class->meta->add_to_block_list( { name => $name, %options } );
+
+    return $class->meta->add_to_block_list( { name => $name, %options } );
 }
 
 sub apply {
     my ( $class, $arrayref ) = @_;
-    $class->meta->add_to_apply_list( @{$arrayref} );
+
+    return $class->meta->add_to_apply_list( @{$arrayref} );
 }
 
 use namespace::autoclean;
+
 1;

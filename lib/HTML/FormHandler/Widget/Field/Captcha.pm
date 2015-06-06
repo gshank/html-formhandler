@@ -15,7 +15,7 @@ sub render_element {
     $result ||= $self->result;
     return '' if $self->widget eq 'no_widget';
 
-    my $output .= '<img src="' . $self->form->captcha_image_url . '"/>';
+    my $output = '<img src="' . $self->form->captcha_image_url . '"/>';
     $output .= '<input id="' . $self->id . '" name="';
     $output .= $self->html_name . '"';
     $output .= process_attrs($self->element_attributes);

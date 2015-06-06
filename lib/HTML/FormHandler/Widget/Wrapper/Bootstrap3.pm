@@ -36,10 +36,10 @@ Tags supported:
 
 =cut
 
-sub is_b3 {1}
+sub is_b3 { return 1; }
 
 sub build_wrapper_tags {
-    {
+    return {
         radio_element_wrapper => 1,
         checkbox_element_wrapper => 1,
     }
@@ -71,7 +71,7 @@ sub wrap_field {
     my $ew_attr = $self->element_wrapper_attributes($result);
     my $element_wrapper_attrs =  process_attrs( $ew_attr );
     $output .= qq{\n<div$element_wrapper_attrs>}
-        unless !$self->do_wrapper;
+        if $self->do_wrapper;
 
     # yet another tag
     $output .= $self->get_tag('before_element_inside_div');
@@ -94,7 +94,7 @@ sub wrap_field {
     # extra after element stuff
     $output .= $self->get_tag('after_element');
     # close element_wrapper 'control' div
-    $output .= '</div>' unless !$self->do_wrapper;
+    $output .= '</div>' if $self->do_wrapper;
     # close wrapper
     if ( $self->do_wrapper ) {
         $output .= "\n</div>";
@@ -105,52 +105,65 @@ sub wrap_field {
 
 # don't render label for checkboxes
 sub do_render_label {
-    my ( $self ) = @_;
+    my ( $self, @params ) = @_;
 
     return '' if $self->type_attr eq 'checkbox';
-    HTML::FormHandler::Widget::Wrapper::Base::do_render_label(@_);
+
+    return HTML::FormHandler::Widget::Wrapper::Base::do_render_label( $self, @params );
 }
 
 sub add_standard_element_classes {
     my ( $self, $result, $class ) = @_;
+
     push @$class, 'has-error' if $result->has_errors;
     push @$class, 'has-warning' if $result->has_warnings;
     push @$class, 'disabled' if $self->disabled;
     push @$class, 'form-control'
        if $self->html_element eq 'select' || $self->html_element eq 'textarea' ||
           $self->type_attr eq 'text' || $self->type_attr eq 'password';
+
+    return;
 }
 
 sub add_standard_wrapper_classes {
     my ( $self, $result, $class ) = @_;
+
     push @$class, 'has-error' if ( $result->has_error_results || $result->has_errors );
     push @$class, 'has-warning' if $result->has_warnings;
     # TODO: has-success?
+
+    return;
 }
 
 sub add_standard_label_classes {
     my ( $self, $result, $class ) = @_;
+
     if ( my $classes = $self->form->get_tag('layout_classes') ) {
         my $label_class = $classes->{label_class};
-        if ( $label_class && not any { $_ =~ /^col\-/ } @$class ) {
+        if ( $label_class and not any { $_ =~ /^col\-/x } @$class ) {
             push @$class, @{$classes->{label_class}};
         }
     }
+
+    return;
 }
 
 sub add_standard_element_wrapper_classes {
     my ( $self, $result, $class ) = @_;
     if ( my $classes = $self->form->get_tag('layout_classes') ) {
-        if ( exists $classes->{element_wrapper_class} &&
-             not any { $_ =~ /^col\-/ } @$class ) {
+        if ( exists $classes->{element_wrapper_class} and
+             not any { $_ =~ /^col\-/x } @$class ) {
             push @$class, @{$classes->{element_wrapper_class}};
         }
-        if ( exists $classes->{no_label_element_wrapper_class} &&
-             ( ! $self->do_label || $self->type_attr eq 'checkbox' ) &&
-             not any { $_ =~ /^col\-.*offset/ } @$class ) {
+
+        if ( exists $classes->{no_label_element_wrapper_class} and
+             ( not( $self->do_label )  or ( $self->type_attr eq 'checkbox' ) ) and
+             not any { $_ =~ /^col\-.*offset/x } @$class ) {
             push @$class, @{$classes->{no_label_element_wrapper_class}};
         }
     }
+
+    return
 }
 
 sub wrap_checkbox {
@@ -195,10 +208,7 @@ sub do_prepend_append {
         push @class, 'input-group';
     }
     my $attr = process_attrs( { class => \@class } );
-    $rendered_widget =
-qq{<div$attr>
-  $rendered_widget
-</div>};
+    $rendered_widget =qq{<div$attr> $rendered_widget </div>};
     return $rendered_widget;
 }
 
