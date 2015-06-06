@@ -86,15 +86,15 @@ is( $field->errors->[0], 'Email is not valid', 'error from Email' );
 
 my @test = (
     IPAddress => \&IPAddress =>
-	[qw(0.0.0.0 01.001.0.00 198.168.0.101 255.255.255.255)],
-	[qw(1 2.33 4.56.789 198.300.0.101 0.-1.13.255)],
+        [qw(0.0.0.0 01.001.0.00 198.168.0.101 255.255.255.255)],
+        [qw(1 2.33 4.56.789 198.300.0.101 0.-1.13.255)],
         'Not a valid IP address',
     NoSpaces => \&NoSpaces =>
-	[qw(a 1 _+~ *), '#'], ['a b', "x\ny", "foo\tbar"],
+        [qw(a 1 _+~ *), '#'], ['a b', "x\ny", "foo\tbar"],
         'Must not contain spaces',
     WordChars => \&WordChars =>
-	[qw(abc 8 ___ 90_i 0)],
-	['a b', "x\ny", "foo\tbar", 'c++', 'C#', '$1,000,000'],
+        [qw(abc 8 ___ 90_i 0)],
+        ['a b', "x\ny", "foo\tbar", 'c++', 'C#', '$1,000,000'],
         'Must be made up of letters, digits, and underscores',
     NotAllDigits => \&NotAllDigits =>
         [qw(a 1a . a=1 1.23), 'a 1'], [qw(0 1 12 03450)],
@@ -125,9 +125,9 @@ while (my ($name, $type, $good, $bad, $error_msg) = splice @test, 0, 5) {
 
 @test = (
     Lower => \&Lower =>
-	[A => 'a', AB => 'ab', Abc => 'abc', abc => 'abc', 'A-z' => 'a-z', '1 + X' => '1 + x'],
+        [A => 'a', AB => 'ab', Abc => 'abc', abc => 'abc', 'A-z' => 'a-z', '1 + X' => '1 + x'],
     Upper => \&Upper =>
-	[a => 'A', ab => 'AB', Abc => 'ABC', ABC => 'ABC', 'A-z' => 'A-Z', '1 + x' => '1 + X'],
+        [a => 'A', ab => 'AB', Abc => 'ABC', ABC => 'ABC', 'A-z' => 'A-Z', '1 + x' => '1 + X'],
 );
 
 while (my ($name, $type, $trans) = splice @test, 0, 3) {
@@ -135,9 +135,9 @@ while (my ($name, $type, $trans) = splice @test, 0, 3) {
     $field = HTML::FormHandler::Field->new(name => 'Test', apply => [&$type]);
     $field->build_result;
     while (my ($from, $to) = splice @trans, 0, 2) {
-	$field->_set_input($from);
-	ok($field->validate_field, "$name validated");
-	is($field->value, $to , "$name field transformation");
+        $field->_set_input($from);
+        ok($field->validate_field, "$name validated");
+        is($field->value, $to , "$name field transformation");
     }
 }
 
