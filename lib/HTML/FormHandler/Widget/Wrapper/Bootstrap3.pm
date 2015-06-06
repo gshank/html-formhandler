@@ -4,7 +4,7 @@ package HTML::FormHandler::Widget::Wrapper::Bootstrap3;
 use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
-use List::AllUtils ('any');
+use List::Util 1.33 ('any');
 
 with 'HTML::FormHandler::Widget::Wrapper::Base';
 
