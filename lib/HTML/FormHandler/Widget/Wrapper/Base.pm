@@ -176,5 +176,33 @@ sub render_class {
     return process_attrs($self->wrapper_attributes($result));
 }
 
+sub render_elementx {
+    my ($self, %args) = @_;
+    my $result ||= $self->result;
+
+    if ( keys %args > 0 ) {
+        while ( my ( $key, $value ) = each %args ) {
+            confess "invalid attribute '$key' passed to render_elementx"
+                unless $self->can($key);
+            $self->$key($value);
+        }
+    }
+    $self->render_element($result);
+}
+
+sub renderx {
+    my ($self, %args) = @_;
+    my $result ||= $self->result;
+
+    if ( keys %args > 0 ) {
+        while ( my ( $key, $value ) = each %args ) {
+            confess "invalid attribute '$key' passed to renderx"
+                unless $self->can($key);
+            $self->$key($value);
+        }
+    }
+    $self->render($result);
+}
+
 use namespace::autoclean;
 1;

@@ -193,9 +193,9 @@ L<HTML::FormHandler::Render::Simple>, and in the individual field classes.
    size            Text & select fields.
 
    render          Widget method to render the field ($field->render)
+   renderx         "" plus set attributes ($field->render( element_class => '...' ))
    render_element  Widget method to render unwrapped field ($field->render_element)
-
-   render_field    Method used by Render::Simple to render field
+   render_elementx "" plus set attributes ($field->render_elementx( element_class => '...'))
 
 =head2 Field attributes managed by FormHandler
 

@@ -40,6 +40,20 @@ Supported tags:
 
 =cut
 
+sub renderx {
+    my ($self, %args) = @_;
+
+    if ( keys %args > 0 ) {
+        while ( my ( $key, $value ) = each %args ) {
+            confess "invalid attribute '$key' passed to renderx"
+                unless $self->can($key);
+            $self->$key($value);
+        }
+    }
+    $self->render;
+}
+
+
 sub render {
     my ($self) = @_;
 

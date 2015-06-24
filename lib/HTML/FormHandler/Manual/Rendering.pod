@@ -81,13 +81,13 @@ default FormHandler output with the following CSS rule (not supported in interne
    } /* make sure the parent element is sized appropriately.  700px is a good width */
 
 Going a little bit farther in using FormHandler rendering, you can render
-each of the fields individually:
+each of the fields individually, using 'render' or 'renderx':
 
      <form id="myform" action="/edit/example" method="post">
      <fieldset><legend>My Foo</legend>
      [% form.field('foo').render %]
      </fieldset>
-     [% form.field('bar').render %]
+     [% form.field('bar').renderx(element_class => 'cb33')  %]
      [% form.field('save').render %]
      </form>
 
@@ -102,14 +102,17 @@ embedded:
     [% form.field('foo').render %]
     </div>
     <div class="another_class">
-    [% form.field('bar').render %]
+    [% form.field('bar').renderx(element_class => 'cb33')  %]
     </div>
 
-You can also use the 'render_element' method, if you want to leave the
+You can also use the 'render_element' or 'render_elementx' methodx, if you want to leave the
 wrapper in place, but sometimes render 'bare' html elements:
 
     <div class="my_class">
     [% form.field('foo').render_element %]
+    </div>
+    <div class="my_class">
+    [% form.field('foo').render_elementx(element_class => 'cb33') %]
     </div>
 
 If you wish to loop through the fields yourself, use the 'sorted_fields'
@@ -129,6 +132,8 @@ See also L<HTML::FormHandler::Manual::Templates>.
 If you take all the defaults, you can simply render a form with C<< $form->render >>.
 
     [% form.render %]
+    or
+    [% form.renderx( form_element_class => ['xxx'] ) %]
 
 This uses the L<HTML::FormHandler::Widget::Form::Simple> role, which is applied to
 the form by default. You can use a different form rendering role by including
