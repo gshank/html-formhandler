@@ -1,3 +1,11 @@
+0.40060 Wed Jun 24, 2015
+   Field validation can use Type::Tiny subclasses
+   Replace NoTabTests and EOLTests
+   switch from List::AllUtils+List::MoreUtils to List::Util (in core)
+   add render_elementx and renderx methods to allow setting attributes at render time
+   Default html5 for number changed to 'tel'
+   Warning if Date field is html5 and not ISO
+
 0.40059 Thu Feb 25, 2015
    Remove clear->item_id that snaked in via merge error
    Pass subfield name to repeatable element wrapper
