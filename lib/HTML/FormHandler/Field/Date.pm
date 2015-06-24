@@ -61,7 +61,7 @@ It will render as <input type="date" ... /> instead of type="text".
 =item *
 
 If the field's format is set to anything other than ISO date format
-(%Y-%m-%d), then attempting to render the field will result in a fatal error.
+(%Y-%m-%d), then attempting to render the field will result in a warning.
 
 (Note that the default value for the field's format attribute is, in fact,
 the ISO date format.)
@@ -174,12 +174,9 @@ before 'get_tag' => sub {
         && $self->form->is_html5
         && not( $self->format =~ /^(yy|%Y)-(mm|%m)-(dd|%d)$/ )
     ) {
-        die "Form is HTML5, but date field '"
-            . $self->full_name
+        warn "Form is HTML5, but date field '" . $self->full_name
             . "' has a format other than %Y-%m-%d, which HTML5 requires for date "
-            . "fields. Either set its format to this, "
-            . "or use its default format (which is also this), or set the form's "
-            . "'is_html5' flag to false.";
+            . "fields. Either correct the date format or set the is_html5 flag to false.";
     }
 };
 

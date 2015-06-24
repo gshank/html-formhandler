@@ -82,7 +82,7 @@ while ( my ( $key, $res ) = each %results ) {
     like( $res, qr/input type="number" name="money"/,    "$key Form got the html5 type" );
     like( $res, qr/input type="date" name="date"/,    "$key Form got the html5 type" );
     like( $res, qr/input type="email" name="email"/,    "$key Form got the html5 type" );
-    like( $res, qr/input type="number" name="range"/,    "$key Form got the html5 type" );
+    like( $res, qr/input type="tel" name="range"/,    "$key Form got the html5 type" );
     like( $res, qr/max="10"/,    "$key Form got the html5 max attribute" );
     like( $res, qr/min="5"/,    "$key Form got the html5 min attribute" );
 
