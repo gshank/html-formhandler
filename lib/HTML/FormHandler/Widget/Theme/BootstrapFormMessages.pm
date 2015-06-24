@@ -16,6 +16,8 @@ Role to render form messages using Bootstrap styling.
 sub render_form_messages {
     my ( $self, $result ) = @_;
 
+    return '' if $self->get_tag('no_form_message_div');
+
     $result ||= $self->result;
     my $output = '';
     if ( $result->has_form_errors || $result->has_errors ) {
