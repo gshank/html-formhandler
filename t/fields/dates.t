@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Exception;
 
 
 use HTML::FormHandler::I18N;
@@ -180,5 +181,48 @@ $fif->{'my_date.day'} = '15';
 $form->process( params => $fif );
 ok( $form->validated, 'form validated' );
 is( $form->field('my_date')->value->mdy, '02-15-2010', 'right value for my_date' );
+
+#
+# HTML5 date-format restrictions
+#
+{
+   package Test::Date::HTML5;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+   with 'HTML::FormHandler::Render::Simple';
+
+   has '+is_html5' => ( default => 1 );
+   has_field 'date' => ( type => 'Date', format => 'mm/dd/yy');
+}
+
+throws_ok(
+    sub { $form = Test::Date::HTML5->new; $form->render; },
+    qr/HTML5 requires for date fields/,
+    "Refusal to render an HTML5 form with a non-ISO date format",
+);
+
+{
+   package Test::Date::HTML5;
+   has_field '+date' => ( format => 'yy-mm-dd' );
+}
+
+lives_ok(
+    sub { $form = Test::Date::HTML5->new; $form->render; },
+    "HTML5 renders fine with ISO date format",
+);
+
+{
+   package Test::Date::HTML5::WithDefault;
+   use HTML::FormHandler::Moose;
+   extends 'HTML::FormHandler';
+   with 'HTML::FormHandler::Render::Simple';
+
+   has_field 'date' => ( type => 'Date' );
+}
+
+lives_ok(
+    sub { $form = Test::Date::HTML5::WithDefault->new; $form->render; },
+    "HTML5 renders fine with default date format",
+);
 
 done_testing;

@@ -47,8 +47,26 @@ Customize error messages 'date_early' and 'date_late':
        messages => { date_early => 'Pick a later date',
                      date_late  => 'Pick an earlier date', } );
 
-If form has 'is_html5' flag active it will render <input type="date" ... />
-instead of type="text"
+=head2 Using with HTML5
+
+If the field's form has its 'is_html5' flag active, then the field's rendering
+behavior changes in two ways:
+
+=over
+
+=item *
+
+It will render as <input type="date" ... /> instead of type="text".
+
+=item *
+
+If the field's format is set to anything other than ISO date format
+(%Y-%m-%d), then attempting to render the field will result in a fatal error.
+
+(Note that the default value for the field's format attribute is, in fact,
+the ISO date format.)
+
+=back
 
 =cut
 
@@ -147,6 +165,23 @@ sub get_strf_format {
         $format =~ s/\%5/\%{day_of_month}/g,
         return $format;
 }
+
+before 'get_tag' => sub {
+    my $self = shift;
+
+    if (
+        $self->form
+        && $self->form->is_html5
+        && not( $self->format =~ /^(yy|%Y)-(mm|%m)-(dd|%d)$/ )
+    ) {
+        die "Form is HTML5, but date field '"
+            . $self->full_name
+            . "' has a format other than %Y-%m-%d, which HTML5 requires for date "
+            . "fields. Either set its format to this, "
+            . "or use its default format (which is also this), or set the form's "
+            . "'is_html5' flag to false.";
+    }
+};
 
 __PACKAGE__->meta->make_immutable;
 use namespace::autoclean;
