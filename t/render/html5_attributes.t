@@ -22,7 +22,7 @@ use_ok('HTML::FormHandler::Render::Table');
 
     has_field 'foo' => ( element_class => 'schoen', style => 'bunt', title => 'MyTitle', required => 1, maxlength=> 10 );
     has_field 'bar' => ( element_attr => { arbitrary => 'something', title => 'AltTitle' } );
-    has_field 'range' => ( type => "Integer", range_start => 5, range_end => 10 );
+    has_field 'range' => ( type => "Integer", range_start => 5, range_end => 10, html5_type_attr => 'tel' );
     has_field 'email' => ( type => "Email");
     has_field 'date' => ( type => "Date");
     has_field 'money' => ( type => "Money");
