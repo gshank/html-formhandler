@@ -1,0 +1,15 @@
+<form class="xxx www">
+<div class="c23 a44">
+  <label>Foo</label> [% form.field('foo').render_elementx( 'element_class', 'c123 ty63' ) %]
+</div>
+<div class="x33 y55">
+  <label class='muha' for="opt_in">Opt in?</label> [% form.field('opt_in').render_elementx('element_class', 'v22 dg34' ) %]
+</div>
+<div class="select p55">
+  [% form.field('choose').render_elementx('element_class', 'sw11') %]
+</div>
+<div classs="c23 a44">
+  [% form.field('submit').render_elementx( 'element_class', 'ghty' ) %]
+</div>
+[% form.field('my_hidden').render_elementx('id', 'hid12') %]
+</form>
