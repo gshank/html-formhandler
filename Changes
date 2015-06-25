@@ -1,3 +1,6 @@
+0.40061 Thu Jun 25, 2015
+   Add skip for Type::Tiny::Enum
+
 0.40060 Wed Jun 24, 2015
    Field validation can use Type::Tiny subclasses
    Replace NoTabTests and EOLTests

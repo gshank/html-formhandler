@@ -142,9 +142,9 @@ while (my ($name, $type, $trans) = splice @test, 0, 3) {
 }
 
 SKIP: {
-    eval { require Type::Tiny };
+    eval { require Type::Tiny; require Type::Tiny::Enum; };
 
-    skip "Type::Tiny not installed", 15 if $@;
+    skip "Type::Tiny or Type::Tiny::Enum not installed", 15 if $@;
 
     {
         package Test::Form::Type::Tiny;
