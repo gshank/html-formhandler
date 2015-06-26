@@ -86,15 +86,15 @@ is( $field->errors->[0], 'Email is not valid', 'error from Email' );
 
 my @test = (
     IPAddress => \&IPAddress =>
-        [qw(0.0.0.0 01.001.0.00 198.168.0.101 255.255.255.255)],
-        [qw(1 2.33 4.56.789 198.300.0.101 0.-1.13.255)],
+    [qw(0.0.0.0 01.001.0.00 198.168.0.101 255.255.255.255)],
+    [qw(1 2.33 4.56.789 198.300.0.101 0.-1.13.255)],
         'Not a valid IP address',
     NoSpaces => \&NoSpaces =>
-        [qw(a 1 _+~ *), '#'], ['a b', "x\ny", "foo\tbar"],
+    [qw(a 1 _+~ *), '#'], ['a b', "x\ny", "foo\tbar"],
         'Must not contain spaces',
     WordChars => \&WordChars =>
-        [qw(abc 8 ___ 90_i 0)],
-        ['a b', "x\ny", "foo\tbar", 'c++', 'C#', '$1,000,000'],
+    [qw(abc 8 ___ 90_i 0)],
+    ['a b', "x\ny", "foo\tbar", 'c++', 'C#', '$1,000,000'],
         'Must be made up of letters, digits, and underscores',
     NotAllDigits => \&NotAllDigits =>
         [qw(a 1a . a=1 1.23), 'a 1'], [qw(0 1 12 03450)],
@@ -125,9 +125,9 @@ while (my ($name, $type, $good, $bad, $error_msg) = splice @test, 0, 5) {
 
 @test = (
     Lower => \&Lower =>
-        [A => 'a', AB => 'ab', Abc => 'abc', abc => 'abc', 'A-z' => 'a-z', '1 + X' => '1 + x'],
+    [A => 'a', AB => 'ab', Abc => 'abc', abc => 'abc', 'A-z' => 'a-z', '1 + X' => '1 + x'],
     Upper => \&Upper =>
-        [a => 'A', ab => 'AB', Abc => 'ABC', ABC => 'ABC', 'A-z' => 'A-Z', '1 + x' => '1 + X'],
+    [a => 'A', ab => 'AB', Abc => 'ABC', ABC => 'ABC', 'A-z' => 'A-Z', '1 + x' => '1 + X'],
 );
 
 while (my ($name, $type, $trans) = splice @test, 0, 3) {
@@ -135,29 +135,22 @@ while (my ($name, $type, $trans) = splice @test, 0, 3) {
     $field = HTML::FormHandler::Field->new(name => 'Test', apply => [&$type]);
     $field->build_result;
     while (my ($from, $to) = splice @trans, 0, 2) {
-        $field->_set_input($from);
-        ok($field->validate_field, "$name validated");
-        is($field->value, $to , "$name field transformation");
+    $field->_set_input($from);
+    ok($field->validate_field, "$name validated");
+    is($field->value, $to , "$name field transformation");
     }
 }
 
 SKIP: {
-    eval { require Type::Tiny; require Type::Tiny::Enum; };
+    eval { require Type::Tiny };
 
-    skip "Type::Tiny or Type::Tiny::Enum not installed", 15 if $@;
+    skip "Type::Tiny not installed", 9 if $@;
 
     {
         package Test::Form::Type::Tiny;
 
         use HTML::FormHandler::Moose;
         extends 'HTML::FormHandler';
-
-        use Type::Tiny::Enum;
-        my $ENUM = Type::Tiny::Enum->new(
-            name    => "Meta",
-            values  => [qw( foo bar )],
-            message => sub { "$_ ain't meta" },
-        );
 
         my $NUM = Type::Tiny->new(
             name       => "Number",
@@ -167,8 +160,6 @@ SKIP: {
 
         has_field 'test_a' => ( apply => [ $NUM ] );
         has_field 'test_b' => ( apply => [ { type => $NUM } ] );
-        has_field 'test_c' => ( apply => [ $ENUM ] );
-        has_field 'test_d' => ( apply => [ { type => $ENUM } ] );
     }
 
     my $form = Test::Form::Type::Tiny->new;
@@ -178,32 +169,22 @@ SKIP: {
     my $params = {
         test_a => 'str1',
         test_b => 'str2',
-        test_c => 'str3',
-        test_d => 'str4',
     };
     $form->process($params);
     ok( !$form->validated, 'form did not validate' );
     ok( $form->field('test_a')->has_errors, 'errors on Type::Tiny type');
     ok( $form->field('test_b')->has_errors, 'errors on Type::Tiny type');
-    ok( $form->field('test_c')->has_errors, 'errors on Type::Tiny::Enum type');
-    ok( $form->field('test_d')->has_errors, 'errors on Type::Tiny::Enum type');
     is( $form->field('test_a')->errors->[0], "str1 ain't a number", 'error from Type::Tiny' );
     is( $form->field('test_b')->errors->[0], "str2 ain't a number", 'error from Type::Tiny' );
-    is( $form->field('test_c')->errors->[0], "str3 ain't meta", 'error from Type::Tiny::Enum' );
-    is( $form->field('test_d')->errors->[0], "str4 ain't meta", 'error from Type::Tiny::Enum' );
 
     $params = {
         test_a => '123',
         test_b => '456',
-        test_c => 'foo',
-        test_d => 'bar',
     };
     $form->process($params);
     ok( $form->validated, 'form validated' );
     ok( !$form->field('test_a')->has_errors, 'no errors on Type::Tiny type');
     ok( !$form->field('test_b')->has_errors, 'no errors on Type::Tiny type');
-    ok( !$form->field('test_c')->has_errors, 'no errors on Type::Tiny::Enum type');
-    ok( !$form->field('test_d')->has_errors, 'no errors on Type::Tiny::Enum type');
 }
 
 done_testing;
