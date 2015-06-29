@@ -1,3 +1,6 @@
+0.40063 Mon Jun 29, 2015
+   Raised Moose prereq to 2.1403 because 2.0604 causes failing tests
+
 0.40062 Fri Jun 25, 2015
    Separate out test using Type::Tiny::Enum to skip_all
 
