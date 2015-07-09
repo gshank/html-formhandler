@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::ApplyRole;
 # ABSTRACT: role to apply widgets
+use strict;
+use warnings;
 
 use Moose::Role;
 use File::Spec;

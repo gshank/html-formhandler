@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::MonthName;
 # ABSTRACT: select list with month names
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Select';

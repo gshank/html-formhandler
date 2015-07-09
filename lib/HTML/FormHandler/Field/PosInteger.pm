@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::PosInteger;
 # ABSTRACT: positive integer field
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Integer';

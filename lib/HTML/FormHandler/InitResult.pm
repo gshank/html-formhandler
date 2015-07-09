@@ -1,5 +1,7 @@
 package HTML::FormHandler::InitResult;
 # ABSTRACT: internal code
+use strict;
+use warnings;
 
 use Moose::Role;
 

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Block;
 # ABSTRACT: base block renderer
+use strict;
+use warnings;
 
 =head1 SYNOPSIS
 

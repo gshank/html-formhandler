@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Wrapper::TableInline;
 # ABSTRACT: wrapper class for table layout that doesn't wrap compound fields
+use strict;
+use warnings;
 
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Wrapper::Base';

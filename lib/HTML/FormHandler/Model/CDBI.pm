@@ -1,5 +1,7 @@
 package    # hide from Pause
     HTML::FormHandler::Model::CDBI;
+use strict;
+use warnings;
 # ABSTRACT: Class::DBI model class (non-functioning)
 
 use Moose;

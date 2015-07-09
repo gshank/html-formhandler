@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Duration;
 # ABSTRACT: DateTime::Duration from HTML form values
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::ButtonTag;
 # ABSTRACT: button field rendering widget, using button tag
+use strict;
+use warnings;
 
 use Moose::Role;
 use namespace::autoclean;

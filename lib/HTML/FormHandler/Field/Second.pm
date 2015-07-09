@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Second;
 # ABSTRACT: select list 0 to 59
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::IntRange';

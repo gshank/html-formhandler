@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::Span;
 # ABSTRACT: button field rendering widget
+use strict;
+use warnings;
 
 =head1 SYNOPSIS
 

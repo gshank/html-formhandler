@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Button;
 # ABSTRACT: button field
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::NoValue';

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::MonthDay;
 # ABSTRACT: select list 1 to 31
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::IntRange';

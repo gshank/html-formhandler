@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Wrapper::Base;
 # ABSTRACT: common methods for widget wrappers
+use strict;
+use warnings;
 
 use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');

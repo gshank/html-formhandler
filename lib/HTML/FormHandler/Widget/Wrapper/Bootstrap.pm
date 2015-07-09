@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Wrapper::Bootstrap;
 # ABSTRACT: Twitter Bootstrap 2.0 field wrapper
+use strict;
+use warnings;
 
 use Moose::Role;
 use namespace::autoclean;

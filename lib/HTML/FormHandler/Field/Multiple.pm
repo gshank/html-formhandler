@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Multiple;
 # ABSTRACT: multiple select list
+use strict;
+use warnings;
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
 our $VERSION = '0.01';

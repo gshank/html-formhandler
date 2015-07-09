@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::Textarea;
 # ABSTRACT: textarea rendering widget
+use strict;
+use warnings;
 
 use Moose::Role;
 use namespace::autoclean;

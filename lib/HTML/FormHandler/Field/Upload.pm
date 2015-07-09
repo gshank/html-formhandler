@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Upload;
 # ABSTRACT: file upload field
+use strict;
+use warnings;
 
 use Moose;
 use Moose::Util::TypeConstraints;

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::Hidden;
 # ABSTRACT: hidden field rendering widget
+use strict;
+use warnings;
 use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
 

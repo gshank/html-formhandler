@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Result;
 # ABSTRACT: result class for fields
+use strict;
+use warnings;
 
 use Moose;
 with 'HTML::FormHandler::Result::Role';

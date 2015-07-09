@@ -1,5 +1,7 @@
 package HTML::FormHandler::BuildFields;
 # ABSTRACT: role to build field array
+use strict;
+use warnings;
 
 use Moose::Role;
 use Try::Tiny;

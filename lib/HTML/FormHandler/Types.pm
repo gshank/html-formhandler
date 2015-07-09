@@ -268,4 +268,3 @@ coerce Trim,
          return $_;  };
 
 1;
-

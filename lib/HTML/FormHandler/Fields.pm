@@ -1,5 +1,7 @@
 package HTML::FormHandler::Fields;
 # ABSTRACT: internal role for form and compound fields
+use strict;
+use warnings;
 
 use Moose::Role;
 use HTML::FormHandler::TraitFor::Types;

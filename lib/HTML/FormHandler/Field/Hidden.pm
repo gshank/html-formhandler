@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Hidden;
 # ABSTRACT: hidden field
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';

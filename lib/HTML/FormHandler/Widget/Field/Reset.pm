@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::Reset;
 # ABSTRACT: reset field rendering widget
+use strict;
+use warnings;
 use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');

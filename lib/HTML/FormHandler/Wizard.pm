@@ -1,5 +1,7 @@
 package HTML::FormHandler::Wizard;
 # ABSTRACT: create a multi-page form
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

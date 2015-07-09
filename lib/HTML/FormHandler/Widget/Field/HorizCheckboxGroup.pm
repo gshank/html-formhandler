@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::HorizCheckboxGroup;
 # ABSTRACT: checkbox group field role
+use strict;
+use warnings;
 
 use Moose::Role;
 use namespace::autoclean;

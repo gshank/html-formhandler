@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::DateMDY;
 # ABSTRACT: m/d/y date field
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Date';

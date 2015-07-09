@@ -1,5 +1,7 @@
 package HTML::FormHandler::Page;
 # ABSTRACT: used in Wizard
+use strict;
+use warnings;
 
 use Moose;
 with 'HTML::FormHandler::Pages';

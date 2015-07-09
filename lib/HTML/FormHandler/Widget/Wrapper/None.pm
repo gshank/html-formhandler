@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Wrapper::None;
 # ABSTRACT: wrapper that doesn't wrap
+use strict;
+use warnings;
 
 =head1 DESCRIPTION
 

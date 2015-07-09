@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Integer;
 # ABSTRACT: validate an integer value
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';

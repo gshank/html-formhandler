@@ -1,5 +1,7 @@
 package HTML::FormHandler::I18N;
 # ABSTRACT: internationalization
+use strict;
+use warnings;
 
 use strict;
 use warnings;

@@ -1,5 +1,7 @@
 package HTML::FormHandler::TraitFor::Types;
 # ABSTRACT: types used internally in FormHandler
+use strict;
+use warnings;
 use Moose::Role;
 use Moose::Util::TypeConstraints;
 

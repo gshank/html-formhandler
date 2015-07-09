@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::Select;
 # ABSTRACT: select field rendering widget
+use strict;
+use warnings;
 
 =head1 NAME
 

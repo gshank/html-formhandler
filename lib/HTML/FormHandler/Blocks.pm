@@ -1,5 +1,7 @@
 package HTML::FormHandler::Blocks;
 # ABSTRACT: arrange form layout using blocks
+use strict;
+use warnings;
 
 =head1 SYNOPSIS
 

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Result;
 # ABSTRACT: form result object
+use strict;
+use warnings;
 
 use Moose;
 # following is to allow the form to return an empty

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Model::Object;
 # ABSTRACT: stub for Object model
+use strict;
+use warnings;
 
 use Moose::Role;
 

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Compound;
 # ABSTRACT: field consisting of subfields
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field';

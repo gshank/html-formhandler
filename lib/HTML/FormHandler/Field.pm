@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field;
 # ABSTRACT: base class for fields
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose;
 use HTML::FormHandler::Field::Result;
