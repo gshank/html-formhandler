@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use HTML::FormHandler::Test;
+$ENV{LANGUAGE_HANDLE} = 'en_en';
 
 {
     package MyApp::Form::CtrlStates::Theme;
