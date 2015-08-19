@@ -6,6 +6,8 @@ extends 'HTML::FormHandler::Field';
 use Carp;
 our $VERSION = '0.03';
 
+use HTML::Entities;
+
 =head1 DESCRIPTION
 
 This is a field that includes a list of possible valid options.
@@ -515,7 +517,8 @@ sub _inner_validate_field {
     }
     for my $value ( ref $value eq 'ARRAY' ? @$value : ($value) ) {
         unless ( $options{$value} ) {
-            $self->add_error($self->get_message('select_invalid_value'), $value);
+            my $opt_value = encode_entities($value);
+            $self->add_error($self->get_message('select_invalid_value'), $opt_value);
             return;
         }
     }
