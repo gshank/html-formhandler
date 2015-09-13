@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Nested;
 # ABSTRACT: for nested elements of compound fields
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';

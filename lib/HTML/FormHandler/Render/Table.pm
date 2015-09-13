@@ -1,5 +1,7 @@
 package HTML::FormHandler::Render::Table;
 # ABSTRACT: render a form with a table layout
+use strict;
+use warnings;
 
 use Moose::Role;
 

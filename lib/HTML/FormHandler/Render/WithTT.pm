@@ -1,5 +1,7 @@
 package HTML::FormHandler::Render::WithTT;
 # ABSTRACT: tt rendering
+use strict;
+use warnings;
 
 use Moose::Role;
 use File::ShareDir;

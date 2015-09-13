@@ -1,5 +1,7 @@
 package HTML::FormHandler::TraitFor::I18N;
 # ABSTRACT: localization
+use strict;
+use warnings;
 
 use HTML::FormHandler::I18N;
 use Moose::Role;

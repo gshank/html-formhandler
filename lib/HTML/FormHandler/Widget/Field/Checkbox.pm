@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::Checkbox;
 # ABSTRACT: HTML attributes field role
+use strict;
+use warnings;
 use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');

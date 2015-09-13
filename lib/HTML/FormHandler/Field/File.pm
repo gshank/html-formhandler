@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::File;
 # ABSTRACT: simple file field; does no processing
+use strict;
+use warnings;
 use Moose;
 extends 'HTML::FormHandler::Field';
 

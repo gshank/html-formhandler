@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Theme::Bootstrap3;
 # ABSTRACT: sample Bootstrap3 theme
+use strict;
+use warnings;
 
 =head1 SYNOPSIS
 

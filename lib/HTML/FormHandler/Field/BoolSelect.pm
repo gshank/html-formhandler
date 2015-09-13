@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::BoolSelect;
 # ABSTRACT: Boolean select field
+use strict;
+use warnings;
 
 =head1 SYNOPSIS
 

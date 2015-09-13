@@ -1,5 +1,7 @@
 package HTML::FormHandler::Render::Util;
 # ABSTRACT: rendering utility
+use strict;
+use warnings;
 use Sub::Exporter;
 Sub::Exporter::setup_exporter({ exports => [ 'process_attrs', 'cc_widget', 'ucc_widget' ] } );
 

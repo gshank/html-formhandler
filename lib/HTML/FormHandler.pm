@@ -1,5 +1,7 @@
 package HTML::FormHandler;
 # ABSTRACT: HTML forms using Moose
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Base'; # to make some methods overridable by roles

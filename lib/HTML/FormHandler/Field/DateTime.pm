@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::DateTime;
 # ABSTRACT: compound DateTime field
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';

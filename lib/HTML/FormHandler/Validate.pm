@@ -1,5 +1,7 @@
 package HTML::FormHandler::Validate;
 # ABSTRACT: validation role (internal)
+use strict;
+use warnings;
 
 =head1 SYNOPSIS
 

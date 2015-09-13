@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::NoValue;
 # ABSTRACT: base class for submit field
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field';

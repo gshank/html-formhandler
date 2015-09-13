@@ -1,5 +1,7 @@
 package  HTML::FormHandler::Moose;
 # ABSTRACT: to add FormHandler sugar
+use strict;
+use warnings;
 
 use Moose;
 use Moose::Exporter;

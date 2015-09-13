@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Wrapper::SimpleInline;
 # ABSTRACT: simple field wrapper
+use strict;
+use warnings;
 
 use Moose::Role;
 use namespace::autoclean;

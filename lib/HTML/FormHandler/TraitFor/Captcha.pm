@@ -1,5 +1,7 @@
 package HTML::FormHandler::TraitFor::Captcha;
 # ABSTRACT: generate and validate captchas
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose::Role;
 use GD::SecurityImage;

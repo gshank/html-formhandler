@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Reset;
 # ABSTRACT: reset field
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::NoValue';

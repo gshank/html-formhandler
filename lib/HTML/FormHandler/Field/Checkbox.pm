@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Checkbox;
 # ABSTRACT: a checkbox field type
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field';

@@ -1,5 +1,7 @@
 package    # hide from Pause
     HTML::FormHandler::Meta::Role;
+use strict;
+use warnings;
 # ABSTRACT: field_list and apply_list
 
 use Moose::Role;

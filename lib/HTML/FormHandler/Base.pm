@@ -1,5 +1,7 @@
 package HTML::FormHandler::Base;
 # ABSTRACT: stub
+use strict;
+use warnings;
 use Moose;
 
 with 'HTML::FormHandler::Widget::Form::Simple';

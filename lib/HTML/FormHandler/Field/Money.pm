@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Money;
 # ABSTRACT: US currency-like values
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';

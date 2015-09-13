@@ -1,5 +1,7 @@
 package HTML::FormHandler::Foo;
 # ABSTRACT: Experiment in loading form from config file
+use strict;
+use warnings;
 use Moose;
 extends 'HTML::FormHandler';
 with 'HTML::FormHandler::Render::WithTT';

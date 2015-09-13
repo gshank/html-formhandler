@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::IntRange;
 # ABSTRACT: integer range in select list
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Select';

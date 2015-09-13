@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Boolean;
 # ABSTRACT: a true or false field
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Checkbox';

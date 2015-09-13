@@ -1,5 +1,7 @@
 package    # hide from Pause
     HTML::FormHandler::Field::Repeatable::Instance;
+use strict;
+use warnings;
 # ABSTRACT: used internally by repeatable fields
 
 use Moose;

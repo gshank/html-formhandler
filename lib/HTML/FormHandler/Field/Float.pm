@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Float;
 # ABSTRACT: validate a float value
+use strict;
+use warnings;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';

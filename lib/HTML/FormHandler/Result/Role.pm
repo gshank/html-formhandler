@@ -1,5 +1,7 @@
 package HTML::FormHandler::Result::Role;
 # ABSTRACT: role with common code for form & field results
+use strict;
+use warnings;
 
 use Moose::Role;
 

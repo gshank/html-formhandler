@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Weekday;
 # ABSTRACT: select list day of week strings
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Select';

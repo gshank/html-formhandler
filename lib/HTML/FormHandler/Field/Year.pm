@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Year;
 # ABSTRACT: year selection list
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::IntRange';

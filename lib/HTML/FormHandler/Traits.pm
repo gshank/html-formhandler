@@ -1,5 +1,7 @@
 package HTML::FormHandler::Traits;
 # ABSTRACT: customized replacement for MooseX::Traits
+use strict;
+use warnings;
 use Moose::Role;
 use Class::Load qw/ load_class /;
 use namespace::autoclean;

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Render::Simple;
 # ABSTRACT: simple rendering role
+use strict;
+use warnings;
 
 use Moose::Role;
 

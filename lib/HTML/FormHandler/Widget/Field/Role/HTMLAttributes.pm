@@ -1,5 +1,7 @@
 package HTML::FormHandler::Widget::Field::Role::HTMLAttributes;
 # ABSTRACT: apply HTML attributes
+use strict;
+use warnings;
 
 =head1 SYNOPSIS
 

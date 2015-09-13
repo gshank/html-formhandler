@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::TextArea;
 # ABSTRACT: textarea input
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';

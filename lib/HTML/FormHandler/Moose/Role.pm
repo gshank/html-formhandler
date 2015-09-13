@@ -1,5 +1,7 @@
 package HTML::FormHandler::Moose::Role;
 # ABSTRACT: to add sugar to roles
+use strict;
+use warnings;
 
 use Moose::Role;
 use Moose::Exporter;

@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::PrimaryKey;
 # ABSTRACT: primary key field
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field';

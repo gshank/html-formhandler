@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Select;
 # ABSTRACT: select fields
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field';

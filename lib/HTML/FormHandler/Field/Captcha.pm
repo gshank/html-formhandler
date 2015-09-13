@@ -1,5 +1,7 @@
 package HTML::FormHandler::Field::Captcha;
 # ABSTRACT: captcha field with GD::SecurityImage
+use strict;
+use warnings;
 
 use Moose;
 extends 'HTML::FormHandler::Field';
