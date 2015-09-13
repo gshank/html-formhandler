@@ -16,6 +16,8 @@ use HTML::FormHandler::Test;
 
 }
 
+$ENV{LANGUAGE_HANDLE} = 'en_en';
+
 my $form = MyApp::Form::Test->new;
 $form->process( params => { foo => 'my_foo', bar => 'my_bar' } );
 
