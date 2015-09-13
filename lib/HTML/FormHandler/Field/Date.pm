@@ -172,6 +172,7 @@ before 'get_tag' => sub {
     if (
         $self->form
         && $self->form->is_html5
+        && $self->html5_type_attr eq 'date' # subclass may be using different input type
         && not( $self->format =~ /^(yy|%Y)-(mm|%m)-(dd|%d)$/ )
     ) {
         warn "Form is HTML5, but date field '" . $self->full_name
