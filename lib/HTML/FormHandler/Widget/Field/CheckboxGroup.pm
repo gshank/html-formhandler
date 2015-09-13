@@ -103,6 +103,10 @@ sub render_option {
     $output .= $self->html_filter($label);
     $output .= "\n</label>";
     $self->inc_options_index;
+
+    if ($self->get_tag('checkbox_element_wrapper')) {
+        $output = qq{<div class="checkbox">$output</div>};
+    }
     return $output;
 }
 

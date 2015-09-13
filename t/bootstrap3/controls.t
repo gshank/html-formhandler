@@ -25,9 +25,15 @@ my $expected = '
 <div class="form-group">
   <label class="control-label" for="inlineCheckboxes">Inline checkboxes</label>
   <div>
-    <label class="checkbox checkbox-inline" for="inlineCheckboxes.0"><input id="inlineCheckboxes.0" name="inlineCheckboxes" type="checkbox" value="option1" /> 1 </label>
-    <label class="checkbox checkbox-inline" for="inlineCheckboxes.1"><input id="inlineCheckboxes.1" name="inlineCheckboxes" type="checkbox" value="option2" /> 2 </label>
-    <label class="checkbox checkbox-inline" for="inlineCheckboxes.2"><input id="inlineCheckboxes.2" name="inlineCheckboxes" type="checkbox" value="option3" /> 3 </label>
+    <div class="checkbox">
+      <label class="checkbox checkbox-inline" for="inlineCheckboxes.0"><input id="inlineCheckboxes.0" name="inlineCheckboxes" type="checkbox" value="option1" /> 1 </label>
+    </div>
+    <div class="checkbox">
+      <label class="checkbox checkbox-inline" for="inlineCheckboxes.1"><input id="inlineCheckboxes.1" name="inlineCheckboxes" type="checkbox" value="option2" /> 2 </label>
+    </div>
+    <div class="checkbox">
+      <label class="checkbox checkbox-inline" for="inlineCheckboxes.2"><input id="inlineCheckboxes.2" name="inlineCheckboxes" type="checkbox" value="option3" /> 3 </label>
+    </div>
   </div>
 </div>
 ';
