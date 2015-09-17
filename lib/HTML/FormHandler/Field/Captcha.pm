@@ -36,7 +36,7 @@ has 'scramble' => ( isa => 'Int', is => 'rw', default => '0' );
 has 'lines'    => ( isa => 'Int', is => 'rw', default => '2' );
 has 'gd_font'  => ( isa => 'Str', is => 'rw', default => 'Large' );
 has 'image'    => ( is  => 'rw' );
-has '+css_class' => ( default => 'captcha' );
+has '+wrapper_class' => ( default => 'captcha' );
 has '+widget' => ( default => 'Captcha' );
 
 has '+noupdate' => ( default => 1 );
