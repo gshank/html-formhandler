@@ -9,7 +9,7 @@ Sample Bootstrap3 theme role. Can be applied to your subclass of HTML::FormHandl
 Sets the widget wrapper to 'Bootstrap3' and renders form messages using Bootstrap3
 formatting and classes.
 
-There is an example app using Bootstrap3 at http://github.com:gshank/formhandler-example.
+There is an example app using Bootstrap3 at http://github.com/gshank/formhandler-example.
 
 This is a lightweight example of what you could do in your own custom
 Bootstrap3 theme. The heavy lifting is done by the Bootstrap3 wrapper,

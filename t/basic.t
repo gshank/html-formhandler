@@ -94,7 +94,6 @@ $form = My::Form->new( init_object => $init_object, no_preload => 0 );
 is( $form->field('optname')->value, 'Over Again', 'value with init_obj' );
 # non-posted params
 $form->process( params => {} );
-my $value = $form->value;
 ok( !$form->validated, 'form validated' );
 
 # it's not crystal clear what the behavior should be here, but I think
