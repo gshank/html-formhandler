@@ -46,7 +46,7 @@ Dynamic select lists are not supported yet. Static select lists
 (that are the same for every form execution) should work fine, but lists
 that are different depending on some field value will not.
 
-Most of this object is implemented in L<HTML::FormHandler::Role::Result>,
+Most of this object is implemented in L<HTML::FormHandler::Result::Role>,
 because it is shared with L<HTML::FormHandler::Field::Result>.
 
 =cut
