@@ -31,5 +31,14 @@ coerce 'HFH::SelectOptions'
          return $opts;
      };
 
+coerce 'HFH::SelectOptions'
+  => from 'ArrayRef[ArrayRef]'
+  => via {
+         my @options = @{ $_[0] };
+         my $opts;
+         push @{$opts}, { value => $_, label => $_ } foreach @options;
+         return $opts;
+     };
+
 no Moose::Util::TypeConstraints;
 1;

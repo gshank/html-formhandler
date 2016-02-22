@@ -167,6 +167,26 @@ is_deeply( $form->fif, { my_list => 2 }, 'fif is correct' );
 $rendered_field = $form->field('my_list')->render;
 like( $rendered_field, qr/<option value="2" id="my_list\.1" selected="selected">/, 'element is selected' );
 
+
+{
+    package Test::Form3;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field fruit => (
+        type => 'Select',
+        options => [ [ qw(apricot banana cherry) ] ],
+    );
+}
+
+$form = Test::Form3->new;
+ok( $form, 'form 3 built' );
+my $expected = [ qw(apricot banana cherry) ];
+is_deeply $form->field('fruit')->options,
+    { label => $expected, value => $expected },
+    'Form 3 has expected options';
+
+
 # following test is for 'has_many' select field flag
 {
     package Test::HasMany;
