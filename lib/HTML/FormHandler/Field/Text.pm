@@ -19,6 +19,7 @@ has '+widget' => ( default => 'Text' );
 our $class_messages = {
     'text_maxlength' => 'Field should not exceed [quant,_1,character]. You entered [_2]',
     'text_minlength' => 'Field must be at least [quant,_1,character]. You entered [_2]',
+    'multiple_values_disallowed' => 'Field must contain a single value',
 };
 
 sub get_class_messages {
@@ -53,6 +54,13 @@ sub validate {
             $field->get_message('text_minlength'),
             $minlength, length $value, $field->loc_label )
             if length $value < $minlength;
+    }
+
+    # Check for multiple values
+    if ( ref $value eq 'ARRAY' ) {
+        return $field->add_error(
+            $field->get_message('multiple_values_disallowed'),
+        );
     }
     return 1;
 }

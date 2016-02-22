@@ -65,6 +65,20 @@ ok( !$form->field('text_gt')->has_errors, 'no errors on subtype');
 ok( !$form->field('text_both')->has_errors, 'no errors on both');
 ok( !$form->field('state')->has_errors, 'no errors on state' );
 
+$params = {
+   test => 100,
+   text_gt => 21,
+   text_both => 15,
+   state => [ qw(NY IL) ],
+};
+
+$form->process($params);
+ok( !$form->validated, 'form did not validate' );
+ok( !$form->field('test')->has_errors, 'no errors on MooseX type');
+ok( !$form->field('text_gt')->has_errors, 'no errors on subtype');
+ok( !$form->field('text_both')->has_errors, 'no errors on both');
+ok( $form->field('state')->has_errors, 'errors on state' );
+
 # State
 my $field = HTML::FormHandler::Field->new( name => 'Test1', apply => [ State ] );
 $field->build_result;
