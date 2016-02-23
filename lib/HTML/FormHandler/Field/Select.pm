@@ -97,6 +97,26 @@ See also L<HTML::FormHandler::Model::DBIC>, the 'lookup_options' method.
 
 =back
 
+The options field should contain one of the following data structures:
+
+=over
+
+=item ArrayRef of HashRefs
+
+Each hash reference defines an option, with the label and value
+attributes corresponding to those of the HTML field.
+
+=item ArrayRef
+
+A list of key/value pairs corresponding to HTML field values and labels.
+
+=item ArrayRef containing one ArrayRef
+
+Each item inside the inner ArrayRef defines both the label and value of
+an option.
+
+=back
+
 =head2 Customizing options
 
 Additional attributes can be added in the options array hashref, by using
