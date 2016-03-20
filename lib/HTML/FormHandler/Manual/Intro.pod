@@ -244,7 +244,7 @@ You can create 'compound' fields and include them in a form:
     package MyApp::Form::Complex;
     use HTML::FormHandler::Moose;
     extends 'HTML::FormHandler';
-    has '+field_name_space' => ( sub => {['MyApp::Form::Field']} );
+    has '+field_name_space' => ( default => 'MyApp::Form::Field' );
     has_field 'compound1' => ( type => 'Complex' );
     has_field 'compound2' => ( type => 'Complex' );
 
