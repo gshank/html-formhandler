@@ -1,3 +1,7 @@
+0.40065 Sat Mar 19, 2016
+   Ensure Text fields only contain a single value
+   Make it easier to specify a Select field having identical labels and values.
+
 0.40064 Thu Sep 17, 2015
    Don't warn about date format unless set to `date`
    Wrap checkbox in CheckboxGroup, if requested
