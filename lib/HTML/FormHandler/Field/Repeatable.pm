@@ -100,6 +100,25 @@ after the database update succeeds.
 This attribute contains the next index number available to create an
 additional array element.
 
+=item init_contains
+
+When the Repeatable is repeated, this hashref will be used to initialise each
+instance. It can contain any of the same attributes you would normally give to
+L<HTML::FormHandler/has_field>, except C<type>, for obvious reasons.
+
+    has_field 'addresses' => (
+        type => 'Repeatable',
+        init_contains => {
+            wrapper_attr => {
+                rel => 'address'
+            },
+            wrapper_class => [ 'row' ]
+        }
+    );
+
+Note that providing a C<wrapper_class> to this hashref will override the default
+C<hfh-repinst> class on these instances.
+
 =item num_when_empty
 
 This attribute (default 1) indicates how many empty fields to present
