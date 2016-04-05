@@ -598,8 +598,15 @@ sub _load_options {
                                # from a table, already set options attributes stays put
 
     # allow returning arrayref
-    if ( ref $options[0] eq 'ARRAY' ) {
-        @options = @{ $options[0] };
+    my $first_option = $options[0];
+    if ( ref $first_option eq 'ARRAY' ) {
+        if ( ref $first_option->[0] eq 'ARRAY' ) {
+            @options = map { label => $_, value => $_ },
+                @{ $first_option->[0] };
+        }
+        else {
+            @options = @$first_option;
+        }
     }
     return unless @options;
     my $opts;

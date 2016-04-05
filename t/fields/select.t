@@ -186,6 +186,21 @@ is_deeply $form->field('fruit')->options,
     { label => $expected, value => $expected },
     'Form 3 has expected options';
 
+my @day_options = qw(Monday Tuesday Wednesday);
+{
+    package Test::Form4;
+    use HTML::FormHandler::Moose;
+    extends 'HTML::FormHandler';
+
+    has_field day => ( type => 'Select' );
+    sub options_day { return [[ @day_options ]] }
+}
+
+$form = Test::Form4->new;
+ok( $form, 'form 4 built' );
+my @expected_days = map { label => $_, value => $_ }, @day_options;
+is_deeply [ $form->field('day')->options ], \@expected_days,
+    'Form 4 has expected options';
 
 # following test is for 'has_many' select field flag
 {
