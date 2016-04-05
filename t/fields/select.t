@@ -228,7 +228,7 @@ $form->process( params => { foo => 'my_foo', hm_bar => [1,2] } );
 $fif_expected = { foo => 'my_foo', hm_bar => [1,2] };
 is_deeply( $form->fif, $fif_expected, 'got expected fif again' );
 $val_expected = { foo => 'my_foo', hm_bar => [ { my_id => 1 }, { my_id => 2 } ] };
-is_deeply( $form->value, $val_expected, 'got expected value agina' );
+is_deeply( $form->value, $val_expected, 'got expected value again' );
 
 {
     package Test::Multiple::InitObject;
