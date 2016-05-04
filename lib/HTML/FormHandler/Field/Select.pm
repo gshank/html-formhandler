@@ -288,6 +288,11 @@ containing options:
 The select rendering widgets all have a 'render_option' method, which may be useful
 for situations when you want to split up the rendering of a radio group or checkbox group.
 
+=head2 Rendering with Template Toolkit
+
+Calling 'options' from Template Toolkit can causes issues with wantarray when there
+is only a single option. As a solution you should use 'options_ref'.
+
 =head1 Database relations
 
 Also see L<HTML::FormHandler::TraitFor::Model::DBIC>.
