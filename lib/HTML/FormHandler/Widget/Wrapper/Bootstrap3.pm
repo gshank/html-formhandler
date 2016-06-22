@@ -185,12 +185,18 @@ sub do_prepend_append {
         push @class, 'input-group';
     }
     if ( my $iab_tag = $self->get_tag('input_append_button') ) {
-        my $iab_element_class_tag = $self->get_tag('input_append_button_element_class');
-        my $classes = join(' ', ref $iab_element_class_tag eq 'ARRAY' ? @$iab_element_class_tag : ($iab_element_class_tag));
+        my $iab_element_attr_tag = $self->get_tag('input_append_button_element_attr');
+
+        my ($btn_class, $attr);
+        if (ref $iab_element_attr_tag eq 'HASH') {
+          $btn_class = ref $iab_element_attr_tag->{class} eq 'ARRAY' ? shift @{$iab_element_attr_tag->{class}} : $iab_element_attr_tag->{class};
+          $attr = process_attrs( $iab_element_attr_tag );
+        }
+
         my @buttons = ref $iab_tag eq 'ARRAY' ? @$iab_tag : ($iab_tag);
         my $group = qq{<span class="input-group-btn">};
         foreach my $btn ( @buttons ) {
-            $group .= qq{<button type="button" class="btn $classes">$btn</button>};
+            $group .= qq{<button type="button" class="btn $btn_class"$attr>$btn</button>};
         }
         $group .= qq{</span>};
         $rendered_widget = qq{$rendered_widget$group};
