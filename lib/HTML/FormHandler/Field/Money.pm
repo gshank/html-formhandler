@@ -79,6 +79,25 @@ Uses a period for the decimal point. Widget type is 'text'.
 If form has 'is_html5' flag active it will render <input type="number" ... />
 instead of type="text"
 
+
+=head1 ATTRIBUTES
+
+=head2
+
+=over
+
+=item currency_symbol
+
+Currency symbol to remove from start of input if found, default is dollar
+C<$>.
+
+=item allow_commas
+
+Allow commas in input for digit grouping? Digits are grouped into groups of 3,
+for example C<1,000,000,000>. Defaults to I<false>.
+
+=back
+
 =cut
 
 __PACKAGE__->meta->make_immutable;
