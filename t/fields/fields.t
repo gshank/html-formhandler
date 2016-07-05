@@ -3,6 +3,8 @@ use warnings;
 
 use Test::More;
 
+use charnames ':full';
+
 use HTML::FormHandler::I18N;
 $ENV{LANGUAGE_HANDLE} = 'en_en';
 
@@ -223,10 +225,28 @@ is( $field->value, 123.45, 'Test value == 123.45' );
 $field->_set_input( '   $12x3.45  ' );
 $field->validate_field;
 ok( $field->has_errors, 'Test for errors "   $12x3.45  "' );
-is( $field->errors->[0], 'Value cannot be converted to money', 'get error' );
+is( $field->errors->[1], 'Value cannot be converted to money', 'get error' );
 $field->_set_input( 2345 );
 $field->validate_field;
 is( $field->value, '2345.00', 'transformation worked: 2345 => 2345.00' );
+$field->_set_input( '   $12,345.67  ' );
+$field->validate_field;
+ok( $field->has_errors, 'Test for errors "   $12,345.67  "' );
+is( $field->errors->[0], 'Value must be a real number', 'get error' );
+$field->_set_input( "   \N{POUND SIGN}12,345.67  " );
+$field->validate_field;
+ok( $field->has_errors, 'Test for errors "   \N{POUND SIGN}12,345.67  "' );
+is( $field->errors->[0], 'Value must be a real number', 'get error' );
+$field = $class->new( 
+    name    => 'test_field', 
+    currency_symbol => "\N{POUND SIGN}", 
+    allow_commas => 1,
+);
+$field->build_result;
+ok( defined $field,  'new() called' );
+$field->_set_input( "   \N{POUND SIGN}12,345.67  " );
+$field->validate_field;
+ok( !$field->has_errors, 'Test for errors "   \N{POUND SIGN}12,345.67  "' );
 
 
 # monthday
