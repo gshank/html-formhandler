@@ -237,9 +237,9 @@ $field->_set_input( "   \N{POUND SIGN}12,345.67  " );
 $field->validate_field;
 ok( $field->has_errors, 'Test for errors "   \N{POUND SIGN}12,345.67  "' );
 is( $field->errors->[0], 'Value must be a real number', 'get error' );
-$field = $class->new( 
-    name    => 'test_field', 
-    currency_symbol => "\N{POUND SIGN}", 
+$field = $class->new(
+    name    => 'test_field',
+    currency_symbol => "\N{POUND SIGN}",
     allow_commas => 1,
 );
 $field->build_result;
