@@ -9,7 +9,7 @@ Sample Bootstrap theme role. Can be applied to your subclass of HTML::FormHandle
 Sets the widget wrapper to 'Bootstrap' and renders form messages using Bootstrap
 formatting and classes.
 
-There is an example app using Bootstrap at http://github.com:gshank/formhandler-example.
+There is an example app using Bootstrap at http://github.com/gshank/formhandler-example.
 
 This is a lightweight example of what you could do in your own custom
 Bootstrap theme. The heavy lifting is done by the Bootstrap wrapper,
