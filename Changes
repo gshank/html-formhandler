@@ -1,3 +1,12 @@
+0.40066 Mon Jul 18, 2016
+   Improve Select field option list support
+   Support arrayref-of-arrayref options in a subroutine
+   Allow input_append_button to take input_append_button_element_class
+   Allow attributes to be specified for input_append_button
+   Add comma digit grouping and custom currency symbol
+   Allow input_append_button to take input_append_button_element_class
+   Various minor doc updates
+
 0.40065 Sat Mar 19, 2016
    Ensure Text fields only contain a single value
    Make it easier to specify a Select field having identical labels and values.
