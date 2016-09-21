@@ -200,16 +200,6 @@ Or create validators with check:
     has_field 'quux' => (
         apply => [ { check => qr/abc/, message => 'Not a valid quux' } ] );
 
-Or use a validate coderef:
-
-    has_field 'foo' => ( validate_method => \&check_foo );
-    sub check_foo {
-        my $self = shift;
-        if ( $self->value =~ s/..../ ) {
-            $self->add_error('....');
-        }
-    }
-
 You can also create custom fields with custom validation, or use an
 existing field that does the validation you need.
 
