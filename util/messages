@@ -1,114 +1,117 @@
 [
-          {
-            'Field' => {
-                         'range_too_high' => 'Value must be less than or equal to [_1]',
-                         'range_incorrect' => 'Value must be between [_1] and [_2]',
-                         'wrong_value' => 'Wrong value',
-                         'error_occurred' => 'error occurred',
-                         'range_too_low' => 'Value must be greater than or equal to [_1]',
-                         'field_invalid' => 'field is invalid',
-                         'required' => '[_1] field is required',
-                         'not_allowed' => '[_1] not allowed',
-                         'no_match' => '[_1] does not match'
-                       }
-          },
-          {
-            'Types' => {
-                         'NegativeNum' => 'Must be a negative number',
-                         'NegativeInt' => 'Must be a negative integer',
-                         'PositiveNum' => 'Must be a positive number',
-                         'WordChars' => 'Must be made up of letters, digits, and underscores',
-                         'IPAddress' => 'Not a valid IP address',
-                         'PositiveInt' => 'Must be a positive integer',
-                         'State' => 'Not a valid state',
-                         'Printable' => 'Field contains non-printable characters',
-                         'Password' => 'Must be between 4 and 255 chars',
-                         'Zip' => 'Zip is not valid',
-                         'SimpleStr' => 'Must be a single line of no more than 255 chars',
-                         'Email' => 'Email is not valid',
-                         'SingleDigit' => 'Must be a single digit',
-                         'NonEmptySimpleStr' => 'Must be a non-empty single line of no more than 255 chars',
-                         'NotAllDigits' => 'Must not be all digits',
-                         'NoSpaces' => 'Must not contain spaces',
-                         'SingleWord' => 'Field must contain a single word',
-                         'NonEmptyStr' => 'Must not be empty',
-                         'StrongPassword' => 'Must be between 8 and 255 chars, and contain a non-alpha char'
-                       }
-          },
-          {
-            'Date' => {
-                        'date_late' => 'Date is too late',
-                        'date_early' => 'Date is too early'
+  {
+    'Field' => {
+                 'error_occurred' => 'error occurred',
+                 'range_incorrect' => 'Value must be between [_1] and [_2]',
+                 'required' => '[_1] field is required',
+                 'range_too_high' => 'Value must be less than or equal to [_1]',
+                 'range_too_low' => 'Value must be greater than or equal to [_1]',
+                 'unique' => 'Duplicate value for [_1]',
+                 'wrong_value' => 'Wrong value',
+                 'no_match' => '[_1] does not match',
+                 'not_allowed' => '[_1] not allowed',
+                 'field_invalid' => 'field is invalid'
+               }
+  },
+  {
+    'Types' => {
+                 'SimpleStr' => 'Must be a single line of no more than 255 chars',
+                 'NegativeNum' => 'Must be a negative number',
+                 'Zip' => 'Zip is not valid',
+                 'Email' => 'Email is not valid',
+                 'Password' => 'Must be between 4 and 255 chars',
+                 'NotAllDigits' => 'Must not be all digits',
+                 'IPAddress' => 'Not a valid IP address',
+                 'PositiveInt' => 'Must be a positive integer',
+                 'NonEmptyStr' => 'Must not be empty',
+                 'State' => 'Not a valid state',
+                 'StrongPassword' => 'Must be between 8 and 255 chars, and contain a non-alpha char',
+                 'NoSpaces' => 'Must not contain spaces',
+                 'NegativeInt' => 'Must be a negative integer',
+                 'SingleDigit' => 'Must be a single digit',
+                 'SingleWord' => 'Field must contain a single word',
+                 'PrintableAndNewline' => 'Field contains non-printable characters',
+                 'NonEmptySimpleStr' => 'Must be a non-empty single line of no more than 255 chars',
+                 'Printable' => 'Field contains non-printable characters',
+                 'WordChars' => 'Must be made up of letters, digits, and underscores',
+                 'PositiveNum' => 'Must be a positive number'
+               }
+  },
+  {
+    'Date' => {
+                'date_late' => 'Date is too late',
+                'date_early' => 'Date is too early'
+              }
+  },
+  {
+    'DateTime' => {
+                    'datetime_invalid' => 'Not a valid DateTime'
+                  }
+  },
+  {
+    'Duration' => {
+                    'duration_invalid' => 'Invalid value for [_1]: [_2]'
+                  }
+  },
+  {
+    'Email' => {
+                 'email_format' => 'Email should be of the format [_1]'
+               }
+  },
+  {
+    'Float' => {
+                 'float_precision' => 'May have a maximum of [quant,_1,digit] after the decimal point, but has [_2]',
+                 'float_needed' => 'Must be a number. May contain numbers, +, - and decimal separator \'[_1]\'',
+                 'float_size' => 'Total size of number must be less than or equal to [_1], but is [_2]'
+               }
+  },
+  {
+    'Integer' => {
+                   'integer_needed' => 'Value must be an integer'
+                 }
+  },
+  {
+    'Money' => {
+                 'money_convert' => 'Value cannot be converted to money',
+                 'money_real' => 'Value must be a real number'
+               }
+  },
+  {
+    'Password' => {
+                    'password_ne_username' => 'Password must not match [_1]',
+                    'required' => 'Please enter a password in this field'
+                  }
+  },
+  {
+    'PasswordConf' => {
+                        'required' => 'Please enter a password confirmation',
+                        'pass_conf_not_matched' => 'The password confirmation does not match the password'
                       }
-          },
-          {
-            'DateTime' => {
-                            'datetime_invalid' => 'Not a valid DateTime'
-                          }
-          },
-          {
-            'Duration' => {
-                            'duration_invalid' => 'Invalid value for [_1]: [_2]'
-                          }
-          },
-          {
-            'Email' => {
-                         'email_format' => 'Email should be of the format [_1]'
-                       }
-          },
-          {
-            'Float' => {
-                         'float_needed' => 'Must be a number. May contain numbers, +, - and decimal separator \'[_1]\'',
-                         'float_precision' => 'May have a maximum of [quant,_1,digit] after the decimal point, but has [_2]',
-                         'float_size' => 'Total size of number must be less than or equal to [_1], but is [_2]'
-                       }
-          },
-          {
-            'Integer' => {
-                           'integer_needed' => 'Value must be an integer'
-                         }
-          },
-          {
-            'Money' => {
-                         'money_real' => 'Value must be a real number',
-                         'money_convert' => 'Value cannot be converted to money'
-                       }
-          },
-          {
-            'Password' => {
-                            'required' => 'Please enter a password in this field',
-                            'password_ne_username' => 'Password must not match [_1]'
-                          }
-          },
-          {
-            'PasswordConf' => {
-                                'required' => 'Please enter a password confirmation',
-                                'pass_conf_not_matched' => 'The password confirmation does not match the password'
-                              }
-          },
-          {
-            'PosInteger' => {
-                              'integer_positive' => 'Value must be a positive integer'
-                            }
-          },
-          {
-            'Select' => {
-                          'select_not_multiple' => 'This field does not take multiple values',
-                          'select_invalid_value' => '\'[_1]\' is not a valid value'
-                        }
-          },
-          {
-            'Text' => {
-                        'text_maxlength' => 'Field should not exceed [quant,_1,character]. You entered [_2]',
-                        'text_minlength' => 'Field must be at least [quant,_1,character]. You entered [_2]'
-                      }
-          },
-          {
-            'Upload' => {
-                          'upload_file_too_small' => 'File is too small (< [_1] bytes)',
-                          'upload_file_empty' => 'File uploaded is empty',
-                          'upload_file_not_found' => 'File not found for upload field',
-                          'upload_file_too_big' => 'File is too big (> [_1] bytes)'
-                        }
-          }
-        ]
+  },
+  {
+    'PosInteger' => {
+                      'integer_positive' => 'Value must be a positive integer'
+                    }
+  },
+  {
+    'Select' => {
+                  'select_invalid_value' => '\'[_1]\' is not a valid value',
+                  'select_not_multiple' => 'This field does not take multiple values'
+                }
+  },
+  {
+    'Text' => {
+                'text_minlength' => 'Field must be at least [quant,_1,character]. You entered [_2]',
+                'multiple_values_disallowed' => 'Field must contain a single value',
+                'text_maxlength' => 'Field should not exceed [quant,_1,character]. You entered [_2]'
+              }
+  },
+  {
+    'Upload' => {
+                  'upload_file_too_big' => 'File is too big (> [_1] bytes)',
+                  'upload_file_too_small' => 'File is too small (< [_1] bytes)',
+                  'upload_file_not_found' => 'File not found for upload field',
+                  'upload_file_empty' => 'File uploaded is empty'
+                }
+  }
+]
