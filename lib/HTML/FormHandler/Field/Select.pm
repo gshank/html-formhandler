@@ -180,8 +180,8 @@ option groups.
 
 =head2 options
 
-This is an array of hashes for this field.
-Each has must have a label and value keys.
+The options available for this field as defined in the L<< /DESCRIPTION
+>> above.
 
 =head2 options_method
 
