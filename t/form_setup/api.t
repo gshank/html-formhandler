@@ -14,6 +14,10 @@ use Test::More;
     has_field 'naffy' => ( type => 'Compound' );
     has_field 'naffy.one';
     has_field 'naffy.two' => ( default => 'two');
+    has_field 'subby' => ( type => 'Select' );
+
+    sub options_subby { [[ qw(ex why zed) ]] }
+    sub default_subby { 'zed' }
 
 }
 
@@ -29,6 +33,7 @@ my $exp_fif = {
     moxy => '',
     'naffy.one' => '',
     'naffy.two' => 'two',
+    subby => 'zed',
 };
 is_deeply( $fif, $exp_fif, 'expected fif for non-validated' );
 
@@ -42,6 +47,7 @@ $exp_fif = {
     moxy => '',
     'naffy.one' => '',
     'naffy.two' => 'two',
+    subby => 'zed',
 };
 is_deeply( $fif, $exp_fif, 'got expected fill-in-form including defaults' );
 
@@ -56,7 +62,12 @@ my $val_exp = {
         one => undef,
         two => 'two',
     },
+    subby => 'zed',
 };
 is_deeply( $value, $val_exp, 'got expected value' );
+
+$form->process( params => $params );
+$fif = $form->fif;
+is_deeply( $fif, $exp_fif, 'got expected fill-in-form from params as arg' );
 
 done_testing;

@@ -1344,11 +1344,11 @@ sub _result_from_input {
         # not a reliable way to get there from here. Field can handle...
         return $self->_result_from_fields( $result );
     }
-    elsif ( $self->has_input_without_param ) {
-        $result->_set_input( $self->input_without_param );
-    }
     elsif ( $self->form && $self->form->use_fields_for_input_without_param ) {
         return $self->_result_from_fields( $result );
+    }
+    elsif ( $self->has_input_without_param ) {
+        $result->_set_input( $self->input_without_param );
     }
     $self->_set_result($result);
     $result->_set_field_def($self);
