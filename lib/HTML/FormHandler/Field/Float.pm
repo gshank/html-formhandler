@@ -3,8 +3,6 @@ package HTML::FormHandler::Field::Float;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.02';
-
 
 has '+size'                 => ( default => 8 );
 has 'precision'             => ( isa => 'Int|Undef', is => 'rw', default => 2 );

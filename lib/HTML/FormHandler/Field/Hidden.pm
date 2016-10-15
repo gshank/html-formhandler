@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::Hidden;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.01';
 
 has '+widget' => ( default => 'Hidden' );
 has '+do_label' => ( default => 0 );

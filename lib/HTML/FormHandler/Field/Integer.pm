@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::Integer;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.02';
 
 has '+size' => ( default => 8 );
 has '+html5_type_attr' => ( default => 'number' );

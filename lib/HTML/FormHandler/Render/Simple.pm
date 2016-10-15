@@ -7,8 +7,6 @@ requires( 'sorted_fields', 'field' );
 
 use HTML::FormHandler::Render::Util ('process_attrs', 'ucc_widget');
 
-our $VERSION = 0.01;
-
 =head1 SYNOPSIS
 
 This is a Moose role that is an example of a simple rendering

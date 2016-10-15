@@ -4,8 +4,6 @@ package HTML::FormHandler::Field::Year;
 use Moose;
 extends 'HTML::FormHandler::Field::IntRange';
 
-our $VERSION = '0.01';
-
 has '+range_start' => (
     default => sub {
         my $year = (localtime)[5] + 1900 - 5;

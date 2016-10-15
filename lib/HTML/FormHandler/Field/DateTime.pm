@@ -6,7 +6,6 @@ extends 'HTML::FormHandler::Field::Compound';
 
 use DateTime;
 use Try::Tiny;
-our $VERSION = '0.04';
 
 =head1 DESCRIPTION
 

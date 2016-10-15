@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::Checkbox;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field';
-our $VERSION = '0.02';
 
 =head1 DESCRIPTION
 

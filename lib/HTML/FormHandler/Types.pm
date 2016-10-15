@@ -4,8 +4,6 @@ package HTML::FormHandler::Types;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
-
 use MooseX::Types -declare => [
     'PositiveNum',    'PositiveInt', 'NegativeNum',         'NegativeInt',
     'SingleDigit',    'SimpleStr',   'NonEmptySimpleStr',   'Password',

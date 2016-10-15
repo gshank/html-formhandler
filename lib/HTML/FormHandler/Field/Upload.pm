@@ -6,8 +6,6 @@ use Moose::Util::TypeConstraints;
 
 extends 'HTML::FormHandler::Field';
 
-our $VERSION = '0.02';
-
 =head1 DESCRIPTION
 
 This field is designed to be used with a blessed object with a 'size' method,

@@ -7,8 +7,6 @@ use Carp;
 use Data::Dumper;
 extends 'HTML::FormHandler';
 
-our $VERSION = '0.02';
-
 =head1 SYNOPSIS
 
     package MyApplication::Form::User;

@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::TextArea;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.02';
 
 has '+widget' => ( default => 'Textarea' );
 has 'cols'    => ( isa     => 'Int', is => 'rw' );

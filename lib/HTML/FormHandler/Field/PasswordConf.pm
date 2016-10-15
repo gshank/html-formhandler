@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::PasswordConf;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.03';
 
 =head1 DESCRIPTION
 

@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::MonthName;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
-our $VERSION = '0.01';
 
 sub build_options {
     my $i      = 1;

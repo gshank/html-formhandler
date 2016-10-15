@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::Text;
 
 use Moose;
 extends 'HTML::FormHandler::Field';
-our $VERSION = '0.01';
 
 has 'size' => ( isa => 'Int|Undef', is => 'rw', default => '0' );
 has 'maxlength' => ( isa => 'Int|Undef', is => 'rw' );

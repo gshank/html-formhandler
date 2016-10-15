@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::Money;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
-our $VERSION = '0.01';
 
 has '+html5_type_attr' => ( default => 'number' );
 has 'currency_symbol' => (

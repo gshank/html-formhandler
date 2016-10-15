@@ -2,7 +2,6 @@ package HTML::FormHandler::Field::Multiple;
 # ABSTRACT: multiple select list
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
-our $VERSION = '0.01';
 
 =head1 DESCRIPTION
 

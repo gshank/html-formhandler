@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::IntRange;
 
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
-our $VERSION = '0.01';
 
 has 'label_format' => ( isa => 'Str', is => 'rw', default => '%d' );
 has '+range_start' => ( default => 1 );

@@ -5,7 +5,6 @@ use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
 
 with 'HTML::FormHandler::Widget::Form::Role::HTMLAttributes';
-our $VERSION = 0.01;
 
 =head1 SYNOPSIS
 

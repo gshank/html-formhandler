@@ -3,7 +3,6 @@ package HTML::FormHandler::Field::PosInteger;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Integer';
-our $VERSION = '0.02';
 
 our $class_messages = {
     'integer_positive' => 'Value must be a positive integer',

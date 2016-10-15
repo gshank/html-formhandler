@@ -4,7 +4,6 @@ package HTML::FormHandler::Field::Email;
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Text';
 use Email::Valid;
-our $VERSION = '0.02';
 
 our $class_messages = {
     'email_format' => 'Email should be of the format [_1]',

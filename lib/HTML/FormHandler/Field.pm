@@ -14,8 +14,6 @@ with 'HTML::FormHandler::Validate';
 with 'HTML::FormHandler::Widget::ApplyRole';
 with 'HTML::FormHandler::TraitFor::Types';
 
-our $VERSION = '0.02';
-
 =head1 SYNOPSIS
 
 Instances of Field subclasses are generally built by L<HTML::FormHandler>

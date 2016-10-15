@@ -4,7 +4,6 @@ package HTML::FormHandler::Field::Select;
 use Moose;
 extends 'HTML::FormHandler::Field';
 use Carp;
-our $VERSION = '0.03';
 
 use HTML::Entities;
 
