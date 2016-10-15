@@ -34,7 +34,7 @@ coerce 'HFH::SelectOptions'
 coerce 'HFH::SelectOptions'
   => from 'ArrayRef[ArrayRef]'
   => via {
-         my @options = @{ $_[0] };
+         my @options = @{ $_[0][0] };
          my $opts;
          push @{$opts}, { value => $_, label => $_ } foreach @options;
          return $opts;

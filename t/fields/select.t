@@ -181,10 +181,11 @@ like( $rendered_field, qr/<option value="2" id="my_list\.1" selected="selected">
 
 $form = Test::Form3->new;
 ok( $form, 'form 3 built' );
-my $expected = [ qw(apricot banana cherry) ];
-is_deeply $form->field('fruit')->options,
-    { label => $expected, value => $expected },
+my $expected = [ map { label => $_, value => $_ }, qw(apricot banana cherry) ];
+is_deeply [ $form->field('fruit')->options ], $expected,
     'Form 3 has expected options';
+$rendered_field = $form->field('fruit')->render;
+like $rendered_field, qr/<option value="cherry"/, 'rendered a field';
 
 my @day_options = qw(Monday Tuesday Wednesday);
 {
@@ -201,6 +202,8 @@ ok( $form, 'form 4 built' );
 my @expected_days = map { label => $_, value => $_ }, @day_options;
 is_deeply [ $form->field('day')->options ], \@expected_days,
     'Form 4 has expected options';
+$rendered_field = $form->field('day')->render;
+like $rendered_field, qr/<option value="Tuesday"/, 'rendered a field';
 
 # following test is for 'has_many' select field flag
 {
