@@ -676,13 +676,15 @@ sub fif {
     {
         return defined $lresult->input ? $lresult->input : '';
     }
-    if ( defined $lresult->value ) {
+    if ( $lresult->has_value ) {
+        my $value;
         if( $self->_can_deflate ) {
-            return $self->_apply_deflation($lresult->value);
+            $value = $self->_apply_deflation($lresult->value);
         }
         else {
-            return $lresult->value;
+            $value = $lresult->value;
         }
+        return ( defined $value ? $value : '' );
     }
     elsif ( defined $self->value ) {
         # this is because checkboxes and submit buttons have their own 'value'
