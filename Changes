@@ -1,3 +1,7 @@
+
+   Fixed Text validation checking, to allow deflations and transformations
+   to be applied first.
+
 0.40066 Mon Jul 18, 2016
    Improve Select field option list support
    Support arrayref-of-arrayref options in a subroutine

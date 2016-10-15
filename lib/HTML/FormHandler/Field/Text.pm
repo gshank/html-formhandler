@@ -40,7 +40,7 @@ sub validate {
     my $field = shift;
 
     return unless $field->next::method;
-    my $value = $field->input;
+    my $value = $field->value;
     # Check for max length
     if ( my $maxlength = $field->maxlength ) {
         return $field->add_error( $field->get_message('text_maxlength'),
