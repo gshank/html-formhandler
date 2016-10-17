@@ -601,29 +601,17 @@ sub _load_options {
     return unless @options;    # so if there isn't an options method and no options
                                # from a table, already set options attributes stays put
 
-    # allow returning arrayref
-    my $first_option = $options[0];
-    if ( ref $first_option eq 'ARRAY' ) {
-        if ( ref $first_option->[0] eq 'ARRAY' ) {
-            @options = map { label => $_, value => $_ },
-                @{ $first_option->[0] };
-        }
-        else {
-            @options = @$first_option;
-        }
-    }
-    return unless @options;
-    my $opts;
-    # if options_<field_name> is returning an already constructed array of hashrefs
-    if ( ref $options[0] eq 'HASH' ) {
-        $opts = \@options;
+    # possibilities:
+    #  @options = ( 1 => 'one', 2 => 'two' );
+    #  @options = ([ 1 => 'one', 2 => 'tw' ]);
+    #  @options = ([ { value => 1, label => 'one'}, { value => 2, label => 'two'}]);
+    #  @options = ([[ 'one', 'two' ]]);
+    my $opts = ref $options[0] eq 'ARRAY' ? $options[0] : \@options;
+    if ( ref $opts->[0] eq 'HASH' ) {
+        # do the array of hashrefs separately so we can get the defaults
         $self->default_from_options($opts);
     }
-    else {
-        croak "Options array must contain an even number of elements for field " . $self->name
-            if @options % 2;
-        push @{$opts}, { value => shift @options, label => shift @options } while @options;
-    }
+    $opts = $self->options($opts); # coerce will reformat
     if ($opts) {
         # sort options if sort method exists
         $opts = $self->sort_options($opts) if $self->has_sort_options_method;
