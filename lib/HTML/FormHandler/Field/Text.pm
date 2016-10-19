@@ -34,6 +34,15 @@ sub get_class_messages {
     return $messages;
 }
 
+sub _inner_validate_field {
+    my $self = shift;
+    # Check for multiple values
+    if ( ref $self->value eq 'ARRAY' ) {
+        return $self->add_error(
+            $self->get_message('multiple_values_disallowed'),
+        );
+    }
+}
 
 sub validate {
     my $field = shift;
@@ -53,13 +62,6 @@ sub validate {
             $field->get_message('text_minlength'),
             $minlength, length $value, $field->loc_label )
             if length $value < $minlength;
-    }
-
-    # Check for multiple values
-    if ( ref $value eq 'ARRAY' ) {
-        return $field->add_error(
-            $field->get_message('multiple_values_disallowed'),
-        );
     }
     return 1;
 }

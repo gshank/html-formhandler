@@ -27,6 +27,7 @@ ok( $rendered, 'rendering worked' );
 
 my $params = { foo => '', bar => '1,2'  };
 $form->process( $params );
+ok( $form->validated, 'validated ok' );
 $fif = $form->fif;
 is_deeply( $fif, $params, 'fif ok' );
 my $value = $form->value;
