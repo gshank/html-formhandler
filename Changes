@@ -1,6 +1,13 @@
-
+0.40067 Wed Oct 19, 2016
    Fixed Text validation checking, to allow deflations and transformations
    to be applied first.
+   change order of processing 'input_without_param' and 'use_fields_for_input_without_param'
+    fixes problem with not using default for select field
+   fix for deflation of undef value, from ether's pull request 122
+   switch from JSON.pm to JSON::MaybeXS
+   use coercion on 'options' instead of duplicate code in _load_options
+   use [PkgVersion]
+   fix bug in TextCSV field caused by setting error for multiple values in Text field
 
 0.40066 Mon Jul 18, 2016
    Improve Select field option list support
