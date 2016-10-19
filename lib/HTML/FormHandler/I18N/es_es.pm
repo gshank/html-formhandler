@@ -6,7 +6,6 @@ use warnings;
 use base 'HTML::FormHandler::I18N';
 
 use utf8;
-our $VERSION = '0.02';
 
 # Auto define lexicon
 our %Lexicon = (
@@ -110,10 +109,6 @@ __END__
 =head1 NAME
 
 HTML::FormHandler::I18N::es_es - Spanish message translations
-
-=head1 VERSION
-
-version 0.40025
 
 =head1 AUTHOR
 

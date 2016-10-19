@@ -1,5 +1,6 @@
 package HTML::FormHandler::Field::SelectCSV;
 # ABSTRACT: Multiple select field from CSV value
+
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Select';
 

@@ -106,10 +106,6 @@ __END__
 
 HTML::FormHandler::I18N::cs_cz - Czech message translations
 
-=head1 VERSION
-
-version 0.40057
-
 =head1 AUTHOR
 
 FormHandler Contributors - see HTML::FormHandler

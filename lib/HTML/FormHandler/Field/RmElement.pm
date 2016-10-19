@@ -1,5 +1,6 @@
 package HTML::FormHandler::Field::RmElement;
 # ABSTRACT: field to support repeatable javascript remove
+
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Display';
 use HTML::FormHandler::Render::Util ('process_attrs');

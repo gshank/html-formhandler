@@ -113,17 +113,9 @@ __END__
 
 HTML::FormHandler::I18N::ar_kw - Arabic message translations
 
-=head1 VERSION
-
-version 0.40056
-
 =head1 NAME
 
 HTML::FormHandler::I18N::ar_kw - Arabic message translations
-
-=head1 VERSION
-
-version 0.40025
 
 =head1 AUTHOR
 

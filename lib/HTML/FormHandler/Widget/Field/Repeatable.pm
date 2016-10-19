@@ -1,5 +1,6 @@
 package HTML::FormHandler::Widget::Field::Repeatable;
 # ABSTRACT: repeatable field widget
+
 use Moose::Role;
 with 'HTML::FormHandler::Widget::Field::Compound';
 

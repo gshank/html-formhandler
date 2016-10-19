@@ -1,5 +1,6 @@
 package HTML::FormHandler::Field::Multiple;
 # ABSTRACT: multiple select list
+
 use Moose;
 extends 'HTML::FormHandler::Field::Select';
 

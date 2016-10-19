@@ -106,10 +106,6 @@ __END__
 
 HTML::FormHandler::I18N::bg_bg - Bulgarian message file
 
-=head1 VERSION
-
-version 0.40010
-
 =head1 AUTHOR
 
 FormHandler Contributors - see HTML::FormHandler

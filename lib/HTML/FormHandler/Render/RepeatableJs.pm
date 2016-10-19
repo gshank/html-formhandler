@@ -1,5 +1,6 @@
 package HTML::FormHandler::Render::RepeatableJs;
 # ABSTRACT: role providing method to construct repeatable javascript
+
 use Moose::Role;
 
 use JSON::MaybeXS ('encode_json');

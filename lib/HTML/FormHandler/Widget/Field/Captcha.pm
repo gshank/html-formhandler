@@ -1,5 +1,6 @@
 package HTML::FormHandler::Widget::Field::Captcha;
 # ABSTRACT: Captcha field rendering widget
+
 use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');

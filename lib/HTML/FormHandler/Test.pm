@@ -1,5 +1,6 @@
 package HTML::FormHandler::Test;
 # ABSTRACT: provides is_html method used in tests
+
 use strict;
 use warnings;
 use base 'Test::Builder::Module';

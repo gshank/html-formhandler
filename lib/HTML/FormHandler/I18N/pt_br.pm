@@ -107,10 +107,6 @@ __END__
 
 HTML::FormHandler::I18N::pt_br - Brazilian Portuguese message file
 
-=head1 VERSION
-
-version 0.40017
-
 =head1 AUTHOR
 
 FormHandler Contributors - see HTML::FormHandler
