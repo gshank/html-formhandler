@@ -16,6 +16,10 @@ Base block renderer to be used with L<HTML::FormHandler::Blocks>.
 
 List of names of objects to render (fields and blocks)
 
+=item build_render_list_method
+
+Coderef for constructing the list of names of objects to render (fields and blocks)
+
 =item tag
 
 HTML tag for this block. Default 'div'.
@@ -95,6 +99,7 @@ sub build_label_class { [] }
 has 'render_list' => (
     is      => 'rw',
     isa     => 'ArrayRef[Str]',
+    lazy => 1,
     traits  => ['Array'],
     builder => 'build_render_list',
     handles => {
@@ -104,7 +109,16 @@ has 'render_list' => (
         get_render_list    => 'get',
     }
 );
-sub build_render_list { [] }
+
+has 'build_render_list_method' => (
+    is      => 'rw',
+    isa     => 'CodeRef',
+    traits  => ['Code'],
+    handles => {'build_render_list' => 'execute_method'},
+    default => sub { \&default_build_render_list },
+);
+
+sub default_build_render_list { [] }
 
 has 'content' => ( is => 'rw' );
 has 'after_plist' => ( is => 'rw' );
