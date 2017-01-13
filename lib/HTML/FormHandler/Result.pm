@@ -55,6 +55,7 @@ has 'form' => (
     isa      => 'HTML::FormHandler',
     is       => 'ro',
     weak_ref => 1,
+    handles  => ['item_values'],
     #  handles => ['render' ]
 );
 
