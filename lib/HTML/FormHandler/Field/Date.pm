@@ -37,8 +37,10 @@ or
 
 You can also set 'date_end' and 'date_start' attributes for validation
 of the date range. Use iso_8601 formats for these dates ("yyyy-mm-dd");
+The dates can be specified either as a string, or as a subref; the subref
+is evaluated at validation time.
 
-   has_field 'start_date' => ( type => 'Date', date_start => "2009-12-25" );
+   has_field 'start_date' => ( type => 'Date', date_start => "2009-12-25", date_end => sub { DateTime->now->ymd } );
 
 Customize error messages 'date_early' and 'date_late':
 
@@ -73,8 +75,8 @@ has '+html5_type_attr' => ( default => 'date' );
 has 'format' => ( is => 'rw', isa => 'Str', default => "%Y-%m-%d" );
 has 'locale'     => ( is => 'rw', isa => 'Str' );                                  # TODO
 has 'time_zone'  => ( is => 'rw', isa => 'Str' );                                  # TODO
-has 'date_start' => ( is => 'rw', isa => 'Str', clearer => 'clear_date_start' );
-has 'date_end'   => ( is => 'rw', isa => 'Str', clearer => 'clear_date_end' );
+has 'date_start' => ( is => 'rw', isa => 'Str|CodeRef', clearer => 'clear_date_start' );
+has 'date_end'   => ( is => 'rw', isa => 'Str|CodeRef', clearer => 'clear_date_end' );
 has '+size' => ( default => '10' );
 has '+deflate_method' => ( default => sub { \&date_deflate } );
 
@@ -133,14 +135,16 @@ sub validate {
     }
     $self->_set_value($dt);
     my $val_strp = DateTime::Format::Strptime->new( pattern => "%Y-%m-%d", @options );
-    if ( $self->date_start ) {
-        my $date_start = $val_strp->parse_datetime( $self->date_start );
+    if ( my $date_start = $self->date_start ) {
+        $date_start = $date_start->() if ref $date_start eq 'CODE';
+        $date_start = $val_strp->parse_datetime( $date_start );
         die "date_start: " . $val_strp->errmsg unless $date_start;
         my $cmp = DateTime->compare( $date_start, $dt );
         $self->add_error($self->get_message('date_early')) if $cmp eq 1;
     }
-    if ( $self->date_end ) {
-        my $date_end = $val_strp->parse_datetime( $self->date_end );
+    if ( my $date_end = $self->date_end ) {
+        $date_end = $date_end->() if ref $date_end eq 'CODE';
+        $date_end = $val_strp->parse_datetime( $date_end );
         die "date_end: " . $val_strp->errmsg unless $date_end;
         my $cmp = DateTime->compare( $date_end, $dt );
         $self->add_error($self->get_message('date_late')) if $cmp eq -1;
