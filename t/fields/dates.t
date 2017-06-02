@@ -63,7 +63,7 @@ is( $field->fif, '08/01/2009', 'Correct value' );
 
 $field->clear_date_start;
 $field->reset_result;
-$field->date_end('2010-01-01');
+$field->date_end(sub { '2010-01-01' });
 $field->_set_input('02/01/2010');
 $field->validate_field;
 ok( $field->has_errors, 'date is too late');
