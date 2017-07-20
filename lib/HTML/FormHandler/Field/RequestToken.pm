@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::RequestToken;
+
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Hidden';
 

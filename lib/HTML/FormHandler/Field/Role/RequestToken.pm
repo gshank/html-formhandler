@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::Role::RequestToken;
+
 use Moose::Role;
 
 =head1 NAME
