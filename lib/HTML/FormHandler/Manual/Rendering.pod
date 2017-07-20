@@ -529,6 +529,12 @@ The 'first_fset' block will render like this:
         <div>
     </fieldset>
 
+You can also provide a method to 'build' the block's render list
+
+   has_block 'first_fset' => ( tag => 'fieldset, label => 'Two Fields',
+       build_render_list_method => \&build_render_list_first_fset );
+   sub build_render_list_first_fset { ['foo', 'bar'] }
+
 In order to actually get this block to be used when you render with
 C<< $form->render >>, you need to supply a 'render_list' on the form
 level:
