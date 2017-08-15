@@ -1,4 +1,5 @@
 
+   - Fix exception when field 'result' has been garbage-collected
    - Crypt::* and MIME::Base64 prereqs added in last release are moved to
      optional prereqs
 
