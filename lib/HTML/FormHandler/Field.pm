@@ -953,7 +953,7 @@ sub element_attributes {
     my $attr = {};
     # handle html5 attributes
     if ($self->form && $self->form->has_flag('is_html5')) {
-        $attr->{required} = 'required' if $self->required;
+        $attr->{required} = 'required' if $self->required && $self->html5_type_attr ne 'hidden';
         $attr->{min} = $self->range_start if defined $self->range_start;
         $attr->{max} = $self->range_end if defined $self->range_end;
     }
