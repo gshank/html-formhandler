@@ -1,7 +1,12 @@
+
+   - Fix exception when field 'result' has been garbage-collected
+   - Crypt::* and MIME::Base64 prereqs added in last release are moved to
+     optional prereqs
+
 0.40068 Thu Jul 20, 2017
    Add RequestToken field
    Add build_render_list_method
-   Zccept coderefs for date_start, date_end in Date field
+   Accept coderefs for date_start, date_end in Date field
 
 0.40067 Wed Oct 19, 2016
    Fixed Text validation checking, to allow deflations and transformations

@@ -579,7 +579,7 @@ has 'result' => (
     is        => 'ro',
     weak_ref  => 1,
     clearer   => 'clear_result',
-    predicate => 'has_result',
+    predicate => 'has_result',  # warning: will still return true if value has been garbage-collected
     writer    => '_set_result',
     handles   => [
         '_set_input',   '_clear_input', '_set_value', '_clear_value',
@@ -592,13 +592,13 @@ has '_pin_result' => ( is => 'ro', reader => '_get_pin_result', writer => '_set_
 
 sub has_input {
     my $self = shift;
-    return unless $self->has_result;
+    return unless $self->has_result and $self->result;
     return $self->result->has_input;
 }
 
 sub has_value {
     my $self = shift;
-    return unless $self->has_result;
+    return unless $self->has_result and $self->result;
     return $self->result->has_value;
 }
 
@@ -627,6 +627,7 @@ sub input {
     # allow testing fields individually by creating result if no form
     return undef unless $self->has_result || !$self->form;
     my $result = $self->result;
+    return undef unless $result;
     return $result->_set_input(@_) if @_;
     return $result->input;
 }
@@ -669,6 +670,7 @@ sub fif {
     return '' if $self->password;
     return unless $result || $self->has_result;
     my $lresult = $result || $self->result;
+    return unless $lresult;
     if ( ( $self->has_result && $self->has_input && !$self->fif_from_value ) ||
         ( $self->fif_from_value && !defined $lresult->value ) )
     {
