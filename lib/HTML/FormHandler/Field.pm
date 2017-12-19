@@ -1063,7 +1063,7 @@ sub build_validate_method {
     my $set_validate = $self->set_validate;
     $set_validate ||= "validate_" . convert_full_name($self->full_name);
     return sub { my $self = shift; $self->form->$set_validate($self); }
-        if ( $self->form && $self->form->can($set_validate) );
+        if ( $set_validate ne 'validate_model' && $self->form && $self->form->can($set_validate) );
     return sub { };
 }
 
