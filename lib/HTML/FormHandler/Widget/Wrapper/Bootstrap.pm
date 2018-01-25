@@ -41,7 +41,7 @@ sub wrap_field {
 
     my $output;
     # is this a control group or a form action?
-    my $form_actions = 1 if ( $self->name eq 'form_actions' || $self->type_attr eq 'submit'
+    my $form_actions = ( $self->name eq 'form_actions' || $self->type_attr eq 'submit'
         || $self->type_attr eq 'reset' );
     # create attribute string for wrapper
     my $attr = $self->wrapper_attributes($result);
