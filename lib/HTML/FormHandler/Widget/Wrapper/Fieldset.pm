@@ -21,7 +21,7 @@ sub wrap_field {
     my ( $self, $result, $rendered_widget ) = @_;
 
     my $wattrs = process_attrs($self->wrapper_attributes);
-    my $output .= qq{\n<fieldset$wattrs>};
+    my $output = qq{\n<fieldset$wattrs>};
     $output .= qq{\n<legend>} . $self->loc_label . '</legend>';
 
     $output .= "\n$rendered_widget";

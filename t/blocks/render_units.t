@@ -25,7 +25,7 @@ use HTML::FormHandler::Test;
 
 my $form = MyApp::Form::MyBlocks->new;
 
-my $rendered .= $form->block('ghi')->render;
+my $rendered = $form->block('ghi')->render;
 $rendered .= $form->field('fie')->render;
 $rendered .= $form->block('abc')->render;
 $rendered .= $form->field('fee')->render;

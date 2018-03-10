@@ -77,7 +77,7 @@ sub render_option {
     }
     my $lattr_str = process_attrs( $lattr );
     my $id = $self->id . '.' . $self->options_index;
-    my $output .= qq{\n<label$lattr_str for="$id">};
+    my $output = qq{\n<label$lattr_str for="$id">};
     my $value = $option->{value};
     $output .= qq{\n<input type="checkbox"};
     $output .= qq{ value="} . $self->html_filter($value) . '"';

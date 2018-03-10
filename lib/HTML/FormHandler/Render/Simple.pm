@@ -386,7 +386,7 @@ sub render_reset {
 sub render_captcha {
     my ( $self, $field ) = @_;
 
-    my $output .= '<img src="' . $self->captcha_image_url . '"/>';
+    my $output = '<img src="' . $self->captcha_image_url . '"/>';
     $output .= '<input id="' . $field->id . '" name="';
     $output .= $field->html_name . '"/>';
     return $output;

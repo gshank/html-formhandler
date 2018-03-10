@@ -77,7 +77,7 @@ sub render_empty_select {
 
     my $label = $self->_localize($self->empty_select);
     my $id = $self->id . "." . $self->options_index;
-    my $output .= qq{\n<option value="" id="$id">$label</option>};
+    my $output = qq{\n<option value="" id="$id">$label</option>};
     $self->inc_options_index;
     return $output;
 }
@@ -95,7 +95,7 @@ sub render_option {
     # set to empty string because of 'eq' below
     my $value = defined $option->{value} ? $option->{value} : '';
     my $id = $self->id . '.' . $self->options_index;
-    my $output .= qq{\n<option value="} . $self->html_filter($value) . '"';
+    my $output = qq{\n<option value="} . $self->html_filter($value) . '"';
     $output .= qq{ id="$id"};
 
     # handle option attributes
