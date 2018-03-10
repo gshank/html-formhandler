@@ -119,7 +119,7 @@ sub b3_label_left_inline {
 
     my $label = $self->get_checkbox_label;
     my $id = $self->id;
-    my $output .= qq{<label class="checkbox-inline" for="$id">\n$label\n$rendered_widget</label>};
+    my $output = qq{<label class="checkbox-inline" for="$id">\n$label\n$rendered_widget</label>};
     return $output;
 }
 
@@ -139,7 +139,7 @@ sub label_left {
 
     my $label = $self->get_checkbox_label;
     my $id = $self->id;
-    my $output .= qq{<label class="checkbox" for="$id">\n$label\n$rendered_widget</label>};
+    my $output = qq{<label class="checkbox" for="$id">\n$label\n$rendered_widget</label>};
     return $output;
 }
 
@@ -148,7 +148,7 @@ sub label_right {
 
     my $label = $self->get_checkbox_label;
     my $id = $self->id;
-    my $output .= qq{<label class="checkbox" for="$id">$rendered_widget\n$label\n</label>};
+    my $output = qq{<label class="checkbox" for="$id">$rendered_widget\n$label\n</label>};
     return $output;
 }
 
