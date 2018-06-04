@@ -4,7 +4,7 @@ package HTML::FormHandler::Field::Repeatable;
 use Moose;
 extends 'HTML::FormHandler::Field::Compound';
 
-use aliased 'HTML::FormHandler::Field::Repeatable::Instance';
+use HTML::FormHandler::Field::Repeatable::Instance;
 use HTML::FormHandler::Field::PrimaryKey;
 use HTML::FormHandler::Merge ('merge');
 use Data::Clone ('data_clone');
@@ -228,7 +228,7 @@ sub create_element {
             $instance_attr );
     }
     else {
-        $instance = Instance->new( %$instance_attr );
+        $instance = HTML::FormHandler::Field::Repeatable::Instance->new( %$instance_attr );
     }
     # copy the fields from this field into the instance
     $instance->add_field( $self->all_fields );
