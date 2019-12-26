@@ -1,6 +1,12 @@
 package HTML::FormHandler::Manual
 # ABSTRACT: index of the manual
 
+=head1 STARTING A NEW PROJECT?
+
+Consider using L<Data::MuForm> instead.  It is the successor to this module
+and may provide you speed or usability benefits.  See
+L<Data::MuForm::Manual::FormHandlerDiff> for differences between HFH and DMF.
+
 =head1 DESCRIPTION
 
 This is the L<HTML::FormHandler> users manual. HTML::FormHandler is
