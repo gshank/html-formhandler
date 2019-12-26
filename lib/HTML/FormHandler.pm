@@ -24,6 +24,12 @@ use Data::Clone;
 
 use 5.008;
 
+=head1 STARTING A NEW PROJECT?
+
+Consider using L<Data::MuForm> instead.  It is the successor to this module
+and may provide you speed or usability benefits.  See
+L<Data::MuForm::Manual::FormHandlerDiff> for differences between HFH and DMF.
+
 =head1 SYNOPSIS
 
 See the manual at L<HTML::FormHandler::Manual>.
