@@ -186,6 +186,8 @@ A field formatted as a select element.
 
 L<HTML::FormHandler::Field::Select>
 
+This also handles radio buttons and checkboxes, by means of widgets.
+
 =head3 Checkbox
 
 A field formatted as a checkbox. If not in params, will be forced to
