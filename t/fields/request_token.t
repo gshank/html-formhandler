@@ -2,6 +2,8 @@ use strict;
 use warnings;
 use Test::More;
 
+use Test::Needs qw(Crypt::CBC Crypt::Blowfish MIME::Base64);
+
 {
     package MyApp::Form::Test;
     use HTML::FormHandler::Moose;
