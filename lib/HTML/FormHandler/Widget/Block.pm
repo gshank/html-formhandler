@@ -127,15 +127,8 @@ sub render {
     my ( $self, $result ) = @_;
     $result ||= $self->form->result;
 
-    my $start_wrapper = '';
-    my $end_wrapper = '';
-    if( $self->wrapper ) {
-        my $tag = $self->tag;
-        # create attribute string
-        my $attr_str = $self->render_attribute_string;
-        $start_wrapper = qq{<$tag$attr_str>};
-        $end_wrapper = qq{</$tag>};
-    }
+    my $start_wrapper = $self->render_start;
+    my $end_wrapper = $self->render_end;
 
     # get rendering of contained fields, if any
     my $rendered_fb = $self->render_from_list($result);
@@ -147,6 +140,26 @@ sub render {
     my $label = $self->render_label;
     my $block = qq{\n$start_wrapper$label$content$rendered_fb$after_plist$end_wrapper};
 
+}
+
+sub render_start {
+    my $self = shift;
+    if( $self->wrapper ) {
+        my $tag = $self->tag;
+        # create attribute string
+        my $attr_str = $self->render_attribute_string;
+        return qq{<$tag$attr_str>};
+    }
+    return '';
+}
+
+sub render_end {
+    my $self = shift;
+    if( $self->wrapper ) {
+        my $tag = $self->tag;
+        return qq{</$tag>};
+    }
+    return '';
 }
 
 sub render_attribute_string {
