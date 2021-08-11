@@ -39,7 +39,7 @@ sub render_form_errors {
 
 sub render_end {
     my $self = shift;
-    my $output .= "</table>\n";
+    my $output = "</table>\n";
     $output .= "</form>\n";
     return $output;
 }

@@ -202,7 +202,7 @@ sub _apply_actions {
                     die "Cannot find type constraint $type";
             }
             if ( $tobj->has_coercion && $tobj->validate($value) ) {
-                eval { $new_value = $tobj->coerce($value) };
+                my $coerce_returned = eval { $tobj->coerce($value) };
                 if ($@) {
                     if ( $tobj->has_message ) {
                         $error_message = $tobj->message->($value);
@@ -212,6 +212,7 @@ sub _apply_actions {
                     }
                 }
                 else {
+                    $new_value = $coerce_returned;
                     $self->_set_value($new_value);
                 }
 

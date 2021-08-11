@@ -8,7 +8,7 @@ use Test::More;
 
     sub render {
         my $self = shift;
-        my $output .= $self->render_start;
+        my $output = $self->render_start;
         $output .= '<p>This is the rendering role</p>';
         $output .= $self->render_end;
     }

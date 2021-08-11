@@ -14,7 +14,7 @@ sub render_element {
     my ( $self, $result ) = @_;
     $result ||= $self->result;
 
-    my $output .= '<input type="hidden" name="';
+    my $output = '<input type="hidden" name="';
     $output .= $self->html_name . '"';
     $output .= ' id="' . $self->id . '"';
     $output .= ' value="' . $self->html_filter($result->fif) . '"';
