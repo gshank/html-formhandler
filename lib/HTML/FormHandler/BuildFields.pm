@@ -63,8 +63,9 @@ sub _build_fields {
             $self->_process_field_list( $flist );
         }
     }
-    my $mlist = $self->model_fields if $self->fields_from_model;
-    $self->_process_field_list( $mlist ) if $mlist;
+    if ( $self->fields_from_model && (my $mlist = $self->model_fields) ) {
+        $self->_process_field_list( $mlist );
+    }
 
     return unless $self->has_fields;
 
