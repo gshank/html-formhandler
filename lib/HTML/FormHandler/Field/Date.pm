@@ -130,7 +130,11 @@ sub validate {
 
     my $dt = eval { $strp->parse_datetime( $self->value ) };
     unless ($dt) {
-        $self->add_error( $strp->errmsg || $@ );
+        # The parser's message is not ours to hand to the localizer as a
+        # bracket-notation FORMAT. DateTime::Format::Strptime 1.80 does not
+        # quote the rejected input into errmsg, but that is the parser's text
+        # to change, and the `|| $@` fallback is a second channel.
+        $self->add_error( $self->_escape_bracket_notation( $strp->errmsg || $@ ) );
         return;
     }
     $self->_set_value($dt);

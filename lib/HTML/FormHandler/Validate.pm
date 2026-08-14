@@ -164,13 +164,40 @@ sub _build_apply_list {
     $self->add_action(@apply_list);
 }
 
+# Locale::Maketext treats its FORMAT argument as bracket-notation source: any
+# '[...]' group inside it is compiled into method-dispatch code (see _compile
+# in Locale::Maketext). Messages FormHandler itself authors are templates on
+# purpose, but three kinds of text reaching _apply_actions are not ours and do
+# embed request data:
+#
+#   * warnings trapped by the $SIG{__WARN__} handler in _apply_actions -- Perl
+#     quotes the offending value into them verbatim, so a submitted value like
+#     '[sprintf,%2000000000d,0]' arrives as a well-formed bracket group;
+#   * a type constraint's failure message -- the type system renders a rejected
+#     reference in bracket-and-comma form (Devel::PartialDump when Moose can
+#     load it, Type::Tiny's own dumper always), so a duplicate request
+#     parameter is enough to put '[ "a", "b" ]' into the format;
+#   * exceptions from a coercion or a transform.
+#
+# Render those literally instead. Tilde is Locale::Maketext's escape character;
+# text containing no brackets comes back unchanged, so lexicon lookups and
+# translated type-constraint messages behave exactly as before.
+sub _escape_bracket_notation {
+    my ( $self, $text ) = @_;
+    return $text unless defined $text;
+    $text = "$text";
+    $text =~ s/~/~~/g;
+    $text =~ s/([\[\]])/~$1/g;
+    return $text;
+}
+
 sub _apply_actions {
     my $self = shift;
 
     my $error_message;
     local $SIG{__WARN__} = sub {
         my $error = shift;
-        $error_message = $error;
+        $error_message = $self->_escape_bracket_notation($error);
         return 1;
     };
 
@@ -205,10 +232,11 @@ sub _apply_actions {
                 my $coerce_returned = eval { $tobj->coerce($value) };
                 if ($@) {
                     if ( $tobj->has_message ) {
-                        $error_message = $tobj->message->($value);
+                        $error_message = $self->_escape_bracket_notation(
+                            $tobj->message->($value) );
                     }
                     else {
-                        $error_message = $@;
+                        $error_message = $self->_escape_bracket_notation($@);
                     }
                 }
                 else {
@@ -217,7 +245,8 @@ sub _apply_actions {
                 }
 
             }
-            $error_message ||= $tobj->validate($new_value);
+            $error_message ||= $self->_escape_bracket_notation(
+                $tobj->validate($new_value) );
         }
         # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
         # actions in a hashref
@@ -242,7 +271,8 @@ sub _apply_actions {
                 $action->{transform}->($value, $self);
             };
             if ($@) {
-                $error_message = $@ || $self->get_message('error_occurred');
+                $error_message = $self->_escape_bracket_notation($@)
+                    || $self->get_message('error_occurred');
             }
             else {
                 $self->_set_value($new_value);
@@ -303,4 +333,3 @@ sub match_when {
 
 use namespace::autoclean;
 1;
-
