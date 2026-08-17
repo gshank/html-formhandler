@@ -6,6 +6,7 @@ use Moose::Role;
 requires( 'sorted_fields', 'field' );
 
 use HTML::FormHandler::Render::Util ('process_attrs', 'ucc_widget');
+use HTML::Entities qw( encode_entities );
 
 =head1 SYNOPSIS
 
@@ -140,7 +141,7 @@ sub render_form_errors {
     return '' unless $self->has_form_errors;
     my $output = "\n<div class=\"form_errors\">";
     $output .= qq{\n<span class="error_message">$_</span>}
-        for $self->all_form_errors;
+        for map { encode_entities($_) } $self->all_form_errors;
     $output .= "\n</div>";
     return $output;
 }
@@ -192,7 +193,7 @@ sub wrap_field {
 
     $output .= "\n$rendered_field";
     $output .= qq{\n<span class="error_message">$_</span>}
-        for $field->all_errors;
+        for map { encode_entities($_) } $field->all_errors;
 
     $output .= "\n</$wrapper_tag>";
 
@@ -395,4 +396,3 @@ sub render_captcha {
 
 use namespace::autoclean;
 1;
-

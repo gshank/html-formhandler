@@ -3,6 +3,7 @@ package HTML::FormHandler::Widget::Form::Simple;
 
 use Moose::Role;
 use HTML::FormHandler::Render::Util ('process_attrs');
+use HTML::Entities qw( encode_entities );
 
 with 'HTML::FormHandler::Widget::Form::Role::HTMLAttributes';
 
@@ -141,22 +142,22 @@ sub render_form_messages {
     my $error_class = $self->get_tag('error_class') || 'error_message';
     if( $self->has_error_message && ( $result->has_errors || $result->has_form_errors ) ) {
         my $msg = $self->error_message;
-        $msg = $self->_localize($msg);
+        $msg = encode_entities($self->_localize($msg));
         $output .= qq{\n<span class="$error_class">$msg</span>};
     }
     if ( $result->has_form_errors ) {
         $output .= qq{\n<span class="$error_class">$_</span>}
-            for $result->all_form_errors;
+            for map { encode_entities($_) } $result->all_form_errors;
     }
     if( $self->has_success_message && $result->validated ) {
         my $msg = $self->success_message;
-        $msg = $self->_localize($msg);
+        $msg = encode_entities($self->_localize($msg));
         my $success_class = $self->get_tag('success_class') || 'success_message';
         $output .= qq{\n<span class="$success_class">$msg</span>};
     }
     if( $self->has_info_message && $self->info_message ) {
         my $msg = $self->info_message;
-        $msg = $self->_localize($msg);
+        $msg = encode_entities($self->_localize($msg));
         my $info_class = $self->get_tag('info_class') || 'info_message';
         $output .= qq{\n<span class="$info_class">$msg</span>};
     }
@@ -184,4 +185,3 @@ sub render_wrapper_end {
 }
 use namespace::autoclean;
 1;
-
