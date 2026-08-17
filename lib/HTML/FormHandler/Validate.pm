@@ -277,8 +277,6 @@ sub _apply_actions {
                 $foreign_message = 1 if $error_message;
             }
         }
-        # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
-        # actions in a hashref
         elsif ( ref $action->{check} eq 'CODE' ) {
             if ( !$action->{check}->($value, $self) ) {
                 $error_message = $self->get_message('wrong_value');
