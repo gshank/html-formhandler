@@ -2,6 +2,10 @@
    - Fix exception when field 'result' has been garbage-collected
    - Crypt::* and MIME::Base64 prereqs added in last release are moved to
      optional prereqs
+   - Fix CVE-2026-19872
+     by html escaping all error message on render
+     only the Select field did this previously but when adding the error message to the field
+     instead of only when rendering to HTML
 
 0.40068 Thu Jul 20, 2017
    Add RequestToken field
@@ -525,7 +529,7 @@
     Minor doc cleanup
     Switch away from MooseX::Traits; memory leak because of non-cached
         composed classes
-    
+
 0.32003 Sun Oct 3, 2010
     Fix syntax for 'with', excludes => -excludes
     Use labels in radio group widgets
@@ -538,7 +542,7 @@
     Allow undefining min_size and max_size in upload field
     Return in render_filter if string is not defined
     Change rendering of repeatable subfields
-    
+
 0.32002 Thu July 29, 2010
     Update to handle newer Moose (error msg with Moose::Util::MetaRole API)
     Swich to Dist::Zilla
@@ -572,7 +576,7 @@
     Strip empty pks and empty elements from repeatable values (avoid DB errors)
     Localize value of submit button
     Make '+' unnecessary in front of field name space types
-    
+
 0.31003 Fri May 7, 2010
     Change precedence of defaults over item/init_object; add 'default_over_obj' for
        cases where that behavior is desired.
@@ -607,7 +611,7 @@
     Die on maketext errors
     Move deflation from fif to get_value called by '_result_from_object'.
        Possible incompatibility, except it was probably not working to start with...
-    
+
 0.30003 Sun Feb 21, 2010
     Partial fix for lack of defaults for compound fields
     Support for using model_fields roles (DBICFields)
@@ -642,7 +646,7 @@
     Add 'empty_select' to Select field
     Fix bug displaying empty repeatable element if no values from object
     Improvements in I18N factoring
-    
+
 0.29002 Wed Dec 16, 2009
     Remove locale.t from dist until issues solved
 
@@ -703,7 +707,7 @@
 0.25 Sat June 20, 2009
     Add dependency for DateTime::Format::SQLite
 
-0.24 Sat June 20, 2009 
+0.24 Sat June 20, 2009
     Refactor validation processing for api consistency
     Skip empty undef array elements. Update Password and PrimaryKey fields.
     Fix bugs: calling validate_ method, recognizing errors in repeatable fields,
@@ -712,7 +716,7 @@
 
 0.23 Fri May 22, 2009
     Refactor HTH to use only 'process'. Deprecate 'validate' and 'update'
-    Add field_list array, deprecate other usages. 
+    Add field_list array, deprecate other usages.
     Clean up documentation
     Add Repeatable field to support has_many relationships
 
@@ -728,7 +732,7 @@
     Added apply constraints, transforms, checks. Refactored code for future
     use of nested fields. Improvements to compound fields. Bug fix for
     checkboxes. Added ability to redefine attributes of existing fields
-    with '+fieldname'. 
+    with '+fieldname'.
 
 0.19 Thu Mar 05, 2009, 17:00
     Fix problem with empty values from form. Add Compound field.
@@ -741,11 +745,11 @@
 0.17 Thurs Feb 19 2009, 17:30
     Refactor validate, adding validate_form method
 
-0.16 Thurs Feb 19 2009, 17:00 
+0.16 Thurs Feb 19 2009, 17:00
     Add ability to use arrayrefs for primary key
     Clear 'fif' for non-db forms. Allow init_object for non-db forms.
 
-0.15 Mon Feb 16 2009, 19:00 
+0.15 Mon Feb 16 2009, 19:00
     Fix inheritance of has_field. Add ability to use has_field
     in roles. Some refactoring of 'clear'. If a field is not
     in params, don't touch in db.
@@ -758,7 +762,7 @@
 
 0.12 Wed Feb 04 2009, 18:00
     Fix 'dump_fields'. Add more output for verbose. Change so
-    that 'validate' doesn't require a separate 'clear' for 
+    that 'validate' doesn't require a separate 'clear' for
     persistent forms. The controller test will only execute
     with an environment variable.
 
@@ -783,7 +787,7 @@
 0.06 Wed Jan 21 2009, 04:00
     Add prereq skip tests to controller test. Clean up Makefile.PL.
     Convert test controller Book.pm to use chained. Support empty
-    rows. 
+    rows.
 
 0.05 Mon Jan 19 2009, 15:00
     Add skip test to htmlarea test. Add action, http_method, & submit to form.

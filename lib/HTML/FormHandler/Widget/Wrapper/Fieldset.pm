@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Wrapper::Fieldset;
 # ABSTRACT: fieldset field wrapper
 
 use Moose::Role;
+use HTML::Entities qw( encode_entities );
 use namespace::autoclean;
 
 with 'HTML::FormHandler::Widget::Wrapper::Base';
@@ -27,7 +28,7 @@ sub wrap_field {
     $output .= "\n$rendered_widget";
 
     $output .= qq{\n<span class="error_message">$_</span>}
-        for $result->all_errors;
+        for map { encode_entities($_) } $result->all_errors;
     $output .= "\n</fieldset>";
 
     return $output;

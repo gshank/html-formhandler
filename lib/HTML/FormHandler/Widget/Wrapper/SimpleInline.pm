@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Wrapper::SimpleInline;
 # ABSTRACT: simple field wrapper
 
 use Moose::Role;
+use HTML::Entities qw( encode_entities );
 use namespace::autoclean;
 
 with 'HTML::FormHandler::Widget::Wrapper::Base';
@@ -34,7 +35,7 @@ sub wrap_field {
 
     $output .= $rendered_widget;
     $output .= qq{\n<span class="error_message">$_</span>}
-        for $result->all_errors;
+        for map { encode_entities($_) } $result->all_errors;
 
     my $end_tag = $self->get_tag('wrapper_end');
     $output .= defined $end_tag ? $end_tag : "</$tag>";

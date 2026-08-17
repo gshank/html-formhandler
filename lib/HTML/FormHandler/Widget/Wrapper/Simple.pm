@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Wrapper::Simple;
 # ABSTRACT: simple field wrapper
 
 use Moose::Role;
+use HTML::Entities qw( encode_entities );
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
 
@@ -96,7 +97,7 @@ sub wrap_field {
     unless( $self->get_tag('no_errors') ) {
         my $error_class = $self->get_tag('error_class') || 'error_message';
         $output .= qq{\n<span class="$error_class">$_</span>}
-            for $result->all_errors;
+            for map { encode_entities($_) } $result->all_errors;
         # warnings (incompletely implemented - only on field itself)
         my $warning_class = $self->get_tag('warning_class') || 'warning_message';
         $output .= qq{\n<span class="warning_message">$_</span>}
