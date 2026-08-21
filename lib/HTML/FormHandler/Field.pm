@@ -173,6 +173,23 @@ See also L<HTML::FormHandler::TraitFor::I18N>.
 
     return $field->add_error( 'bad data' ) if $bad;
 
+The first argument is the localization FORMAT, which for a
+L<Locale::Maketext> handle means bracket notation in it is compiled and
+executed. Do not build that argument out of submitted data: a value
+containing a C<[...]> group would be run as a method call rather than
+shown. Pass the value as an argument instead, where it is inert:
+
+    # wrong -- the submitted value becomes part of the format
+    $field->add_error( "The value '" . $field->value . "' is not allowed" );
+
+    # right -- the format is yours, the value is just an argument
+    $field->add_error( "The value '[_1]' is not allowed", $field->value );
+
+Also note that the first argument is cached by L<Locale::Maketext>,
+without any size limits or purging of data.  Passing error messages in
+the first argument that contain text submitted over the network opens
+up a system to memory consumption attacks.
+
 =item error_fields
 
 Compound fields will have an array of errors from the subfields.
@@ -1415,7 +1432,26 @@ sub add_error {
     unless ( defined $message[0] ) {
         @message = ( $class_messages->{field_invalid});
     }
-    @message = @{$message[0]} if ref $message[0] eq 'ARRAY';
+    if ( ref $message[0] eq 'ARRAY' ) {
+        # The list-or-arrayref spelling here is the same convenience idiom as
+        # add_element_class and friends. It is not documented for add_error,
+        # nothing in the distribution reaches it, and what does reach it is
+        # request data: $field->add_error($field->value), where the request
+        # parser folded a duplicate parameter into an arrayref, puts submitted
+        # text in element 0 -- which _localize hands to Locale::Maketext as the
+        # FORMAT. Dereference as before, but if element 0 could be parsed as a
+        # bracket group, pass it as an inert argument instead of as the format.
+        # A caller who really wants a compiled template passes it as a plain
+        # list, $field->add_error($template, @args), which is the documented
+        # spelling and is unchanged.
+        my @args = @{ $message[0] };
+        # Interpolate explicitly: '[_1]' alone returns its argument unchanged
+        # (see the note in Validate.pm's _needs_inert_format caller), and the
+        # errors attribute holds strings.
+        @message = $self->_needs_inert_format( $args[0] )
+            ? ( '[_1]', "$args[0]" )
+            : @args;
+    }
     my $out;
     try {
         $out = $self->_localize(@message);
