@@ -164,13 +164,66 @@ sub _build_apply_list {
     $self->add_action(@apply_list);
 }
 
+
+# Locale::Maketext compiles its FORMAT argument: a '[...]' group in it becomes
+# method-dispatch code (see _compile in Locale::Maketext). Messages FormHandler
+# itself authors are templates on purpose, but several kinds of text reaching
+# _apply_actions are not ours and do carry request data -- a warning trapped by
+# the $SIG{__WARN__} handler below (Perl quotes the offending value into it
+# verbatim), a type constraint's failure message (the type system renders a
+# rejected reference in bracket-and-comma form), and exceptions from a coercion
+# or a transform.
+#
+# Rather than escape the bracket metacharacters in such text, hand it to the
+# localizer as an ARGUMENT with a constant format, which is the idiom the
+# add_error POD recommends to applications: the text then cannot be parsed as
+# anything at all, so there is no escaping to get right.
+#
+# This applies to all such text, not only text that happens to contain a
+# bracket. Two reasons. It keeps the rule simple enough to check by reading it
+# -- "text we did not author is never a format" -- with no predicate to get
+# wrong. And it stops the text being used as a LEXICON KEY: with _AUTO set, as
+# it is for HTML::FormHandler::I18N::en_us, Locale::Maketext memoises every
+# distinct format into a package-global hash that is never evicted and outlives
+# the handle, so distinct submitted values otherwise accumulate in a long-lived
+# process for as long as it runs.
+#
+# The cost is that such text is no longer looked up in the lexicon, so a
+# translated custom type-constraint message is now shown as the type gave it.
+# A maintainer who would rather keep that lookup can return false for text with
+# no '~', '[' or ']' in it, which is the complete set of characters
+# Locale::Maketext's compiler treats specially:
+#
+#     return 0 if $text !~ /[~\[\]]/;
+#
+# and adjust the corresponding assertion in t/errors/maketext_inert_argument.t.
+# References are diverted too, and deliberately so. All of the sources above can
+# deliver one: `warn $object` hands the object itself to $SIG{__WARN__}, `die
+# $object` in a transform or a coercion leaves it in $@, and a type constraint's
+# message block may return one. Locale::Maketext then STRINGIFIES whatever it is
+# given as the format -- _compile's own fast-path regex does it before anything
+# else -- so an object with a '""' overload that yields bracket notation would
+# skip a reference bailout and be compiled anyway. Testing the stringification
+# here instead would not help: Maketext performs its own, later stringification,
+# so inspecting one and compiling the other leaves a gap, and an overload is
+# arbitrary code that need not answer the same way twice. Passing the object as
+# an argument sidesteps all of it -- an argument is interpolated, never compiled,
+# so it stringifies exactly as it did before and only the compilation is gone.
+sub _needs_inert_format {
+    my ( $self, $text ) = @_;
+
+    return defined $text ? 1 : 0;
+}
 sub _apply_actions {
     my $self = shift;
 
     my $error_message;
+    # True when $error_message holds text this module did not author.
+    my $foreign_message;
     local $SIG{__WARN__} = sub {
         my $error = shift;
-        $error_message = $error;
+        $error_message   = $error;
+        $foreign_message = 1;
         return 1;
     };
 
@@ -180,7 +233,8 @@ sub _apply_actions {
     };
 
     for my $action ( @{ $self->actions || [] } ) {
-        $error_message = undef;
+        $error_message   = undef;
+        $foreign_message = undef;
         # the first time through value == input
         my $value     = $self->value;
         my $new_value = $value;
@@ -210,6 +264,7 @@ sub _apply_actions {
                     else {
                         $error_message = $@;
                     }
+                    $foreign_message = 1;
                 }
                 else {
                     $new_value = $coerce_returned;
@@ -217,7 +272,10 @@ sub _apply_actions {
                 }
 
             }
-            $error_message ||= $tobj->validate($new_value);
+            unless ($error_message) {
+                $error_message = $tobj->validate($new_value);
+                $foreign_message = 1 if $error_message;
+            }
         }
         # now maybe: http://search.cpan.org/~rgarcia/perl-5.10.0/pod/perlsyn.pod#Smart_matching_in_detail
         # actions in a hashref
@@ -243,6 +301,7 @@ sub _apply_actions {
             };
             if ($@) {
                 $error_message = $@ || $self->get_message('error_occurred');
+                $foreign_message = 1;
             }
             else {
                 $self->_set_value($new_value);
@@ -261,6 +320,20 @@ sub _apply_actions {
                 elsif ( ref \$act_msg eq 'SCALAR' ) {
                     @message = ($act_msg);
                 }
+                # The application supplied this message, so it is a template on
+                # purpose and foreignness no longer applies.
+                $foreign_message = 0;
+            }
+            if ( $foreign_message && $self->_needs_inert_format( $message[0] ) ) {
+                # Interpolate explicitly. A format that is a single bracket group
+                # compiles to one chunk, and Locale::Maketext only prepends its
+                # `join ''` when there is more than one, so '[_1]' alone returns the
+                # argument UNCHANGED rather than a string -- which would put an
+                # exception object into the errors attribute, where the type
+                # constraint is ArrayRef[Str]. Stringifying here also means the
+                # conversion happens exactly once, under our control, and its result
+                # can never be reparsed as a format.
+                @message = ( '[_1]', "$message[0]" );
             }
             $self->add_error(@message);
         }
