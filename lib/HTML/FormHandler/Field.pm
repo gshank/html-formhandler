@@ -173,18 +173,6 @@ See also L<HTML::FormHandler::TraitFor::I18N>.
 
     return $field->add_error( 'bad data' ) if $bad;
 
-The first argument is the localization FORMAT, which for a
-L<Locale::Maketext> handle means bracket notation in it is compiled and
-executed. Do not build that argument out of submitted data: a value
-containing a C<[...]> group would be run as a method call rather than
-shown. Pass the value as an argument instead, where it is inert:
-
-    # wrong -- the submitted value becomes part of the format
-    $field->add_error( "The value '" . $field->value . "' is not allowed" );
-
-    # right -- the format is yours, the value is just an argument
-    $field->add_error( "The value '[_1]' is not allowed", $field->value );
-
 =item error_fields
 
 Compound fields will have an array of errors from the subfields.
@@ -1427,21 +1415,7 @@ sub add_error {
     unless ( defined $message[0] ) {
         @message = ( $class_messages->{field_invalid});
     }
-    if ( ref $message[0] eq 'ARRAY' ) {
-        # An arrayref argument is a value, not a message specification. The
-        # list-or-arrayref spelling here is the same convenience idiom as
-        # add_element_class and friends, it is not documented for add_error,
-        # and nothing in the distribution reaches it -- but request data does:
-        # $field->add_error($field->value), where the request parser folded a
-        # duplicate parameter into an arrayref, puts submitted text in element
-        # 0, which _localize hands to Locale::Maketext as bracket-notation
-        # source. Dereference as before, but render element 0 literally.
-        # A caller who really wants a compiled template passes it as a plain
-        # list: $field->add_error($template, @args).
-        my @args = @{ $message[0] };
-        $args[0] = $self->_escape_bracket_notation( $args[0] );
-        @message = @args;
-    }
+    @message = @{$message[0]} if ref $message[0] eq 'ARRAY';
     my $out;
     try {
         $out = $self->_localize(@message);
