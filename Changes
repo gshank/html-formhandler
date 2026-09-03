@@ -1,4 +1,5 @@
 {{$NEXT}}
+   - add the missing Changes entry for CVE-2022-4993
 
 0.410000  2026-09-03 15:16:36+02:00 Europe/Vienna
    - Fix exception when field 'result' has been garbage-collected
@@ -8,6 +9,8 @@
      by html escaping all error message on render
      only the Select field did this previously but when adding the error message to the field
      instead of only when rendering to HTML
+   - Fix CVE-2022-4993
+     by passing error messages with request data as Locale::Maketext arguments instead of templates
 
 0.40068 Thu Jul 20, 2017
    Add RequestToken field
