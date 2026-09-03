@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.410000  2026-09-03 15:16:36+02:00 Europe/Vienna
    - Fix exception when field 'result' has been garbage-collected
    - Crypt::* and MIME::Base64 prereqs added in last release are moved to
      optional prereqs
