@@ -1,4 +1,5 @@
 package HTML::FormHandler::Field::RequestToken;
+# ABSTRACT: Hidden text field which contains a unique time-stamped token
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Hidden';
@@ -13,11 +14,6 @@ use Try::Tiny;
 has '+required' => ( default => 1 );
 
 has '+default_method' => ( default => sub { \&get_token });
-
-=head1 NAME
-
-HTML::FormHandler::Field::RequestToken - Hidden text field which contains
-a unique time-stamped token
 
 =head1 SYNOPSIS
 
@@ -178,4 +174,3 @@ sub get_token {
 __PACKAGE__->meta->make_immutable;
 
 1;
-

@@ -1,16 +1,7 @@
 package HTML::FormHandler::Field::Role::RequestToken;
+# ABSTRACT: Role with Moose attributes necessary for the RequestToken field
 
 use Moose::Role;
-
-=head1 NAME
-
-HTML::FormHandler::Field::Role::RequestToken
-
-=head1 SYNOPSIS
-
-Role with Moose attributes necessary for the RequestToken field
-
-=cut
 
 has 'token_prefix' => (
   is => 'rw',
