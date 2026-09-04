@@ -43,7 +43,7 @@ sub render_element {
     foreach my $option ( @{ $self->{options} } ) {
         if ( my $label = $option->{group} ) {
             $label = $self->_localize( $label ) if $self->localize_labels;
-            $output .= qq{\n<optgroup label="$label">};
+            $output .= qq{\n<optgroup label="} . $self->html_filter($label) . qq{">};
             foreach my $group_opt ( @{ $option->{options} } ) {
                 $output .= $self->render_option( $group_opt, $result );
             }

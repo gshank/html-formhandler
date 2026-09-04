@@ -44,7 +44,7 @@ sub render_element {
             my $attr_str = process_attrs($attr);
             my $lattr = $option->{label_attributes} || {};
             my $lattr_str= process_attrs($lattr);
-            $output .= qq{\n<div$attr_str><label$lattr_str>$label</label>};
+            $output .= qq{\n<div$attr_str><label$lattr_str>} . $self->html_filter($label) . qq{</label>};
             foreach my $group_opt ( @{ $option->{options} } ) {
                 $output .= $self->render_option( $group_opt, $result );
             }

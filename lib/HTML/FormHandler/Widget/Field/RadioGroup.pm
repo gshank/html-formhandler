@@ -40,7 +40,7 @@ sub render_element {
             my $attr_str = process_attrs($attr);
             my $lattr = $option->{label_attributes} || {};
             my $lattr_str= process_attrs($lattr);
-            $output .= qq{\n<div$attr_str><label$lattr_str>$label</label>};
+            $output .= qq{\n<div$attr_str><label$lattr_str>} . $self->html_filter($label) . qq{</label>};
             foreach my $group_opt ( @{ $option->{options} } ) {
                 $output .= $self->render_option( $group_opt, $result );
             }
@@ -105,7 +105,7 @@ sub wrap_radio {
     my $lattrs = process_attrs( { class => \@label_class } );
 
     # return wrapped radio, either on left or right
-    my $label = $self->_localize($option_label);
+    my $label = $self->html_filter( $self->_localize($option_label) );
     my $output = '';
     if ( $self->get_tag('label_left') ) {
         $output = qq{<label$lattrs$for>\n$label\n$rendered_widget</label>};
