@@ -5,6 +5,7 @@ use Moose::Role;
 with 'HTML::FormHandler::Widget::Form::Simple' =>
     { -excludes => [ 'render_start', 'render_end', 'render_form_errors' ] };
 use HTML::FormHandler::Render::Util ('process_attrs');
+use HTML::Entities qw( encode_entities );
 
 =head1 SYNOPSIS
 
@@ -32,7 +33,7 @@ sub render_form_errors {
     return '' unless $result->has_form_errors;
     my $output = "\n<tr class=\"form_errors\"><td colspan=\"2\">";
     $output .= qq{\n<span class="error_message">$_</span>}
-        for $result->all_form_errors;
+        for map { encode_entities($_) } $result->all_form_errors;
     $output .= "\n</td></tr>";
     return $output;
 }
@@ -46,4 +47,3 @@ sub render_end {
 
 use namespace::autoclean;
 1;
-
