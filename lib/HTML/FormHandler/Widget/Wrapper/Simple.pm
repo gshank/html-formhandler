@@ -101,7 +101,7 @@ sub wrap_field {
         # warnings (incompletely implemented - only on field itself)
         my $warning_class = $self->get_tag('warning_class') || 'warning_message';
         $output .= qq{\n<span class="warning_message">$_</span>}
-            for $result->all_warnings;
+            for map { encode_entities($_) } $result->all_warnings;
     }
     if( $self->do_wrapper ) {
         $output .= "\n</$wrapper_tag>";
