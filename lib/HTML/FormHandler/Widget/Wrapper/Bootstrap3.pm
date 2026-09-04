@@ -2,6 +2,7 @@ package HTML::FormHandler::Widget::Wrapper::Bootstrap3;
 # ABSTRACT: Twitter Bootstrap 3.0 field wrapper
 
 use Moose::Role;
+use HTML::Entities qw( encode_entities );
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
 use List::Util 1.33 ('any');
@@ -88,8 +89,9 @@ sub wrap_field {
     # various 'help-inline' bits: errors, warnings
     unless( $self->get_tag('no_errors') ) {
         $output .= qq{\n<span class="help-block">$_</span>}
-            for $result->all_errors;
-        $output .= qq{\n<span class="help-block">$_</span>} for $result->all_warnings;
+            for map { encode_entities($_) } $result->all_errors;
+        $output .= qq{\n<span class="help-block">$_</span>}
+            for map { encode_entities($_) } $result->all_warnings;
     }
     # extra after element stuff
     $output .= $self->get_tag('after_element');

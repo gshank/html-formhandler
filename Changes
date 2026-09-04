@@ -1,4 +1,12 @@
 {{$NEXT}}
+   - Complete the CVE-2026-19872 fix: the Bootstrap and Bootstrap3 wrappers
+     still rendered field error messages unescaped, so a submitted value
+     reached the page through them
+   - Escape warnings as well as errors when rendering. Warnings travel the
+     same path and were not escaped in any wrapper, including
+     Widget::Wrapper::Simple, whose errors were already escaped
+   - Escape form errors in Widget::Form::Table for consistency, although its
+     render_form_errors is not reachable through the widget render path
 
 0.410001  2026-09-03 15:35:45+02:00 Europe/Vienna
    - add the missing Changes entry for CVE-2022-4993
