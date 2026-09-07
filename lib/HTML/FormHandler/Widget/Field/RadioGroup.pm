@@ -4,6 +4,7 @@ package HTML::FormHandler::Widget::Field::RadioGroup;
 use Moose::Role;
 use namespace::autoclean;
 use HTML::FormHandler::Render::Util ('process_attrs');
+use HTML::Entities qw( encode_entities );
 
 =head1 SYNOPSIS
 
@@ -40,7 +41,7 @@ sub render_element {
             my $attr_str = process_attrs($attr);
             my $lattr = $option->{label_attributes} || {};
             my $lattr_str= process_attrs($lattr);
-            $output .= qq{\n<div$attr_str><label$lattr_str>} . $self->html_filter($label) . qq{</label>};
+            $output .= qq{\n<div$attr_str><label$lattr_str>} . encode_entities($label, '<>&') . qq{</label>};
             foreach my $group_opt ( @{ $option->{options} } ) {
                 $output .= $self->render_option( $group_opt, $result );
             }
@@ -105,7 +106,7 @@ sub wrap_radio {
     my $lattrs = process_attrs( { class => \@label_class } );
 
     # return wrapped radio, either on left or right
-    my $label = $self->html_filter( $self->_localize($option_label) );
+    my $label = encode_entities( $self->_localize($option_label), '<>&' );
     my $output = '';
     if ( $self->get_tag('label_left') ) {
         $output = qq{<label$lattrs$for>\n$label\n$rendered_widget</label>};
