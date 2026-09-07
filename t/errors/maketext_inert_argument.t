@@ -3,6 +3,8 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
+local $ENV{LANGUAGE_HANDLE} = 'en_en';
+
 # Text this distribution did not author must not be used as the Locale::Maketext
 # FORMAT. Maketext compiles a '[...]' group in the format into a method call, so
 # any such text carrying request data lets a submitted value reach a method on

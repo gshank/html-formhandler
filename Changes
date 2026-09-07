@@ -1,4 +1,5 @@
 {{$NEXT}}
+   - fix failing t/errors/maketext_inert_argument.t test with non-English locale
 
 0.410001  2026-09-03 15:35:45+02:00 Europe/Vienna
    - add the missing Changes entry for CVE-2022-4993
