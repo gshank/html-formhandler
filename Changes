@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.410002  2026-09-07 13:17:02+02:00 Europe/Vienna
    - fix failing t/errors/maketext_inert_argument.t test with non-English locale
    - fix CVE-2026-85484
      by HTML encoding option-list labels
