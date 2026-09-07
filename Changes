@@ -2,6 +2,8 @@
    - fix failing t/errors/maketext_inert_argument.t test with non-English locale
    - fix CVE-2026-85484
      by HTML encoding option-list labels
+     this doesn't use html_filter any more and might break code that used it for mangling labels
+     and values
 
 0.410001  2026-09-03 15:35:45+02:00 Europe/Vienna
    - add the missing Changes entry for CVE-2022-4993
